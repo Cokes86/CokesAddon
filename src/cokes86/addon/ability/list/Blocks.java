@@ -126,6 +126,7 @@ public class Blocks extends AbilityBase implements ActiveHandler {
 				} else if (condition.equals(Condition.SAND)) {
 					if (e.getCause().equals(DamageCause.FALL)) {
 						e.setCancelled(true);
+						return;
 					}
 					invTimer.start();
 				} else if (condition.equals(Condition.GLASS)) {
