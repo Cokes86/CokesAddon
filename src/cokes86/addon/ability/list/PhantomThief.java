@@ -82,7 +82,7 @@ public class PhantomThief extends AbilityBase implements ActiveHandler, TargetHa
 
 		@Override
 		protected void run(int arg0) {
-			getPlayer().addPotionEffect(new PotionEffect(PotionEffectType.INVISIBILITY, 20, 0));
+			getPlayer().addPotionEffect(new PotionEffect(PotionEffectType.INVISIBILITY, Integer.MAX_VALUE, 0));
 		}
 		
 		public void onSilentEnd() {
@@ -95,12 +95,7 @@ public class PhantomThief extends AbilityBase implements ActiveHandler, TargetHa
 		}
 		
 		public void onEnd() {
-			getPlayer().getInventory().setHelmet(armor[0]);
-			getPlayer().getInventory().setChestplate(armor[1]);
-			getPlayer().getInventory().setLeggings(armor[2]);
-			getPlayer().getInventory().setBoots(armor[3]);
-			armor = new ItemStack[4];
-			getPlayer().removePotionEffect(PotionEffectType.INVISIBILITY);
+			onSilentEnd();
 			c.start();
 		}
 	};
@@ -109,7 +104,7 @@ public class PhantomThief extends AbilityBase implements ActiveHandler, TargetHa
 
 		@Override
 		protected void run(int arg0) {
-			getPlayer().addPotionEffect(new PotionEffect(PotionEffectType.GLOWING, 20, 0));
+			getPlayer().addPotionEffect(new PotionEffect(PotionEffectType.GLOWING, Integer.MAX_VALUE, 0));
 		}
 		
 		protected void onEnd() {

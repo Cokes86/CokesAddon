@@ -71,7 +71,14 @@ public class Aris extends AbilityBase implements ActiveHandler {
 	HashMap<Player, Location> hold = new HashMap<>();
 	HashMap<Player, ActionbarChannel> holdAc = new HashMap<>();
 
-	DurationTimer d = null;
+	DurationTimer d = new DurationTimer(10) {
+
+		@Override
+		protected void onDurationProcess(int arg0) {
+			
+		}
+		
+	};
 
 	public Aris(Participant participant) {
 		super(participant);

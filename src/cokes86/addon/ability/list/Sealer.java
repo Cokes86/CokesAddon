@@ -61,6 +61,12 @@ public class Sealer extends AbilityBase implements TargetHandler {
 
 		@Override
 		protected void onDurationEnd() {
+			onDurationSilentEnd();
+		}
+		
+		@Override
+		protected void onDurationSilentEnd() {
+			ac.update("§a능력 봉인이 풀렸습니다");
 			target.getAbility().setRestricted(false);
 			ac.unregister();
 		}

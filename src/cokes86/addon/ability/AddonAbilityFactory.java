@@ -7,7 +7,6 @@ import java.util.Map;
 
 import cokes86.addon.ability.list.Aris;
 import cokes86.addon.ability.list.Blocks;
-import cokes86.addon.ability.list.CreeperController;
 import cokes86.addon.ability.list.DataMining;
 import cokes86.addon.ability.list.Elva;
 import cokes86.addon.ability.list.EnchantArrow;
@@ -15,6 +14,7 @@ import cokes86.addon.ability.list.Freud;
 import cokes86.addon.ability.list.Gambler;
 import cokes86.addon.ability.list.GodsBless;
 import cokes86.addon.ability.list.Harmony;
+import cokes86.addon.ability.list.Keily;
 import cokes86.addon.ability.list.Mir;
 import cokes86.addon.ability.list.Ovisni;
 import cokes86.addon.ability.list.Perseverance;
@@ -75,7 +75,7 @@ public class AddonAbilityFactory {
 		registerAbility(Pocker.class);
 		registerAbility(DataMining.class);
 		registerAbility(Xyz.class);
-		registerAbility(CreeperController.class);
+		registerAbility(Keily.class);
 		registerAbility(Elva.class);
 		registerAbility(Reincarnation.class);
 		registerAbility(Queen.class);

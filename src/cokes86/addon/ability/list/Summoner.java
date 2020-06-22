@@ -2,9 +2,11 @@ package cokes86.addon.ability.list;
 
 import java.util.ArrayList;
 import java.util.Random;
+import java.util.function.Predicate;
 
 import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.entity.Entity;
 
 import cokes86.addon.configuration.ability.Config;
 import daybreak.abilitywar.ability.AbilityBase;
@@ -15,7 +17,7 @@ import daybreak.abilitywar.ability.decorator.ActiveHandler;
 import daybreak.abilitywar.game.AbstractGame;
 import daybreak.abilitywar.game.AbstractGame.Participant;
 import daybreak.abilitywar.game.manager.object.DeathManager;
-import daybreak.abilitywar.game.manager.object.DeathManager.Handler;
+import daybreak.abilitywar.utils.base.math.LocationUtil.Predicates;
 
 @AbilityManifest(
 		name = "소환사",
@@ -47,10 +49,14 @@ public class Summoner extends AbilityBase implements ActiveHandler {
 				if (getGame() instanceof DeathManager.Handler) {
 					ArrayList<Participant> par2 = new ArrayList<>(par);
 					for (Participant participant : par2) {
-						if (((Handler) getGame()).getDeathManager().isExcluded(participant.getPlayer())) {
+						if (((DeathManager.Handler) getGame()).getDeathManager().isExcluded(participant.getPlayer())) {
 							par.remove(participant);
 						}
 					}
+				}
+				for (Participant p : new ArrayList<Participant>(par)) {
+					Predicate<Entity> predicate = Predicates.STRICT(getPlayer());
+					if (!predicate.test(p.getPlayer())) par.remove(p);
 				}
 				Random r = new Random();
 

@@ -79,13 +79,18 @@ public class Unbelief extends AbilityBase {
 		protected void onEnd() {
 			shield.update("보호막 생성!");
 			getPlayer().sendMessage("보호막이 생성되었습니다.");
+			getPlayer().removePotionEffect(PotionEffectType.INCREASE_DAMAGE);
 			ShieldOn.start();
+		}
+		
+		protected void onSilentEnd() {
+			getPlayer().removePotionEffect(PotionEffectType.INCREASE_DAMAGE);
 		}
 
 		@Override
 		protected void run(int arg0) {
 			shield.update("보호막 생성중 (남은 시간: " + TimeUtil.parseTimeAsString(getFixedCount())+")");
-			getPlayer().addPotionEffect(new PotionEffect(PotionEffectType.INCREASE_DAMAGE, 40, 0));
+			getPlayer().addPotionEffect(new PotionEffect(PotionEffectType.INCREASE_DAMAGE, Integer.MAX_VALUE, 0));
 		}
 	}, ShieldOn = new Timer() {
 		@Override
@@ -96,13 +101,19 @@ public class Unbelief extends AbilityBase {
 					ParticleLib.REDSTONE.spawnParticle(l, color);
 				}
 
-				getPlayer().addPotionEffect(new PotionEffect(PotionEffectType.WEAKNESS, 40, 0));
+				getPlayer().addPotionEffect(new PotionEffect(PotionEffectType.WEAKNESS, Integer.MAX_VALUE, 0));
 			}
 		}
 
 		@Override
 		protected void onEnd() {
+			getPlayer().removePotionEffect(PotionEffectType.WEAKNESS);
 			ShieldOff.start();
+		}
+		
+		@Override
+		protected void onSilentEnd() {
+			getPlayer().removePotionEffect(PotionEffectType.WEAKNESS);
 		}
 	}.setPeriod(TimeUnit.TICKS, 5);
 }

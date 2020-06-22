@@ -26,7 +26,6 @@ import daybreak.abilitywar.utils.base.Formatter;
 import daybreak.abilitywar.utils.base.concurrent.TimeUnit;
 import daybreak.abilitywar.utils.library.MaterialX;
 import daybreak.abilitywar.utils.library.PotionEffects;
-import daybreak.abilitywar.utils.library.SoundLib;
 
 @AbilityManifest(name = "블럭", rank = Rank.A, species = Species.OTHERS, explain = {
 		"철괴 우클릭시 자신의 상태를 변화시킵니다. 자신의 상태에따라 추가효과를 얻습니다. $[cooldown]", "§7돌 §f: 받는 대미지가 $[stone]% 감소합니다.",
@@ -136,12 +135,11 @@ public class Blocks extends AbilityBase implements ActiveHandler {
 							|| e.getCause().equals(DamageCause.ENTITY_EXPLOSION)) {
 						e.setCancelled(true);
 					} else {
+						getPlayer().setHealth(Math.max(0.0, getPlayer().getHealth() - e.getFinalDamage()));
 						e.setDamage(0);
 						Vector vec = new Vector();
 						getPlayer().setVelocity(vec);
 						Bukkit.getScheduler().runTaskLater(AbilityWar.getPlugin(), () -> getPlayer().setVelocity(vec), 1l);
-						getPlayer().setHealth(Math.max(0.0, getPlayer().getHealth() - e.getFinalDamage()));
-						SoundLib.ENTITY_PLAYER_HURT.playSound(getPlayer());
 					}
 				}
 			}
@@ -171,17 +169,14 @@ public class Blocks extends AbilityBase implements ActiveHandler {
 					}
 				} else if (condition.equals(Condition.OBSIDIAN)) {
 					onEntityDamage(e);
-					SoundLib.ENTITY_PLAYER_HURT.playSound(damager);
 				} else {
 					onEntityDamage(e);
 				}
 			} else if (e.getDamager() instanceof Arrow) {
 				Arrow a = (Arrow) e.getDamager();
 				if (a.getShooter() instanceof Player) {
-					Player damager = (Player) a.getShooter();
 					if (condition.equals(Condition.OBSIDIAN)) {
 						onEntityDamage(e);
-						SoundLib.ENTITY_ARROW_HIT_PLAYER.playSound(damager);
 					} else {
 						onEntityDamage(e);
 					}
