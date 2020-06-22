@@ -45,6 +45,7 @@ public class EnchantArrow extends AbilityBase {
 	private void onProjectileHit(ProjectileHitEvent e) {
 		if (e.getEntity().getShooter().equals(getPlayer())) {
 			if (e.getHitEntity() == null) {
+				SoundLib.ENTITY_VILLAGER_NO.playSound(getPlayer());
 				if (enchantStack == 0) {
 					getPlayer().setHealth(Math.max(0.0, getPlayer().getHealth()-2));
 				} else {

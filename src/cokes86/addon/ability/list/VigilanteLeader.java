@@ -62,16 +62,12 @@ public class VigilanteLeader extends AbilityBase implements ActiveHandler {
 				}
 
 				ArrayList<Player> inAjit = LocationUtil.getNearbyPlayers(ajit, r.getValue(), r.getValue());
-				addNum = inAjit.size();
-
-				if (inAjit.contains(getPlayer())) {
-					addNum += 2;
-				} else {
-					addNum += 1;
-				}
-				for (Participant vigilante : vigilantes) {
-					if (inAjit.contains(vigilante.getPlayer()))
-						addNum += 1;
+				addNum = 1;
+				
+				for (Player p : inAjit) {
+					if (p.equals(getPlayer())) addNum += 2;
+					else if (vigilantes.contains(getGame().getParticipant(p))) addNum += 2;
+					else addNum += 1;
 				}
 
 				channel.update("인원 수: " + getGame().getParticipants().size() + "+" + addNum + "");

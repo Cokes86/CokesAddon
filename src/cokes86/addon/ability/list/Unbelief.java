@@ -34,6 +34,7 @@ public class Unbelief extends AbilityBase {
 	};
 
 	ActionbarChannel shield = newActionbarChannel();
+	ParticleLib.RGB color = new ParticleLib.RGB(0, 0, 0);
 
 	public Unbelief(Participant arg0) {
 		super(arg0);
@@ -89,21 +90,11 @@ public class Unbelief extends AbilityBase {
 	}, ShieldOn = new Timer() {
 		@Override
 		protected void run(int arg0) {
-			for (Location l : Circle.iteratorOf(getPlayer().getLocation(), 1, 16).iterable()) {
-				l.setY(LocationUtil.getFloorYAt(l.getWorld(), getPlayer().getLocation().getY(), l.getBlockX(), l.getBlockZ()) + 0.1);
-				ParticleLib.REDSTONE.spawnParticle(l, new ParticleLib.RGB(0, 0, 0));
-
-				l.setY(LocationUtil.getFloorYAt(l.getWorld(), getPlayer().getLocation().getY(), l.getBlockX(), l.getBlockZ()) + 0.3);
-				ParticleLib.REDSTONE.spawnParticle(l, new ParticleLib.RGB(0, 0, 0));
-
-				l.setY(LocationUtil.getFloorYAt(l.getWorld(), getPlayer().getLocation().getY(), l.getBlockX(), l.getBlockZ()) + 0.5);
-				ParticleLib.REDSTONE.spawnParticle(l, new ParticleLib.RGB(0, 0, 0));
-
-				l.setY(LocationUtil.getFloorYAt(l.getWorld(), getPlayer().getLocation().getY(), l.getBlockX(), l.getBlockZ()) + 0.7);
-				ParticleLib.REDSTONE.spawnParticle(l, new ParticleLib.RGB(0, 0, 0));
-
-				l.setY(LocationUtil.getFloorYAt(l.getWorld(), getPlayer().getLocation().getY(), l.getBlockX(), l.getBlockZ()) + 0.9);
-				ParticleLib.REDSTONE.spawnParticle(l, new ParticleLib.RGB(0, 0, 0));
+			for (Location l : Circle.iteratorOf(getPlayer().getLocation(), 1, 20).iterable()) {
+				for (int a= 0; a<5;a++) {
+					l.setY(LocationUtil.getFloorYAt(l.getWorld(), getPlayer().getLocation().getY(), l.getBlockX(), l.getBlockZ()) + (0.1+0.2*a));
+					ParticleLib.REDSTONE.spawnParticle(l, color);
+				}
 
 				getPlayer().addPotionEffect(new PotionEffect(PotionEffectType.WEAKNESS, 40, 0));
 			}
