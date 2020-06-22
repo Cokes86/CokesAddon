@@ -17,6 +17,7 @@ import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 import org.bukkit.util.Vector;
 
+import cokes86.addon.configuration.ability.Config;
 import cokes86.addon.utils.LocationPlusUtil;
 import daybreak.abilitywar.ability.AbilityBase;
 import daybreak.abilitywar.ability.AbilityManifest;
@@ -52,6 +53,15 @@ import daybreak.abilitywar.utils.base.math.LocationUtil.Predicates;
 public class PhantomThief extends AbilityBase implements ActiveHandler, TargetHandler {
 	Player target;
 	ItemStack[] armor = new ItemStack[4];
+	
+	public static Config<Integer> cool = new Config<Integer>(PhantomThief.class, "쿨타임", 90, 1) {
+		@Override
+		public boolean Condition(Integer value) {
+			return value >= 0;
+		}
+	};
+	
+	CooldownTimer c = new CooldownTimer(cool.getValue());
 
 	public PhantomThief(Participant participant) {
 		super(participant);
@@ -75,6 +85,15 @@ public class PhantomThief extends AbilityBase implements ActiveHandler, TargetHa
 			getPlayer().addPotionEffect(new PotionEffect(PotionEffectType.INVISIBILITY, 20, 0));
 		}
 		
+		public void onSilentEnd() {
+			getPlayer().getInventory().setHelmet(armor[0]);
+			getPlayer().getInventory().setChestplate(armor[1]);
+			getPlayer().getInventory().setLeggings(armor[2]);
+			getPlayer().getInventory().setBoots(armor[3]);
+			armor = new ItemStack[4];
+			getPlayer().removePotionEffect(PotionEffectType.INVISIBILITY);
+		}
+		
 		public void onEnd() {
 			getPlayer().getInventory().setHelmet(armor[0]);
 			getPlayer().getInventory().setChestplate(armor[1]);
@@ -82,6 +101,7 @@ public class PhantomThief extends AbilityBase implements ActiveHandler, TargetHa
 			getPlayer().getInventory().setBoots(armor[3]);
 			armor = new ItemStack[4];
 			getPlayer().removePotionEffect(PotionEffectType.INVISIBILITY);
+			c.start();
 		}
 	};
 	
@@ -204,6 +224,8 @@ public class PhantomThief extends AbilityBase implements ActiveHandler, TargetHa
 				getPlayer().removePotionEffect(PotionEffectType.GLOWING);
 				Stun.apply(getParticipant(), TimeUnit.SECONDS, 1);
 				Bukkit.broadcastMessage(getPlayer().getName()+"님의 능력은 §e팬텀시프§f입니다.");
+				c.start();
+				c.setCount(cool.getValue()/2);
 			}
 		}
 	}
@@ -236,7 +258,7 @@ public class PhantomThief extends AbilityBase implements ActiveHandler, TargetHa
 	@Override
 	public void TargetSkill(Material arg0, LivingEntity arg1) {
 		if (arg0.equals(Material.IRON_INGOT) && arg1.equals(target) && phantom_1.isRunning()) {
-			phantom_1.stop(false);
+			phantom_1.stop(true);
 			phantom_2.start();
 			target.sendTitle("경  고", "팬텀시프가 당신의 능력을 훔칠려 합니다.", 10, 30, 10);
 		}

@@ -71,41 +71,7 @@ public class Aris extends AbilityBase implements ActiveHandler {
 	HashMap<Player, Location> hold = new HashMap<>();
 	HashMap<Player, ActionbarChannel> holdAc = new HashMap<>();
 
-	DurationTimer d = new DurationTimer(chain * 20) {
-		@Override
-		protected void onDurationStart() {
-			passive.stop(false);
-			ac.update(null);
-			for (Player p : LocationUtil.getNearbyPlayers(getPlayer(), range.getValue(), range.getValue())) {
-				hold.put(p, p.getLocation().clone().add(0, 9, 0));
-				holdAc.put(p,getGame().getParticipant(p).actionbar().newChannel());
-				SoundLib.ENTITY_PLAYER_ATTACK_SWEEP.playSound(p);
-			}
-			
-		}
-
-		@Override
-		protected void onDurationProcess(int seconds) {
-			for (Player p : hold.keySet()) {
-				p.teleport(hold.get(p));
-				holdAc.get(p).update("고정 지속시간: "+ TimeUtil.parseTimeAsString(getFixedCount()));
-				if (seconds % 20 == 0 && DamageUtil.canDamage(getPlayer(), p, DamageCause.ENTITY_ATTACK, 1)) {
-					p.damage(DamageUtil.getPenetratedDamage(getPlayer(), p, 1), getPlayer());
-				}
-			}
-		}
-
-		@Override
-		protected void onDurationEnd() {
-			hold.clear();
-			for (Player p : holdAc.keySet()) {
-				holdAc.get(p).unregister();
-			}
-			holdAc.clear();
-			chain = 0;
-			passive.start();
-		}
-	}.setPeriod(TimeUnit.TICKS, 1);
+	DurationTimer d = null;
 
 	public Aris(Participant participant) {
 		super(participant);
@@ -114,7 +80,42 @@ public class Aris extends AbilityBase implements ActiveHandler {
 	@Override
 	public boolean ActiveSkill(Material mt, ClickType ct) {
 		if (mt.equals(Material.IRON_INGOT) && ct.equals(ClickType.RIGHT_CLICK)) {
-			if (!d.isDuration() && chain != 0) {
+			if ((!d.isDuration() || d == null) && chain != 0) {
+				this.d = new DurationTimer(chain * 20) {
+					@Override
+					protected void onDurationStart() {
+						passive.stop(false);
+						ac.update(null);
+						for (Player p : LocationUtil.getNearbyPlayers(getPlayer(), range.getValue(), range.getValue())) {
+							hold.put(p, p.getLocation().clone().add(0, 9, 0));
+							holdAc.put(p,getGame().getParticipant(p).actionbar().newChannel());
+							SoundLib.ENTITY_PLAYER_ATTACK_SWEEP.playSound(p);
+						}
+						
+					}
+
+					@Override
+					protected void onDurationProcess(int seconds) {
+						for (Player p : hold.keySet()) {
+							p.teleport(hold.get(p));
+							holdAc.get(p).update("고정 지속시간: "+ TimeUtil.parseTimeAsString(getFixedCount()));
+							if (seconds % 20 == 0 && DamageUtil.canDamage(getPlayer(), p, DamageCause.ENTITY_ATTACK, 1)) {
+								p.damage(DamageUtil.getPenetratedDamage(getPlayer(), p, 1), getPlayer());
+							}
+						}
+					}
+
+					@Override
+					protected void onDurationEnd() {
+						hold.clear();
+						for (Player p : holdAc.keySet()) {
+							holdAc.get(p).unregister();
+						}
+						holdAc.clear();
+						chain = 0;
+						passive.start();
+					}
+				}.setPeriod(TimeUnit.TICKS, 1);
 				d.start();
 				return true;
 			}

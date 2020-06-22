@@ -18,6 +18,10 @@ public abstract class Config<T> extends SettingObject<T> {
 		}
 	}
 	
+	public Config(Class<? extends AbilityBase> arg0, String arg1, T arg2, String... arg3) {
+		this(arg0, arg1, arg2, arg3, 0);
+	}
+	
 	public Config(Class<? extends AbilityBase> arg0, String arg1, T arg2, int arg3) {
 		this(arg0, arg1, arg2, new String[] {}, arg3);
 	}

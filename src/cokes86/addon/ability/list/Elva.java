@@ -116,11 +116,11 @@ public class Elva extends AbilityBase {
 
 	}.setPeriod(TimeUnit.TICKS, speed.getValue());
 
-	Timer reload = new Timer(10) {
+	Timer reload = new Timer(20) {
 		ProgressBar progress;
 
 		protected void onStart() {
-			progress = new ProgressBar(10, 10);
+			progress = new ProgressBar(20, 20);
 		}
 
 		@Override
@@ -185,7 +185,7 @@ public class Elva extends AbilityBase {
 		@Override
 		protected void run(int i) {
 			Location newLocation = lastLocation.clone().add(forward);
-			for (Iterator<Location> iterator = Line.iteratorBetween(lastLocation, newLocation, 40); iterator
+			for (Iterator<Location> iterator = Line.iteratorBetween(lastLocation, newLocation, 10); iterator
 					.hasNext();) {
 				Location location = iterator.next();
 				entity.setLocation(location);

@@ -13,6 +13,7 @@ import daybreak.abilitywar.ability.AbilityManifest.Species;
 import daybreak.abilitywar.ability.SubscribeEvent;
 import daybreak.abilitywar.game.AbstractGame.Participant;
 import daybreak.abilitywar.game.AbstractGame.Participant.ActionbarNotification.ActionbarChannel;
+import daybreak.abilitywar.utils.base.concurrent.TimeUnit;
 
 @AbilityManifest(
 		name = "인내심",
@@ -30,7 +31,7 @@ public class Perseverance extends AbilityBase {
 			return value >=0;
 		}
 	},
-	max = new Config<Integer>(Perseverance.class, "최대치(%)", 250) {
+	max = new Config<Integer>(Perseverance.class, "최대치(%)", 200) {
 		@Override
 		public boolean Condition(Integer value) {
 			return value > 0;
@@ -41,9 +42,10 @@ public class Perseverance extends AbilityBase {
 		public boolean Condition(Integer value) {
 			return value > 0;
 		}
-	}, period = new Config<Integer>(Perseverance.class, "주기", 2, 2) {
+	};
+	public static Config<Double> period = new Config<Double>(Perseverance.class, "주기", 3.5, 2) {
 		@Override
-		public boolean Condition(Integer value) {
+		public boolean Condition(Double value) {
 			return value > 0;
 		}
 	};
@@ -68,12 +70,12 @@ public class Perseverance extends AbilityBase {
 
 		@Override
 		protected void run(int seconds) {
-			if (seconds % period.getValue() == 0)
+			if (seconds % (period.getValue()*20) == 0)
 			give += upg.getValue();
 			if (give >= max.getValue()) give = max.getValue();
 			ac.update("상대방에게 주는 대미지: " + (give) + "%");
 		}
-	};
+	}.setPeriod(TimeUnit.TICKS, 1);
 	
 	Timer passive_2 = new Timer(dura.getValue()) {
 
@@ -94,11 +96,11 @@ public class Perseverance extends AbilityBase {
 			if (passive_2.isRunning()) e.setCancelled(true);
 			else {
 				e.setDamage(e.getDamage() * give/100.00);
-				give = 100;
 				if (give == max.getValue()) {
 					passive_1.stop(false);
 					passive_2.start();
 				}
+				give = 100;
 				ac.update("상대방에게 주는 대미지: " + (give) + "%");
 			}
 		}
@@ -109,11 +111,12 @@ public class Perseverance extends AbilityBase {
 				if (passive_2.isRunning()) e.setCancelled(true);
 				else {
 					e.setDamage(e.getDamage() * give/100.00);
-					give = 100;
 					if (give == max.getValue()) {
 						passive_1.stop(false);
 						passive_2.start();
 					}
+					give = 100;
+					ac.update("상대방에게 주는 대미지: " + (give) + "%");
 				}
 			}
 		}
