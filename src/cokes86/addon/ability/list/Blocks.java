@@ -79,10 +79,6 @@ public class Blocks extends AbilityBase implements ActiveHandler {
 		@Override
 		protected void run(int count) {
 			ac.update("상태: " + condition.getName());
-
-			if (condition.equals(Condition.GLASS)) {
-				PotionEffects.INVISIBILITY.addPotionEffect(getPlayer(), 30, 0, true);
-			}
 		}
 	}.setPeriod(TimeUnit.TICKS, 1);
 
@@ -98,10 +94,13 @@ public class Blocks extends AbilityBase implements ActiveHandler {
 		if (arg0.equals(Material.IRON_INGOT) && arg1.equals(ClickType.RIGHT_CLICK)) {
 			if (!c.isCooldown()) {
 				condition = condition.next();
-				if (condition.equals(Condition.GLASS))
+				if (condition.equals(Condition.GLASS)) {
 					getParticipant().attributes().TARGETABLE.setValue(false);
-				else
+					PotionEffects.INVISIBILITY.addPotionEffect(getPlayer(), Integer.MAX_VALUE, 0, true);
+				} else {
 					getParticipant().attributes().TARGETABLE.setValue(true);
+					PotionEffects.INVISIBILITY.removePotionEffect(getPlayer());
+				}
 				c.start();
 				return true;
 			}
