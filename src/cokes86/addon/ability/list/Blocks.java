@@ -1,5 +1,6 @@
 package cokes86.addon.ability.list;
 
+import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Arrow;
@@ -9,8 +10,10 @@ import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.util.Vector;
 
 import cokes86.addon.configuration.ability.Config;
+import daybreak.abilitywar.AbilityWar;
 import daybreak.abilitywar.ability.AbilityBase;
 import daybreak.abilitywar.ability.AbilityManifest;
 import daybreak.abilitywar.ability.AbilityManifest.Rank;
@@ -132,7 +135,10 @@ public class Blocks extends AbilityBase implements ActiveHandler {
 							|| e.getCause().equals(DamageCause.ENTITY_EXPLOSION)) {
 						e.setCancelled(true);
 					} else {
-						e.setCancelled(true);
+						e.setDamage(0);
+						Vector vec = new Vector();
+						getPlayer().setVelocity(vec);
+						Bukkit.getScheduler().runTaskLater(AbilityWar.getPlugin(), () -> getPlayer().setVelocity(vec), 1l);
 						getPlayer().setHealth(Math.max(0.0, getPlayer().getHealth() - e.getFinalDamage()));
 						SoundLib.ENTITY_PLAYER_HURT.playSound(getPlayer());
 					}
