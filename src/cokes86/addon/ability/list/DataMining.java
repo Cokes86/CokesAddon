@@ -24,7 +24,7 @@ import daybreak.abilitywar.game.list.mixability.synergy.SynergyFactory;
 import daybreak.abilitywar.utils.base.collect.Pair;
 
 @AbilityManifest(name = "데이터마이닝", rank = AbilityManifest.Rank.S, species = AbilityManifest.Species.HUMAN, explain = {
-		"철괴 좌클릭시 모든 플레이어의 능력을 알 수 있습니다.",
+		"철괴 우클릭시 모든 플레이어의 능력을 알 수 있습니다.",
 		"플레이어가 능력을 사용할 때 마다 그 사실을 알 수 있으며,",
 		"§c마이닝 스택§f이 1만큼 상승합니다.", 
 		"플레이어끼리 전투가 발생할 시 그 사실을 알 수 있으며,",
@@ -32,7 +32,8 @@ import daybreak.abilitywar.utils.base.collect.Pair;
 		"§c마이닝 스택§f이 1만큼 상승할 때 마다",
 		"0.5%씩 데미지가 감소하거나, 0.1만큼의 추가데미지를 주는",
 		"버프를 랜덤하게 받습니다. (각각 최대치 25%, 5)",
-		"§c마이닝 스택§f은 최대 100까지 쌓입니다."
+		"§c마이닝 스택§f은 최대 100까지 쌓입니다.",
+		"철괴 좌클릭시 사실 여부 메세지를 끄고 킬 수 있습니다."
 		}
 )
 @Test
@@ -41,6 +42,7 @@ public class DataMining extends AbilityBase implements ActiveHandler {
 	int count = 0;
 	double damage =0, defense =0;
 	ActionbarChannel ac = newActionbarChannel();
+	boolean message = true;
 
 	public DataMining(Participant arg0) {
 		super(arg0);
@@ -76,7 +78,7 @@ public class DataMining extends AbilityBase implements ActiveHandler {
 	@SubscribeEvent
 	public void onAbilityActiveSkill(AbilityActiveSkillEvent e) {
 		if (!e.getParticipant().equals(getParticipant())) {
-			getPlayer().sendMessage("§e" + e.getPlayer().getName() + "§f님이 능력을 사용하였습니다.");
+			if (message) getPlayer().sendMessage("§e" + e.getPlayer().getName() + "§f님이 능력을 사용하였습니다.");
 			if (count != 100) {
 				count++;
 				Active();
@@ -108,7 +110,7 @@ public class DataMining extends AbilityBase implements ActiveHandler {
 			}
 
 			if (damager != null && !e.isCancelled()) {
-				getPlayer().sendMessage(
+				if (message) getPlayer().sendMessage(
 						"§e" + damager.getName() + "§f(§c♥" + df.format(damager.getHealth()) + "§f)님이 §e" + entity.getName()
 								+ "§f(§c♥" + df.format(entity.getHealth()) + "§f)님을 공격! (대미지: " + df.format(e.getFinalDamage()) + ")");
 			}
@@ -117,7 +119,7 @@ public class DataMining extends AbilityBase implements ActiveHandler {
 
 	@Override
 	public boolean ActiveSkill(Material arg0, ClickType arg1) {
-		if (arg0.equals(Material.IRON_INGOT) && arg1.equals(ClickType.LEFT_CLICK)) {
+		if (arg0.equals(Material.IRON_INGOT) && arg1.equals(ClickType.RIGHT_CLICK)) {
 			AbstractGame game = getGame();
 			getPlayer().sendMessage("§2===== §a능력자 목록 §2=====");
 			int count = 0;
@@ -147,6 +149,11 @@ public class DataMining extends AbilityBase implements ActiveHandler {
 				}
 			}
 			return true;
+		} else if (arg0.equals(Material.IRON_INGOT) && arg1.equals(ClickType.LEFT_CLICK)) {
+			boolean temp = message;
+			message = (!temp);
+			if (message) getPlayer().sendMessage("사실 확인 메세지를 볼 수 있게 됩니다.");
+			else getPlayer().sendMessage("더이상 사실 확인 메세지를 볼 수 없습니다.");
 		}
 		return false;
 	}

@@ -1,6 +1,7 @@
 package cokes86.addon.ability.list;
 
 import org.bukkit.Location;
+import org.bukkit.attribute.Attribute;
 import org.bukkit.entity.Player;
 
 import cokes86.addon.ability.Test;
@@ -47,12 +48,12 @@ public class Harmony extends AbilityBase {
 			int a = 0;
 			for (Player p : LocationUtil.getNearbyPlayers(getPlayer(), 10, 10)) {
 				a++;
-				p.setHealth(Math.min(p.getHealth()+0.5, 20));
+				p.setHealth(Math.min(p.getHealth()+0.5, getPlayer().getAttribute(Attribute.GENERIC_MAX_HEALTH).getValue()));
 				for (Location l : Line.iteratorBetween(getPlayer().getLocation(), p.getLocation(), 10).iterable()) {
 					ParticleLib.HEART.spawnParticle(l);
 				}
 			}
-			getPlayer().setHealth(Math.min(getPlayer().getHealth()+a/2, 20));
+			getPlayer().setHealth(Math.min(getPlayer().getHealth()+a/2, getPlayer().getAttribute(Attribute.GENERIC_MAX_HEALTH).getValue()));
 		}
 	}.setPeriod(TimeUnit.SECONDS, 5);
 }

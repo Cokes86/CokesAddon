@@ -74,6 +74,7 @@ public class EnchantArrow extends AbilityBase {
 			if (arrow.getShooter().equals(getPlayer())) {
 				e.setDamage(e.getDamage()*(1+enchantStack*damage.getValue()/100.0));
 				enchantStack++;
+				if (enchantStack >= 7) enchantStack = 7;
 				ac.update("인챈트 스택: "+enchantStack);
 				arrow.remove();
 			}

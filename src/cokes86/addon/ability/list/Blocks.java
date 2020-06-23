@@ -57,7 +57,7 @@ public class Blocks extends AbilityBase implements ActiveHandler {
 	protected Object cooldown = new Object() {
 		@Override
 		public String toString() {
-			return Formatter.formatCooldown(3);
+			return Formatter.formatCooldown(1);
 		}
 	};
 
@@ -74,7 +74,7 @@ public class Blocks extends AbilityBase implements ActiveHandler {
 		}
 	}
 
-	CooldownTimer c = new CooldownTimer(3);
+	CooldownTimer c = new CooldownTimer(1);
 	Timer Passive = new Timer() {
 		@Override
 		protected void run(int count) {

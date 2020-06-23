@@ -1,5 +1,6 @@
 package cokes86.addon.ability.list;
 
+import org.bukkit.attribute.Attribute;
 import org.bukkit.event.entity.EntityDamageByBlockEvent;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
@@ -64,7 +65,7 @@ public class Resurrection extends AbilityBase {
 					getPlayer().setFireTicks(0);
 					SoundLib.ENTITY_FIREWORK_ROCKET_TWINKLE.playSound(getPlayer());
 					clearPotionEffect();
-					getPlayer().setHealth(20.00);
+					getPlayer().setHealth(getPlayer().getAttribute(Attribute.GENERIC_MAX_HEALTH).getValue());
 					if (spawn) {
 						getPlayer().teleport(Settings.getSpawnLocation());
 						Resurrection.this.setRestricted(true);

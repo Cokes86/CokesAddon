@@ -79,7 +79,7 @@ public class VigilanteLeader extends AbilityBase implements ActiveHandler {
 	public boolean ActiveSkill(Material m, ClickType ct) {
 		if (m.equals(Material.IRON_INGOT) && ct.equals(ClickType.RIGHT_CLICK)) {
 			if (ajit == null) {
-				ajit = getPlayer().getLocation();
+				ajit = getPlayer().getLocation().clone();
 				getPlayer().sendMessage("자신의 자경단이 결성되었습니다!");
 				for (Player p : LocationUtil.getNearbyPlayers(ajit, r.getValue(), r.getValue())) {
 					if (getGame().isParticipating(p) && !p.equals(getPlayer())) {

@@ -13,6 +13,7 @@ import daybreak.abilitywar.ability.event.AbilityRestrictionClearEvent;
 import daybreak.abilitywar.game.AbstractGame.Participant;
 import daybreak.abilitywar.utils.base.concurrent.TimeUnit;
 import daybreak.abilitywar.utils.base.math.LocationUtil;
+import daybreak.abilitywar.utils.library.PotionEffects;
 
 @AbilityManifest(
 		name = "토끼",
@@ -34,8 +35,13 @@ public class Rabbit extends AbilityBase {
 	}
 	
 	protected void onUpdate(Update update) {
-		if (update.equals(Update.RESTRICTION_CLEAR)) {
+		switch (update) {
+		case RESTRICTION_CLEAR:
 			Passive.setPeriod(TimeUnit.TICKS,1).start();
+			break;
+		default:
+			PotionEffects.SPEED.removePotionEffect(getPlayer());
+			PotionEffects.JUMP.removePotionEffect(getPlayer());
 		}
 	}
 
@@ -47,9 +53,11 @@ public class Rabbit extends AbilityBase {
 	Timer Passive = new Timer() {
 		@Override
 		protected void run(int arg0) {
-			getPlayer().addPotionEffect(new PotionEffect(PotionEffectType.JUMP, 40, 1));
+			getPlayer().addPotionEffect(new PotionEffect(PotionEffectType.JUMP, Integer.MAX_VALUE, 1));
 			if (!LocationUtil.getNearbyPlayers(getPlayer(), range.getValue(), range.getValue()).isEmpty()) {
-				getPlayer().addPotionEffect(new PotionEffect(PotionEffectType.SPEED, 40, 1));
+				getPlayer().addPotionEffect(new PotionEffect(PotionEffectType.SPEED, Integer.MAX_VALUE, 1));
+			} else {
+				PotionEffects.SPEED.removePotionEffect(getPlayer());
 			}
 		}
 	};

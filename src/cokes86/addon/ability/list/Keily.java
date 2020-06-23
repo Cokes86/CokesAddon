@@ -59,11 +59,14 @@ public class Keily extends AbilityBase implements ActiveHandler {
 			if (!c.isCooldown() && switchCounter > 0) {
 				getPlayer().getWorld().createExplosion(getPlayer().getLocation(), 3F, false);
 				switchCounter--;
+				channel.update(ChatColor.DARK_RED.toString().concat(Strings.repeat("●", switchCounter)
+						.concat(Strings.repeat("○", Math.max(3 - switchCounter, 0)))));
 				c.start();
 				new Timer(2) {
 
 					@Override
 					protected void onStart() {
+						getPlayer().setAllowFlight(true);
 						getPlayer().setFlying(true);
 					}
 
@@ -74,11 +77,13 @@ public class Keily extends AbilityBase implements ActiveHandler {
 
 					@Override
 					protected void onEnd() {
+						getPlayer().setAllowFlight(false);
 						getPlayer().setFlying(false);
 					}
 
 					@Override
 					protected void onSilentEnd() {
+						getPlayer().setAllowFlight(false);
 						getPlayer().setFlying(false);
 					}
 
