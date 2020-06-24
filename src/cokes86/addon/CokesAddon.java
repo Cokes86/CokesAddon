@@ -13,11 +13,6 @@ import cokes86.addon.configuration.gamemode.GameConfiguration;
 import cokes86.addon.gamemodes.addon.debug.DebugWar;
 import cokes86.addon.gamemodes.addon.standard.AddonAbilityWar;
 import cokes86.addon.gamemodes.battleability.BattleAbility;
-import cokes86.addon.gamemodes.boomcatch.BoomCatch;
-import cokes86.addon.gamemodes.boomcatch.Seak;
-import cokes86.addon.gamemodes.boomchallenge.BoomAbility;
-import cokes86.addon.gamemodes.boomchallenge.BoomChallenge;
-import daybreak.abilitywar.ability.AbilityFactory;
 import daybreak.abilitywar.addon.Addon;
 import daybreak.abilitywar.config.Configuration.Settings;
 import daybreak.abilitywar.config.ability.AbilitySettings;
@@ -44,14 +39,6 @@ public class CokesAddon extends Addon implements Listener {
 		// AddonAbilityWar
 		GameFactory.registerMode(AddonAbilityWar.class);
 		if (Settings.DeveloperSettings.isEnabled()) GameFactory.registerMode(DebugWar.class);
-
-		// BoomChellanger
-		GameFactory.registerMode(BoomChallenge.class);
-		AbilityFactory.registerAbility(BoomAbility.class);
-
-		// Boom Catch
-		GameFactory.registerMode(BoomCatch.class);
-		AbilityFactory.registerAbility(Seak.class);
 		
 		//Battle Ability
 		GameFactory.registerMode(BattleAbility.class);

@@ -30,7 +30,7 @@ import daybreak.abilitywar.utils.library.SoundLib;
 		"공중에 고정되어있는 플레이어는 그동안 움직일 수 없으며,", "매 2초마다 1의 고정대미지를 입습니다. 그 이외의 대미지는 받지 않습니다.",
 		"지속시간동안 §d사슬 카운터§f는 증가하지 않습니다." })
 public class Aris extends AbilityBase implements ActiveHandler {
-	public static Config<Integer> range = new Config<Integer>(Aris.class, "범위", 5) {
+	public static Config<Integer> range = new Config<Integer>(Aris.class, "범위", 7) {
 		@Override
 		public boolean Condition(Integer value) {
 			return value > 0;
@@ -74,9 +74,13 @@ public class Aris extends AbilityBase implements ActiveHandler {
 	public boolean ActiveSkill(Material mt, ClickType ct) {
 		if (mt.equals(Material.IRON_INGOT) && ct.equals(ClickType.RIGHT_CLICK)) {
 			if ((!d.isDuration() || d == null) && chain != 0) {
-				this.d = new ChainTimer();
-				d.start();
-				return true;
+				if (LocationUtil.getNearbyPlayers(getPlayer(), range.getValue(), range.getValue()).isEmpty()) {
+					getPlayer().sendMessage("주변에 플레이어가 존재하지 않습니다.");
+				} else {
+					this.d = new ChainTimer();
+					d.start();
+					return true;
+				}
 			}
 		}
 		return false;

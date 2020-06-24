@@ -19,7 +19,7 @@ import daybreak.abilitywar.utils.base.concurrent.TimeUnit;
 		name = "인내심",
 		rank = Rank.B,
 		species = Species.HUMAN,
-		explain = {"매 $[period]마다 상대방에게 주는 피해가 $[upg]%p씩 상승하며 최대 $[max]%까지 상승합니다.",
+		explain = {"매 $[period]초마다 상대방에게 주는 피해가 $[upg]%p씩 상승하며 최대 $[max]%까지 상승합니다.",
 		"상대방을 공격할 시 이는 초기화되며, 최대치 상태에서 공격할 경우",
 		"$[dura]동안 상대방을 공격할 수 없게 됩니다.",
 		"※능력 아이디어: RainStar_"}

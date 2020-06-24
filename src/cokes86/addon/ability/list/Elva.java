@@ -65,7 +65,7 @@ public class Elva extends AbilityBase {
 
 	};
 
-	private static SettingObject<Double> damage = new Config<Double>(Elva.class, "마법화살대미지", 3.0) {
+	private static SettingObject<Double> damage = new Config<Double>(Elva.class, "마법화살대미지", 2.0) {
 
 		@Override
 		public boolean Condition(Double value) {
@@ -189,8 +189,7 @@ public class Elva extends AbilityBase {
 					.hasNext();) {
 				Location location = iterator.next();
 				entity.setLocation(location);
-				org.bukkit.block.Block block = location.getBlock();
-				Material type = block.getType();
+				Material type = location.getBlock().getType();
 				if (type.isSolid()) {
 					stop(false);
 					return;

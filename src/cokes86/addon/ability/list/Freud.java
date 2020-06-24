@@ -42,7 +42,7 @@ import daybreak.abilitywar.utils.library.PotionEffects;
 		"마법은 발사할 때 마다 랜덤하게 바뀝니다.",
 		"§c화상§f: 마나 30소모, 상대방에게 고정 2의 대미지를 주고 $[fireTick]틱의 화상효과 부여",
 		"§8나약함§f: 마나 45소모, 상대방에게 고정 3의 대미지를 주고 상대방의 나약함 디버프를 3초 부여.",
-		"§a폭발§f: 마나 80소모, 상대방에게 고정 4의 대미지를 주고 1.5F의 위력으로 폭발."
+		"§a폭발§f: 마나 80소모, 상대방에게 고정 4의 대미지를 주고 2F의 위력으로 폭발."
 })
 public class Freud extends AbilityBase implements ActiveHandler {
 	private Magic magic;
@@ -210,7 +210,7 @@ public class Freud extends AbilityBase implements ActiveHandler {
 		EXPLOSION("§a폭발§f", 80, new RGB(102,153,0)){
 			protected void onDamaged(Damageable target) {
 				target.damage(4);
-				target.getWorld().createExplosion(target.getLocation().clone().add(0, -0.5, 0), 1.5F);
+				target.getWorld().createExplosion(target.getLocation().clone().add(0, -0.25, 0), 2F);
 			}
 		};
 		
