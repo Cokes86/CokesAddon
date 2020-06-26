@@ -16,6 +16,10 @@ import daybreak.abilitywar.ability.SubscribeEvent;
 import daybreak.abilitywar.ability.decorator.ActiveHandler;
 import daybreak.abilitywar.game.AbstractGame.Participant;
 import daybreak.abilitywar.game.event.participant.ParticipantDeathEvent;
+import daybreak.abilitywar.utils.base.concurrent.TimeUnit;
+import daybreak.abilitywar.utils.base.minecraft.compat.nms.Hologram;
+import daybreak.abilitywar.utils.base.minecraft.compat.nms.NMSHandler;
+import daybreak.google.common.base.Strings;
 
 @AbilityManifest(name="오비스니", rank = Rank.B, species = Species.HUMAN , explain= {
 		"상대방을 공격할 시 상대방에게 §2맹독 카운터§f를 1씩 상승시키며",
@@ -40,6 +44,7 @@ public class Ovisni extends AbilityBase implements ActiveHandler {
 	};
 	
 	Map<Player, Integer> ovisniCounter = new HashMap<>();
+	Map<Player, HologramTimer> ovisniTimer = new HashMap<>();
 	
 	CooldownTimer cooldown = new CooldownTimer(cool.getValue());
 	Timer ovisni = new Timer() {
@@ -72,11 +77,13 @@ public class Ovisni extends AbilityBase implements ActiveHandler {
 		if (arg0.equals(Material.IRON_INGOT) && arg1.equals(ClickType.RIGHT_CLICK) && !cooldown.isCooldown()) {
 			for (Player p : ovisniCounter.keySet()) {
 				p.damage(ovisniCounter.get(p)*2, getPlayer());
+				ovisniTimer.get(p).stop(false);
 			}
 			ovisniCounter.clear();
+			ovisniTimer.clear();
 			cooldown.start();
 		} else if (arg0.equals(Material.IRON_INGOT) && arg1.equals(ClickType.LEFT_CLICK)) {
-			getPlayer().sendMessage("§2===== §2맹독 카운터§f 수치 §2=====");
+			getPlayer().sendMessage("§e===== §2맹독 카운터§f 수치 §e=====");
 			for (Player target : ovisniCounter.keySet()) {
 				getPlayer().sendMessage("§f" + target.getName() + " §7: §2" + ovisniCounter.get(target));
 			}
@@ -89,14 +96,54 @@ public class Ovisni extends AbilityBase implements ActiveHandler {
 		if (e.getDamager().equals(getPlayer()) && getGame().isGameStarted() && e.getEntity() instanceof Player) {
 			if (getGame().isParticipating((Player) e.getEntity())) {
 				ovisniCounter.put((Player) e.getEntity(), Math.min(ovisniCounter.getOrDefault((Player) e.getEntity(), 0)+1, max.getValue()));
+				ovisniTimer.put((Player) e.getEntity(), new HologramTimer((Player) e.getEntity()));
 			}
 		}
 	}
 	
 	@SubscribeEvent
 	public void onParticipantDeath(ParticipantDeathEvent e) {
-		if (ovisniCounter.containsKey(e.getPlayer())) {
+		if (e.getPlayer().equals(getPlayer())) {
+			for (Player p : ovisniTimer.keySet()) {
+				ovisniTimer.get(p).stop(false);
+			}
+			ovisniCounter.clear();
+			ovisniTimer.clear();
+		} else if (ovisniCounter.containsKey(e.getPlayer())) {
 			ovisniCounter.remove(e.getPlayer());
+			ovisniTimer.get(e.getPlayer()).stop(false);
+			ovisniTimer.remove(e.getPlayer());
+		}
+	}
+	
+	private class HologramTimer extends Timer {
+		private final Player entity;
+		private final Hologram hologram;
+		
+		private HologramTimer(Player entity) {
+			super();
+			setPeriod(TimeUnit.TICKS, 2);
+			this.entity = entity;
+			this.hologram = NMSHandler.getNMS().newHologram(entity.getWorld(), entity.getLocation().getX(), entity.getLocation().getY() + entity.getEyeHeight() + 0.6, entity.getLocation().getZ());
+			this.hologram.setText("");
+			
+		}
+
+		@Override
+		protected void run(int arg0) {
+			this.hologram.setText(Strings.repeat("§2◆", ovisniCounter.get(entity)).concat(Strings.repeat("§2◇", max.getValue() - ovisniCounter.get(entity))));
+			hologram.teleport(entity.getWorld(), entity.getLocation().getX(), entity.getLocation().getY() + entity.getEyeHeight() + 0.6, entity.getLocation().getZ(), entity.getLocation().getYaw(), 0);
+		}
+		
+		@Override
+		protected void onEnd() {
+			onSilentEnd();
+		}
+
+		@Override
+		protected void onSilentEnd() {
+			hologram.hide(getPlayer());
+			ovisniTimer.remove(entity);
 		}
 	}
 }

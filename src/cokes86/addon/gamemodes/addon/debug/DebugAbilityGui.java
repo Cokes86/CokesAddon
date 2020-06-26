@@ -69,12 +69,12 @@ public class DebugAbilityGui implements Listener {
 		for (Class<? extends AbilityBase> ab : AddonAbilityFactory.getAddonAbilities()) {
 			values.put(ab.getAnnotation(AbilityManifest.class).name(), AbilityFactory.getRegistration(ab));
 		}
-		
+
 		for (Class<? extends AbilityBase> ab : AddonAbilityFactory.getAddonSynergies()) {
 			values.put(ab.getAnnotation(AbilityManifest.class).name(), AbilityFactory.getRegistration(ab));
 		}
 	}
-	
+
 	public DebugAbilityGui(Player p, Participant target, Plugin Plugin) {
 		this.p = p;
 		this.target = target;
@@ -94,7 +94,8 @@ public class DebugAbilityGui implements Listener {
 			page = 1;
 		if (page < 1)
 			page = 1;
-		this.abilityGUI = Bukkit.createInventory(null, 54, ChatColor.translateAlternateColorCodes('&', "&cAbilityWar 코크스 애드온 &e능력 목록"));
+		this.abilityGUI = Bukkit.createInventory(null, 54,
+				ChatColor.translateAlternateColorCodes('&', "&cAbilityWar 코크스 애드온 &e능력 목록"));
 		this.currentPage = page;
 		int count = 0;
 		for (Map.Entry<String, AbilityFactory.AbilityRegistration> entry : this.values.entrySet()) {
@@ -111,9 +112,9 @@ public class DebugAbilityGui implements Listener {
 					joiner.add(ChatColor.RED + "테스트");
 				if (registration.getAbilityClass().getSuperclass().equals(Synergy.class)) {
 					joiner.add(ChatColor.YELLOW + "시너지");
-					itemStack = new ItemStack(Material.DIAMOND_BLOCK);
+					itemStack.setType(Material.DIAMOND_BLOCK);
 				}
-				
+
 				ItemMeta itemMeta = itemStack.getItemMeta();
 				itemMeta.setDisplayName(ChatColor.translateAlternateColorCodes('&', "&b" + manifest.name()));
 
@@ -209,7 +210,8 @@ public class DebugAbilityGui implements Listener {
 					String AbilityName = ChatColor.stripColor(e.getCurrentItem().getItemMeta().getDisplayName());
 
 					@SuppressWarnings("unchecked")
-					Class<? extends Synergy> abilityClass = (Class<? extends Synergy>) AddonAbilityFactory.getByString(AbilityName);
+					Class<? extends Synergy> abilityClass = (Class<? extends Synergy>) AddonAbilityFactory
+							.getByString(AbilityName);
 					try {
 						if (abilityClass != null && GameManager.isGameRunning()) {
 							AbstractGame game = GameManager.getGame();
@@ -217,7 +219,8 @@ public class DebugAbilityGui implements Listener {
 							if (this.target != null) {
 								target.removeAbility();
 								Mix mix = (Mix) AbilityBase.create(Mix.class, target);
-								mix.setAbility(SynergyFactory.getSynergyBase(ab).getLeft().getAbilityClass(), SynergyFactory.getSynergyBase(ab).getRight().getAbilityClass());
+								mix.setAbility(SynergyFactory.getSynergyBase(ab).getLeft().getAbilityClass(),
+										SynergyFactory.getSynergyBase(ab).getRight().getAbilityClass());
 								target.setAbility(mix);
 								Bukkit.broadcastMessage(ChatColor.translateAlternateColorCodes('&', "&e" + p.getName()
 										+ "&a님이 &f" + this.target.getPlayer().getName() + "&a님에게 능력을 임의로 부여하였습니다."));
@@ -225,7 +228,8 @@ public class DebugAbilityGui implements Listener {
 								for (AbstractGame.Participant participant : game.getParticipants()) {
 									participant.removeAbility();
 									Mix mix = (Mix) AbilityBase.create(Mix.class, participant);
-									mix.setAbility(SynergyFactory.getSynergyBase(ab).getLeft().getAbilityClass(), SynergyFactory.getSynergyBase(ab).getRight().getAbilityClass());
+									mix.setAbility(SynergyFactory.getSynergyBase(ab).getLeft().getAbilityClass(),
+											SynergyFactory.getSynergyBase(ab).getRight().getAbilityClass());
 									participant.setAbility(mix);
 								}
 								Bukkit.broadcastMessage(ChatColor.translateAlternateColorCodes('&',
@@ -233,7 +237,8 @@ public class DebugAbilityGui implements Listener {
 							}
 						}
 					} catch (SecurityException | InstantiationException | IllegalAccessException
-							| IllegalArgumentException | java.lang.reflect.InvocationTargetException | NoSuchFieldException ex) {
+							| IllegalArgumentException | java.lang.reflect.InvocationTargetException
+							| NoSuchFieldException ex) {
 
 						if (ex.getMessage() != null && !ex.getMessage().isEmpty()) {
 							Messager.sendErrorMessage(p, ex.getMessage());
@@ -241,7 +246,8 @@ public class DebugAbilityGui implements Listener {
 							Messager.sendErrorMessage(p, "설정 도중 오류가 발생하였습니다.");
 						}
 					}
-				} if (e.getCurrentItem().getItemMeta().getDisplayName().equals(ChatColor.AQUA + "다음 페이지")) {
+				}
+				if (e.getCurrentItem().getItemMeta().getDisplayName().equals(ChatColor.AQUA + "다음 페이지")) {
 					openGUI(this.currentPage - 1);
 				} else if (e.getCurrentItem().getItemMeta().getDisplayName().equals(ChatColor.AQUA + "이전 페이지")) {
 					openGUI(this.currentPage + 1);
@@ -250,14 +256,14 @@ public class DebugAbilityGui implements Listener {
 						AbstractGame game = GameManager.getGame();
 						if (this.target != null) {
 							this.target.removeAbility();
-							Bukkit.broadcastMessage(ChatColor.translateAlternateColorCodes('&',
-									"&e" + p.getName() + "&a님이&f " + this.target.getPlayer().getName() + "&a님의 능력을 제거하였습니다."));
+							Bukkit.broadcastMessage(ChatColor.translateAlternateColorCodes('&', "&e" + p.getName()
+									+ "&a님이&f " + this.target.getPlayer().getName() + "&a님의 능력을 제거하였습니다."));
 						} else {
 							for (AbstractGame.Participant participant : game.getParticipants()) {
 								participant.removeAbility();
 							}
-							Bukkit.broadcastMessage(
-									ChatColor.translateAlternateColorCodes('&', "&e" + p.getName() + "&a님이 &f전체 유저&a의 능력을 제거하였습니다."));
+							Bukkit.broadcastMessage(ChatColor.translateAlternateColorCodes('&',
+									"&e" + p.getName() + "&a님이 &f전체 유저&a의 능력을 제거하였습니다."));
 						}
 					}
 				}

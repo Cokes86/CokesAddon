@@ -25,6 +25,7 @@ import daybreak.abilitywar.ability.event.AbilityRestrictionClearEvent;
 import daybreak.abilitywar.game.AbstractGame.CustomEntity;
 import daybreak.abilitywar.game.AbstractGame.Participant;
 import daybreak.abilitywar.game.AbstractGame.Participant.ActionbarNotification.ActionbarChannel;
+import daybreak.abilitywar.game.manager.object.WRECK;
 import daybreak.abilitywar.utils.base.concurrent.TimeUnit;
 import daybreak.abilitywar.utils.base.math.LocationUtil;
 import daybreak.abilitywar.utils.base.math.LocationUtil.Predicates;
@@ -66,7 +67,7 @@ public class Freud extends AbilityBase implements ActiveHandler {
 
 		@Override
 		protected void run(int arg0) {
-			if (mana != 100 && this.getCount() % 5 == 0) {
+			if (mana != 100 && this.getCount() % (WRECK.isEnabled(getGame()) ? 2 : 5) == 0) {
 				mana += 1;
 			}
 			

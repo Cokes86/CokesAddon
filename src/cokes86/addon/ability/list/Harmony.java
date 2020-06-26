@@ -1,7 +1,6 @@
 package cokes86.addon.ability.list;
 
 import org.bukkit.Location;
-import org.bukkit.attribute.Attribute;
 import org.bukkit.entity.Player;
 
 import cokes86.addon.ability.Test;
@@ -11,6 +10,7 @@ import daybreak.abilitywar.ability.AbilityManifest.Rank;
 import daybreak.abilitywar.ability.AbilityManifest.Species;
 import daybreak.abilitywar.ability.SubscribeEvent;
 import daybreak.abilitywar.ability.event.AbilityRestrictionClearEvent;
+import daybreak.abilitywar.config.Configuration.Settings;
 import daybreak.abilitywar.game.AbstractGame.Participant;
 import daybreak.abilitywar.utils.base.concurrent.TimeUnit;
 import daybreak.abilitywar.utils.base.math.LocationUtil;
@@ -48,12 +48,12 @@ public class Harmony extends AbilityBase {
 			int a = 0;
 			for (Player p : LocationUtil.getNearbyPlayers(getPlayer(), 10, 10)) {
 				a++;
-				p.setHealth(Math.min(p.getHealth()+0.5, getPlayer().getAttribute(Attribute.GENERIC_MAX_HEALTH).getValue()));
+				p.setHealth(Math.min(p.getHealth()+0.5, Settings.getDefaultMaxHealth()));
 				for (Location l : Line.iteratorBetween(getPlayer().getLocation(), p.getLocation(), 10).iterable()) {
 					ParticleLib.HEART.spawnParticle(l);
 				}
 			}
-			getPlayer().setHealth(Math.min(getPlayer().getHealth()+a/2, getPlayer().getAttribute(Attribute.GENERIC_MAX_HEALTH).getValue()));
+			getPlayer().setHealth(Math.min(getPlayer().getHealth()+a/2, Settings.getDefaultMaxHealth()));
 		}
 	}.setPeriod(TimeUnit.SECONDS, 5);
 }

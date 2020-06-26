@@ -19,6 +19,7 @@ import daybreak.abilitywar.ability.SubscribeEvent;
 import daybreak.abilitywar.ability.decorator.ActiveHandler;
 import daybreak.abilitywar.game.AbstractGame.Participant;
 import daybreak.abilitywar.game.AbstractGame.Participant.ActionbarNotification.ActionbarChannel;
+import daybreak.abilitywar.game.manager.object.WRECK;
 import daybreak.abilitywar.utils.base.TimeUtil;
 import daybreak.abilitywar.utils.base.concurrent.TimeUnit;
 import daybreak.abilitywar.utils.base.math.LocationUtil;
@@ -43,7 +44,7 @@ public class Aris extends AbilityBase implements ActiveHandler {
 
 		@Override
 		protected void run(int arg0) {
-			if (arg0 % 5 == 0) {
+			if (arg0 % (WRECK.isEnabled(getGame()) ? 2 : 5) == 0) {
 				chain++;
 				if (chain >= 10)
 					chain = 10;

@@ -35,6 +35,7 @@ import cokes86.addon.ability.list.Unbelief;
 import cokes86.addon.ability.list.VigilanteLeader;
 import cokes86.addon.ability.list.Wily;
 import cokes86.addon.ability.list.Xyz;
+import cokes86.addon.ability.synergy.AirDisintegration;
 import cokes86.addon.ability.synergy.LureOfRoses;
 import cokes86.addon.ability.synergy.RevengeArrow;
 import cokes86.addon.ability.synergy.RoyalStraightFlush;
@@ -42,6 +43,7 @@ import cokes86.addon.ability.synergy.TheEnd;
 import daybreak.abilitywar.ability.AbilityBase;
 import daybreak.abilitywar.ability.AbilityFactory;
 import daybreak.abilitywar.ability.AbilityManifest;
+import daybreak.abilitywar.ability.list.Assassin;
 import daybreak.abilitywar.ability.list.Stalker;
 import daybreak.abilitywar.game.list.mixability.synergy.Synergy;
 import daybreak.abilitywar.game.list.mixability.synergy.SynergyFactory;
@@ -89,6 +91,7 @@ public class AddonAbilityFactory {
 		registerSynergy(Xyz.class, Xyz.class, TheEnd.class);
 		registerSynergy(Stalker.class, Reincarnation.class, LureOfRoses.class);
 		registerSynergy(Revenge.class, Elva.class, RevengeArrow.class);
+		registerSynergy(Aris.class, Assassin.class, AirDisintegration.class);
 	}
 	
 	public static void registerAbility(Class<? extends AbilityBase> clazz) {
