@@ -29,6 +29,10 @@ public class Keily extends AbilityBase implements ActiveHandler {
 		public boolean Condition(Integer value) {
 			return value > 0;
 		}
+	}, cool = new Config<Integer>(Keily.class, "쿨타임", 45, 1) {
+		public boolean Condition(Integer value) {
+			return value > 0;
+		}
 	};
 	
 	boolean falling = false;
@@ -39,11 +43,12 @@ public class Keily extends AbilityBase implements ActiveHandler {
 		protected void run(int count) {
 			if (switchCounter < 3) {
 				switchCounter++;
-				channel.update(ChatColor.DARK_RED.toString().concat(Strings.repeat("●", switchCounter)
+				channel.update(ChatColor.DARK_GREEN.toString().concat(Strings.repeat("●", switchCounter)
 						.concat(Strings.repeat("○", Math.max(3 - switchCounter, 0)))));
 			}
 		}
 	}.setPeriod(TimeUnit.SECONDS, WRECK.isEnabled(getGame()) ? dura.getValue() / 2 : dura.getValue());
+	CooldownTimer c = new CooldownTimer(cool.getValue());
 
 	ActionbarChannel channel = newActionbarChannel();
 	int switchCounter = 0;
@@ -63,9 +68,8 @@ public class Keily extends AbilityBase implements ActiveHandler {
 
 		@Override
 		protected void onEnd() {
-			getPlayer().setAllowFlight(false);
-			getPlayer().setFlying(false);
-			falling = true;
+			onSilentEnd();
+			c.start();
 		}
 
 		@Override
@@ -84,9 +88,9 @@ public class Keily extends AbilityBase implements ActiveHandler {
 	@Override
 	public boolean ActiveSkill(Material arg0, ClickType arg1) {
 		if (arg0.equals(Material.IRON_INGOT) && arg1.equals(ClickType.RIGHT_CLICK)) {
-			if (switchCounter > 0 && !flying.isRunning()) {
+			if (switchCounter > 0 && !flying.isRunning() && !c.isCooldown()) {
 				getPlayer().getWorld().createExplosion(getPlayer().getLocation(), switchCounter * 2F, false);
-				switchCounter--;
+				switchCounter = 0;
 				channel.update(ChatColor.DARK_GREEN.toString().concat(Strings.repeat("●", switchCounter)
 						.concat(Strings.repeat("○", Math.max(3 - switchCounter, 0)))));
 				flying.start();

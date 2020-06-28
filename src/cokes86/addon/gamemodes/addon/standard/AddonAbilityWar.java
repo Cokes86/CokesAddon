@@ -197,30 +197,7 @@ public class AddonAbilityWar extends Game implements DefaultKitHandler {
 			private List<Class<? extends AbilityBase>> abilities;
 
 			@Override
-			protected void drawAbility(Collection<Participant> arg0) {
-				this.abilities = AddonAbilityFactory.getAddonAbilities();
-				if (getSelectors().size() <= this.abilities.size()) {
-					Random random = new Random();
-					for (AbstractGame.Participant participant : arg0) {
-						Player p = participant.getPlayer();
-						Class<? extends AbilityBase> abilityClass = this.abilities
-								.get(random.nextInt(this.abilities.size()));
-						try {
-							participant.setAbility(abilityClass);
-							this.abilities.remove(abilityClass);
-							p.sendMessage("§a당신에게 능력을 배정하였습니다. §e/aw check §a명령어를 통해 확인이 가능합니다.");
-							p.sendMessage("§e/aw yes §a명령어를 통해 능력을 확정할 수 있습니다.");
-							p.sendMessage("§e/aw no §a명령어를 통해 능력을 변경할 수 있습니다.");
-						} catch (Exception e) {
-							Messager.sendConsoleMessage("능력을 배정받는 도중 오류가 발생하였습니다.");
-							Messager.sendConsoleMessage("오류가 발생한 능력: " + abilityClass.getName());
-						}
-					}
-				}
-			}
-
-			@Override
-			protected boolean changeAbility(Participant arg0) {
+			public boolean changeAbility(Participant arg0) {
 				Player p = arg0.getPlayer();
 				if (this.abilities.size() > 0) {
 					Random random = new Random();
@@ -243,6 +220,29 @@ public class AddonAbilityWar extends Game implements DefaultKitHandler {
 					p.sendMessage("더이상 변경할 수 있는 능력이 존재하지 않습니다.");
 				}
 				return false;
+			}
+
+			@Override
+			protected void drawAbility(Collection<? extends Participant> arg0) {
+				this.abilities = AddonAbilityFactory.getAddonAbilities();
+				if (getSelectors().size() <= this.abilities.size()) {
+					Random random = new Random();
+					for (AbstractGame.Participant participant : arg0) {
+						Player p = participant.getPlayer();
+						Class<? extends AbilityBase> abilityClass = this.abilities
+								.get(random.nextInt(this.abilities.size()));
+						try {
+							participant.setAbility(abilityClass);
+							this.abilities.remove(abilityClass);
+							p.sendMessage("§a당신에게 능력을 배정하였습니다. §e/aw check §a명령어를 통해 확인이 가능합니다.");
+							p.sendMessage("§e/aw yes §a명령어를 통해 능력을 확정할 수 있습니다.");
+							p.sendMessage("§e/aw no §a명령어를 통해 능력을 변경할 수 있습니다.");
+						} catch (Exception e) {
+							Messager.sendConsoleMessage("능력을 배정받는 도중 오류가 발생하였습니다.");
+							Messager.sendConsoleMessage("오류가 발생한 능력: " + abilityClass.getName());
+						}
+					}
+				}
 			}
 		};
 	}

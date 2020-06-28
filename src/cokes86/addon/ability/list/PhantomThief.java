@@ -27,11 +27,9 @@ import daybreak.abilitywar.ability.AbilityManifest.Species;
 import daybreak.abilitywar.ability.SubscribeEvent;
 import daybreak.abilitywar.ability.decorator.ActiveHandler;
 import daybreak.abilitywar.ability.decorator.TargetHandler;
-import daybreak.abilitywar.game.AbstractGame;
 import daybreak.abilitywar.game.AbstractGame.Participant;
 import daybreak.abilitywar.game.AbstractGame.Participant.ActionbarNotification.ActionbarChannel;
-import daybreak.abilitywar.game.list.mixability.Mix;
-import daybreak.abilitywar.game.list.mixability.MixAbility;
+import daybreak.abilitywar.game.list.mix.Mix;
 import daybreak.abilitywar.game.manager.effect.Stun;
 import daybreak.abilitywar.utils.base.TimeUtil;
 import daybreak.abilitywar.utils.base.concurrent.TimeUnit;
@@ -141,8 +139,7 @@ public class PhantomThief extends AbilityBase implements ActiveHandler, TargetHa
 			try {
 				Participant targ = getGame().getParticipant(target);
 				if (targ.hasAbility()) {
-					AbstractGame game = getGame();
-					if (game.getClass() == MixAbility.class) {
+					if (targ.getAbility().getClass() == Mix.class) {
 						Mix mix = (Mix) getParticipant().getAbility();
 						int a;
 						if (mix.getFirst().getClass() == PhantomThief.class) {

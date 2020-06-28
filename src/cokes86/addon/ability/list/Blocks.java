@@ -22,13 +22,12 @@ import daybreak.abilitywar.ability.SubscribeEvent;
 import daybreak.abilitywar.ability.decorator.ActiveHandler;
 import daybreak.abilitywar.ability.event.AbilityRestrictionClearEvent;
 import daybreak.abilitywar.game.AbstractGame.Participant;
-import daybreak.abilitywar.utils.base.Formatter;
 import daybreak.abilitywar.utils.base.concurrent.TimeUnit;
 import daybreak.abilitywar.utils.library.MaterialX;
 import daybreak.abilitywar.utils.library.PotionEffects;
 
 @AbilityManifest(name = "블럭", rank = Rank.A, species = Species.OTHERS, explain = {
-		"철괴 우클릭시 자신의 상태를 변화시킵니다. 자신의 상태에따라 추가효과를 얻습니다. $[cooldown]", "§7돌 §f: 받는 대미지가 $[stone]% 감소합니다.",
+		"철괴 우클릭시 자신의 상태를 변화시킵니다. 자신의 상태에따라 추가효과를 얻습니다.", "§7돌 §f: 받는 대미지가 $[stone]% 감소합니다.",
 		"곡괭이로 자신이 공격받을 시 그 재료로 만든 검의 데미지를 받습니다.", "이때, 효율은 날카로움 취급을 받으며, 공속에 영향을 받지 않습니다.",
 		"§6모래 §f: 낙하 대미지를 입지 않습니다. 피해를 입을 시 $[inv]초간 무적상태가 되어 무적상태에선 넉백당하지 않습니다.",
 		"§f유리 §f: 받는 대미지가 $[glass]% 증폭합니다. 유리상태동안 자신은 블라인드 버프를 얻습니다. 또한 스킬의 대상이 되지 않습니다.",
@@ -48,25 +47,20 @@ public class Blocks extends AbilityBase implements ActiveHandler {
 			return value > 100;
 		}
 	};
-	protected static Config<Double> inv = new Config<Double>(Blocks.class, "모래_무적시간", 0.3, new String[] {"#0.0 단위로 작성"}) {
+	protected static Config<Double> inv = new Config<Double>(Blocks.class, "모래_무적시간", 0.3,
+			new String[] { "#0.0 단위로 작성" }) {
 		@Override
 		public boolean Condition(Double value) {
-			return value > 0 && Math.ceil(value*10) == value*10;
-		}
-	};
-	protected Object cooldown = new Object() {
-		@Override
-		public String toString() {
-			return Formatter.formatCooldown(1);
+			return value > 0 && Math.ceil(value * 10) == value * 10;
 		}
 	};
 
 	public Blocks(Participant arg0) {
 		super(arg0);
 	}
-	
+
 	protected void onUpdate(Update update) {
-		switch(update) {
+		switch (update) {
 		case RESTRICTION_CLEAR:
 			Passive.start();
 			break;
@@ -74,7 +68,6 @@ public class Blocks extends AbilityBase implements ActiveHandler {
 		}
 	}
 
-	CooldownTimer c = new CooldownTimer(1);
 	Timer Passive = new Timer() {
 		@Override
 		protected void run(int count) {
@@ -85,24 +78,21 @@ public class Blocks extends AbilityBase implements ActiveHandler {
 	Timer invTimer = new Timer() {
 		@Override
 		protected void run(int count) {
-			if (count == inv.getValue()*20) this.stop(false);
+			if (count == inv.getValue() * 20)
+				this.stop(false);
 		}
 	}.setPeriod(TimeUnit.TICKS, 1);
 
 	@Override
 	public boolean ActiveSkill(Material arg0, ClickType arg1) {
 		if (arg0.equals(Material.IRON_INGOT) && arg1.equals(ClickType.RIGHT_CLICK)) {
-			if (!c.isCooldown()) {
-				condition = condition.next();
-				if (condition.equals(Condition.GLASS)) {
-					getParticipant().attributes().TARGETABLE.setValue(false);
-					PotionEffects.INVISIBILITY.addPotionEffect(getPlayer(), Integer.MAX_VALUE, 0, true);
-				} else {
-					getParticipant().attributes().TARGETABLE.setValue(true);
-					PotionEffects.INVISIBILITY.removePotionEffect(getPlayer());
-				}
-				c.start();
-				return true;
+			condition = condition.next();
+			if (condition.equals(Condition.GLASS)) {
+				getParticipant().attributes().TARGETABLE.setValue(false);
+				PotionEffects.INVISIBILITY.addPotionEffect(getPlayer(), Integer.MAX_VALUE, 0, true);
+			} else {
+				getParticipant().attributes().TARGETABLE.setValue(true);
+				PotionEffects.INVISIBILITY.removePotionEffect(getPlayer());
 			}
 		}
 		return false;
@@ -128,7 +118,7 @@ public class Blocks extends AbilityBase implements ActiveHandler {
 					}
 					invTimer.start();
 				} else if (condition.equals(Condition.GLASS)) {
-					e.setDamage(1.0* e.getDamage() * glass.getValue() / 100.0);
+					e.setDamage(1.0 * e.getDamage() * glass.getValue() / 100.0);
 				} else if (condition.equals(Condition.OBSIDIAN)) {
 					if (e.getCause().equals(DamageCause.BLOCK_EXPLOSION)
 							|| e.getCause().equals(DamageCause.ENTITY_EXPLOSION)) {
@@ -138,7 +128,8 @@ public class Blocks extends AbilityBase implements ActiveHandler {
 						e.setDamage(0);
 						Vector vec = new Vector();
 						getPlayer().setVelocity(vec);
-						Bukkit.getScheduler().runTaskLater(AbilityWar.getPlugin(), () -> getPlayer().setVelocity(vec), 1l);
+						Bukkit.getScheduler().runTaskLater(AbilityWar.getPlugin(), () -> getPlayer().setVelocity(vec),
+								1l);
 					}
 				}
 			}

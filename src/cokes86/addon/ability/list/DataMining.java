@@ -18,9 +18,9 @@ import daybreak.abilitywar.ability.event.AbilityActiveSkillEvent;
 import daybreak.abilitywar.game.AbstractGame;
 import daybreak.abilitywar.game.AbstractGame.Participant;
 import daybreak.abilitywar.game.AbstractGame.Participant.ActionbarNotification.ActionbarChannel;
-import daybreak.abilitywar.game.list.mixability.Mix;
-import daybreak.abilitywar.game.list.mixability.synergy.Synergy;
-import daybreak.abilitywar.game.list.mixability.synergy.SynergyFactory;
+import daybreak.abilitywar.game.list.mix.Mix;
+import daybreak.abilitywar.game.list.mix.synergy.Synergy;
+import daybreak.abilitywar.game.list.mix.synergy.SynergyFactory;
 import daybreak.abilitywar.utils.base.collect.Pair;
 
 @AbilityManifest(name = "데이터마이닝", rank = AbilityManifest.Rank.S, species = AbilityManifest.Species.HUMAN, explain = {
@@ -30,9 +30,9 @@ import daybreak.abilitywar.utils.base.collect.Pair;
 		"플레이어끼리 전투가 발생할 시 그 사실을 알 수 있으며,",
 		"각 플레이어의 체력과 피해량을 알 수 있습니다.",
 		"§c마이닝 스택§f이 1만큼 상승할 때 마다",
-		"0.5%씩 데미지가 감소하거나, 0.1만큼의 추가데미지를 주는",
+		"1.0%씩 데미지가 감소하거나, 0.2만큼의 추가데미지를 주는",
 		"버프를 랜덤하게 받습니다. (각각 최대치 25%, 5)",
-		"§c마이닝 스택§f은 최대 100까지 쌓입니다.",
+		"§c마이닝 스택§f은 최대 50까지 쌓입니다.",
 		"철괴 좌클릭시 사실 여부 메세지를 끄고 킬 수 있습니다."
 		}
 )
@@ -53,15 +53,15 @@ public class DataMining extends AbilityBase implements ActiveHandler {
 		double a = r.nextDouble()*2;
 		if (a > 1) {
 			if (damage == 5) {
-				defense += 0.5;
+				defense += 1.0;
 			} else {
-				damage += 0.1;
+				damage += 0.2;
 			}
 		} else {
 			if (defense == 25) {
-				damage += 0.1;
+				damage += 0.2;
 			} else {
-				defense += 0.5;
+				defense += 1.0;
 			}
 		}
 	}
@@ -79,7 +79,7 @@ public class DataMining extends AbilityBase implements ActiveHandler {
 	public void onAbilityActiveSkill(AbilityActiveSkillEvent e) {
 		if (!e.getParticipant().equals(getParticipant())) {
 			if (message) getPlayer().sendMessage("§e" + e.getPlayer().getName() + "§f님이 능력을 사용하였습니다.");
-			if (count != 100) {
+			if (count != 50) {
 				count++;
 				Active();
 			}

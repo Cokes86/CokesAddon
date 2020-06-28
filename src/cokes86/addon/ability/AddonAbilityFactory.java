@@ -45,8 +45,8 @@ import daybreak.abilitywar.ability.AbilityFactory;
 import daybreak.abilitywar.ability.AbilityManifest;
 import daybreak.abilitywar.ability.list.Assassin;
 import daybreak.abilitywar.ability.list.Stalker;
-import daybreak.abilitywar.game.list.mixability.synergy.Synergy;
-import daybreak.abilitywar.game.list.mixability.synergy.SynergyFactory;
+import daybreak.abilitywar.game.list.mix.synergy.Synergy;
+import daybreak.abilitywar.game.list.mix.synergy.SynergyFactory;
 import daybreak.abilitywar.game.manager.AbilityList;
 
 public class AddonAbilityFactory {

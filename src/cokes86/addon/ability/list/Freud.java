@@ -114,26 +114,15 @@ public class Freud extends AbilityBase implements ActiveHandler {
 		private final Vector velocity;
 		private final Magic magic;
 
-		private Bullet(Shooter shooter, Location startLocation, Player target, Magic magic) {
+		private Bullet(Shooter shooter, Location startLocation, Entity target, Magic magic) {
 			super(40);
 			setPeriod(TimeUnit.TICKS, 1);
 			this.shooter = shooter;
 			
 			Vector first = target.getLocation().clone().subtract(getPlayer().getLocation().clone()).toVector();
-			first = first.multiply(1/first.length());
 			
 			this.entity = new ArrowEntity(startLocation.getWorld(), startLocation.getX()+first.getX()/0.25, startLocation.getY()+first.getY()/0.25, startLocation.getZ()+first.getZ()/0.25).setBoundingBox(-.75, -.75, -.75, .75, .75, .75);
-			this.velocity = first.multiply(1.5);
-			this.magic = magic;
-			this.lastLocation = startLocation;
-		}
-		
-		private Bullet(Shooter shooter, Location startLocation, Vector velocity, Magic magic) {
-			super(40);
-			setPeriod(TimeUnit.TICKS, 1);
-			this.shooter = shooter;
-			this.entity = new ArrowEntity(startLocation.getWorld(), startLocation.getX(), startLocation.getY(), startLocation.getZ()).setBoundingBox(-.75, -.75, -.75, .75, .75, .75);
-			this.velocity = velocity.multiply(1.5);
+			this.velocity = target.getLocation().clone().subtract(getPlayer().getLocation().clone()).toVector().normalize().multiply(0.045);
 			this.magic = magic;
 			this.lastLocation = startLocation;
 		}
@@ -178,7 +167,7 @@ public class Freud extends AbilityBase implements ActiveHandler {
 			public void onDeflect(Participant deflector, Vector newDirection) {
 				stop(false);
 				Player deflectedPlayer = deflector.getPlayer();
-				new Bullet<>(deflectedPlayer, lastLocation, newDirection, magic).start();
+				new Bullet<>(deflectedPlayer, lastLocation, Bullet.this.shooter, magic).start();
 			}
 
 			@Override

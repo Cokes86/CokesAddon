@@ -10,16 +10,19 @@ import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
+import org.bukkit.event.entity.EntityDamageEvent;
+import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
 
 import cokes86.addon.configuration.synergy.Config;
 import daybreak.abilitywar.ability.AbilityManifest;
 import daybreak.abilitywar.ability.AbilityManifest.Rank;
 import daybreak.abilitywar.ability.AbilityManifest.Species;
 import daybreak.abilitywar.ability.Scheduled;
+import daybreak.abilitywar.ability.SubscribeEvent;
 import daybreak.abilitywar.ability.decorator.ActiveHandler;
 import daybreak.abilitywar.game.AbstractGame.Participant;
 import daybreak.abilitywar.game.AbstractGame.Participant.ActionbarNotification.ActionbarChannel;
-import daybreak.abilitywar.game.list.mixability.synergy.Synergy;
+import daybreak.abilitywar.game.list.mix.synergy.Synergy;
 import daybreak.abilitywar.game.manager.object.WRECK;
 import daybreak.abilitywar.utils.base.concurrent.TimeUnit;
 import daybreak.abilitywar.utils.base.math.LocationUtil;
@@ -44,6 +47,7 @@ public class AirDisintegration extends Synergy implements ActiveHandler {
 	ActionbarChannel ac = newActionbarChannel();
 	private final Predicate<Entity> STRICT_PREDICATE = Predicates.STRICT(getPlayer());
 	private LinkedList<LivingEntity> entities = null;
+	boolean falling = false;
 	
 	@Scheduled
 	Timer passive = new Timer() {
@@ -60,10 +64,11 @@ public class AirDisintegration extends Synergy implements ActiveHandler {
 
 	};
 	
-	private final Timer skill = new Timer(chain) {
+	private final Timer skill = new Timer() {
 		Map<LivingEntity, Location> stun = new HashMap<>();
 		
 		public void onStart() {
+			passive.stop(false);
 			for (LivingEntity entity : entities) {
 				stun.put(entity, entity.getLocation().clone().add(0, chain/2 + 4, 0));
 			}
@@ -85,11 +90,13 @@ public class AirDisintegration extends Synergy implements ActiveHandler {
 						stun.remove(e);
 					}
 				} else {
+					falling = true;
+					chain = 0;
+					passive.start();
 					stop(false);
 				}
 			}
 		}
-
 	}.setPeriod(TimeUnit.TICKS, 1);
 
 	public AirDisintegration(Participant participant) {
@@ -109,5 +116,12 @@ public class AirDisintegration extends Synergy implements ActiveHandler {
 		}
 		return false;
 	}
-
+	
+	@SubscribeEvent
+	public void onEntityDamage(EntityDamageEvent e) {
+		if (e.getCause().equals(DamageCause.FALL) && falling) {
+			falling = false;
+			e.setCancelled(true);
+		}
+	}
 }

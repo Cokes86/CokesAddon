@@ -26,11 +26,13 @@ import daybreak.abilitywar.game.AbstractGame.CustomEntity;
 import daybreak.abilitywar.game.AbstractGame.Participant;
 import daybreak.abilitywar.game.AbstractGame.Participant.ActionbarNotification.ActionbarChannel;
 import daybreak.abilitywar.game.AbstractGame.RestrictionBehavior;
+import daybreak.abilitywar.utils.annotations.Support;
 import daybreak.abilitywar.utils.base.ProgressBar;
 import daybreak.abilitywar.utils.base.concurrent.TimeUnit;
 import daybreak.abilitywar.utils.base.math.LocationUtil;
 import daybreak.abilitywar.utils.base.math.geometry.Line;
 import daybreak.abilitywar.utils.base.minecraft.entity.decorator.Deflectable;
+import daybreak.abilitywar.utils.base.minecraft.version.ServerVersion.Version;
 import daybreak.abilitywar.utils.library.ParticleLib;
 import daybreak.abilitywar.utils.library.ParticleLib.RGB;
 import daybreak.abilitywar.utils.library.SoundLib;
@@ -39,6 +41,7 @@ import daybreak.abilitywar.utils.library.SoundLib;
 		"마법의 화살이 전방으로 $[speed]틱 간격으로 자동으로 발사되며 최대 $[maxarrow]발까지 발사됩니다.",
 		"마법의 화살은 $[damage]의 대미지를 주며, 화살을 다 소비할 시 재장전합니다.", "기존의 화살은 사용할 수 없습니다.", "마법의 화살은 대미지를 주거나, 블럭에 닿을 시 소멸합니다.",
 		"※능력 아이디어: Sato207" })
+@Support(min = Version.v1_9_R1)
 public class Elva extends AbilityBase {
 
 	Vector velocity = null;
