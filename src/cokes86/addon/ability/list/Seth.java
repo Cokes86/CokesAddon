@@ -1,5 +1,6 @@
 package cokes86.addon.ability.list;
 
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 
 import org.bukkit.Material;
@@ -28,6 +29,7 @@ import daybreak.abilitywar.utils.library.SoundLib;
 public class Seth extends AbilityBase implements ActiveHandler {
 	int max;
 	int kill = 0;
+	DecimalFormat df = new DecimalFormat("0.00");
 	public static Config<Integer> buff1 = new Config<Integer>(Seth.class, "힘.1단계", 25) {
 		public boolean Condition(Integer value) {
 			return value >= 0;
@@ -69,7 +71,7 @@ public class Seth extends AbilityBase implements ActiveHandler {
 		@Override
 		protected void run(int arg0) {
 			max = getGame().getParticipants().size();
-			ac.update((double) kill * 100 / max + "% (" + kill + "/" + max + ")");
+			ac.update(df.format((double) kill * 100 / max) + "% (" + kill + "/" + max + ")");
 
 			if (kill * 100 / max >= buff1.getValue() && kill * 100 / max < buff2.getValue()) {
 				getPlayer().addPotionEffect(new PotionEffect(PotionEffectType.INCREASE_DAMAGE, 40, 0));

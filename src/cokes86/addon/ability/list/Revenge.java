@@ -12,10 +12,8 @@ import daybreak.abilitywar.ability.AbilityManifest;
 import daybreak.abilitywar.ability.AbilityManifest.Rank;
 import daybreak.abilitywar.ability.AbilityManifest.Species;
 import daybreak.abilitywar.ability.SubscribeEvent;
-import daybreak.abilitywar.ability.event.AbilityRestrictionClearEvent;
 import daybreak.abilitywar.game.AbstractGame.Participant;
 import daybreak.abilitywar.game.AbstractGame.Participant.ActionbarNotification.ActionbarChannel;
-import daybreak.abilitywar.utils.base.concurrent.TimeUnit;
 
 @AbilityManifest(
 		name = "복수",
@@ -26,7 +24,7 @@ import daybreak.abilitywar.utils.base.concurrent.TimeUnit;
 public class Revenge extends AbilityBase {
 	DecimalFormat df = new DecimalFormat("0.00");
 	double finalDamage = 0;
-	public static Config<Integer> per = new Config<Integer>(Revenge.class, "반사대미지(%)", 50) {
+	public static Config<Integer> per = new Config<Integer>(Revenge.class, "반사대미지(%)", 40) {
 		@Override
 		public boolean Condition(Integer value) {
 			return value >= 0;
@@ -39,30 +37,19 @@ public class Revenge extends AbilityBase {
 		super(participant);
 	}
 	
-	Timer t = new Timer() {
-		@Override
-		protected void run(int count) {
-			ac.update(ChatColor.BLUE+ "반사고정대미지 : "+df.format(finalDamage * per.getValue() / (double)100));
-		}
-	};
-	
 	public void onUpdate(Update update) {
 		switch(update) {
 		case RESTRICTION_CLEAR:
-			t.setPeriod(TimeUnit.TICKS, 1).start();
+			ac.update(ChatColor.BLUE+ "반사고정대미지 : "+df.format(finalDamage * per.getValue() / (double)100));
 		default:
 		}
-	}
-
-	@SubscribeEvent(onlyRelevant = true)
-	public void onRestrictionClear(AbilityRestrictionClearEvent e) {
-		t.setPeriod(TimeUnit.TICKS, 1).start();
 	}
 	
 	@SubscribeEvent
 	public void onEntityDamageByEntity(EntityDamageByEntityEvent e) {
 		if (e.getEntity().equals(getPlayer()) && e.getDamager() instanceof Player) {
 			finalDamage = e.getFinalDamage();
+			ac.update(ChatColor.BLUE+ "반사고정대미지 : "+df.format(finalDamage * per.getValue() / (double)100));
 		}
 		
 		if (e.getDamager().equals(getPlayer()) && e.getEntity() instanceof Player) {

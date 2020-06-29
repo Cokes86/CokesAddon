@@ -27,6 +27,7 @@ import daybreak.abilitywar.game.event.GameEndEvent;
 @Test
 public class Queen extends AbilityBase implements ActiveHandler, TargetHandler {
 	DecimalFormat df = new DecimalFormat(".00");
+	double defaultHealth = Settings.getDefaultMaxHealth();
 	
 	public static Config<Integer> cool = new Config<Integer>(Queen.class, "쿨타임", 120, 1) {
 
@@ -40,7 +41,7 @@ public class Queen extends AbilityBase implements ActiveHandler, TargetHandler {
 	
 	public Queen(Participant arg0) {
 		super(arg0);
-		getPlayer().getAttribute(Attribute.GENERIC_MAX_HEALTH).setBaseValue(Settings.getDefaultMaxHealth());
+		getPlayer().getAttribute(Attribute.GENERIC_MAX_HEALTH).setBaseValue(defaultHealth);
 	}
 
 	@Override
@@ -50,7 +51,7 @@ public class Queen extends AbilityBase implements ActiveHandler, TargetHandler {
 			if (getGame().isParticipating(target) && !cooldown.isCooldown()) {
 				double plus = target.getHealth()/2;
 				
-				getPlayer().getAttribute(Attribute.GENERIC_MAX_HEALTH).setBaseValue(Settings.getDefaultMaxHealth() + plus);
+				getPlayer().getAttribute(Attribute.GENERIC_MAX_HEALTH).setBaseValue(defaultHealth + plus);
 				getPlayer().setHealth(getPlayer().getHealth() + plus);
 				cooldown.start();
 			}
@@ -60,13 +61,13 @@ public class Queen extends AbilityBase implements ActiveHandler, TargetHandler {
 	@Override
 	protected void onUpdate(AbilityBase.Update update) {
 		if (update == Update.RESTRICTION_SET || update == Update.ABILITY_DESTROY) {
-			getPlayer().getAttribute(Attribute.GENERIC_MAX_HEALTH).setBaseValue(Settings.getDefaultMaxHealth());
+			getPlayer().getAttribute(Attribute.GENERIC_MAX_HEALTH).setBaseValue(defaultHealth);
 		}
 	}
 	
 	@SubscribeEvent(onlyRelevant = true)
 	public void onGameEnd(GameEndEvent e) {
-		getPlayer().getAttribute(Attribute.GENERIC_MAX_HEALTH).setBaseValue(Settings.getDefaultMaxHealth());
+		getPlayer().getAttribute(Attribute.GENERIC_MAX_HEALTH).setBaseValue(defaultHealth);
 	}
 
 	@Override

@@ -24,7 +24,7 @@ public class Wily extends AbilityBase implements ActiveHandler {
 		public boolean Condition(Integer value) {
 			return value > 0;
 		}
-	}, duration = new Config<Integer>(Wily.class, "지속시간", 2, 2) {
+	}, duration = new Config<Integer>(Wily.class, "지속시간", 1, 2) {
 
 		@Override
 		public boolean Condition(Integer value) {

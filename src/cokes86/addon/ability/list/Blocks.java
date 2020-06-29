@@ -64,6 +64,10 @@ public class Blocks extends AbilityBase implements ActiveHandler {
 		case RESTRICTION_CLEAR:
 			Passive.start();
 			break;
+		case ABILITY_DESTROY:
+		case RESTRICTION_SET:
+			PotionEffects.INVISIBILITY.removePotionEffect(getPlayer());
+			break;
 		default:
 		}
 	}

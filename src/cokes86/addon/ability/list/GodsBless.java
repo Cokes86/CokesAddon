@@ -30,15 +30,15 @@ import daybreak.abilitywar.utils.base.minecraft.Bar;
 		explain = {"철괴 우클릭 시 자신의 정체를 공개하고 $[dura]동안 대기시간을 가집니다.",
 		"대기시간동안 자신은 움직일 수 없습니다.",
 		"해당 대기시간이 끝날 시 자신을 제외한 모든 플레이어는 사망합니다.",
-		"대기시간이 2분 남았을 때, 자신에게 발광효과를 부여합니다.",
-		"대기시간이 1분 남았을 때, 모두에게 자신의 좌표를 실시간으로 공개합니다.",
+		"대기시간이 지속시간의 1/2만큼 남았을 때, 자신에게 발광효과를 부여합니다.",
+		"대기시간이 지속시간의 1/4만큼 남았을 때, 모두에게 자신의 좌표를 실시간으로 공개합니다.",
 		"자신이 사망하거나 대기시간이 끝날 경우 해당 능력은 비활성화됩니다."}
 )
 public class GodsBless extends AbilityBase implements ActiveHandler {
 	public static Config<Integer> dura = new Config<Integer>(GodsBless.class, "대기시간", 4) {
 		@Override
 		public boolean Condition(Integer value) {
-			return value >= 2;
+			return value >= 0;
 		}
 
 		@Override
@@ -56,16 +56,16 @@ public class GodsBless extends AbilityBase implements ActiveHandler {
 			int c = getFixedCount();
 			String a = "x: " + (int)getPlayer().getLocation().getX() + " y: " + (int)getPlayer().getLocation().getY()
 					+ " z: " + (int)getPlayer().getLocation().getZ();
-			if (c <= 120) {
+			if (c <= dura.getValue() * 30) {
 				getPlayer().addPotionEffect(new PotionEffect(PotionEffectType.GLOWING, 50, 0));
 			}
-			if (c == 60) {
+			if (c == dura.getValue() * 15) {
 				Bukkit.broadcastMessage("신이 당신을 부르고 있습니다.");
 				bar = new Bar("신의가호 "+getPlayer().getName()+ "의 위치 / "+a, BarColor.YELLOW, BarStyle.SEGMENTED_10);
 			}
-			if (c < 60) {
+			if (c < dura.getValue() * 15) {
 				bar.setTitle("신의가호 "+getPlayer().getName()+ "의 위치 "+a);
-				bar.setProgress(Math.min((double)Count / 60, 1.0D));
+				bar.setProgress(Math.min((double)Count / dura.getValue() * 15, 1.0D));
 			}
 			ac.update(ChatColor.translateAlternateColorCodes('&', "&6대기 시간 &f: &e" + TimeUtil.parseTimeAsString(c)));
 			

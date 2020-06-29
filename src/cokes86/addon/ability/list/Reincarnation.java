@@ -70,7 +70,7 @@ public class Reincarnation extends AbilityBase {
 		super(arg0);
 	}
 
-	@SubscribeEvent
+	@SubscribeEvent(priority = 5)
 	public void onEntityDamage(EntityDamageEvent e) {
 		if (e.getEntity().equals(getPlayer())) {
 			if (reincarnation.isRunning())
@@ -84,7 +84,7 @@ public class Reincarnation extends AbilityBase {
 		}
 	}
 
-	@SubscribeEvent
+	@SubscribeEvent(priority = 5)
 	public void onEntityDamageByEntity(EntityDamageByEntityEvent e) {
 		onEntityDamage(e);
 		Entity damager = e.getDamager();
@@ -113,7 +113,7 @@ public class Reincarnation extends AbilityBase {
 		}
 	}
 
-	@SubscribeEvent
+	@SubscribeEvent(priority = 5)
 	public void onEntityDamageByBlock(EntityDamageByBlockEvent e) {
 		onEntityDamage(e);
 	}

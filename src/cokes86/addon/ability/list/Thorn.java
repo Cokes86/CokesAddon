@@ -8,7 +8,6 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 
 import cokes86.addon.configuration.ability.Config;
-import cokes86.addon.utils.DamagePlusUtil;
 import daybreak.abilitywar.ability.AbilityBase;
 import daybreak.abilitywar.ability.AbilityManifest;
 import daybreak.abilitywar.ability.AbilityManifest.Rank;
@@ -16,6 +15,7 @@ import daybreak.abilitywar.ability.AbilityManifest.Species;
 import daybreak.abilitywar.ability.SubscribeEvent;
 import daybreak.abilitywar.ability.decorator.ActiveHandler;
 import daybreak.abilitywar.game.AbstractGame.Participant;
+import daybreak.abilitywar.utils.base.minecraft.DamageUtil;
 import daybreak.abilitywar.utils.library.SoundLib;
 
 @AbilityManifest(name = "가시", rank = Rank.A, species = Species.OTHERS, explain = {
@@ -65,7 +65,7 @@ public class Thorn extends AbilityBase implements ActiveHandler {
 				if (a.getShooter() instanceof Player) {
 					Player shooter = (Player) a.getShooter();
 					double dam = e.getFinalDamage();
-					DamagePlusUtil.penetratingDamage(dam * damage.getValue() / (float) 100, shooter, getPlayer());
+					shooter.damage(DamageUtil.getPenetratedDamage(getPlayer(), shooter, dam * damage.getValue() / (float) 100), getPlayer());
 					SoundLib.PIANO.playInstrument(shooter, new Note(1, Tone.F, false));
 					e.setDamage(0);
 				}

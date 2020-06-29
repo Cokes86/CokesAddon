@@ -33,6 +33,7 @@ import daybreak.abilitywar.game.list.mix.Mix;
 import daybreak.abilitywar.game.manager.effect.Stun;
 import daybreak.abilitywar.utils.base.TimeUtil;
 import daybreak.abilitywar.utils.base.concurrent.TimeUnit;
+import daybreak.abilitywar.utils.base.math.LocationUtil;
 import daybreak.abilitywar.utils.base.math.LocationUtil.Predicates;
 import daybreak.abilitywar.utils.library.SoundLib;
 
@@ -58,8 +59,8 @@ public class PhantomThief extends AbilityBase implements ActiveHandler, TargetHa
 		super(participant);
 	}
 
-	Timer phantom_1 = new Timer(15) {
-		public void onStart() {
+	DurationTimer phantom_1 = new DurationTimer(15) {
+		public void onDurationStart() {
 			armor[0] = getPlayer().getInventory().getHelmet();
 			armor[1] = getPlayer().getInventory().getChestplate();
 			armor[2] = getPlayer().getInventory().getLeggings();
@@ -72,11 +73,11 @@ public class PhantomThief extends AbilityBase implements ActiveHandler, TargetHa
 		}
 
 		@Override
-		protected void run(int arg0) {
+		protected void onDurationProcess(int arg0) {
 			getPlayer().addPotionEffect(new PotionEffect(PotionEffectType.INVISIBILITY, Integer.MAX_VALUE, 0));
 		}
 
-		public void onSilentEnd() {
+		public void onDurationSilentEnd() {
 			getPlayer().getInventory().setHelmet(armor[0]);
 			getPlayer().getInventory().setChestplate(armor[1]);
 			getPlayer().getInventory().setLeggings(armor[2]);
@@ -85,56 +86,56 @@ public class PhantomThief extends AbilityBase implements ActiveHandler, TargetHa
 			getPlayer().removePotionEffect(PotionEffectType.INVISIBILITY);
 		}
 
-		public void onEnd() {
+		public void onDurationEnd() {
 			onSilentEnd();
 			c.start();
 		}
 	};
 
-	Timer phantom_2 = new Timer(10) {
+	DurationTimer phantom_2 = new DurationTimer(10) {
 
 		@Override
-		protected void run(int arg0) {
+		protected void onDurationProcess(int arg0) {
 			getPlayer().addPotionEffect(new PotionEffect(PotionEffectType.GLOWING, Integer.MAX_VALUE, 0));
 			switch (arg0) {
-			case 1:
+			case 10:
 				SoundLib.PIANO.playInstrument(getPlayer(), Note.natural(0, Note.Tone.C));
 				break;
-			case 2:
+			case 9:
 				SoundLib.PIANO.playInstrument(getPlayer(), Note.natural(0, Note.Tone.D));
 				break;
-			case 3:
+			case 8:
 				SoundLib.PIANO.playInstrument(getPlayer(), Note.natural(0, Note.Tone.E));
 				break;
-			case 4:
+			case 7:
 				SoundLib.PIANO.playInstrument(getPlayer(), Note.natural(0, Note.Tone.F));
 				break;
-			case 5:
+			case 6:
 				SoundLib.PIANO.playInstrument(getPlayer(), Note.natural(0, Note.Tone.G));
 				break;
-			case 6:
+			case 5:
 				SoundLib.PIANO.playInstrument(getPlayer(), Note.natural(1, Note.Tone.A));
 				break;
-			case 7:
+			case 4:
 				SoundLib.PIANO.playInstrument(getPlayer(), Note.natural(1, Note.Tone.B));
 				break;
-			case 8:
+			case 3:
 				SoundLib.PIANO.playInstrument(getPlayer(), Note.natural(1, Note.Tone.C));
 				break;
-			case 9:
+			case 2:
 				SoundLib.PIANO.playInstrument(getPlayer(), Note.natural(1, Note.Tone.D));
 				break;
-			case 10:
+			case 1:
 				SoundLib.PIANO.playInstrument(getPlayer(), Note.natural(1, Note.Tone.E));
 				break;
 			}
 		}
 
-		protected void onSilentEnd() {
+		protected void onDurationSilentEnd() {
 			getPlayer().removePotionEffect(PotionEffectType.GLOWING);
 		}
 
-		protected void onEnd() {
+		protected void onDurationEnd() {
 			getPlayer().removePotionEffect(PotionEffectType.GLOWING);
 			try {
 				Participant targ = getGame().getParticipant(target);
@@ -251,7 +252,7 @@ public class PhantomThief extends AbilityBase implements ActiveHandler, TargetHa
 				Stun.apply(getParticipant(), TimeUnit.SECONDS, 1);
 				Bukkit.broadcastMessage(getPlayer().getName() + "님의 능력은 §e팬텀시프§f입니다.");
 				c.start();
-				c.setCount(cool.getValue() / 2);
+				c.setCount(c.getCount() / 2);
 			}
 		}
 	}
@@ -273,8 +274,9 @@ public class PhantomThief extends AbilityBase implements ActiveHandler, TargetHa
 				double z = Math.cos(radYaw);
 				Vector velocity = new Vector(x, 0, z);
 				velocity.normalize().multiply(10);
-
-				getPlayer().teleport(target.getLocation().add(velocity));
+				
+				Location after = target.getLocation().add(velocity);
+				getPlayer().teleport(after.add(0, LocationUtil.getFloorYAt(after.getWorld(), after.getY(), after.getBlockX(), after.getBlockZ()) + (0.1), 0));
 
 				return phantom_1.start();
 			}

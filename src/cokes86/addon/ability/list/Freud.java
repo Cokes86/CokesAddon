@@ -122,7 +122,7 @@ public class Freud extends AbilityBase implements ActiveHandler {
 			Vector first = target.getLocation().clone().subtract(getPlayer().getLocation().clone()).toVector();
 			
 			this.entity = new ArrowEntity(startLocation.getWorld(), startLocation.getX()+first.getX()/0.25, startLocation.getY()+first.getY()/0.25, startLocation.getZ()+first.getZ()/0.25).setBoundingBox(-.75, -.75, -.75, .75, .75, .75);
-			this.velocity = target.getLocation().clone().subtract(getPlayer().getLocation().clone()).toVector().normalize().multiply(0.045);
+			this.velocity = target.getLocation().clone().subtract(getPlayer().getLocation().clone()).toVector().normalize().multiply(0.75);
 			this.magic = magic;
 			this.lastLocation = startLocation;
 		}

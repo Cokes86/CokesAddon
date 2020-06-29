@@ -4,6 +4,8 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.bukkit.Material;
+import org.bukkit.entity.Arrow;
+import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 
@@ -93,7 +95,15 @@ public class Ovisni extends AbilityBase implements ActiveHandler {
 	
 	@SubscribeEvent
 	public void onEntityDamageByEntity(EntityDamageByEntityEvent e) {
-		if (e.getDamager().equals(getPlayer()) && getGame().isGameStarted() && e.getEntity() instanceof Player) {
+		Entity damager = e.getDamager();
+		if (damager instanceof Arrow) {
+			Arrow arrow = (Arrow) damager;
+			if (arrow.getShooter() instanceof Entity) {
+				damager = (Entity) arrow.getShooter();
+			}
+		}
+		
+		if (damager.equals(getPlayer()) && getGame().isGameStarted() && e.getEntity() instanceof Player) {
 			if (getGame().isParticipating((Player) e.getEntity())) {
 				ovisniCounter.put((Player) e.getEntity(), Math.min(ovisniCounter.getOrDefault((Player) e.getEntity(), 0)+1, max.getValue()));
 				ovisniTimer.put((Player) e.getEntity(), new HologramTimer((Player) e.getEntity()));
