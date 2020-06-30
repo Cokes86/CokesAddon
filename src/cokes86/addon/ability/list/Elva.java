@@ -15,6 +15,7 @@ import org.bukkit.projectiles.ProjectileSource;
 import org.bukkit.util.Vector;
 
 import cokes86.addon.configuration.ability.Config;
+import cokes86.addon.utils.LocationPlusUtil;
 import daybreak.abilitywar.ability.AbilityBase;
 import daybreak.abilitywar.ability.AbilityManifest;
 import daybreak.abilitywar.ability.AbilityManifest.Rank;
@@ -86,21 +87,8 @@ public class Elva extends AbilityBase {
 
 		@Override
 		protected void run(int arg0) {
-			Location playerLocation = getPlayer().getLocation().clone();
-
-			float playerYaw = playerLocation.getYaw(), playerPitch = playerLocation.getPitch();
-
-			double radYaw = Math.toRadians(playerYaw), radPitch = Math.toRadians(playerPitch);
-
-			double cosPitch = Math.cos(radPitch);
-
-			double x = -Math.sin(radYaw) * cosPitch;
-			double y = -Math.sin(radPitch);
-			double z = Math.cos(radYaw) * cosPitch;
-
-			velocity = new Vector(x, y, z);
-			velocity.normalize();
-			Location startArrow = playerLocation.add(velocity.multiply(.25)).add(0, getPlayer().getEyeHeight(), 0);
+			velocity = LocationPlusUtil.getForwardVector(getPlayer().getLocation().clone());
+			Location startArrow = getPlayer().getLocation().clone().add(velocity.multiply(.25)).add(0, getPlayer().getEyeHeight(), 0);
 
 			ItemStack off = getPlayer().getInventory().getItemInOffHand();
 

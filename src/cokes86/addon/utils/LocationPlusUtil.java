@@ -5,6 +5,7 @@ import java.util.function.Predicate;
 import org.bukkit.Location;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
+import org.bukkit.util.Vector;
 
 import daybreak.abilitywar.game.AbstractGame;
 import daybreak.abilitywar.game.GameManager;
@@ -28,6 +29,21 @@ public class LocationPlusUtil {
 		}
 
 		return current;
+	}
+	
+	public static Vector getForwardVector(Location location) {
+		float yaw = location.getYaw(), pitch = location.getPitch();
+
+		double radYaw = Math.toRadians(yaw), radPitch = Math.toRadians(pitch);
+
+		double cosPitch = Math.cos(radPitch);
+
+		double x = -Math.sin(radYaw) * cosPitch;
+		double y = -Math.sin(radPitch);
+		double z = Math.cos(radYaw) * cosPitch;
+
+		Vector velocity = new Vector(x, y, z);
+		return velocity.normalize();
 	}
 	
 	public static Predicate<Entity> HAVE_ABILITY() {
