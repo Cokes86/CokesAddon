@@ -136,6 +136,7 @@ public class Ovisni extends AbilityBase implements ActiveHandler {
 			this.entity = entity;
 			this.hologram = NMSHandler.getNMS().newHologram(entity.getWorld(), entity.getLocation().getX(), entity.getLocation().getY() + entity.getEyeHeight() + 0.6, entity.getLocation().getZ());
 			this.hologram.setText("");
+			this.hologram.display(getPlayer());
 			
 		}
 

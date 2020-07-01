@@ -1,14 +1,18 @@
 package cokes86.addon.ability.list;
 
 import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
 
-import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
+import org.bukkit.event.EventHandler;
 import org.bukkit.event.entity.EntityDamageByBlockEvent;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
+import org.bukkit.event.player.PlayerMoveEvent;
 
 import cokes86.addon.configuration.ability.Config;
 import daybreak.abilitywar.ability.AbilityBase;
@@ -24,7 +28,6 @@ import daybreak.abilitywar.utils.base.TimeUtil;
 import daybreak.abilitywar.utils.base.concurrent.TimeUnit;
 import daybreak.abilitywar.utils.base.math.LocationUtil;
 import daybreak.abilitywar.utils.base.minecraft.DamageUtil;
-import daybreak.abilitywar.utils.library.SoundLib;
 
 @AbilityManifest(name = "아리스", rank = Rank.B, species = Species.HUMAN, explain = {
 		"5초마다 §d사슬 카운터§f를 1씩 상승하며 최대 10만큼 상승합니다.",
@@ -74,8 +77,7 @@ public class Aris extends AbilityBase implements ActiveHandler {
 		}
 	}
 
-	HashMap<Player, Location> hold = new HashMap<>();
-	HashMap<Player, ActionbarChannel> holdAc = new HashMap<>();
+	Set<Player> holding = new HashSet<>();
 
 	DurationTimer d = new ChainTimer();
 	CooldownTimer c = new CooldownTimer(cool.getValue());
@@ -104,7 +106,7 @@ public class Aris extends AbilityBase implements ActiveHandler {
 	public void onEntityDamage(EntityDamageEvent e) {
 		if (e.getEntity() instanceof Player) {
 			Player t = (Player) e.getEntity();
-			if (hold.containsKey(t)) {
+			if (holding.contains(t)) {
 				e.setCancelled(true);
 			}
 		}
@@ -114,7 +116,7 @@ public class Aris extends AbilityBase implements ActiveHandler {
 	public void onEntityDamageByEntity(EntityDamageByEntityEvent e) {
 		if (e.getEntity() instanceof Player) {
 			Player t = (Player) e.getEntity();
-			if (hold.containsKey(t) && e.getDamager().equals(getPlayer())) {
+			if (holding.contains(t) && e.getDamager().equals(getPlayer())) {
 				return;
 			}
 		}
@@ -126,6 +128,11 @@ public class Aris extends AbilityBase implements ActiveHandler {
 		onEntityDamage(e);
 	}
 	
+	@EventHandler
+	public void onPlayerMove(PlayerMoveEvent e) {
+		if (holding.contains(e.getPlayer())) e.setCancelled(true);
+	}
+	
 	class ChainTimer extends DurationTimer {
 
 		public ChainTimer() {
@@ -133,27 +140,28 @@ public class Aris extends AbilityBase implements ActiveHandler {
 			this.setPeriod(TimeUnit.TICKS, 1);
 		}
 		
+		Map<Player, ActionbarChannel> channel = new HashMap<>();
+		
 		@Override
 		protected void onDurationStart() {
 			passive.stop(false);
 			ac.update(null);
 			for (Player p : LocationUtil.getNearbyPlayers(getPlayer(), range.getValue(),
 					range.getValue())) {
-				hold.put(p, p.getLocation().clone().add(0, chain/2+4, 0));
-				holdAc.put(p, getGame().getParticipant(p).actionbar().newChannel());
-				SoundLib.ENTITY_PLAYER_ATTACK_SWEEP.playSound(p);
+				p.teleport(p.getLocation().clone().add(0, chain/2 + 4, 0));
+				holding.add(p);
+				channel.put(p, getGame().getParticipant(p).actionbar().newChannel());
 			}
 
 		}
 
 		@Override
 		protected void onDurationProcess(int seconds) {
-			for (Player p : hold.keySet()) {
-				p.teleport(hold.get(p));
-				holdAc.get(p).update("고정 지속시간: " + TimeUtil.parseTimeAsString(getFixedCount()));
+			for (Player player : channel.keySet()) {
+				channel.get(player).update("고정 지속시간: " + TimeUtil.parseTimeAsString(getFixedCount()));
 				if (seconds % 40 == 0
-						&& DamageUtil.canDamage(getPlayer(), p, DamageCause.ENTITY_ATTACK, 1)) {
-					p.setHealth(Math.max(0.0, p.getHealth() - 1));
+						&& DamageUtil.canDamage(getPlayer(), player, DamageCause.ENTITY_ATTACK, 1)) {
+					player.setHealth(Math.max(0.0, player.getHealth() - 1));
 				}
 			}
 		}
@@ -165,11 +173,11 @@ public class Aris extends AbilityBase implements ActiveHandler {
 		
 		@Override
 		protected void onDurationSilentEnd() {
-			hold.clear();
-			for (Player p : holdAc.keySet()) {
-				holdAc.get(p).unregister();
+			for (Player p : channel.keySet()) {
+				channel.get(p).unregister();
 			}
-			holdAc.clear();
+			channel.clear();
+			holding.clear();
 			chain = 0;
 			c.start();
 			passive.start();

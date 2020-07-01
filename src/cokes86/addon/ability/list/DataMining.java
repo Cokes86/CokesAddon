@@ -150,8 +150,7 @@ public class DataMining extends AbilityBase implements ActiveHandler {
 			}
 			return true;
 		} else if (arg0.equals(Material.IRON_INGOT) && arg1.equals(ClickType.LEFT_CLICK)) {
-			boolean temp = message;
-			message = (!temp);
+			message = (!message);
 			if (message) getPlayer().sendMessage("사실 확인 메세지를 볼 수 있게 됩니다.");
 			else getPlayer().sendMessage("더이상 사실 확인 메세지를 볼 수 없습니다.");
 		}

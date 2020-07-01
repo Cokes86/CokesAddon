@@ -23,7 +23,7 @@ import daybreak.abilitywar.utils.library.SoundLib;
 		species = Species.HUMAN,
 		explain = {"철괴로 상대방을 우클릭할 시 상대방의 능력을 $[dura]간 비활성화시킵니다. $[cool]",
 		"이미 비활성화되어있는 능력에겐 이 능력이 발동하지 않습니다.",
-		"봉인한 능력의 등급에 따라 자신에게 각종 버프를 $[dura]초간 부여합니다."}
+		"봉인한 능력의 등급에 따라 자신에게 각종 버프를 $[dura]간 부여합니다."}
 )
 public class Sealer extends AbilityBase implements TargetHandler {
 	public static Config<Integer> cool = new Config<Integer>(Sealer.class,"쿨타임",60, 1) {

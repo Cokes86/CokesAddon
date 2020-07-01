@@ -46,7 +46,7 @@ import daybreak.abilitywar.utils.library.SoundLib;
 public class Elva extends AbilityBase {
 
 	Vector velocity = null;
-	RGB color = new RGB(0, 255, 102);
+	RGB color = RGB.of(0, 255, 102);
 	int arrow;
 	ActionbarChannel ac = newActionbarChannel();
 	double[] location;

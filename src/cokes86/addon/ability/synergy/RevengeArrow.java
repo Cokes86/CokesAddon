@@ -67,7 +67,7 @@ public class RevengeArrow extends Synergy {
 					Vector vector = damager.getLocation().clone().subtract(getPlayer().getLocation().clone()).toVector()
 							.normalize();
 					new Bullet<>(getPlayer(), getPlayer().getLocation().clone().add(vector.multiply(.25)), vector,
-							new RGB(100, 100, 100), e.getFinalDamage() / 2).start();
+							RGB.of(100, 100, 100), e.getFinalDamage() / 2).start();
 				}
 			}
 		}

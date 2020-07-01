@@ -21,6 +21,7 @@ import daybreak.abilitywar.utils.base.concurrent.TimeUnit;
 import daybreak.abilitywar.utils.base.math.LocationUtil;
 import daybreak.abilitywar.utils.base.math.geometry.Circle;
 import daybreak.abilitywar.utils.library.ParticleLib;
+import daybreak.abilitywar.utils.library.ParticleLib.RGB;
 
 @AbilityManifest(name = "불신", rank = Rank.A, species = Species.HUMAN, explain = {
 		"$[cool]마다 공격 1회를 무효로 하는 방어막을 생성합니다. (최대 1개)", "방어막을 가지고 있는 동안 나약함1 디버프를 부여합니다.",
@@ -34,7 +35,7 @@ public class Unbelief extends AbilityBase {
 	};
 
 	ActionbarChannel shield = newActionbarChannel();
-	ParticleLib.RGB color = new ParticleLib.RGB(0, 0, 0);
+	RGB color = RGB.of(0, 0, 0);
 
 	public Unbelief(Participant arg0) {
 		super(arg0);

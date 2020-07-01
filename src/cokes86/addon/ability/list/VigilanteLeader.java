@@ -1,6 +1,8 @@
 package cokes86.addon.ability.list;
 
 import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.Set;
 
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -44,7 +46,7 @@ public class VigilanteLeader extends AbilityBase implements ActiveHandler {
 		}
 	};
 	RGB color = RGB.of(0, 162, 232);
-	ArrayList<Participant> vigilantes = new ArrayList<>();
+	Set<Participant> vigilantes = new HashSet<>();
 	Location ajit = null;
 	int addNum;
 	protected ActionbarChannel channel = this.newActionbarChannel();
