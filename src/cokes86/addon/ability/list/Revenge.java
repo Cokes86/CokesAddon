@@ -3,6 +3,8 @@ package cokes86.addon.ability.list;
 import java.text.DecimalFormat;
 
 import org.bukkit.ChatColor;
+import org.bukkit.entity.Arrow;
+import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 
@@ -14,6 +16,7 @@ import daybreak.abilitywar.ability.AbilityManifest.Species;
 import daybreak.abilitywar.ability.SubscribeEvent;
 import daybreak.abilitywar.game.AbstractGame.Participant;
 import daybreak.abilitywar.game.AbstractGame.Participant.ActionbarNotification.ActionbarChannel;
+import daybreak.abilitywar.utils.base.minecraft.DamageUtil;
 
 @AbilityManifest(
 		name = "복수",
@@ -47,17 +50,24 @@ public class Revenge extends AbilityBase {
 	
 	@SubscribeEvent
 	public void onEntityDamageByEntity(EntityDamageByEntityEvent e) {
-		if (e.getEntity().equals(getPlayer()) && e.getDamager() instanceof Player) {
+		if (e.getEntity().equals(getPlayer()) && (e.getDamager() instanceof Player || e.getDamager() instanceof Arrow)) {
 			finalDamage = e.getFinalDamage();
 			ac.update(ChatColor.BLUE+ "반사고정대미지 : "+df.format(finalDamage * per.getValue() / (double)100));
-		}
-		
-		if (e.getDamager().equals(getPlayer()) && e.getEntity() instanceof Player) {
-			double plus = finalDamage * per.getValue() / (double)100;
-			if (plus != 0) {
-				Player p = (Player) e.getEntity();
-				p.setHealth(Math.max(0.0, p.getHealth()-e.getFinalDamage()-plus));
-				e.setDamage(0);
+		} else {
+			Entity damager = e.getDamager();
+			if (damager instanceof Arrow) {
+				Arrow arrow = (Arrow) damager;
+				if (arrow.getShooter() instanceof Entity) {
+					damager = (Entity) arrow.getShooter();
+				}
+			}
+			
+			if (damager.equals(getPlayer()) && e.getEntity() instanceof Player) {
+				double plus = finalDamage * per.getValue() / (double)100;
+				if (plus != 0) {
+					Player p = (Player) e.getEntity();
+					e.setDamage(DamageUtil.getPenetratedDamage(getPlayer(), p, e.getFinalDamage()+plus));
+				}
 			}
 		}
 	}

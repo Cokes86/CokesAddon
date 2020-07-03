@@ -22,6 +22,7 @@ import daybreak.abilitywar.game.AbstractGame.Participant;
 import daybreak.abilitywar.game.AbstractGame.Participant.ActionbarNotification.ActionbarChannel;
 import daybreak.abilitywar.utils.base.TimeUtil;
 import daybreak.abilitywar.utils.base.minecraft.Bar;
+import daybreak.abilitywar.utils.library.PotionEffects;
 
 @AbilityManifest(
 		name = "신의가호",
@@ -57,7 +58,7 @@ public class GodsBless extends AbilityBase implements ActiveHandler {
 			String a = "x: " + (int)getPlayer().getLocation().getX() + " y: " + (int)getPlayer().getLocation().getY()
 					+ " z: " + (int)getPlayer().getLocation().getZ();
 			if (c <= dura.getValue() * 30) {
-				getPlayer().addPotionEffect(new PotionEffect(PotionEffectType.GLOWING, 50, 0));
+				getPlayer().addPotionEffect(new PotionEffect(PotionEffectType.GLOWING, dura.getValue() * 30, 0));
 			}
 			if (c == dura.getValue() * 15) {
 				Bukkit.broadcastMessage("신이 당신을 부르고 있습니다.");
@@ -65,11 +66,11 @@ public class GodsBless extends AbilityBase implements ActiveHandler {
 			}
 			if (c < dura.getValue() * 15) {
 				bar.setTitle("신의가호 "+getPlayer().getName()+ "의 위치 "+a);
-				bar.setProgress(Math.min((double)Count / dura.getValue() * 15, 1.0D));
+				bar.setProgress(Math.min(Count / dura.getValue() * 15.00, 1.0D));
 			}
 			ac.update(ChatColor.translateAlternateColorCodes('&', "&6대기 시간 &f: &e" + TimeUtil.parseTimeAsString(c)));
 			
-			if (c == 30 || (c <= 5 && c >= 1)) {
+			if (c == dura.getValue() * 8 || (c <= 5 && c >= 1)) {
 				Bukkit.broadcastMessage("신의가호가 신을 부르기 §c"+ TimeUtil.parseTimeAsString(c)+" §f전");
 			}
 		}
@@ -88,6 +89,7 @@ public class GodsBless extends AbilityBase implements ActiveHandler {
 		protected void onSilentEnd() {
 			if (bar != null) bar.remove();
 			GodsBless.this.setRestricted(true);
+			PotionEffects.GLOWING.removePotionEffect(getPlayer());
 		}
 	};
 

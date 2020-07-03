@@ -79,6 +79,8 @@ public class Ovisni extends AbilityBase implements ActiveHandler {
 		if (arg0.equals(Material.IRON_INGOT) && arg1.equals(ClickType.RIGHT_CLICK) && !cooldown.isCooldown()) {
 			for (Player p : ovisniCounter.keySet()) {
 				p.damage(ovisniCounter.get(p)*2, getPlayer());
+			}
+			for (Player p : ovisniTimer.keySet()) {
 				ovisniTimer.get(p).stop(false);
 			}
 			ovisniCounter.clear();
@@ -104,9 +106,15 @@ public class Ovisni extends AbilityBase implements ActiveHandler {
 		}
 		
 		if (damager.equals(getPlayer()) && getGame().isGameStarted() && e.getEntity() instanceof Player) {
-			if (getGame().isParticipating((Player) e.getEntity())) {
-				ovisniCounter.put((Player) e.getEntity(), Math.min(ovisniCounter.getOrDefault((Player) e.getEntity(), 0)+1, max.getValue()));
-				ovisniTimer.put((Player) e.getEntity(), new HologramTimer((Player) e.getEntity()));
+			Player entity = (Player) e.getEntity();
+			if (getGame().isParticipating(entity)) {
+				ovisniCounter.put(entity, Math.min(ovisniCounter.getOrDefault((Player) e.getEntity(), 0)+1, max.getValue()));
+				if (ovisniTimer.containsKey(entity)) {
+					HologramTimer timer = ovisniTimer.get(entity);
+					timer.run(0);
+				} else {
+					ovisniTimer.put(entity, new HologramTimer(entity));
+				}
 			}
 		}
 	}
@@ -132,12 +140,12 @@ public class Ovisni extends AbilityBase implements ActiveHandler {
 		
 		private HologramTimer(Player entity) {
 			super();
-			setPeriod(TimeUnit.TICKS, 2);
+			this.setPeriod(TimeUnit.TICKS, 1);
 			this.entity = entity;
 			this.hologram = NMSHandler.getNMS().newHologram(entity.getWorld(), entity.getLocation().getX(), entity.getLocation().getY() + entity.getEyeHeight() + 0.6, entity.getLocation().getZ());
-			this.hologram.setText("");
+			this.hologram.setText(Strings.repeat("§2◆", ovisniCounter.get(entity)).concat(Strings.repeat("§2◇", max.getValue() - ovisniCounter.get(entity))));
 			this.hologram.display(getPlayer());
-			
+			this.start();
 		}
 
 		@Override

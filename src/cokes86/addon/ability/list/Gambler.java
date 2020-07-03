@@ -115,8 +115,8 @@ public class Gambler extends AbilityBase implements ActiveHandler {
 
 		@Override
 		protected void run(int Count) {	
-			String giver = (give > 100 ? "§a" : (give < 0 ? "§c": ""));
-			String receiver = (give > 100 ? "§c" : (give < 0 ? "§a": ""));	
+			String giver = (give > 100 ? "§a" : (give < 100 ? "§c": ""));
+			String receiver = (receive > 100 ? "§c" : (receive < 100 ? "§a": ""));	
 			String cool = go == 0 ? "" : " §a|§f 남은 시간: " + TimeUtil.parseTimeAsString(getCount());
 
 			ac.update("주는 대미지: " + giver+give+ "% §a|§f 받는 대미지: " + receiver+receive + "%§f" + cool);

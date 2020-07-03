@@ -21,6 +21,8 @@ import org.bukkit.util.Vector;
 import cokes86.addon.configuration.ability.Config;
 import cokes86.addon.utils.LocationPlusUtil;
 import daybreak.abilitywar.ability.AbilityBase;
+import daybreak.abilitywar.ability.AbilityFactory;
+import daybreak.abilitywar.ability.AbilityFactory.AbilityRegistration;
 import daybreak.abilitywar.ability.AbilityManifest;
 import daybreak.abilitywar.ability.AbilityManifest.Rank;
 import daybreak.abilitywar.ability.AbilityManifest.Species;
@@ -30,8 +32,10 @@ import daybreak.abilitywar.ability.decorator.TargetHandler;
 import daybreak.abilitywar.game.AbstractGame.Participant;
 import daybreak.abilitywar.game.AbstractGame.Participant.ActionbarNotification.ActionbarChannel;
 import daybreak.abilitywar.game.list.mix.Mix;
+import daybreak.abilitywar.game.list.mix.synergy.SynergyFactory;
 import daybreak.abilitywar.game.manager.effect.Stun;
 import daybreak.abilitywar.utils.base.TimeUtil;
+import daybreak.abilitywar.utils.base.collect.Pair;
 import daybreak.abilitywar.utils.base.concurrent.TimeUnit;
 import daybreak.abilitywar.utils.base.math.LocationUtil;
 import daybreak.abilitywar.utils.base.math.LocationUtil.Predicates;
@@ -45,6 +49,10 @@ import daybreak.abilitywar.utils.library.SoundLib;
 public class PhantomThief extends AbilityBase implements ActiveHandler, TargetHandler {
 	Player target;
 	ItemStack[] armor = new ItemStack[4];
+	
+	static {
+		AbilityFactory.registerAbility(NullAbility.class);
+	}
 
 	public static Config<Integer> cool = new Config<Integer>(PhantomThief.class, "쿨타임", 90, 1) {
 		@Override
@@ -139,57 +147,115 @@ public class PhantomThief extends AbilityBase implements ActiveHandler, TargetHa
 			getPlayer().removePotionEffect(PotionEffectType.GLOWING);
 			try {
 				Participant targ = getGame().getParticipant(target);
-				if (targ.hasAbility()) {
-					if (targ.getAbility().getClass() == Mix.class) {
+				if (targ != null && targ.hasAbility() && getParticipant().hasAbility()) {
+					if (targ.getAbility().getClass() == Mix.class && getParticipant().getAbility().getClass() == Mix.class) {
 						Mix mix = (Mix) getParticipant().getAbility();
-						int a;
-						if (mix.getFirst().getClass() == PhantomThief.class) {
-							mix.setAbility(((Mix) targ.getAbility()).getFirst().getClass(), mix.getSecond().getClass());
-							getPlayer().sendMessage("능력을 훔쳤습니다. => " + ((Mix) targ.getAbility()).getFirst().getName());
-							((Mix) targ.getAbility()).getFirst().setRestricted(true);
-							a = 0;
+						if (mix.hasSynergy()) {
+							Pair<AbilityRegistration, AbilityRegistration> pair = SynergyFactory.getSynergyBase(mix.getSynergy().getRegistration());
+							int a;
+							AbilityRegistration stealed;
+							AbilityRegistration continued;
+							
+							if (mix.getFirst().getClass() == PhantomThief.class) {
+								stealed = pair.getLeft();
+								continued = pair.getRight();
+								mix.setAbility(stealed.getAbilityClass(), mix.getSecond().getClass());
+								a= 0;
+							} else {
+								stealed = pair.getRight();
+								continued = pair.getLeft();
+								mix.setAbility(mix.getFirst().getClass(), stealed.getAbilityClass());
+								a=1;
+							}
+							getPlayer().sendMessage("능력을 훔쳤습니다. => " + stealed.getManifest().name());
+							if (a == 0) {
+								((Mix) targ.getAbility()).setAbility(NullAbility.class, continued.getAbilityClass());
+							} else {
+								((Mix) targ.getAbility()).setAbility(continued.getAbilityClass(), NullAbility.class);
+							}
+							
+							new Timer(30) {
+								ActionbarChannel ac;
+
+								protected void onStart() {
+									ac = targ.actionbar().newChannel();
+								}
+
+								@Override
+								protected void run(int arg0) {
+									ac.update("팬텀시프가 되기까지 " + TimeUtil.parseTimeAsString(getFixedCount()) + " 전");
+								}
+
+								protected void onEnd() {
+									try {
+										if (a == 0) {
+											((Mix) targ.getAbility()).setAbility(PhantomThief.class, continued.getAbilityClass());
+										} else {
+											((Mix) targ.getAbility()).setAbility(continued.getAbilityClass(), PhantomThief.class);
+										}
+										ac.update(null);
+										target.sendMessage("당신의 능력이 팬텀시프가 되었습니다 /aw check");
+										ac.unregister();
+									} catch (IllegalAccessException | InvocationTargetException
+											| InstantiationException e) {
+										e.printStackTrace();
+									}
+								}
+
+							}.start();
 						} else {
-							mix.setAbility(mix.getFirst().getClass(), ((Mix) targ.getAbility()).getSecond().getClass());
-							getPlayer().sendMessage("능력을 훔쳤습니다. => " + ((Mix) targ.getAbility()).getSecond().getName());
-							((Mix) targ.getAbility()).getSecond().setRestricted(true);
-							a = 1;
+							int a;
+							if (mix.getFirst().getClass() == PhantomThief.class) {
+								mix.setAbility(((Mix) targ.getAbility()).getFirst().getClass(), mix.getSecond().getClass());
+								getPlayer().sendMessage("능력을 훔쳤습니다. => " + ((Mix) targ.getAbility()).getFirst().getName());
+								((Mix) targ.getAbility()).setAbility(NullAbility.class,
+										((Mix) targ.getAbility()).getSecond().getClass());
+								a = 0;
+							} else {
+								mix.setAbility(mix.getFirst().getClass(), ((Mix) targ.getAbility()).getSecond().getClass());
+								getPlayer().sendMessage("능력을 훔쳤습니다. => " + ((Mix) targ.getAbility()).getSecond().getName());
+								((Mix) targ.getAbility()).setAbility(
+										((Mix) targ.getAbility()).getFirst().getClass(), NullAbility.class);
+								a = 1;
+							}
+							
+							new Timer(30) {
+								ActionbarChannel ac;
+
+								protected void onStart() {
+									ac = targ.actionbar().newChannel();
+								}
+
+								@Override
+								protected void run(int arg0) {
+									ac.update("팬텀시프가 되기까지 " + TimeUtil.parseTimeAsString(getFixedCount()) + " 전");
+								}
+
+								protected void onEnd() {
+									try {
+										if (a == 0) {
+											((Mix) targ.getAbility()).setAbility(PhantomThief.class,
+													((Mix) targ.getAbility()).getSecond().getClass());
+										} else {
+											((Mix) targ.getAbility()).setAbility(
+													((Mix) targ.getAbility()).getFirst().getClass(), PhantomThief.class);
+										}
+										ac.update(null);
+										target.sendMessage("당신의 능력이 팬텀시프가 되었습니다 /aw check");
+										ac.unregister();
+									} catch (IllegalAccessException | InvocationTargetException
+											| InstantiationException e) {
+										e.printStackTrace();
+									}
+								}
+
+							}.start();
 						}
 						target.sendMessage("팬텀시프가 당신의 능력을 훔쳤습니다. 30초뒤 자신의 능력 중 하나가 팬텀시프로 바뀝니다.");
 
-						new Timer(30) {
-							ActionbarChannel ac;
-
-							protected void onStart() {
-								ac = targ.actionbar().newChannel();
-							}
-
-							@Override
-							protected void run(int arg0) {
-								ac.update("팬텀시프가 되기까지 " + TimeUtil.parseTimeAsString(getFixedCount()) + " 전");
-							}
-
-							protected void onEnd() {
-								try {
-									if (a == 0) {
-										((Mix) targ.getAbility()).setAbility(PhantomThief.class,
-												((Mix) targ.getAbility()).getSecond().getClass());
-									} else {
-										((Mix) targ.getAbility()).setAbility(
-												((Mix) targ.getAbility()).getFirst().getClass(), PhantomThief.class);
-									}
-									ac.update(null);
-									target.sendMessage("당신의 능력이 팬텀시프가 되었습니다 /aw check");
-									ac.unregister();
-								} catch (IllegalAccessException | InvocationTargetException
-										| InstantiationException e) {
-									e.printStackTrace();
-								}
-							}
-
-						}.start();
+						
 					} else {
-						getParticipant().removeAbility();
-						getParticipant().setAbility(targ.getAbility().getClass());
+						targ.setAbility(NullAbility.class);
 						getPlayer().sendMessage("능력을 훔쳤습니다. => " + targ.getAbility().getName());
 
 						target.sendMessage("팬텀시프가 당신의 능력을 훔쳤습니다. 30초뒤 자신의 능력이 팬텀시프로 바뀝니다.");
@@ -218,6 +284,8 @@ public class PhantomThief extends AbilityBase implements ActiveHandler, TargetHa
 							}
 
 						}.start();
+						getParticipant().removeAbility();
+						getParticipant().setAbility(targ.getAbility().getClass());
 					}
 				} else {
 					getPlayer().sendMessage("이런! 상대방이 능력이 없네요. 다시 시도해봐요~!");
@@ -260,7 +328,7 @@ public class PhantomThief extends AbilityBase implements ActiveHandler, TargetHa
 	@Override
 	public boolean ActiveSkill(Material arg0, ClickType arg1) {
 		if (arg0.equals(Material.IRON_INGOT) && arg1.equals(ClickType.LEFT_CLICK) && !phantom_1.isRunning()
-				&& !phantom_2.isRunning()) {
+				&& !phantom_2.isRunning() && !c.isCooldown()) {
 			Predicate<Entity> predicate = LocationPlusUtil.HAVE_ABILITY().and(Predicates.STRICT(getPlayer()));
 			target = LocationPlusUtil.getFarthestEntity(Player.class, getPlayer().getLocation(), predicate);
 
@@ -276,7 +344,8 @@ public class PhantomThief extends AbilityBase implements ActiveHandler, TargetHa
 				velocity.normalize().multiply(10);
 				
 				Location after = target.getLocation().add(velocity);
-				getPlayer().teleport(after.add(0, LocationUtil.getFloorYAt(after.getWorld(), after.getY(), after.getBlockX(), after.getBlockZ()) + (0.1), 0));
+				after.setY(LocationUtil.getFloorYAt(after.getWorld(), location.getY(), after.getBlockX(), after.getBlockZ()) + 0.1);
+				getPlayer().teleport(after);
 
 				return phantom_1.start();
 			}
@@ -292,5 +361,14 @@ public class PhantomThief extends AbilityBase implements ActiveHandler, TargetHa
 			getPlayer().sendMessage("능력 훔치기를 시도합니다!");
 			target.sendTitle("경  고", "팬텀시프가 당신의 능력을 훔칠려 합니다.", 10, 30, 10);
 		}
+	}
+	
+	@AbilityManifest(name="NULL", rank = Rank.C, species = Species.OTHERS, explain = {"이런! 능력이 사라지셨네!"})
+	public static class NullAbility extends AbilityBase {
+
+		public NullAbility(Participant arg0) {
+			super(arg0);
+		}
+		
 	}
 }

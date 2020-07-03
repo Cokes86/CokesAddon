@@ -24,6 +24,7 @@ import daybreak.abilitywar.game.list.mix.synergy.Synergy;
 import daybreak.abilitywar.utils.base.concurrent.TimeUnit;
 import daybreak.abilitywar.utils.base.math.LocationUtil;
 import daybreak.abilitywar.utils.base.math.geometry.Line;
+import daybreak.abilitywar.utils.base.minecraft.DamageUtil;
 import daybreak.abilitywar.utils.base.minecraft.entity.decorator.Deflectable;
 import daybreak.abilitywar.utils.library.ParticleLib;
 import daybreak.abilitywar.utils.library.ParticleLib.RGB;
@@ -75,15 +76,15 @@ public class RevengeArrow extends Synergy {
 
 	public class Bullet<Shooter extends Entity & ProjectileSource> extends Timer {
 
-		private final Shooter shooter;
+		private final Player shooter;
 		private final CustomEntity entity;
 		private final Vector forward;
 		private final double damage;
 
 		private final RGB color;
 
-		private Bullet(Shooter shooter, Location startLocation, Vector arrowVelocity, RGB color, double damage) {
-			super();
+		private Bullet(Player shooter, Location startLocation, Vector arrowVelocity, RGB color, double damage) {
+			super(100);
 			setPeriod(TimeUnit.TICKS, 1);
 			this.shooter = shooter;
 			this.entity = new ArrowEntity(startLocation.getWorld(), startLocation.getX(), startLocation.getY(),
@@ -114,8 +115,8 @@ public class RevengeArrow extends Synergy {
 					return;
 				}
 				for (Damageable damageable : LocationUtil.getConflictingDamageables(entity.getBoundingBox())) {
-					if (!shooter.equals(damageable) && !damageable.isDead()) {
-						damageable.damage(damage, shooter);
+					if (!shooter.equals(damageable) && !damageable.isDead() && damageable instanceof Player) {
+						damageable.damage(DamageUtil.getPenetratedDamage(shooter, (Player) damageable, damage), shooter);
 						stop(false);
 						return;
 					}

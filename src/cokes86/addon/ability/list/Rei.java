@@ -24,7 +24,7 @@ public class Rei extends AbilityBase {
 		public boolean Condition(Double value) {
 			return value >= 0.0;
 		}
-	}, cost = new Config<Double>(Rei.class, "코스트(%)", 7.0) {
+	}, cost = new Config<Double>(Rei.class, "코스트(%)", 10.0) {
 		@Override
 		public boolean Condition(Double value) {
 			return value > 0.0;
@@ -56,7 +56,7 @@ public class Rei extends AbilityBase {
 				if (!c.isRunning()) {
 					double finald = e.getDamage() + damage.getValue();
 					e.setDamage(finald);
-					Damager.setHealth(Math.max(0.0, Damager.getHealth() * (100 - cost.getValue()) / 100));
+					Damager.setHealth(Math.max(0.0, Damager.getHealth() * (100 - cost.getValue()) / 100.00));
 				}
 			} else if (e.getDamager() instanceof Arrow) {
 				Arrow a = (Arrow) e.getDamager();
@@ -64,7 +64,7 @@ public class Rei extends AbilityBase {
 					Player Damager = (Player) a.getShooter();
 					double finald = e.getDamage() + damage.getValue();
 					e.setDamage(finald);
-					Damager.setHealth(Math.max(0.0, Damager.getHealth() * (100 - cost.getValue()) / 100));
+					Damager.setHealth(Math.max(0.0, Damager.getHealth() * (100 - cost.getValue()) / 100.00));
 				}
 			}
 		}
