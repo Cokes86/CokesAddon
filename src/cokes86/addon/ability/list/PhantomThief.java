@@ -69,10 +69,8 @@ public class PhantomThief extends AbilityBase implements ActiveHandler, TargetHa
 
 	DurationTimer phantom_1 = new DurationTimer(15) {
 		public void onDurationStart() {
-			armor[0] = getPlayer().getInventory().getHelmet();
-			armor[1] = getPlayer().getInventory().getChestplate();
-			armor[2] = getPlayer().getInventory().getLeggings();
-			armor[3] = getPlayer().getInventory().getBoots();
+			armor = new ItemStack[] {getPlayer().getInventory().getHelmet(), getPlayer().getInventory().getChestplate(),
+			getPlayer().getInventory().getLeggings(), getPlayer().getInventory().getBoots()};
 
 			getPlayer().getInventory().setHelmet(new ItemStack(Material.AIR));
 			getPlayer().getInventory().setChestplate(new ItemStack(Material.AIR));
@@ -150,142 +148,52 @@ public class PhantomThief extends AbilityBase implements ActiveHandler, TargetHa
 				if (targ != null && targ.hasAbility() && getParticipant().hasAbility()) {
 					if (targ.getAbility().getClass() == Mix.class && getParticipant().getAbility().getClass() == Mix.class) {
 						Mix mix = (Mix) getParticipant().getAbility();
+						boolean first;
+						Class<? extends AbilityBase> continued;
 						if (mix.hasSynergy()) {
 							Pair<AbilityRegistration, AbilityRegistration> pair = SynergyFactory.getSynergyBase(mix.getSynergy().getRegistration());
-							int a;
 							AbilityRegistration stealed;
-							AbilityRegistration continued;
-							
 							if (mix.getFirst().getClass() == PhantomThief.class) {
 								stealed = pair.getLeft();
-								continued = pair.getRight();
+								continued = pair.getRight().getAbilityClass();
 								mix.setAbility(stealed.getAbilityClass(), mix.getSecond().getClass());
-								a= 0;
+								((Mix) targ.getAbility()).setAbility(NullAbility.class, continued);
+								first = true;
 							} else {
 								stealed = pair.getRight();
-								continued = pair.getLeft();
+								continued = pair.getLeft().getAbilityClass();
 								mix.setAbility(mix.getFirst().getClass(), stealed.getAbilityClass());
-								a=1;
+								((Mix) targ.getAbility()).setAbility(continued, NullAbility.class);
+								first = false;
 							}
 							getPlayer().sendMessage("능력을 훔쳤습니다. => " + stealed.getManifest().name());
-							if (a == 0) {
-								((Mix) targ.getAbility()).setAbility(NullAbility.class, continued.getAbilityClass());
-							} else {
-								((Mix) targ.getAbility()).setAbility(continued.getAbilityClass(), NullAbility.class);
-							}
-							
-							new Timer(30) {
-								ActionbarChannel ac;
-
-								protected void onStart() {
-									ac = targ.actionbar().newChannel();
-								}
-
-								@Override
-								protected void run(int arg0) {
-									ac.update("팬텀시프가 되기까지 " + TimeUtil.parseTimeAsString(getFixedCount()) + " 전");
-								}
-
-								protected void onEnd() {
-									try {
-										if (a == 0) {
-											((Mix) targ.getAbility()).setAbility(PhantomThief.class, continued.getAbilityClass());
-										} else {
-											((Mix) targ.getAbility()).setAbility(continued.getAbilityClass(), PhantomThief.class);
-										}
-										ac.update(null);
-										target.sendMessage("당신의 능력이 팬텀시프가 되었습니다 /aw check");
-										ac.unregister();
-									} catch (IllegalAccessException | InvocationTargetException
-											| InstantiationException e) {
-										e.printStackTrace();
-									}
-								}
-
-							}.start();
 						} else {
-							int a;
 							if (mix.getFirst().getClass() == PhantomThief.class) {
 								mix.setAbility(((Mix) targ.getAbility()).getFirst().getClass(), mix.getSecond().getClass());
 								getPlayer().sendMessage("능력을 훔쳤습니다. => " + ((Mix) targ.getAbility()).getFirst().getName());
 								((Mix) targ.getAbility()).setAbility(NullAbility.class,
 										((Mix) targ.getAbility()).getSecond().getClass());
-								a = 0;
+								continued = ((Mix) targ.getAbility()).getSecond().getClass();
+								first = true;
 							} else {
 								mix.setAbility(mix.getFirst().getClass(), ((Mix) targ.getAbility()).getSecond().getClass());
 								getPlayer().sendMessage("능력을 훔쳤습니다. => " + ((Mix) targ.getAbility()).getSecond().getName());
 								((Mix) targ.getAbility()).setAbility(
 										((Mix) targ.getAbility()).getFirst().getClass(), NullAbility.class);
-								a = 1;
+								continued = ((Mix) targ.getAbility()).getFirst().getClass();
+								first = false;
 							}
-							
-							new Timer(30) {
-								ActionbarChannel ac;
-
-								protected void onStart() {
-									ac = targ.actionbar().newChannel();
-								}
-
-								@Override
-								protected void run(int arg0) {
-									ac.update("팬텀시프가 되기까지 " + TimeUtil.parseTimeAsString(getFixedCount()) + " 전");
-								}
-
-								protected void onEnd() {
-									try {
-										if (a == 0) {
-											((Mix) targ.getAbility()).setAbility(PhantomThief.class,
-													((Mix) targ.getAbility()).getSecond().getClass());
-										} else {
-											((Mix) targ.getAbility()).setAbility(
-													((Mix) targ.getAbility()).getFirst().getClass(), PhantomThief.class);
-										}
-										ac.update(null);
-										target.sendMessage("당신의 능력이 팬텀시프가 되었습니다 /aw check");
-										ac.unregister();
-									} catch (IllegalAccessException | InvocationTargetException
-											| InstantiationException e) {
-										e.printStackTrace();
-									}
-								}
-
-							}.start();
 						}
+						new PhantomThiefTimer(targ, first, continued);
 						target.sendMessage("팬텀시프가 당신의 능력을 훔쳤습니다. 30초뒤 자신의 능력 중 하나가 팬텀시프로 바뀝니다.");
-
-						
 					} else {
 						targ.setAbility(NullAbility.class);
 						getPlayer().sendMessage("능력을 훔쳤습니다. => " + targ.getAbility().getName());
 
 						target.sendMessage("팬텀시프가 당신의 능력을 훔쳤습니다. 30초뒤 자신의 능력이 팬텀시프로 바뀝니다.");
-						new Timer(30) {
-							ActionbarChannel ac;
-
-							protected void onStart() {
-								ac = targ.actionbar().newChannel();
-							}
-
-							@Override
-							protected void run(int arg0) {
-								ac.update("팬텀시프가 되기까지 " + TimeUtil.parseTimeAsString(getFixedCount()) + " 전");
-							}
-
-							protected void onEnd() {
-								try {
-									targ.setAbility(PhantomThief.class);
-									ac.update(null);
-									target.sendMessage("당신의 능력이 팬텀시프가 되었습니다 /aw check");
-									ac.unregister();
-								} catch (IllegalAccessException | InvocationTargetException
-										| InstantiationException e) {
-									e.printStackTrace();
-								}
-							}
-
-						}.start();
 						getParticipant().removeAbility();
 						getParticipant().setAbility(targ.getAbility().getClass());
+						new PhantomThiefTimer(targ);
 					}
 				} else {
 					getPlayer().sendMessage("이런! 상대방이 능력이 없네요. 다시 시도해봐요~!");
@@ -360,6 +268,57 @@ public class PhantomThief extends AbilityBase implements ActiveHandler, TargetHa
 			phantom_2.start();
 			getPlayer().sendMessage("능력 훔치기를 시도합니다!");
 			target.sendTitle("경  고", "팬텀시프가 당신의 능력을 훔칠려 합니다.", 10, 30, 10);
+		}
+	}
+	
+	class PhantomThiefTimer extends Timer {
+		final Participant target;
+		final ActionbarChannel ac;
+		final boolean mix;
+		private boolean first;
+		private Class<? extends AbilityBase> continued;
+		
+		public PhantomThiefTimer(Participant target) {
+			super(30);
+			this.target = target;
+			this.ac = target.actionbar().newChannel();
+			this.mix = false;
+			this.start();
+		}
+		
+		public PhantomThiefTimer(Participant target, boolean first, Class<? extends AbilityBase> continued) {
+			super(30);
+			this.target = target;
+			this.ac = target.actionbar().newChannel();
+			this.mix = true;
+			this.first = first;
+			this.continued = continued;
+			this.start();
+		}
+		
+		@Override
+		protected void run(int arg0) {
+			ac.update("팬텀시프가 되기까지 " + TimeUtil.parseTimeAsString(getFixedCount()) + " 전");
+		}
+		
+		@Override
+		protected void onEnd() {
+			try {
+				if (mix) {
+					Mix mix = (Mix) target.getAbility();
+					if (first) {
+						mix.setAbility(PhantomThief.class, continued);
+					} else {
+						mix.setAbility(continued, PhantomThief.class);
+					}
+				} else {
+					target.setAbility(PhantomThief.class);
+				}
+				target.getPlayer().sendMessage("당신의 능력이 팬텀시프가 되었습니다 /aw check");
+				ac.unregister();
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
 		}
 	}
 	
