@@ -3,7 +3,6 @@ package cokes86.addon.ability.list;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.enchantments.Enchantment;
-import org.bukkit.entity.Arrow;
 import org.bukkit.entity.Player;
 import org.bukkit.event.entity.EntityDamageByBlockEvent;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
@@ -48,7 +47,7 @@ public class Blocks extends AbilityBase implements ActiveHandler {
 		}
 	};
 	protected static Config<Double> inv = new Config<Double>(Blocks.class, "모래_무적시간", 0.3,
-			new String[] { "#0.0 단위로 작성" }) {
+			"#0.0 단위로 작성") {
 		@Override
 		public boolean Condition(Double value) {
 			return value > 0 && Math.ceil(value * 10) == value * 10;
@@ -133,7 +132,7 @@ public class Blocks extends AbilityBase implements ActiveHandler {
 						Vector vec = new Vector();
 						getPlayer().setVelocity(vec);
 						Bukkit.getScheduler().runTaskLater(AbilityWar.getPlugin(), () -> getPlayer().setVelocity(vec),
-								1l);
+								1L);
 					}
 				}
 			}
@@ -160,19 +159,6 @@ public class Blocks extends AbilityBase implements ActiveHandler {
 						}
 					} else {
 						e.setDamage(e.getDamage() * (100.0 - stone.getValue()) / 100);
-					}
-				} else if (condition.equals(Condition.OBSIDIAN)) {
-					onEntityDamage(e);
-				} else {
-					onEntityDamage(e);
-				}
-			} else if (e.getDamager() instanceof Arrow) {
-				Arrow a = (Arrow) e.getDamager();
-				if (a.getShooter() instanceof Player) {
-					if (condition.equals(Condition.OBSIDIAN)) {
-						onEntityDamage(e);
-					} else {
-						onEntityDamage(e);
 					}
 				} else {
 					onEntityDamage(e);

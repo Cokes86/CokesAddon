@@ -35,11 +35,9 @@ public class Rabbit extends AbilityBase {
 	}
 	
 	protected void onUpdate(Update update) {
-		switch (update) {
-		case RESTRICTION_CLEAR:
-			Passive.setPeriod(TimeUnit.TICKS,1).start();
-			break;
-		default:
+		if (update == Update.RESTRICTION_CLEAR) {
+			Passive.setPeriod(TimeUnit.TICKS, 1).start();
+		} else {
 			PotionEffects.SPEED.removePotionEffect(getPlayer());
 			PotionEffects.JUMP.removePotionEffect(getPlayer());
 		}

@@ -48,9 +48,9 @@ import daybreak.abilitywar.utils.library.PotionEffects;
 public class Freud extends AbilityBase implements ActiveHandler {
 	private Magic magic;
 	private int mana = 100;
-	private ActionbarChannel ac = newActionbarChannel();
+	private final ActionbarChannel ac = newActionbarChannel();
 	
-	private static Config<Integer> fireTick = new Config<Integer>(Freud.class, "화상시간(틱)", 50) {
+	private static final Config<Integer> fireTick = new Config<Integer>(Freud.class, "화상시간(틱)", 50) {
 
 		@Override
 		public boolean Condition(Integer value) {
@@ -77,10 +77,8 @@ public class Freud extends AbilityBase implements ActiveHandler {
 	};
 	
 	protected void onUpdate(Update update) {
-		switch(update) {
-		case RESTRICTION_CLEAR:
+		if (update == Update.RESTRICTION_CLEAR) {
 			passiveTimer.setPeriod(TimeUnit.TICKS, 1).start();
-		default:
 		}
 	}
 	
@@ -93,7 +91,7 @@ public class Freud extends AbilityBase implements ActiveHandler {
 	public boolean ActiveSkill(Material arg0, ClickType arg1) {
 		if (arg0.equals(Material.IRON_INGOT)) {
 			if (arg1.equals(ClickType.RIGHT_CLICK) && mana >= magic.getMana()) {
-				Predicate<Entity> predicate = (Predicate<Entity>) Predicates.STRICT(getPlayer());
+				Predicate<Entity> predicate = Predicates.STRICT(getPlayer());
 				Player target = LocationUtil.getNearestEntity(Player.class, getPlayer().getLocation(), predicate);
 				if (target != null) {
 					mana -= magic.getMana();

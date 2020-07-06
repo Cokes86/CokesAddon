@@ -7,7 +7,6 @@ import org.bukkit.attribute.Attribute;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 
-import cokes86.addon.ability.Test;
 import cokes86.addon.configuration.ability.Config;
 import daybreak.abilitywar.ability.AbilityBase;
 import daybreak.abilitywar.ability.AbilityManifest;
@@ -24,7 +23,6 @@ import daybreak.abilitywar.game.event.GameEndEvent;
 		"능력을 사용할 때 마다, 최대체력이 게임 설정 초깃값으로 수정된 후 증가합니다.",
 		"철괴 좌클릭시, 자신의 최대체력을 수치로 확인할 수 있습니다."
 })
-@Test
 public class Queen extends AbilityBase implements ActiveHandler, TargetHandler {
 	DecimalFormat df = new DecimalFormat(".00");
 	double defaultHealth = Settings.getDefaultMaxHealth();

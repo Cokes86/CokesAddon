@@ -36,7 +36,7 @@ import daybreak.abilitywar.utils.library.PotionEffects;
 		"자신이 사망하거나 대기시간이 끝날 경우 해당 능력은 비활성화됩니다."}
 )
 public class GodsBless extends AbilityBase implements ActiveHandler {
-	public static Config<Integer> dura = new Config<Integer>(GodsBless.class, "대기시간", 4) {
+	public static final Config<Integer> dura = new Config<Integer>(GodsBless.class, "대기시간", 4) {
 		@Override
 		public boolean Condition(Integer value) {
 			return value >= 0;
@@ -66,7 +66,7 @@ public class GodsBless extends AbilityBase implements ActiveHandler {
 			}
 			if (c < dura.getValue() * 15) {
 				bar.setTitle("신의가호 "+getPlayer().getName()+ "의 위치 "+a);
-				bar.setProgress(Math.min(Count / dura.getValue() * 15.00, 1.0D));
+				bar.setProgress(Math.min((double) getFixedCount() / dura.getValue() * 15.00, 1.0D));
 			}
 			ac.update(ChatColor.translateAlternateColorCodes('&', "&6대기 시간 &f: &e" + TimeUtil.parseTimeAsString(c)));
 			

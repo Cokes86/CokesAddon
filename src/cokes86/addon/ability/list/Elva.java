@@ -44,23 +44,12 @@ import daybreak.abilitywar.utils.library.SoundLib;
 		"※능력 아이디어: Sato207" })
 @Support(min = Version.v1_9_R1)
 public class Elva extends AbilityBase {
-
 	Vector velocity = null;
 	RGB color = RGB.of(0, 255, 102);
 	int arrow;
 	ActionbarChannel ac = newActionbarChannel();
-	double[] location;
 
-	private static Config<Integer> maxarrow = new Config<Integer>(Elva.class, "마법화살수", 200) {
-
-		@Override
-		public boolean Condition(Integer value) {
-			return value > 0;
-		}
-
-	};
-
-	private static SettingObject<Integer> speed = new Config<Integer>(Elva.class, "발사속도(틱)", 4) {
+	private static final Config<Integer> maxarrow = new Config<Integer>(Elva.class, "마법화살수", 200) {
 
 		@Override
 		public boolean Condition(Integer value) {
@@ -69,7 +58,16 @@ public class Elva extends AbilityBase {
 
 	};
 
-	private static SettingObject<Double> damage = new Config<Double>(Elva.class, "마법화살대미지", 2.0) {
+	private static final SettingObject<Integer> speed = new Config<Integer>(Elva.class, "발사속도(틱)", 4) {
+
+		@Override
+		public boolean Condition(Integer value) {
+			return value > 0;
+		}
+
+	};
+
+	private static final SettingObject<Double> damage = new Config<Double>(Elva.class, "마법화살대미지", 2.0) {
 
 		@Override
 		public boolean Condition(Double value) {
@@ -144,11 +142,8 @@ public class Elva extends AbilityBase {
 	}
 	
 	protected void onUpdate(Update update) {
-		switch(update) {
-		case RESTRICTION_CLEAR:
+		if (update == Update.RESTRICTION_CLEAR) {
 			bow.setBehavior(RestrictionBehavior.PAUSE_RESUME).start();
-			break;
-		default:
 		}
 	}
 

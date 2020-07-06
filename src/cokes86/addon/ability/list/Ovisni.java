@@ -33,7 +33,7 @@ import daybreak.google.common.base.Strings;
 		"0개는 따로 표시하지 않습니다."
 })
 public class Ovisni extends AbilityBase implements ActiveHandler {
-	public static Config<Integer> cool = new Config<Integer>(Ovisni.class, "쿨타임", 30, 1) {
+	public static final Config<Integer> cool = new Config<Integer>(Ovisni.class, "쿨타임", 30, 1) {
 		@Override
 		public boolean Condition(Integer value) {
 			return value > 0;
@@ -67,10 +67,8 @@ public class Ovisni extends AbilityBase implements ActiveHandler {
 	}
 	
 	public void onUpdate(Update update) {
-		switch(update) {
-		case RESTRICTION_CLEAR:
+		if (update == Update.RESTRICTION_CLEAR) {
 			ovisni.start();
-		default:
 		}
 	}
 
@@ -108,7 +106,7 @@ public class Ovisni extends AbilityBase implements ActiveHandler {
 		if (damager.equals(getPlayer()) && getGame().isGameStarted() && e.getEntity() instanceof Player) {
 			Player entity = (Player) e.getEntity();
 			if (getGame().isParticipating(entity)) {
-				ovisniCounter.put(entity, Math.min(ovisniCounter.getOrDefault((Player) e.getEntity(), 0)+1, max.getValue()));
+				ovisniCounter.put(entity, Math.min(max.getValue(), ovisniCounter.getOrDefault(entity, 0) + 1));
 				if (ovisniTimer.containsKey(entity)) {
 					HologramTimer timer = ovisniTimer.get(entity);
 					timer.run(0);

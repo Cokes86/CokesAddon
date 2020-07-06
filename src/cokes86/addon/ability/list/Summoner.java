@@ -54,7 +54,7 @@ public class Summoner extends AbilityBase implements ActiveHandler {
 						}
 					}
 				}
-				for (Participant p : new ArrayList<Participant>(par)) {
+				for (Participant p : new ArrayList<>(par)) {
 					Predicate<Entity> predicate = Predicates.STRICT(getPlayer());
 					if (!predicate.test(p.getPlayer())) par.remove(p);
 				}

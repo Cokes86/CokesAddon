@@ -12,7 +12,7 @@ import cokes86.addon.configuration.ConfigFile;
 import cokes86.addon.configuration.gamemode.GameConfiguration;
 import cokes86.addon.gamemodes.addon.debug.DebugWar;
 import cokes86.addon.gamemodes.addon.standard.AddonAbilityWar;
-import cokes86.addon.gamemodes.battleability.BattleAbility;
+import cokes86.addon.gamemodes.battleability.*;
 import daybreak.abilitywar.addon.Addon;
 import daybreak.abilitywar.config.Configuration.Settings;
 import daybreak.abilitywar.config.ability.AbilitySettings;
@@ -42,6 +42,7 @@ public class CokesAddon extends Addon implements Listener {
 		
 		//Battle Ability
 		GameFactory.registerMode(BattleAbility.class);
+		GameFactory.registerMode(BattleMixAbility.class);
 
 		// Load Complete
 		Bukkit.getConsoleSender().sendMessage("[AbilityAddon] 애드온이 활성화되었습니다.");
@@ -68,8 +69,8 @@ public class CokesAddon extends Addon implements Listener {
 	
 	@EventHandler()
 	public void onGameCredit(GameCreditEvent e) {
-		Bukkit.broadcastMessage("§a코크스에드온 §f적용중. 총 "+AddonAbilityFactory.getAddonAbilities().size()+"개의 능력이 추가되었습니다.");
-		Bukkit.broadcastMessage("§a코크스에드온 §f제작자 : Cokes_86  [§7디스코드 §f: Cokes_86#9329]");
+		e.addCredit("§a코크스에드온 §f적용중. 총 "+AddonAbilityFactory.getAddonAbilities().size()+"개의 능력이 추가되었습니다.");
+		e.addCredit("§a코크스에드온 §f제작자 : Cokes_86  [§7디스코드 §f: Cokes_86#9329]");
 	}
 
 	class ConfigLoader implements Runnable {

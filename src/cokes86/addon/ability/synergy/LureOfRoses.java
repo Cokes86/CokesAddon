@@ -32,7 +32,7 @@ import daybreak.abilitywar.utils.base.math.LocationUtil;
 public class LureOfRoses extends Synergy {
 	int counter=0;
 	
-	SettingObject<Integer> cool = new Config<Integer>(LureOfRoses.class, "쿨타임", 300, 1) {
+	private static final SettingObject<Integer> cool = new Config<Integer>(LureOfRoses.class, "쿨타임", 300, 1) {
 
 		@Override
 		public boolean condition(Integer arg0) {
@@ -75,7 +75,7 @@ public class LureOfRoses extends Synergy {
 		onEntityDamage(e);
 	}
 	
-	CooldownTimer cooldown = new CooldownTimer(300);
+	CooldownTimer cooldown = new CooldownTimer(cool.getValue());
 	DurationTimer duration = new DurationTimer(counter, cooldown) {
 
 		@Override

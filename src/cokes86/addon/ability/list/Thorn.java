@@ -21,7 +21,7 @@ import daybreak.abilitywar.utils.library.SoundLib;
 @AbilityManifest(name = "가시", rank = Rank.A, species = Species.OTHERS, explain = {
 		"철괴 우클릭시 $[du]동안 상대방의 화살 공격의 대미지를 0으로 하고,", "무시한 대미지의 $[damage]%만큼을 상대방에게 되돌려줍니다. $[cool]" })
 public class Thorn extends AbilityBase implements ActiveHandler {
-	private static Config<Integer> cool = new Config<Integer>(Thorn.class, "쿨타임", 20, 1) {
+	private static final Config<Integer> cool = new Config<Integer>(Thorn.class, "쿨타임", 20, 1) {
 		public boolean Condition(Integer value) {
 			return value >= 0;
 		}

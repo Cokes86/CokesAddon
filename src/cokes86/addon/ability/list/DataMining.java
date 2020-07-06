@@ -8,7 +8,6 @@ import org.bukkit.entity.Player;
 import org.bukkit.entity.Projectile;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 
-import cokes86.addon.ability.Test;
 import daybreak.abilitywar.ability.AbilityBase;
 import daybreak.abilitywar.ability.AbilityFactory.AbilityRegistration;
 import daybreak.abilitywar.ability.AbilityManifest;
@@ -36,7 +35,6 @@ import daybreak.abilitywar.utils.base.collect.Pair;
 		"철괴 좌클릭시 사실 여부 메세지를 끄고 킬 수 있습니다."
 		}
 )
-@Test
 public class DataMining extends AbilityBase implements ActiveHandler {
 	DecimalFormat df = new DecimalFormat("0.00");
 	int count = 0;
@@ -67,11 +65,8 @@ public class DataMining extends AbilityBase implements ActiveHandler {
 	}
 	
 	public void onUpdate(Update update) {
-		switch(update) {
-		case RESTRICTION_CLEAR:
-			ac.update("§c마이닝 스택§f: "+count+ " (추가대미지: "+df.format(damage)+"  피해감소: "+df.format(defense)+"%)");
-			break;
-		default:
+		if (update == Update.RESTRICTION_CLEAR) {
+			ac.update("§c마이닝 스택§f: " + count + " (추가대미지: " + df.format(damage) + "  피해감소: " + df.format(defense) + "%)");
 		}
 	}
 
@@ -87,7 +82,7 @@ public class DataMining extends AbilityBase implements ActiveHandler {
 		}
 	}
 
-	@SubscribeEvent()
+	@SubscribeEvent(priority = 100)
 	public void onEntityDamageByEntity(EntityDamageByEntityEvent e) {
 		if (e.getEntity() instanceof Player) {
 			Player entity = (Player) e.getEntity();
@@ -103,16 +98,18 @@ public class DataMining extends AbilityBase implements ActiveHandler {
 			} else
 				damager = null;
 			
-			if (damager.equals(getPlayer())) {
-				e.setDamage(e.getDamage()+damage);
-			} else if (entity.equals(getPlayer())) {
-				e.setDamage(e.getDamage()*((double)100-defense)/100);
-			}
+			if (damager != null) {
+				if (damager.equals(getPlayer())) {
+					e.setDamage(e.getDamage()+damage);
+				} else if (entity.equals(getPlayer())) {
+					e.setDamage(e.getDamage()*((double)100-defense)/100);
+				}
 
-			if (damager != null && !e.isCancelled()) {
-				if (message) getPlayer().sendMessage(
-						"§e" + damager.getName() + "§f(§c♥" + df.format(damager.getHealth()) + "§f)님이 §e" + entity.getName()
-								+ "§f(§c♥" + df.format(entity.getHealth()) + "§f)님을 공격! (대미지: " + df.format(e.getFinalDamage()) + ")");
+				if (!e.isCancelled()) {
+					if (message) getPlayer().sendMessage(
+							"§e" + damager.getName() + "§f(§c♥" + df.format(damager.getHealth()) + "§f)님이 §e" + entity.getName()
+									+ "§f(§c♥" + df.format(entity.getHealth()) + "§f)님을 공격! (대미지: " + df.format(e.getFinalDamage()) + ")");
+				}
 			}
 		}
 	}

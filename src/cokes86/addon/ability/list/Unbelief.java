@@ -42,11 +42,8 @@ public class Unbelief extends AbilityBase {
 	}
 
 	protected void onUpdate(Update update) {
-		switch (update) {
-		case RESTRICTION_CLEAR:
+		if (update == Update.RESTRICTION_CLEAR) {
 			ShieldOff.start();
-			break;
-		default:
 		}
 	}
 

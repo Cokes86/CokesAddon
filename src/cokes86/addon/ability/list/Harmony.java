@@ -3,7 +3,6 @@ package cokes86.addon.ability.list;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
 
-import cokes86.addon.ability.Test;
 import daybreak.abilitywar.ability.AbilityBase;
 import daybreak.abilitywar.ability.AbilityManifest;
 import daybreak.abilitywar.ability.AbilityManifest.Rank;
@@ -21,7 +20,6 @@ import daybreak.abilitywar.utils.library.ParticleLib;
 		"5초마다 주변 10블럭 이내의 플레이어의 수/2 만큼 체력을 회복하고,",
 		"그 주변 플레이어 역시 0.5의 체력을 증가시켜줍니다."
 })
-@Test
 public class Harmony extends AbilityBase {
 
 	public Harmony(Participant arg0) {
@@ -34,11 +32,8 @@ public class Harmony extends AbilityBase {
 	}
 	
 	protected void onUpdate(Update update) {
-		switch(update) {
-		case RESTRICTION_CLEAR:
+		if (update == Update.RESTRICTION_CLEAR) {
 			passive.start();
-			break;
-		default:
 		}
 	}
 	
@@ -53,7 +48,7 @@ public class Harmony extends AbilityBase {
 					ParticleLib.HEART.spawnParticle(l);
 				}
 			}
-			getPlayer().setHealth(Math.min(getPlayer().getHealth()+a/2, Settings.getDefaultMaxHealth()));
+			getPlayer().setHealth(Math.min(getPlayer().getHealth()+a/2.0, Settings.getDefaultMaxHealth()));
 		}
 	}.setPeriod(TimeUnit.SECONDS, 5);
 }

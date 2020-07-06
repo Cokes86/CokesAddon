@@ -9,7 +9,6 @@ import org.bukkit.event.entity.EntityDamageByBlockEvent;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
 
-import cokes86.addon.ability.Test;
 import cokes86.addon.configuration.ability.Config;
 import daybreak.abilitywar.ability.AbilityBase;
 import daybreak.abilitywar.ability.AbilityManifest;
@@ -30,7 +29,6 @@ import daybreak.abilitywar.utils.library.SoundLib;
 		"자신이 죽을 위기에 처했을 때, 이를 무시하고 체력이 1로 고정됩니다. $[cooldown]", "지속시간 $[duration]동안 상대방에게 주는 대미지가 $[damage]% 증가합니다.",
 		"지속시간동안 상대방에게 총 $[hit]번 공격에 성공했을 경우", "지속시간이 종료 시 체력이 20이 되어 부활합니다.", "그러지 못하였을 경우 사망합니다.",
 		"※능력 아이디어: Sato207" })
-@Test
 public class Reincarnation extends AbilityBase {
 	ActionbarChannel ac = newActionbarChannel();
 

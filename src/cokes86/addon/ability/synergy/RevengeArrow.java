@@ -6,7 +6,6 @@ import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.World;
 import org.bukkit.entity.Damageable;
-import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Projectile;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
@@ -67,14 +66,14 @@ public class RevengeArrow extends Synergy {
 					}
 					Vector vector = damager.getLocation().clone().subtract(getPlayer().getLocation().clone()).toVector()
 							.normalize();
-					new Bullet<>(getPlayer(), getPlayer().getLocation().clone().add(vector.multiply(.25)), vector,
+					new Bullet(getPlayer(), getPlayer().getLocation().clone().add(vector.multiply(.25)), vector,
 							RGB.of(100, 100, 100), e.getFinalDamage() / 2).start();
 				}
 			}
 		}
 	}
 
-	public class Bullet<Shooter extends Entity & ProjectileSource> extends Timer {
+	public class Bullet extends Timer {
 
 		private final Player shooter;
 		private final CustomEntity entity;
@@ -146,7 +145,7 @@ public class RevengeArrow extends Synergy {
 			public void onDeflect(Participant deflector, Vector newDirection) {
 				stop(false);
 				Player deflectedPlayer = deflector.getPlayer();
-				new Bullet<>(deflectedPlayer, lastLocation, newDirection, color, Bullet.this.getDamage()).start();
+				new Bullet(deflectedPlayer, lastLocation, newDirection, color, Bullet.this.getDamage()).start();
 			}
 
 			@Override

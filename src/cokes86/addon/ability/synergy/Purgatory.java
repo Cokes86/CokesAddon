@@ -62,7 +62,7 @@ public class Purgatory extends Synergy implements ActiveHandler {
 						participant.setAbility(getRandomAbility());
 					}
 					participant.getPlayer().sendMessage("당신의 죄는 말끔히 사라졌습니다. 새로운 능력이 부여되었습니다. §a/aw check");
-				} catch (Exception e) {
+				} catch (Exception ignored) {
 					
 				}
 			}

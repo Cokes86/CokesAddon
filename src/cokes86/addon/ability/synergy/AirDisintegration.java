@@ -77,12 +77,12 @@ public class AirDisintegration extends Synergy implements ActiveHandler {
 	};
 	
 	private final Timer skill = new Timer() {
-		Map<LivingEntity, Location> stun = new HashMap<>();
+		final Map<LivingEntity, Location> stun = new HashMap<>();
 		
 		public void onStart() {
 			passive.stop(false);
 			for (LivingEntity entity : entities) {
-				stun.put(entity, entity.getLocation().clone().add(0, chain/2 + 5, 0));
+				stun.put(entity, entity.getLocation().clone().add(0, chain/2.0 + 5, 0));
 			}
 		}
 
@@ -136,15 +136,21 @@ public class AirDisintegration extends Synergy implements ActiveHandler {
 			falling = false;
 			e.setCancelled(true);
 			SoundLib.ENTITY_EXPERIENCE_ORB_PICKUP.playSound(getPlayer());
-		} else if (entities != null && entities.contains(e.getEntity())) {
-			e.setCancelled(true);
+		} else if (e.getEntity() instanceof LivingEntity) {
+			LivingEntity entity = (LivingEntity) e.getEntity();
+			if (entities != null && entities.contains(entity)) {
+				e.setCancelled(true);
+			}
 		}
 	}
 	
 	@SubscribeEvent
 	public void onEntityDamageByEntity(EntityDamageByEntityEvent e) {
-		if (entities != null && entities.contains(e.getEntity()) && !e.getDamager().equals(getPlayer())) {
-			e.setCancelled(true);
+		if (e.getEntity() instanceof LivingEntity) {
+			LivingEntity entity = (LivingEntity) e.getEntity();
+			if (entities != null && entities.contains(entity) && !e.getDamager().equals(getPlayer())) {
+				e.setCancelled(true);
+			}
 		}
 	}
 }

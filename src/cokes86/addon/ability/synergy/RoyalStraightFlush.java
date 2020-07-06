@@ -47,9 +47,9 @@ public class RoyalStraightFlush extends Synergy implements ActiveHandler {
 				int r = range.getValue();
 				int a = new Random().nextInt(20), b = new Random().nextInt(20);
 				getPlayer().sendMessage("숫자를 뽑습니다 : "+a+", "+b);
-				getPlayer().sendMessage("총 "+(double)(a+b)/2+"대미지를 상대방에게 줍니다.");
+				getPlayer().sendMessage("총 "+(a+b)/2.0+"대미지를 상대방에게 줍니다.");
 				for (Player p : LocationUtil.getNearbyPlayers(getPlayer(), r, r)) {
-					p.damage((a+b)/2);
+					p.damage((a+b)/2.0);
 					SoundLib.ENTITY_FIREWORK_ROCKET_TWINKLE_FAR.playSound(p);
 				}
 				cooldown.start();

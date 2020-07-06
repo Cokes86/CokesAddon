@@ -20,7 +20,7 @@ import daybreak.abilitywar.utils.base.TimeUtil;
 @AbilityManifest(name = "겜블러", rank = Rank.B, species = Species.HUMAN, explain = { "매 $[du]마다 받는 대미지와 주는 대미지의 비율이",
 		"$[min]%에서 $[max]% 사이로 랜덤하게 바뀝니다.", "게임 중 단 한 번 철괴 우클릭 시 다음 차례에는 비율이 바뀌지 않고 고정됩니다.", "※능력 아이디어: RainStar_" })
 public class Gambler extends AbilityBase implements ActiveHandler {
-	public static Config<Integer> du = new Config<Integer>(Gambler.class, "주기", 15, 2) {
+	public static final Config<Integer> du = new Config<Integer>(Gambler.class, "주기", 15, 2) {
 		@Override
 		public boolean Condition(Integer value) {
 			return value > 0;
@@ -55,11 +55,8 @@ public class Gambler extends AbilityBase implements ActiveHandler {
 	}
 	
 	protected void onUpdate(Update update) {
-		switch(update) {
-		case RESTRICTION_CLEAR:
+		if (update == Update.RESTRICTION_CLEAR) {
 			passive.start();
-			break;
-		default:
 		}
 	}
 

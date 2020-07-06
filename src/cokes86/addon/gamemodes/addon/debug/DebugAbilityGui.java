@@ -24,7 +24,6 @@ import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.plugin.Plugin;
 
 import cokes86.addon.ability.AddonAbilityFactory;
-import cokes86.addon.ability.Test;
 import daybreak.abilitywar.ability.AbilityBase;
 import daybreak.abilitywar.ability.AbilityFactory;
 import daybreak.abilitywar.ability.AbilityFactory.AbilityRegistration;
@@ -108,8 +107,6 @@ public class DebugAbilityGui implements Listener {
 					joiner.add(ChatColor.GREEN + "액티브");
 				if (registration.hasFlag(Flag.TARGET_SKILL))
 					joiner.add(ChatColor.GOLD + "타겟팅");
-				if (registration.getAbilityClass().isAnnotationPresent(Test.class))
-					joiner.add(ChatColor.RED + "테스트");
 				if (registration.getAbilityClass().getSuperclass().equals(Synergy.class)) {
 					joiner.add(ChatColor.YELLOW + "시너지");
 					itemStack.setType(Material.DIAMOND_BLOCK);
@@ -118,20 +115,18 @@ public class DebugAbilityGui implements Listener {
 				ItemMeta itemMeta = itemStack.getItemMeta();
 				itemMeta.setDisplayName(ChatColor.translateAlternateColorCodes('&', "&b" + manifest.name()));
 
-				List<String> lore = Messager.asList(new String[] {
-						ChatColor.translateAlternateColorCodes('&', "&f" + manifest.rank().getRankName()),
+				List<String> lore = Messager.asList(ChatColor.translateAlternateColorCodes('&', "&f" + manifest.rank().getRankName()),
 						ChatColor.translateAlternateColorCodes('&', "&f" + manifest.species().getSpeciesName()),
-						joiner.toString(), "" });
-				Function<MatchResult, String> valueProvider = new Function<MatchResult, String>() {
-					public String apply(MatchResult matchResult) {
-						Field field = (Field) registration.getFields().get(matchResult.group(1));
-						if (field != null && Modifier.isStatic(field.getModifiers()))
-							try {
-								return String.valueOf(((Field) ReflectionUtil.setAccessible(field)).get(null));
-							} catch (IllegalAccessException illegalAccessException) {
-							}
-						return "?";
-					}
+						joiner.toString(), "");
+				Function<MatchResult, String> valueProvider = matchResult -> {
+					assert matchResult != null;
+					Field field = registration.getFields().get(matchResult.group(1));
+					if (field != null && Modifier.isStatic(field.getModifiers()))
+						try {
+							return String.valueOf(ReflectionUtil.setAccessible(field).get(null));
+						} catch (IllegalAccessException ignored) {
+						}
+					return "?";
 				};
 				for (String explain : manifest.explain())
 					lore.add(ChatColor.WHITE.toString().concat(ROUND_BRACKET

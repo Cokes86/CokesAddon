@@ -19,7 +19,7 @@ import daybreak.abilitywar.utils.library.SoundLib;
 		"$[duration] 기절합니다. $[cooldown]" })
 public class Wily extends AbilityBase implements ActiveHandler {
 
-	private static Config<Integer> range = new Config<Integer>(Wily.class, "범위", 5) {
+	private static final Config<Integer> range = new Config<Integer>(Wily.class, "범위", 5) {
 		@Override
 		public boolean Condition(Integer value) {
 			return value > 0;

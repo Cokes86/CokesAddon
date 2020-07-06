@@ -119,10 +119,8 @@ public class VigilanteLeader extends AbilityBase implements ActiveHandler {
 	}
 
 	public void onUpdate(Update update) {
-		switch (update) {
-		case RESTRICTION_CLEAR:
+		if (update == Update.RESTRICTION_CLEAR) {
 			passive.start();
-		default:
 		}
 	}
 

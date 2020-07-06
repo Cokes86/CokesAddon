@@ -33,7 +33,7 @@ import daybreak.abilitywar.utils.library.SoundLib;
 )
 public class Pocker extends AbilityBase implements ActiveHandler {
 	int[] num = new int[3];
-	private static Config<Integer> cool = new Config<Integer>(Pocker.class, "쿨타임", 30, 1) {
+	private static final Config<Integer> cool = new Config<Integer>(Pocker.class, "쿨타임", 30, 1) {
 		@Override
 		public boolean Condition(Integer value) {
 			return value >= 0;
@@ -58,6 +58,13 @@ public class Pocker extends AbilityBase implements ActiveHandler {
 	};
 
 	@Override
+	public void onUpdate(Update update) {
+	 	if (update == Update.RESTRICTION_CLEAR) {
+	 		p.start();
+		}
+	}
+
+	@Override
 	public boolean ActiveSkill(Material materialType, ClickType ct) {
 		if (materialType.equals(Material.IRON_INGOT) && ct.equals(ClickType.RIGHT_CLICK)) {
 			if (!c.isCooldown()) {
@@ -69,26 +76,31 @@ public class Pocker extends AbilityBase implements ActiveHandler {
 				String result = getPockerName(num);
 				int number = getPockerGet(num);
 				getPlayer().sendMessage("숫자를 뽑습니다 : "+num[0]+ " "+num[1]+ " "+num[2]);
-				if (result.equals("Top")) {
-					String str = "";
-					if (num[2] == 9 || num[2] == 10) {
-						str = str+ "신속 버프를 "+number+"초만큼 부여합니다.";
-						getPlayer().addPotionEffect(new PotionEffect(PotionEffectType.SPEED, number*20, 0));
-					}
-					getPlayer().sendMessage("이런! 탑입니다! "+str);
-				} else if (result.equals("Pair")) {
-					getPlayer().sendMessage("좋습니다! §a페어§f입니다! 재생3 버프를 "+(number*2)+"초간 받습니다.");
-					getPlayer().addPotionEffect(new PotionEffect(PotionEffectType.REGENERATION, number*2*20, 2));
-				} else if (result.equals("Straight")) {
-					getPlayer().sendMessage("와우! §b스트레이트§f입니다! 다음 공격은 추가적으로 "+(number)+"의 대미지를 줍니다.");
-					additional = number;
-				} else if (result.equals("Triple")) {
-					getPlayer().sendMessage("완벽합니다! §e트리플§f입니다! 자신을 제외한 모든 플레이어에게 "+(number*1.5)+"만큼의 대미지를 줍니다.");
-					for (Participant p : getGame().getParticipants()) {
-						if (p.equals(getParticipant())) continue;
-						DamagePlusUtil.penetratingDamage(number*1.5, p.getPlayer(), getPlayer());
-					}
-					SoundLib.UI_TOAST_CHALLENGE_COMPLETE.broadcastSound();
+				switch (result) {
+					case "Top":
+						String str = "";
+						if (num[2] == 9 || num[2] == 10) {
+							str = str + "신속 버프를 " + number + "초만큼 부여합니다.";
+							getPlayer().addPotionEffect(new PotionEffect(PotionEffectType.SPEED, number * 20, 0));
+						}
+						getPlayer().sendMessage("이런! 탑입니다! " + str);
+						break;
+					case "Pair":
+						getPlayer().sendMessage("좋습니다! §a페어§f입니다! 재생3 버프를 " + (number * 2) + "초간 받습니다.");
+						getPlayer().addPotionEffect(new PotionEffect(PotionEffectType.REGENERATION, number * 2 * 20, 2));
+						break;
+					case "Straight":
+						getPlayer().sendMessage("와우! §b스트레이트§f입니다! 다음 공격은 추가적으로 " + (number) + "의 대미지를 줍니다.");
+						additional = number;
+						break;
+					case "Triple":
+						getPlayer().sendMessage("완벽합니다! §e트리플§f입니다! 자신을 제외한 모든 플레이어에게 " + (number * 1.5) + "만큼의 대미지를 줍니다.");
+						for (Participant p : getGame().getParticipants()) {
+							if (p.equals(getParticipant())) continue;
+							DamagePlusUtil.penetratingDamage(number * 1.5, p.getPlayer(), getPlayer());
+						}
+						SoundLib.UI_TOAST_CHALLENGE_COMPLETE.broadcastSound();
+						break;
 				}
 				c.start();
 				return true;

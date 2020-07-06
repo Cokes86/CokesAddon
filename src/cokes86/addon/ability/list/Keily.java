@@ -52,6 +52,12 @@ public class Keily extends AbilityBase implements ActiveHandler {
 
 	ActionbarChannel channel = newActionbarChannel();
 	int switchCounter = 0;
+
+	public void onUpdate(Update update) {
+		if (update == Update.RESTRICTION_CLEAR) {
+			stackAdder.start();
+		}
+	}
 	
 	DurationTimer flying = new DurationTimer(2) {
 

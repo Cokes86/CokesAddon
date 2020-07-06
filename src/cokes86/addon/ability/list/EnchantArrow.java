@@ -44,10 +44,8 @@ public class EnchantArrow extends AbilityBase {
 	}
 	
 	public void onUpdate(Update update) {
-		switch(update) {
-		case RESTRICTION_CLEAR:
-			ac.update("인챈트 스택: "+enchantStack);
-		default:
+		if (update == Update.RESTRICTION_CLEAR) {
+			ac.update("인챈트 스택: " + enchantStack);
 		}
 	}
 	

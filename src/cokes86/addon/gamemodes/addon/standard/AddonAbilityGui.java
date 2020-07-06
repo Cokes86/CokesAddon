@@ -23,7 +23,6 @@ import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.plugin.Plugin;
 
 import cokes86.addon.ability.AddonAbilityFactory;
-import cokes86.addon.ability.Test;
 import daybreak.abilitywar.ability.AbilityBase;
 import daybreak.abilitywar.ability.AbilityFactory;
 import daybreak.abilitywar.ability.AbilityFactory.AbilityRegistration;
@@ -89,7 +88,6 @@ public class AddonAbilityGui implements Listener {
 			StringJoiner joiner = new StringJoiner(ChatColor.WHITE + ", ");
 			if (registration.hasFlag(Flag.ACTIVE_SKILL)) joiner.add(ChatColor.GREEN + "액티브");
 			if (registration.hasFlag(Flag.TARGET_SKILL)) joiner.add(ChatColor.GOLD + "타겟팅");
-			if (registration.getAbilityClass().isAnnotationPresent(Test.class)) joiner.add(ChatColor.RED + "테스트");
 			
 			List<String> lore = Messager.asList(
 					ChatColor.translateAlternateColorCodes('&', "&f등급: " + manifest.rank().getRankName()),
@@ -97,20 +95,17 @@ public class AddonAbilityGui implements Listener {
 					joiner.toString(),
 					"");
 			
-			Function<MatchResult, String> valueProvider = new Function<MatchResult, String>() {
-				@Override
-				public String apply(MatchResult matchResult) {
-					Field field = registration.getFields().get(matchResult.group(1));
-					if (field != null) {
-						if (Modifier.isStatic(field.getModifiers())) {
-							try {
-								return String.valueOf(ReflectionUtil.setAccessible(field).get(null));
-							} catch (IllegalAccessException ignored) {
-							}
+			Function<MatchResult, String> valueProvider = matchResult -> {
+				Field field = registration.getFields().get(matchResult.group(1));
+				if (field != null) {
+					if (Modifier.isStatic(field.getModifiers())) {
+						try {
+							return String.valueOf(ReflectionUtil.setAccessible(field).get(null));
+						} catch (IllegalAccessException ignored) {
 						}
 					}
-					return "?";
 				}
+				return "?";
 			};
 			
 			for (String explain : manifest.explain()) {

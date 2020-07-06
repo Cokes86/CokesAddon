@@ -31,7 +31,7 @@ import daybreak.abilitywar.utils.library.SoundLib;
 		"※제작자 자캐 기반 능력자"}
 )
 public class Mir extends AbilityBase implements TargetHandler {
-	public static Config<Integer> cool = new Config<Integer>(Mir.class,"쿨타임", 20 ,1) {
+	public static final Config<Integer> cool = new Config<Integer>(Mir.class,"쿨타임", 20 ,1) {
 		@Override
 		public boolean Condition(Integer value) {
 			return value >= 0;
@@ -49,7 +49,7 @@ public class Mir extends AbilityBase implements TargetHandler {
 			return value > 0;
 		}
 	};
-	public static Config<Double> ac2 = new Config<Double>(Mir.class, "고정대미지", 3.0) {
+	public static final Config<Double> ac2 = new Config<Double>(Mir.class, "고정대미지", 3.0) {
 		@Override
 		public boolean Condition(Double value) {
 			return value > 0.0;

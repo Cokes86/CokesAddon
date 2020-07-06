@@ -41,10 +41,8 @@ public class Revenge extends AbilityBase {
 	}
 	
 	public void onUpdate(Update update) {
-		switch(update) {
-		case RESTRICTION_CLEAR:
-			ac.update(ChatColor.BLUE+ "반사고정대미지 : "+df.format(finalDamage * per.getValue() / (double)100));
-		default:
+		if (update == Update.RESTRICTION_CLEAR) {
+			ac.update(ChatColor.BLUE + "반사고정대미지 : " + df.format(finalDamage * per.getValue() / (double) 100));
 		}
 	}
 	

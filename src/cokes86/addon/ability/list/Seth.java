@@ -88,11 +88,8 @@ public class Seth extends AbilityBase implements ActiveHandler {
 	}
 	
 	protected void onUpdate(Update update) {
-		switch(update) {
-		case RESTRICTION_CLEAR:
+		if (update == Update.RESTRICTION_CLEAR) {
 			Passive.start();
-			break;
-		default:
 		}
 	}
 

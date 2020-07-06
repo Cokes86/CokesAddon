@@ -70,10 +70,8 @@ public class Aris extends AbilityBase implements ActiveHandler {
 	};
 
 	public void onUpdate(Update update) {
-		switch (update) {
-		case RESTRICTION_CLEAR:
+		if (update == Update.RESTRICTION_CLEAR) {
 			passive.start();
-		default:
 		}
 	}
 
@@ -148,7 +146,7 @@ public class Aris extends AbilityBase implements ActiveHandler {
 			ac.update(null);
 			for (Player p : LocationUtil.getNearbyPlayers(getPlayer(), range.getValue(),
 					range.getValue())) {
-				p.teleport(p.getLocation().clone().add(0, chain/2 + 4, 0));
+				p.teleport(p.getLocation().clone().add(0, chain/2.0 + 4, 0));
 				holding.add(p);
 				channel.put(p, getGame().getParticipant(p).actionbar().newChannel());
 			}

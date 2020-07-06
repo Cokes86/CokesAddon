@@ -25,7 +25,7 @@ import daybreak.abilitywar.utils.base.concurrent.TimeUnit;
 		"※능력 아이디어: RainStar_"}
 )
 public class Perseverance extends AbilityBase {
-	public static Config<Integer> dura = new Config<Integer>(Perseverance.class, "그로기시간", 3 ,2) {
+	public static final Config<Integer> dura = new Config<Integer>(Perseverance.class, "그로기시간", 3 ,2) {
 		@Override
 		public boolean Condition(Integer value) {
 			return value >=0;
@@ -43,7 +43,7 @@ public class Perseverance extends AbilityBase {
 			return value > 0;
 		}
 	};
-	public static Config<Double> period = new Config<Double>(Perseverance.class, "주기", 3.5) {
+	public static final Config<Double> period = new Config<Double>(Perseverance.class, "주기", 3.5) {
 		@Override
 		public boolean Condition(Double value) {
 			return value > 0;
@@ -51,10 +51,8 @@ public class Perseverance extends AbilityBase {
 	};
 	
 	public void onUpdate(Update update) {
-		switch(update) {
-		case RESTRICTION_CLEAR:
+		if (update == Update.RESTRICTION_CLEAR) {
 			passive_1.start();
-		default:
 		}
 	}
 	
