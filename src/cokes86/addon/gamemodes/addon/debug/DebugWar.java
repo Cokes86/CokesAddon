@@ -4,6 +4,7 @@ import static daybreak.abilitywar.game.GameManager.getGame;
 
 import java.util.Arrays;
 
+import daybreak.abilitywar.game.manager.object.WRECK;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
@@ -21,7 +22,6 @@ import daybreak.abilitywar.game.GameManifest;
 import daybreak.abilitywar.game.list.mix.Mix;
 import daybreak.abilitywar.game.list.mix.synergy.Synergy;
 import daybreak.abilitywar.game.list.mix.synergy.SynergyFactory;
-import daybreak.abilitywar.game.manager.object.CommandHandler;
 import daybreak.abilitywar.utils.base.Messager;
 import daybreak.abilitywar.utils.base.collect.Pair;
 import daybreak.abilitywar.utils.base.language.korean.KoreanUtil;
@@ -29,7 +29,8 @@ import daybreak.abilitywar.utils.base.language.korean.KoreanUtil.Josa;
 import daybreak.abilitywar.utils.base.minecraft.PlayerCollector;
 
 @GameManifest(name = "코크스애드온 디버그", description = { "§r어빌리티 테스트용." })
-public class DebugWar extends AbstractGame implements Listener {
+public class DebugWar extends AbstractGame implements Listener, WRECK.Handler {
+	private final WRECK wreck = newWRECK();
 
 	public DebugWar() {
 		super(PlayerCollector.EVERY_PLAYER_EXCLUDING_SPECTATORS());
@@ -42,18 +43,18 @@ public class DebugWar extends AbstractGame implements Listener {
 
 	@Override
 	protected void run(int seconds) {
-		switch (seconds) {
-		case 1:
+		if (seconds == 1) {
 			startGame();
 			Bukkit.broadcastMessage("코크스애드온 디버그 모드 시작");
 			setRestricted(false);
 		}
 	}
 
-	public void executeCommand(CommandHandler.CommandType type, CommandSender sender, String[] args, Plugin plugin) {
+	@Override
+	public void executeCommand(CommandType commandType, CommandSender sender, String command, String[] args, Plugin plugin) {
 		Player targetPlayer;
 		int count;
-		switch (type) {
+		switch (commandType) {
 		case ABI:
 			if (args.length == 1) {
 				if (sender instanceof Player) {
@@ -61,7 +62,6 @@ public class DebugWar extends AbstractGame implements Listener {
 					if (args[0].equalsIgnoreCase("@a")) {
 						DebugAbilityGui g = new DebugAbilityGui(p, plugin);
 						g.openGUI(1);
-						break;
 					} else {
 						targetPlayer = Bukkit.getPlayerExact(args[0]);
 						if (targetPlayer != null) {
@@ -70,16 +70,14 @@ public class DebugWar extends AbstractGame implements Listener {
 								AbstractGame.Participant target = game.getParticipant(targetPlayer);
 								DebugAbilityGui gui = new DebugAbilityGui(p, target, plugin);
 								gui.openGUI(1);
-								break;
 							} else {
 								p.sendMessage("해당 플레이어는 게임에 참가하지 않았거나 탈락한 플레이어입니다.");
-								break;
 							}
 						} else {
 							p.sendMessage("해당 플레이어는 존재하지 않는 플레이어입니다.");
-							break;
 						}
 					}
+					break;
 				} else Messager.sendErrorMessage(sender, "콘솔에서 사용할 수 없는 명령어입니다.");
 			} else {
 				String name = String.join(" ", Arrays.copyOfRange(args, 1, args.length));
@@ -129,9 +127,9 @@ public class DebugWar extends AbstractGame implements Listener {
 							Pair<AbilityFactory.AbilityRegistration, AbilityFactory.AbilityRegistration> base = SynergyFactory
 									.getSynergyBase(synergy.getRegistration());
 							String name = "&e" + synergy.getName() + " &f(&c"
-									+ ((AbilityFactory.AbilityRegistration) base.getLeft()).getManifest().name()
+									+ base.getLeft().getManifest().name()
 									+ " &f+ &c"
-									+ ((AbilityFactory.AbilityRegistration) base.getRight()).getManifest().name()
+									+ base.getRight().getManifest().name()
 									+ "&f)";
 							sender.sendMessage(ChatColor.translateAlternateColorCodes('&',
 									"&e" + count + ". &f" + participant.getPlayer().getName() + " &7: " + name));
@@ -159,5 +157,15 @@ public class DebugWar extends AbstractGame implements Listener {
 					ChatColor.translateAlternateColorCodes('&', "&f" + sender.getName() + "&a님이 플레이어들의 능력을 확인하였습니다."));
 			break;
 		}
+	}
+
+	@Override
+	public WRECK getWRECK() {
+		return wreck;
+	}
+
+	@Override
+	public boolean isWRECKEnabled() {
+		return wreck.isEnabled();
 	}
 }

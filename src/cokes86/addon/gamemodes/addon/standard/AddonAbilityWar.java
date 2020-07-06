@@ -19,7 +19,6 @@ import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
 
 import cokes86.addon.ability.AddonAbilityFactory;
-import cokes86.addon.gamemodes.addon.debug.DebugAbilityGui;
 import daybreak.abilitywar.ability.AbilityBase;
 import daybreak.abilitywar.config.Configuration;
 import daybreak.abilitywar.config.Configuration.Settings.DeveloperSettings;
@@ -29,7 +28,6 @@ import daybreak.abilitywar.game.GameManager;
 import daybreak.abilitywar.game.GameManifest;
 import daybreak.abilitywar.game.event.GameCreditEvent;
 import daybreak.abilitywar.game.manager.object.AbilitySelect;
-import daybreak.abilitywar.game.manager.object.CommandHandler;
 import daybreak.abilitywar.game.manager.object.DefaultKitHandler;
 import daybreak.abilitywar.game.script.manager.ScriptManager;
 import daybreak.abilitywar.utils.base.Messager;
@@ -41,7 +39,7 @@ import daybreak.abilitywar.utils.library.SoundLib;
 
 @GameManifest(name = "애드온 능력자 전쟁", description = { "§f기존의 능력자 전쟁과 같은데 능력이 코크스애드온의 능력들 뿐이다?!" })
 public class AddonAbilityWar extends Game implements DefaultKitHandler {
-	private boolean invincible;
+	private final boolean invincible;
 
 	public AddonAbilityWar() {
 		super(PlayerCollector.EVERY_PLAYER_EXCLUDING_SPECTATORS());
@@ -91,11 +89,10 @@ public class AddonAbilityWar extends Game implements DefaultKitHandler {
 			break;
 		case 5:
 			if (Configuration.Settings.getDrawAbility()) {
-				for (String line : Messager.asList(new String[] {
-						ChatColor.translateAlternateColorCodes('&',
-								"&f애드온에는 총 &b" + AddonAbilityFactory.getAddonAbilities().size()
-										+ "개&f의 능력이 등록되어 있습니다."),
-						ChatColor.translateAlternateColorCodes('&', "&7능력이 무작위로 배정됩니다...") })) {
+				for (String line : Messager.asList(ChatColor.translateAlternateColorCodes('&',
+						"&f애드온에는 총 &b" + AddonAbilityFactory.getAddonAbilities().size()
+								+ "개&f의 능력이 등록되어 있습니다."),
+						ChatColor.translateAlternateColorCodes('&', "&7능력이 무작위로 배정됩니다..."))) {
 					Bukkit.broadcastMessage(line);
 				}
 			}
@@ -247,36 +244,34 @@ public class AddonAbilityWar extends Game implements DefaultKitHandler {
 		};
 	}
 
-	public void executeCommand(CommandHandler.CommandType type, CommandSender sender, String[] args, Plugin plugin) {
+	@Override
+	public void executeCommand(CommandType commandType, CommandSender sender, String command, String[] args, Plugin plugin) {
 		Player targetPlayer;
 		int count;
-		switch (type) {
+		switch (commandType) {
 		case ABI:
 			if (args.length == 1) {
 				if (sender instanceof Player) {
 					Player p = (Player) sender;
 					if (args[0].equalsIgnoreCase("@a")) {
-						DebugAbilityGui g = new DebugAbilityGui(p, plugin);
+						AddonAbilityGui g = new AddonAbilityGui(p, plugin);
 						g.openGUI(1);
-						break;
 					} else {
 						targetPlayer = Bukkit.getPlayerExact(args[0]);
 						if (targetPlayer != null) {
 							AbstractGame game = getGame();
 							if (game.isParticipating(targetPlayer)) {
 								AbstractGame.Participant target = game.getParticipant(targetPlayer);
-								DebugAbilityGui gui = new DebugAbilityGui(p, target, plugin);
+								AddonAbilityGui gui = new AddonAbilityGui(p, target, plugin);
 								gui.openGUI(1);
-								break;
 							} else {
 								p.sendMessage("해당 플레이어는 게임에 참가하지 않았거나 탈락한 플레이어입니다.");
-								break;
 							}
 						} else {
 							p.sendMessage("해당 플레이어는 존재하지 않는 플레이어입니다.");
-							break;
 						}
 					}
+					break;
 				} else Messager.sendErrorMessage(sender, "콘솔에서 사용할 수 없는 명령어입니다.");
 			} else {
 				String name = String.join(" ", Arrays.copyOfRange(args, 1, args.length));

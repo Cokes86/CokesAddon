@@ -41,10 +41,14 @@ public class Keily extends AbilityBase implements ActiveHandler {
 	private final Timer stackAdder = new Timer() {
 		@Override
 		protected void run(int count) {
-			if (switchCounter < 3) {
-				switchCounter++;
-				channel.update(ChatColor.DARK_GREEN.toString().concat(Strings.repeat("●", switchCounter)
-						.concat(Strings.repeat("○", Math.max(3 - switchCounter, 0)))));
+			if (!c.isRunning()) {
+				if (switchCounter < 3) {
+					switchCounter++;
+					channel.update(ChatColor.DARK_GREEN.toString().concat(Strings.repeat("●", switchCounter)
+							.concat(Strings.repeat("○", Math.max(3 - switchCounter, 0)))));
+				}
+			} else {
+				channel.update(null);
 			}
 		}
 	}.setPeriod(TimeUnit.SECONDS, WRECK.isEnabled(getGame()) ? dura.getValue() / 2 : dura.getValue());

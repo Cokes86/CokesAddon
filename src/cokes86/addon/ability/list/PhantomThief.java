@@ -187,12 +187,12 @@ public class PhantomThief extends AbilityBase implements ActiveHandler, TargetHa
 						new PhantomThiefTimer(targ, first, continued);
 						target.sendMessage("팬텀시프가 당신의 능력을 훔쳤습니다. 30초뒤 자신의 능력 중 하나가 팬텀시프로 바뀝니다.");
 					} else {
-						targ.setAbility(NullAbility.class);
-						getPlayer().sendMessage("능력을 훔쳤습니다. => " + targ.getAbility().getName());
+                        getParticipant().removeAbility();
+                        getParticipant().setAbility(targ.getAbility().getClass());
+                        getPlayer().sendMessage("능력을 훔쳤습니다. => " + targ.getAbility().getName());
 
+						targ.setAbility(NullAbility.class);
 						target.sendMessage("팬텀시프가 당신의 능력을 훔쳤습니다. 30초뒤 자신의 능력이 팬텀시프로 바뀝니다.");
-						getParticipant().removeAbility();
-						getParticipant().setAbility(targ.getAbility().getClass());
 						new PhantomThiefTimer(targ);
 					}
 				} else {
@@ -255,8 +255,12 @@ public class PhantomThief extends AbilityBase implements ActiveHandler, TargetHa
 				after.setY(LocationUtil.getFloorYAt(after.getWorld(), location.getY(), after.getBlockX(), after.getBlockZ()) + 0.1);
 				getPlayer().teleport(after);
 
+				getPlayer().sendMessage("§e"+target.getName()+"§f님이 목표입니다. 해당 플레이어에게 다가가 철괴로 우클릭하세요.");
+
 				return phantom_1.start();
-			}
+			} else {
+                getPlayer().sendMessage("조건에 맞는 가장 먼 플레이어가 존재하지 않습니다.");
+            }
 		}
 		return false;
 	}
@@ -322,7 +326,7 @@ public class PhantomThief extends AbilityBase implements ActiveHandler, TargetHa
 		}
 	}
 	
-	@AbilityManifest(name="NULL", rank = Rank.C, species = Species.OTHERS, explain = {"이런! 능력이 사라지셨네!"})
+	@AbilityManifest(name="사라짐", rank = Rank.C, species = Species.OTHERS, explain = {"이런! 능력이 사라지셨네!"})
 	public static class NullAbility extends AbilityBase {
 
 		public NullAbility(Participant arg0) {

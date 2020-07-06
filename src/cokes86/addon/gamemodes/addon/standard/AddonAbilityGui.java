@@ -67,7 +67,7 @@ public class AddonAbilityGui implements Listener {
 		}
 	}
 
-	public void openAbilityGUI(int page) {
+	public void openGUI(int page) {
 		int MaxPage = (this.values.size() - 1) / 36 + 1;
 		if (MaxPage < page)
 			page = 1;
@@ -88,6 +88,7 @@ public class AddonAbilityGui implements Listener {
 			StringJoiner joiner = new StringJoiner(ChatColor.WHITE + ", ");
 			if (registration.hasFlag(Flag.ACTIVE_SKILL)) joiner.add(ChatColor.GREEN + "액티브");
 			if (registration.hasFlag(Flag.TARGET_SKILL)) joiner.add(ChatColor.GOLD + "타겟팅");
+			if (registration.hasFlag(Flag.BETA)) joiner.add(ChatColor.DARK_AQUA + "타겟팅");
 			
 			List<String> lore = Messager.asList(
 					ChatColor.translateAlternateColorCodes('&', "&f등급: " + manifest.rank().getRankName()),
@@ -162,10 +163,10 @@ public class AddonAbilityGui implements Listener {
 					&& e.getCurrentItem().getItemMeta().hasDisplayName()) {
 				if (e.getCurrentItem().getItemMeta().getDisplayName()
 						.equals(ChatColor.translateAlternateColorCodes('&', "&b이전 페이지"))) {
-					openAbilityGUI(this.PlayerPage - 1);
+					openGUI(this.PlayerPage - 1);
 				} else if (e.getCurrentItem().getItemMeta().getDisplayName()
 						.equals(ChatColor.translateAlternateColorCodes('&', "&b다음 페이지"))) {
-					openAbilityGUI(this.PlayerPage + 1);
+					openGUI(this.PlayerPage + 1);
 				}
 			}
 			if (e.getCurrentItem() != null && e.getCurrentItem().getType().equals(MaterialX.GREEN_WOOL.parseMaterial())

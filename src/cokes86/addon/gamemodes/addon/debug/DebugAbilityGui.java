@@ -107,6 +107,8 @@ public class DebugAbilityGui implements Listener {
 					joiner.add(ChatColor.GREEN + "액티브");
 				if (registration.hasFlag(Flag.TARGET_SKILL))
 					joiner.add(ChatColor.GOLD + "타겟팅");
+				if (registration.hasFlag(Flag.BETA))
+					joiner.add(ChatColor.DARK_AQUA + "타겟팅");
 				if (registration.getAbilityClass().getSuperclass().equals(Synergy.class)) {
 					joiner.add(ChatColor.YELLOW + "시너지");
 					itemStack.setType(Material.DIAMOND_BLOCK);

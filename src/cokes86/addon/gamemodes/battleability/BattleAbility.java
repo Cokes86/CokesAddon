@@ -170,7 +170,7 @@ public class BattleAbility extends Game implements DefaultKitHandler, Winnable, 
 			WorldBorder wb = world.getWorldBorder();
 			
 			if (isRestricted()) {
-				getBorder().Start(false);
+				getBorder().start(false);
 			} else {
 				Bukkit.broadcastMessage(ChatColor.translateAlternateColorCodes('&', "&4초반 무적&c이 적용되지 않습니다."));
 				setRestricted(false);

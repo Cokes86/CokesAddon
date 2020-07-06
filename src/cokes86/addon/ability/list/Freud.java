@@ -109,8 +109,9 @@ public class Freud extends AbilityBase implements ActiveHandler {
 
 		private final Shooter shooter;
 		private final CustomEntity entity;
-		private final Vector velocity;
+		private Vector velocity;
 		private final Magic magic;
+		private final Entity target;
 
 		private Bullet(Shooter shooter, Location startLocation, Entity target, Magic magic) {
 			super(40);
@@ -120,15 +121,17 @@ public class Freud extends AbilityBase implements ActiveHandler {
 			Vector first = target.getLocation().clone().subtract(getPlayer().getLocation().clone()).toVector();
 			
 			this.entity = new ArrowEntity(startLocation.getWorld(), startLocation.getX()+first.getX()/0.25, startLocation.getY()+first.getY()/0.25, startLocation.getZ()+first.getZ()/0.25).setBoundingBox(-.75, -.75, -.75, .75, .75, .75);
-			this.velocity = target.getLocation().clone().subtract(getPlayer().getLocation().clone()).toVector().normalize().multiply(0.75);
+			this.velocity = target.getLocation().clone().subtract(getPlayer().getLocation().clone()).toVector().normalize().multiply(0.65);
 			this.magic = magic;
 			this.lastLocation = startLocation;
+			this.target = target;
 		}
 
 		private Location lastLocation;
 
 		@Override
 		protected void run(int i) {
+			this.velocity = target.getLocation().clone().subtract(getPlayer().getLocation().clone()).toVector().normalize().multiply(0.65);
 			Location newLocation = lastLocation.clone().add(velocity);
 			for (Iterator<Location> iterator = Line.iteratorBetween(lastLocation, newLocation, 40); iterator.hasNext(); ) {
 				Location location = iterator.next();
