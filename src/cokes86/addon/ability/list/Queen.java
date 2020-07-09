@@ -26,8 +26,8 @@ import daybreak.abilitywar.game.event.GameEndEvent;
 public class Queen extends AbilityBase implements ActiveHandler, TargetHandler {
 	DecimalFormat df = new DecimalFormat(".00");
 	double defaultHealth = Settings.getDefaultMaxHealth();
-	
-	public static Config<Integer> cool = new Config<Integer>(Queen.class, "쿨타임", 120, 1) {
+
+	private static final Config<Integer> cool = new Config<Integer>(Queen.class, "쿨타임", 120, 1) {
 
 		@Override
 		public boolean Condition(Integer value) {

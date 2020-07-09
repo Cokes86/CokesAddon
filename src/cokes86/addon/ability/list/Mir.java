@@ -31,32 +31,28 @@ import daybreak.abilitywar.utils.library.SoundLib;
 		"※제작자 자캐 기반 능력자"}
 )
 public class Mir extends AbilityBase implements TargetHandler {
-	public static final Config<Integer> cool = new Config<Integer>(Mir.class,"쿨타임", 20 ,1) {
+	private static final Config<Integer> cool = new Config<Integer>(Mir.class,"쿨타임", 20 ,1) {
 		@Override
 		public boolean Condition(Integer value) {
 			return value >= 0;
 		}
-	},
-	ac1 = new Config<Integer>(Mir.class,"용암생성시간",1,2) {
+	}, ac1 = new Config<Integer>(Mir.class,"용암생성시간",1,2) {
 		@Override
 		public boolean Condition(Integer value) {
 			return value > 0;
 		}
-	},
-	ac3 = new Config<Integer>(Mir.class,"디버프시간", 7,2) {
+	}, ac3 = new Config<Integer>(Mir.class,"디버프시간", 7,2) {
 		@Override
 		public boolean Condition(Integer value) {
 			return value > 0;
 		}
 	};
-	public static final Config<Double> ac2 = new Config<Double>(Mir.class, "고정대미지", 3.0) {
+	private static final Config<Double> ac2 = new Config<Double>(Mir.class, "고정대미지", 3.0) {
 		@Override
 		public boolean Condition(Double value) {
 			return value > 0.0;
 		}
 	};
-
-	Player target = null;
 
 	CooldownTimer c = new CooldownTimer(cool.getValue());
 
@@ -71,8 +67,7 @@ public class Mir extends AbilityBase implements TargetHandler {
 			int active = r.nextInt(3);
 			Player target = (Player) arg1;
 			if (active == 0) {
-				this.target = target;
-				Lava_Attack.start();
+				new LavaTimer(target).start();
 			} else if (active == 1) {
 				DamagePlusUtil.penetratingDamage(ac2.getValue(), target, getPlayer());
 			} else if (active == 2) {
@@ -83,9 +78,15 @@ public class Mir extends AbilityBase implements TargetHandler {
 		}
 	}
 
-	Timer Lava_Attack = new Timer(ac1.getValue()) {
-		Location l;
-		Material m;
+	class LavaTimer extends Timer {
+		private final Location l;
+		private final Material m;
+
+		public LavaTimer(Player target) {
+			super(ac1.getValue());
+			l = target.getLocation();
+			m = l.getBlock().getType();
+		}
 
 		@Override
 		protected void onEnd() {
@@ -98,9 +99,7 @@ public class Mir extends AbilityBase implements TargetHandler {
 
 		@Override
 		protected void onStart() {
-			l = target.getLocation();
-			m = l.getBlock().getType();
 			l.getBlock().setType(Material.LAVA);
 		}
-	};
+	}
 }

@@ -2,6 +2,7 @@ package cokes86.addon.ability.synergy;
 
 import java.util.Random;
 
+import cokes86.addon.utils.LocationPlusUtil;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 
@@ -48,7 +49,7 @@ public class RoyalStraightFlush extends Synergy implements ActiveHandler {
 				int a = new Random().nextInt(20), b = new Random().nextInt(20);
 				getPlayer().sendMessage("숫자를 뽑습니다 : "+a+", "+b);
 				getPlayer().sendMessage("총 "+(a+b)/2.0+"대미지를 상대방에게 줍니다.");
-				for (Player p : LocationUtil.getNearbyPlayers(getPlayer(), r, r)) {
+				for (Player p : LocationUtil.getNearbyEntities(Player.class, getPlayer().getLocation(), r, r, LocationPlusUtil.STRICT(getParticipant()))) {
 					p.damage((a+b)/2.0);
 					SoundLib.ENTITY_FIREWORK_ROCKET_TWINKLE_FAR.playSound(p);
 				}

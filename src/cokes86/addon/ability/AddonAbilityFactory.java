@@ -1,62 +1,23 @@
 package cokes86.addon.ability;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
-import cokes86.addon.ability.list.Aris;
-import cokes86.addon.ability.list.Blocks;
-import cokes86.addon.ability.list.DataMining;
-import cokes86.addon.ability.list.Elva;
-import cokes86.addon.ability.list.EnchantArrow;
-import cokes86.addon.ability.list.Freud;
-import cokes86.addon.ability.list.Gambler;
-import cokes86.addon.ability.list.GodsBless;
-import cokes86.addon.ability.list.Harmony;
-import cokes86.addon.ability.list.Keily;
-import cokes86.addon.ability.list.Mir;
-import cokes86.addon.ability.list.Ovisni;
-import cokes86.addon.ability.list.Perseverance;
-import cokes86.addon.ability.list.PhantomThief;
-import cokes86.addon.ability.list.Pocker;
-import cokes86.addon.ability.list.Queen;
-import cokes86.addon.ability.list.Rabbit;
-import cokes86.addon.ability.list.Rei;
-import cokes86.addon.ability.list.Reincarnation;
-import cokes86.addon.ability.list.Resurrection;
-import cokes86.addon.ability.list.Revenge;
-import cokes86.addon.ability.list.Rune;
-import cokes86.addon.ability.list.Sealer;
-import cokes86.addon.ability.list.Seth;
-import cokes86.addon.ability.list.Summoner;
-import cokes86.addon.ability.list.Thorn;
-import cokes86.addon.ability.list.Unbelief;
-import cokes86.addon.ability.list.VigilanteLeader;
-import cokes86.addon.ability.list.Wily;
-import cokes86.addon.ability.list.Xyz;
-import cokes86.addon.ability.synergy.AirDisintegration;
-import cokes86.addon.ability.synergy.LureOfRoses;
-import cokes86.addon.ability.synergy.Purgatory;
-import cokes86.addon.ability.synergy.RevengeArrow;
-import cokes86.addon.ability.synergy.RoyalStraightFlush;
-import cokes86.addon.ability.synergy.TheEnd;
-import daybreak.abilitywar.ability.AbilityBase;
-import daybreak.abilitywar.ability.AbilityFactory;
-import daybreak.abilitywar.ability.AbilityManifest;
-import daybreak.abilitywar.ability.list.Assassin;
-import daybreak.abilitywar.ability.list.Muse;
-import daybreak.abilitywar.ability.list.Stalker;
-import daybreak.abilitywar.game.list.mix.synergy.Synergy;
-import daybreak.abilitywar.game.list.mix.synergy.SynergyFactory;
+import cokes86.addon.ability.list.*;
+import cokes86.addon.ability.synergy.*;
+import daybreak.abilitywar.ability.*;
+import daybreak.abilitywar.ability.list.*;
+import daybreak.abilitywar.game.list.mix.synergy.*;
 import daybreak.abilitywar.game.manager.AbilityList;
+import daybreak.abilitywar.utils.base.logging.Logger;
+import daybreak.abilitywar.utils.base.minecraft.version.ServerVersion;
 
 public class AddonAbilityFactory {
+	private static final Logger logger = Logger.getLogger(AddonAbilityFactory.class);
 	protected static Map<String, Class<? extends AbilityBase>> abilities = new HashMap<>();
 	protected static Map<String, Class<? extends Synergy>> synergies = new HashMap<>();
 	
 	static {
-		registerAbility(PhantomThief.class);
+		registerAbility("cokes86.addon.ability.list."+ ServerVersion.getVersion().name()+".PhantomThief");
 		registerAbility(Seth.class);
 		registerAbility(Rabbit.class);
 		registerAbility(Ovisni.class);
@@ -111,6 +72,29 @@ public class AddonAbilityFactory {
 			System.out.println("이미 애드온에 등록된 능력입니다 : "+clazz.getName());
 		}
 	}
+
+	public static void registerAbility(String className) {
+		try{
+			Class<? extends AbilityBase> clazz = Class.forName(className).asSubclass(AbilityBase.class);
+			if (!abilities.containsValue(clazz)) {
+				AbilityFactory.registerAbility(clazz);
+				if (AbilityFactory.isRegistered(clazz)) {
+					AbilityList.registerAbility(clazz);
+					AbilityManifest am = clazz.getAnnotation(AbilityManifest.class);
+					abilities.put(am.name(), clazz);
+				} else {
+					System.out.println("등록에 실패하였습니다. : "+clazz.getName());
+				}
+			} else {
+				System.out.println("이미 애드온에 등록된 능력입니다 : "+clazz.getName());
+			}
+		} catch (ClassNotFoundException e) {
+			logger.error("§e" + className + " §f클래스는 존재하지 않습니다.");
+		} catch (ClassCastException e) {
+			logger.error("§e" + className + " §f클래스는 AbilityBase를 확장하지 않습니다.");
+		}
+
+	}
 	
 	public static void registerSynergy(Class<? extends AbilityBase> first, Class<? extends AbilityBase> second, Class<? extends Synergy> synergy) {
 		if (SynergyFactory.getSynergy(first, second) == null) {
@@ -142,7 +126,6 @@ public class AddonAbilityFactory {
 
 	public static Class<? extends AbilityBase> getByString(String abilityName) {
 		if (abilities.containsKey(abilityName)) return abilities.get(abilityName);
-		else if (synergies.containsKey(abilityName)) return synergies.get(abilityName);
-		else return null;
+		else return synergies.getOrDefault(abilityName, null);
 	}
 }

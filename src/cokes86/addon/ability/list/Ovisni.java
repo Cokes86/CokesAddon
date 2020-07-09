@@ -3,6 +3,7 @@ package cokes86.addon.ability.list;
 import java.util.HashMap;
 import java.util.Map;
 
+import daybreak.abilitywar.utils.base.collect.Pair;
 import org.bukkit.Material;
 import org.bukkit.entity.Arrow;
 import org.bukkit.entity.Entity;
@@ -45,17 +46,16 @@ public class Ovisni extends AbilityBase implements ActiveHandler {
 		}
 	};
 	
-	Map<Player, Integer> ovisniCounter = new HashMap<>();
-	Map<Player, HologramTimer> ovisniTimer = new HashMap<>();
+	Map<Player, Pair<Integer, HologramTimer>> ovisniMap = new HashMap<>();
 	
 	CooldownTimer cooldown = new CooldownTimer(cool.getValue());
 	Timer ovisni = new Timer() {
 
 		@Override
 		protected void run(int arg0) {
-			for (Player p : ovisniCounter.keySet()) {
+			for (Player p : ovisniMap.keySet()) {
 				if (arg0 % 10 == 0) {
-					p.damage(ovisniCounter.get(p), getPlayer());
+					p.damage(ovisniMap.get(p).getLeft(), getPlayer());
 				}
 			}
 		}
@@ -75,19 +75,16 @@ public class Ovisni extends AbilityBase implements ActiveHandler {
 	@Override
 	public boolean ActiveSkill(Material arg0, ClickType arg1) {
 		if (arg0.equals(Material.IRON_INGOT) && arg1.equals(ClickType.RIGHT_CLICK) && !cooldown.isCooldown()) {
-			for (Player p : ovisniCounter.keySet()) {
-				p.damage(ovisniCounter.get(p)*2, getPlayer());
+			for (Player p : ovisniMap.keySet()) {
+				p.damage(ovisniMap.get(p).getLeft()*2, getPlayer());
+				ovisniMap.get(p).getRight().stop(false);
 			}
-			for (Player p : ovisniTimer.keySet()) {
-				ovisniTimer.get(p).stop(false);
-			}
-			ovisniCounter.clear();
-			ovisniTimer.clear();
+			ovisniMap.clear();
 			cooldown.start();
 		} else if (arg0.equals(Material.IRON_INGOT) && arg1.equals(ClickType.LEFT_CLICK)) {
 			getPlayer().sendMessage("§e===== §2맹독 카운터§f 수치 §e=====");
-			for (Player target : ovisniCounter.keySet()) {
-				getPlayer().sendMessage("§f" + target.getName() + " §7: §2" + ovisniCounter.get(target));
+			for (Player target : ovisniMap.keySet()) {
+				getPlayer().sendMessage("§f" + target.getName() + " §7: §2" + ovisniMap.get(target).getLeft());
 			}
 		}
 		return false;
@@ -106,13 +103,13 @@ public class Ovisni extends AbilityBase implements ActiveHandler {
 		if (damager.equals(getPlayer()) && getGame().isGameStarted() && e.getEntity() instanceof Player) {
 			Player entity = (Player) e.getEntity();
 			if (getGame().isParticipating(entity)) {
-				ovisniCounter.put(entity, Math.min(max.getValue(), ovisniCounter.getOrDefault(entity, 0) + 1));
-				if (ovisniTimer.containsKey(entity)) {
-					HologramTimer timer = ovisniTimer.get(entity);
-					timer.run(0);
+				Pair<Integer, HologramTimer> pair;
+				if (ovisniMap.containsKey(entity)) {
+					pair = Pair.of(ovisniMap.get(entity).getLeft()+1, ovisniMap.get(entity).getRight());
 				} else {
-					ovisniTimer.put(entity, new HologramTimer(entity));
+					pair = Pair.of(1, new HologramTimer(entity));
 				}
+				ovisniMap.put(entity, pair);
 			}
 		}
 	}
@@ -120,15 +117,13 @@ public class Ovisni extends AbilityBase implements ActiveHandler {
 	@SubscribeEvent
 	public void onParticipantDeath(ParticipantDeathEvent e) {
 		if (e.getPlayer().equals(getPlayer())) {
-			for (Player p : ovisniTimer.keySet()) {
-				ovisniTimer.get(p).stop(false);
+			for (Player p : ovisniMap.keySet()) {
+				ovisniMap.get(p).getRight().stop(false);
 			}
-			ovisniCounter.clear();
-			ovisniTimer.clear();
-		} else if (ovisniCounter.containsKey(e.getPlayer())) {
-			ovisniCounter.remove(e.getPlayer());
-			ovisniTimer.get(e.getPlayer()).stop(false);
-			ovisniTimer.remove(e.getPlayer());
+			ovisniMap.clear();
+		} else if (ovisniMap.containsKey(e.getPlayer())) {
+			ovisniMap.get(e.getPlayer()).getRight().stop(false);
+			ovisniMap.remove(e.getPlayer());
 		}
 	}
 	
@@ -141,14 +136,14 @@ public class Ovisni extends AbilityBase implements ActiveHandler {
 			this.setPeriod(TimeUnit.TICKS, 1);
 			this.entity = entity;
 			this.hologram = NMSHandler.getNMS().newHologram(entity.getWorld(), entity.getLocation().getX(), entity.getLocation().getY() + entity.getEyeHeight() + 0.6, entity.getLocation().getZ());
-			this.hologram.setText(Strings.repeat("§2◆", ovisniCounter.get(entity)).concat(Strings.repeat("§2◇", max.getValue() - ovisniCounter.get(entity))));
+			this.hologram.setText(Strings.repeat("§2◆", ovisniMap.get(entity).getLeft()).concat(Strings.repeat("§2◇", max.getValue() - ovisniMap.get(entity).getLeft())));
 			this.hologram.display(getPlayer());
 			this.start();
 		}
 
 		@Override
 		protected void run(int arg0) {
-			this.hologram.setText(Strings.repeat("§2◆", ovisniCounter.get(entity)).concat(Strings.repeat("§2◇", max.getValue() - ovisniCounter.get(entity))));
+			this.hologram.setText(Strings.repeat("§2◆", ovisniMap.get(entity).getLeft()).concat(Strings.repeat("§2◇", max.getValue() - ovisniMap.get(entity).getLeft())));
 			hologram.teleport(entity.getWorld(), entity.getLocation().getX(), entity.getLocation().getY() + entity.getEyeHeight() + 0.6, entity.getLocation().getZ(), entity.getLocation().getYaw(), 0);
 		}
 		
@@ -160,7 +155,7 @@ public class Ovisni extends AbilityBase implements ActiveHandler {
 		@Override
 		protected void onSilentEnd() {
 			hologram.hide(getPlayer());
-			ovisniTimer.remove(entity);
+			ovisniMap.remove(getPlayer());
 		}
 	}
 }

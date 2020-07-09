@@ -19,7 +19,6 @@ import daybreak.abilitywar.ability.AbilityManifest.Rank;
 import daybreak.abilitywar.ability.AbilityManifest.Species;
 import daybreak.abilitywar.ability.SubscribeEvent;
 import daybreak.abilitywar.ability.decorator.ActiveHandler;
-import daybreak.abilitywar.ability.event.AbilityRestrictionClearEvent;
 import daybreak.abilitywar.game.AbstractGame.Participant;
 import daybreak.abilitywar.utils.base.concurrent.TimeUnit;
 import daybreak.abilitywar.utils.library.MaterialX;
@@ -35,7 +34,7 @@ public class Blocks extends AbilityBase implements ActiveHandler {
 	protected Condition condition = Condition.STONE;
 	protected Participant.ActionbarNotification.ActionbarChannel ac = this.newActionbarChannel();
 
-	protected static Config<Integer> stone = new Config<Integer>(Blocks.class, "돌_받는대미지감소량(%)", 20) {
+	private static final Config<Integer> stone = new Config<Integer>(Blocks.class, "돌_받는대미지감소량(%)", 20) {
 		@Override
 		public boolean Condition(Integer value) {
 			return value > 0 && value < 100;
@@ -46,7 +45,7 @@ public class Blocks extends AbilityBase implements ActiveHandler {
 			return value > 100;
 		}
 	};
-	protected static Config<Double> inv = new Config<Double>(Blocks.class, "모래_무적시간", 0.3,
+	private static final Config<Double> inv = new Config<Double>(Blocks.class, "모래_무적시간", 0.3,
 			"#0.0 단위로 작성") {
 		@Override
 		public boolean Condition(Double value) {
@@ -99,11 +98,6 @@ public class Blocks extends AbilityBase implements ActiveHandler {
 			}
 		}
 		return false;
-	}
-
-	@SubscribeEvent(onlyRelevant = true)
-	public void onRestrictionClear(AbilityRestrictionClearEvent e) {
-		Passive.start();
 	}
 
 	@SubscribeEvent

@@ -4,6 +4,7 @@ import java.text.DecimalFormat;
 import java.util.Random;
 
 import cokes86.addon.configuration.ability.Config;
+import daybreak.abilitywar.game.manager.object.DeathManager;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Projectile;
@@ -40,7 +41,7 @@ public class DataMining extends AbilityBase implements ActiveHandler {
 	ActionbarChannel ac = newActionbarChannel();
 	boolean message = true;
 
-	private static final Config<Double> damageUp = new Config<Double>(DataMining.class, "대미지성장치", 0.4) {
+	private static final Config<Double> damageUp = new Config<Double>(DataMining.class, "대미지성장치", 0.25) {
 		@Override
 		public boolean Condition(Double value) {
 			return value > 0;
@@ -135,11 +136,13 @@ public class DataMining extends AbilityBase implements ActiveHandler {
 					continue;
 				if (!p.hasAbility())
 					continue;
-				count++;
+				if (getGame() instanceof DeathManager.Handler && ((DeathManager.Handler) getGame()).getDeathManager().isExcluded(p.getPlayer()))
+					continue;
 				AbilityBase ability = p.getAbility();
 				String name;
 				if (ability instanceof Mix) {
 					Mix mix = (Mix) ability;
+					if (!mix.hasAbility()) continue;
 					if (mix.hasSynergy()) {
 						Synergy synergy = mix.getSynergy();
 						Pair<AbilityRegistration, AbilityRegistration> base = SynergyFactory
@@ -151,16 +154,15 @@ public class DataMining extends AbilityBase implements ActiveHandler {
 							name = "§e"+mix.getFirst().getName();
 						} else if (mix.getFirst() == null && mix.getSecond() != null) {
 							name = "§e"+mix.getSecond().getName();
-						} else if (mix.getFirst() != null && mix.getSecond() != null) {
-							name = "§e"+mix.getFirst().getName() + " §f+ §e" + mix.getSecond().getName();
 						} else {
-							continue;
+							name = "§e"+mix.getFirst().getName() + " §f+ §e" + mix.getSecond().getName();
 						}
 					}
 				} else {
 					name = ability.getName();
 				}
 
+				count++;
 				getPlayer().sendMessage("§e" + count + ". §f" + p.getPlayer().getName() + " §7: §e" + name);
 			}
 		} else if (arg0.equals(Material.IRON_INGOT) && arg1.equals(ClickType.LEFT_CLICK)) {

@@ -3,6 +3,7 @@ package cokes86.addon.ability.list;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 
+import cokes86.addon.utils.LocationPlusUtil;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.entity.PlayerDeathEvent;
@@ -16,7 +17,6 @@ import daybreak.abilitywar.ability.AbilityManifest.Rank;
 import daybreak.abilitywar.ability.AbilityManifest.Species;
 import daybreak.abilitywar.ability.SubscribeEvent;
 import daybreak.abilitywar.ability.decorator.ActiveHandler;
-import daybreak.abilitywar.ability.event.AbilityRestrictionClearEvent;
 import daybreak.abilitywar.game.AbstractGame.Participant;
 import daybreak.abilitywar.game.AbstractGame.Participant.ActionbarNotification.ActionbarChannel;
 import daybreak.abilitywar.utils.base.concurrent.TimeUnit;
@@ -97,7 +97,7 @@ public class Seth extends AbilityBase implements ActiveHandler {
 	public boolean ActiveSkill(Material arg0, ClickType arg1) {
 		if (arg0.equals(Material.IRON_INGOT) && arg1.equals(ClickType.RIGHT_CLICK)) {
 			if (!c.isCooldown()) {
-				ArrayList<Player> ps = LocationUtil.getNearbyPlayers(getPlayer(), 7, 7);
+				ArrayList<Player> ps = LocationUtil.getNearbyEntities(Player.class, getPlayer().getLocation(), 7, 7, LocationPlusUtil.STRICT(getParticipant()));
 				for (Player p : ps) {
 					p.teleport(getPlayer().getLocation());
 					p.addPotionEffect(new PotionEffect(PotionEffectType.WEAKNESS, debuff.getValue() * 20, 0));
@@ -108,11 +108,6 @@ public class Seth extends AbilityBase implements ActiveHandler {
 			}
 		}
 		return false;
-	}
-
-	@SubscribeEvent(onlyRelevant = true)
-	public void onRestrictionClear(AbilityRestrictionClearEvent e) {
-		Passive.start();
 	}
 
 	@SubscribeEvent

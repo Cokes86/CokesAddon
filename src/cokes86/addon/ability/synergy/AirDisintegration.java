@@ -5,6 +5,7 @@ import java.util.LinkedList;
 import java.util.Map;
 import java.util.function.Predicate;
 
+import cokes86.addon.utils.LocationPlusUtil;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -27,7 +28,6 @@ import daybreak.abilitywar.game.list.mix.synergy.Synergy;
 import daybreak.abilitywar.game.manager.object.WRECK;
 import daybreak.abilitywar.utils.base.concurrent.TimeUnit;
 import daybreak.abilitywar.utils.base.math.LocationUtil;
-import daybreak.abilitywar.utils.base.math.LocationUtil.Predicates;
 import daybreak.abilitywar.utils.base.minecraft.DamageUtil;
 import daybreak.abilitywar.utils.library.SoundLib;
 
@@ -52,7 +52,7 @@ public class AirDisintegration extends Synergy implements ActiveHandler {
 
 	int chain = 0;
 	ActionbarChannel ac = newActionbarChannel();
-	private final Predicate<Entity> STRICT_PREDICATE = Predicates.STRICT(getPlayer());
+	private final Predicate<Entity> STRICT_PREDICATE = LocationPlusUtil.STRICT(getParticipant());
 	private LinkedList<LivingEntity> entities = null;
 	boolean falling = false;
 	CooldownTimer cooldown = new CooldownTimer(cool.getValue());

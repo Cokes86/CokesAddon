@@ -4,6 +4,7 @@ import java.util.Iterator;
 import java.util.Random;
 import java.util.function.Predicate;
 
+import cokes86.addon.utils.LocationPlusUtil;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.World;
@@ -19,16 +20,13 @@ import daybreak.abilitywar.ability.AbilityBase;
 import daybreak.abilitywar.ability.AbilityManifest;
 import daybreak.abilitywar.ability.AbilityManifest.Rank;
 import daybreak.abilitywar.ability.AbilityManifest.Species;
-import daybreak.abilitywar.ability.SubscribeEvent;
 import daybreak.abilitywar.ability.decorator.ActiveHandler;
-import daybreak.abilitywar.ability.event.AbilityRestrictionClearEvent;
 import daybreak.abilitywar.game.AbstractGame.CustomEntity;
 import daybreak.abilitywar.game.AbstractGame.Participant;
 import daybreak.abilitywar.game.AbstractGame.Participant.ActionbarNotification.ActionbarChannel;
 import daybreak.abilitywar.game.manager.object.WRECK;
 import daybreak.abilitywar.utils.base.concurrent.TimeUnit;
 import daybreak.abilitywar.utils.base.math.LocationUtil;
-import daybreak.abilitywar.utils.base.math.LocationUtil.Predicates;
 import daybreak.abilitywar.utils.base.math.geometry.Line;
 import daybreak.abilitywar.utils.base.minecraft.entity.decorator.Deflectable;
 import daybreak.abilitywar.utils.library.ParticleLib;
@@ -82,16 +80,11 @@ public class Freud extends AbilityBase implements ActiveHandler {
 		}
 	}
 	
-	@SubscribeEvent
-	public void onAbilityRestrictionClear(AbilityRestrictionClearEvent e) {
-		passiveTimer.setPeriod(TimeUnit.TICKS, 1).start();
-	}
-	
 	@Override
 	public boolean ActiveSkill(Material arg0, ClickType arg1) {
 		if (arg0.equals(Material.IRON_INGOT)) {
 			if (arg1.equals(ClickType.RIGHT_CLICK) && mana >= magic.getMana()) {
-				Predicate<Entity> predicate = Predicates.STRICT(getPlayer());
+				Predicate<Entity> predicate = LocationPlusUtil.STRICT(getParticipant());
 				Player target = LocationUtil.getNearestEntity(Player.class, getPlayer().getLocation(), predicate);
 				if (target != null) {
 					mana -= magic.getMana();
@@ -136,7 +129,7 @@ public class Freud extends AbilityBase implements ActiveHandler {
 			for (Iterator<Location> iterator = Line.iteratorBetween(lastLocation, newLocation, 40); iterator.hasNext(); ) {
 				Location location = iterator.next();
 				entity.setLocation(location);
-				for (Damageable damageable : LocationUtil.getConflictingDamageables(entity.getBoundingBox())) {
+				for (Damageable damageable : LocationUtil.getConflictingEntities(Damageable.class,entity.getBoundingBox(), LocationPlusUtil.STRICT(getParticipant()))) {
 					if (!shooter.equals(damageable) && !damageable.isDead()) {
 						magic.onDamaged(damageable);
 						stop(false);

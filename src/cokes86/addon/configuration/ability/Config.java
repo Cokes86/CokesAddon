@@ -29,14 +29,6 @@ public abstract class Config<T> extends SettingObject<T> {
 	public Config(Class<? extends AbilityBase> arg0, String arg1, T arg2) {
 		this(arg0, arg1, arg2, new String[] {}, 0);
 	}
-	
-	public Config(AbilityBase arg0, String arg1, T arg2, int option) {
-		this(arg0.getClass(), arg1, arg2, new String[] {}, option);
-	}
-	
-	public Config(AbilityBase arg0, String arg1, T arg2) {
-		this(arg0.getClass(), arg1, arg2, new String[] {}, 0);
-	}
 
 	public String toString() {
 		if (option == 1 && getValue().getClass().equals(Integer.class)) {

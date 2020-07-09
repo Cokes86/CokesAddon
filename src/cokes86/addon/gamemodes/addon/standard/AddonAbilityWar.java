@@ -80,10 +80,10 @@ public class AddonAbilityWar extends Game implements DefaultKitHandler {
 		case 3:
 			Bukkit.broadcastMessage("§b코크스애드온 §f애드온 능력자 전쟁 게임모드 제작자 : §aCokes_86");
 
-			GameCreditEvent event = new GameCreditEvent();
+			GameCreditEvent event = new GameCreditEvent(this);
 			Bukkit.getPluginManager().callEvent(event);
 
-			for (String line : event.getCreditList()) {
+			for (String line : event.getCredits()) {
 				Bukkit.broadcastMessage(line);
 			}
 			break;

@@ -3,6 +3,7 @@ package cokes86.addon.ability.list;
 import java.util.ArrayList;
 import java.util.Random;
 
+import cokes86.addon.utils.LocationPlusUtil;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.Note;
@@ -48,7 +49,7 @@ public class Rune extends AbilityBase implements ActiveHandler {
 
 		@Override
 		protected void onDurationProcess(int seconds) {
-			ArrayList<Player> ps = LocationUtil.getNearbyPlayers(getPlayer(), range.getValue(), range.getValue());
+			ArrayList<Player> ps = LocationUtil.getNearbyEntities(Player.class, getPlayer().getLocation(), range.getValue(), range.getValue(), LocationPlusUtil.STRICT(getParticipant()));
 			if (ps.size() > 0) {
 				int a = new Random().nextInt(ps.size());
 				Player target = ps.get(a);

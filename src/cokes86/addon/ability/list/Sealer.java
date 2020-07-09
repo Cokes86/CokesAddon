@@ -81,8 +81,8 @@ public class Sealer extends AbilityBase implements TargetHandler {
 		if (mt.equals(Material.IRON_INGOT) && !t.isDuration() && !c.isCooldown()) {
 			if (entity instanceof Player) {
 				Player p = (Player) entity;
-				target = getGame().getParticipant(p);
-				if (target.hasAbility() && !target.getAbility().isRestricted()) {
+				target = getGame().isParticipating(p) ? getGame().getParticipant(p) : null;
+				if (target != null && target.hasAbility() && !target.getAbility().isRestricted()) {
 					t.start();
 					getPlayer().sendMessage(p.getName()+"님의 능력을 봉인하였습니다.");
 					target.getPlayer().sendMessage("당신의 능력이 봉인되었습니다.");

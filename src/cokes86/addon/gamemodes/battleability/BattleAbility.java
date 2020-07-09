@@ -4,6 +4,7 @@ import java.util.List;
 
 import javax.naming.OperationNotSupportedException;
 
+import daybreak.abilitywar.game.manager.object.Invincibility;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.GameMode;
@@ -83,9 +84,9 @@ public class BattleAbility extends Game implements DefaultKitHandler, Winnable, 
 					ChatColor.translateAlternateColorCodes('&', "&9디스코드 &7: &fCokes_86&7#9329")
 			);
 
-			GameCreditEvent event = new GameCreditEvent();
+			GameCreditEvent event = new GameCreditEvent(this);
 			Bukkit.getPluginManager().callEvent(event);
-			lines.addAll(event.getCreditList());
+			lines.addAll(event.getCredits());
 
 			for (String line : lines) {
 				Bukkit.broadcastMessage(line);
@@ -250,6 +251,11 @@ public class BattleAbility extends Game implements DefaultKitHandler, Winnable, 
 
 	@Override
 	public Border getBorder() {
+		return border;
+	}
+
+	@Override
+	public Invincibility getInvincibility() {
 		return border;
 	}
 }

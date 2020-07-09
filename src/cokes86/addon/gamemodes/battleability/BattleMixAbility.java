@@ -3,18 +3,25 @@ package cokes86.addon.gamemodes.battleability;
 import cokes86.addon.configuration.gamemode.GameConfiguration;
 import cokes86.addon.configuration.gamemode.GameNodes;
 import daybreak.abilitywar.AbilityWar;
+import daybreak.abilitywar.ability.AbilityBase;
+import daybreak.abilitywar.ability.AbilityFactory;
 import daybreak.abilitywar.config.Configuration;
 import daybreak.abilitywar.game.AbstractGame;
+import daybreak.abilitywar.game.GameManager;
 import daybreak.abilitywar.game.GameManifest;
 import daybreak.abilitywar.game.event.GameCreditEvent;
 import daybreak.abilitywar.game.interfaces.Winnable;
 import daybreak.abilitywar.game.list.mix.AbstractMix;
+import daybreak.abilitywar.game.list.mix.Mix;
+import daybreak.abilitywar.game.list.mix.synergy.Synergy;
+import daybreak.abilitywar.game.list.mix.synergy.SynergyFactory;
 import daybreak.abilitywar.game.manager.AbilityList;
-import daybreak.abilitywar.game.manager.object.DeathManager;
-import daybreak.abilitywar.game.manager.object.DefaultKitHandler;
-import daybreak.abilitywar.game.manager.object.InfiniteDurability;
+import daybreak.abilitywar.game.manager.object.*;
 import daybreak.abilitywar.game.script.manager.ScriptManager;
 import daybreak.abilitywar.utils.base.Messager;
+import daybreak.abilitywar.utils.base.collect.Pair;
+import daybreak.abilitywar.utils.base.language.korean.KoreanUtil;
+import daybreak.abilitywar.utils.base.logging.Logger;
 import daybreak.abilitywar.utils.base.minecraft.PlayerCollector;
 import daybreak.abilitywar.utils.library.SoundLib;
 import org.bukkit.*;
@@ -24,9 +31,12 @@ import org.bukkit.event.HandlerList;
 import org.bukkit.event.player.PlayerQuitEvent;
 
 import javax.naming.OperationNotSupportedException;
+import java.lang.reflect.InvocationTargetException;
+import java.util.Collection;
 import java.util.List;
+import java.util.Random;
 
-@GameManifest(name = "자기장 능력자 믹스 전쟁", description = {
+@GameManifest(name = "자기장 믹스 능력자 전쟁", description = {
         "§f맵의 크기가 서서히 줄어든다!",
         "§f줄어들기 전에 얼른 사냥해라!",
         "§f※게임 시작 전에 게임 스폰을 지정해주세요."
@@ -36,6 +46,7 @@ public class BattleMixAbility extends AbstractMix implements DefaultKitHandler, 
     private final World world;
     private final double size;
     private final Border border = new Border(this);
+    private static final Logger logger = Logger.getLogger(BattleMixAbility.class);
 
     public BattleMixAbility() {
         super(PlayerCollector.EVERY_PLAYER_EXCLUDING_SPECTATORS());
@@ -65,17 +76,80 @@ public class BattleMixAbility extends AbstractMix implements DefaultKitHandler, 
     }
 
     @Override
+    public AbilitySelect newAbilitySelect() {
+        return new AbilitySelect(this, getParticipants(), 1) {
+
+            private List<Class<? extends AbilityBase>> abilities;
+
+            @Override
+            protected void drawAbility(Collection<? extends Participant> selectors) {
+                abilities = AbilitySelectStrategy.EVERY_ABILITY_EXCLUDING_BLACKLISTED.getAbilities();
+                if (abilities.size() > 0) {
+                    Random random = new Random();
+
+                    for (Participant participant : selectors) {
+                        Player p = participant.getPlayer();
+
+                        Class<? extends AbilityBase> abilityClass = abilities.get(random.nextInt(abilities.size()));
+                        Class<? extends AbilityBase> secondAbilityClass = abilities.get(random.nextInt(abilities.size()));
+                        try {
+                            ((Mix) participant.getAbility()).setAbility(abilityClass, secondAbilityClass);
+
+                            p.sendMessage(new String[]{
+                                    "§a능력이 할당되었습니다. §e/aw check§f로 확인 할 수 있습니다.",
+                                    "§e/aw yes §f명령어를 사용하여 능력을 확정합니다.",
+                                    "§e/aw no §f명령어를 사용하여 능력을 변경합니다."
+                            });
+                        } catch (IllegalAccessException | SecurityException | InstantiationException | IllegalArgumentException | InvocationTargetException e) {
+                            logger.error(ChatColor.YELLOW + participant.getPlayer().getName() + ChatColor.WHITE + "님에게 능력을 할당하는 도중 오류가 발생하였습니다.");
+                            logger.error("문제가 발생한 능력: " + ChatColor.AQUA + abilityClass.getName());
+                        }
+                    }
+                } else {
+                    Messager.broadcastErrorMessage("사용 가능한 능력이 없습니다.");
+                    GameManager.stopGame();
+                }
+            }
+
+            @Override
+            protected boolean changeAbility(Participant participant) {
+                Player p = participant.getPlayer();
+
+                if (abilities.size() > 0) {
+                    Random random = new Random();
+
+                    if (participant.hasAbility()) {
+                        Class<? extends AbilityBase> abilityClass = abilities.get(random.nextInt(abilities.size()));
+                        Class<? extends AbilityBase> secondAbilityClass = abilities.get(random.nextInt(abilities.size()));
+                        try {
+                            ((Mix) participant.getAbility()).setAbility(abilityClass, secondAbilityClass);
+                            return true;
+                        } catch (Exception e) {
+                            logger.error(ChatColor.YELLOW + p.getName() + ChatColor.WHITE + "님의 능력을 변경하는 도중 오류가 발생하였습니다.");
+                            logger.error(ChatColor.WHITE + "문제가 발생한 능력: " + ChatColor.AQUA + abilityClass.getName());
+                        }
+                    }
+                } else {
+                    Messager.sendErrorMessage(p, "능력을 변경할 수 없습니다.");
+                }
+
+                return false;
+            }
+        };
+    }
+
+    @Override
     protected void progressGame(int i) {
         switch (i) {
             case 1:
-                List<String> lines = Messager.asList(ChatColor.translateAlternateColorCodes('&', "&6==== &e게임 참여자 목록 &6===="));
+                List<String> lines = Messager.asList(ChatColor.translateAlternateColorCodes('&', "&5==== &d게임 참여자 목록 &5===="));
                 int count = 0;
                 for (Participant p : getParticipants()) {
                     count++;
-                    lines.add(ChatColor.translateAlternateColorCodes('&', "&a" + count + ". &f" + p.getPlayer().getName()));
+                    lines.add(ChatColor.translateAlternateColorCodes('&', "&d" + count + ". &f" + p.getPlayer().getName()));
                 }
-                lines.add(ChatColor.translateAlternateColorCodes('&', "&e총 인원수 : " + count + "명"));
-                lines.add(ChatColor.translateAlternateColorCodes('&', "&6=========================="));
+                lines.add(ChatColor.translateAlternateColorCodes('&', "&5총 인원수 : " + count + "명"));
+                lines.add(ChatColor.translateAlternateColorCodes('&', "&5=========================="));
 
                 for (String line : lines) {
                     Bukkit.broadcastMessage(line);
@@ -88,15 +162,15 @@ public class BattleMixAbility extends AbstractMix implements DefaultKitHandler, 
                 break;
             case 3:
                 lines = Messager.asList(
-                        ChatColor.translateAlternateColorCodes('&', "&cAbilityWar &f- &6자기장 능력자 믹스 전쟁"),
+                        ChatColor.translateAlternateColorCodes('&', "&cAbilityWar &f- &6자기장 믹스 능력자 전쟁"),
                         ChatColor.translateAlternateColorCodes('&', "&e버전 &7: &f" + AbilityWar.getPlugin().getDescription().getVersion()),
                         ChatColor.translateAlternateColorCodes('&', "&b애드온 개발자 &7: &fCokes_86"),
                         ChatColor.translateAlternateColorCodes('&', "&9디스코드 &7: &fCokes_86&7#9329")
                 );
 
-                GameCreditEvent event = new GameCreditEvent();
+                GameCreditEvent event = new GameCreditEvent(this);
                 Bukkit.getPluginManager().callEvent(event);
-                lines.addAll(event.getCreditList());
+                lines.addAll(event.getCredits());
 
                 for (String line : lines) {
                     Bukkit.broadcastMessage(line);
@@ -246,6 +320,29 @@ public class BattleMixAbility extends AbstractMix implements DefaultKitHandler, 
                 }
                 if (winner != null) Win(getParticipant(winner));
             }
+
+            @Override
+            protected String getRevealMessage(Participant victim) {
+                final Mix mix = (Mix) victim.getAbility();
+                if (mix.hasAbility()) {
+                    if (mix.hasSynergy()) {
+                        final Synergy synergy = mix.getSynergy();
+                        final Pair<AbilityFactory.AbilityRegistration, AbilityFactory.AbilityRegistration> base = SynergyFactory.getSynergyBase(synergy.getRegistration());
+                        final String name = synergy.getName() + " (" + base.getLeft().getManifest().name() + " + " + base.getRight().getManifest().name() + ")";
+                        return "§f[§c능력§f] §c" + victim.getPlayer().getName() + "§f님의 능력은 §e" + name + "§f" + KoreanUtil.getJosa(name, KoreanUtil.Josa.이었였) + "습니다.";
+                    } else {
+                        final String name = mix.getFirst().getName() + " + " + mix.getSecond().getName();
+                        return "§f[§c능력§f] §c" + victim.getPlayer().getName() + "§f님의 능력은 §e" + name + "§f" + KoreanUtil.getJosa(name, KoreanUtil.Josa.이었였) + "습니다.";
+                    }
+                } else {
+                    return "§f[§c능력§f] §c" + victim.getPlayer().getName() + "§f님은 능력이 없습니다.";
+                }
+            }
         };
+    }
+
+    @Override
+    public Invincibility getInvincibility() {
+        return border;
     }
 }

@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Random;
 import java.util.function.Predicate;
 
+import cokes86.addon.utils.LocationPlusUtil;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.entity.Entity;
@@ -17,7 +18,6 @@ import daybreak.abilitywar.ability.decorator.ActiveHandler;
 import daybreak.abilitywar.game.AbstractGame;
 import daybreak.abilitywar.game.AbstractGame.Participant;
 import daybreak.abilitywar.game.manager.object.DeathManager;
-import daybreak.abilitywar.utils.base.math.LocationUtil.Predicates;
 
 @AbilityManifest(
 		name = "소환사",
@@ -55,7 +55,7 @@ public class Summoner extends AbilityBase implements ActiveHandler {
 					}
 				}
 				for (Participant p : new ArrayList<>(par)) {
-					Predicate<Entity> predicate = Predicates.STRICT(getPlayer());
+					Predicate<Entity> predicate = LocationPlusUtil.STRICT(getParticipant());
 					if (!predicate.test(p.getPlayer())) par.remove(p);
 				}
 				Random r = new Random();
@@ -77,6 +77,11 @@ public class Summoner extends AbilityBase implements ActiveHandler {
 		@Override
 		protected void onEnd() {
 			target.getPlayer().teleport(l);
+			onSilentEnd();
+		}
+
+		@Override
+		protected void onSilentEnd() {
 			Summoner.this.setRestricted(true);
 		}
 

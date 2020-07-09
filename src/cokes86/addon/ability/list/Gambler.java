@@ -12,7 +12,6 @@ import daybreak.abilitywar.ability.AbilityManifest.Rank;
 import daybreak.abilitywar.ability.AbilityManifest.Species;
 import daybreak.abilitywar.ability.SubscribeEvent;
 import daybreak.abilitywar.ability.decorator.ActiveHandler;
-import daybreak.abilitywar.ability.event.AbilityRestrictionClearEvent;
 import daybreak.abilitywar.game.AbstractGame.Participant;
 import daybreak.abilitywar.game.AbstractGame.Participant.ActionbarNotification.ActionbarChannel;
 import daybreak.abilitywar.utils.base.TimeUtil;
@@ -20,7 +19,7 @@ import daybreak.abilitywar.utils.base.TimeUtil;
 @AbilityManifest(name = "겜블러", rank = Rank.B, species = Species.HUMAN, explain = { "매 $[du]마다 받는 대미지와 주는 대미지의 비율이",
 		"$[min]%에서 $[max]% 사이로 랜덤하게 바뀝니다.", "게임 중 단 한 번 철괴 우클릭 시 다음 차례에는 비율이 바뀌지 않고 고정됩니다.", "※능력 아이디어: RainStar_" })
 public class Gambler extends AbilityBase implements ActiveHandler {
-	public static final Config<Integer> du = new Config<Integer>(Gambler.class, "주기", 15, 2) {
+	private static final Config<Integer> du = new Config<Integer>(Gambler.class, "주기", 15, 2) {
 		@Override
 		public boolean Condition(Integer value) {
 			return value > 0;
@@ -70,11 +69,6 @@ public class Gambler extends AbilityBase implements ActiveHandler {
 			}
 		}
 		return false;
-	}
-
-	@SubscribeEvent(onlyRelevant = true)
-	public void onRestrictionClear(AbilityRestrictionClearEvent e) {
-		passive.start();
 	}
 
 	@SubscribeEvent

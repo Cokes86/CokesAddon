@@ -1,5 +1,6 @@
 package cokes86.addon.ability.synergy;
 
+import cokes86.addon.utils.LocationPlusUtil;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Projectile;
@@ -80,7 +81,7 @@ public class LureOfRoses extends Synergy {
 
 		@Override
 		protected void onDurationProcess(int arg0) {
-			for (Player p : LocationUtil.getNearbyPlayers(getPlayer(), 10, 10)) {
+			for (Player p : LocationUtil.getNearbyEntities(Player.class, getPlayer().getLocation(), 10, 10, LocationPlusUtil.STRICT(getParticipant()))) {
 				p.addPotionEffect(new PotionEffect(PotionEffectType.BLINDNESS, 20, 0));
 			}
 			getPlayer().setHealth(getPlayer().getHealth()+1);

@@ -13,7 +13,6 @@ import daybreak.abilitywar.ability.AbilityManifest;
 import daybreak.abilitywar.ability.AbilityManifest.Rank;
 import daybreak.abilitywar.ability.AbilityManifest.Species;
 import daybreak.abilitywar.ability.SubscribeEvent;
-import daybreak.abilitywar.ability.event.AbilityRestrictionClearEvent;
 import daybreak.abilitywar.game.AbstractGame.Participant;
 import daybreak.abilitywar.game.AbstractGame.Participant.ActionbarNotification.ActionbarChannel;
 import daybreak.abilitywar.utils.base.TimeUtil;
@@ -45,11 +44,6 @@ public class Unbelief extends AbilityBase {
 		if (update == Update.RESTRICTION_CLEAR) {
 			ShieldOff.start();
 		}
-	}
-
-	@SubscribeEvent(onlyRelevant = true)
-	public void onRestrictionClear(AbilityRestrictionClearEvent e) {
-		ShieldOff.start();
 	}
 
 	@SubscribeEvent

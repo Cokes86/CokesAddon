@@ -21,8 +21,6 @@ import daybreak.abilitywar.ability.AbilityManifest;
 import daybreak.abilitywar.ability.AbilityManifest.Rank;
 import daybreak.abilitywar.ability.AbilityManifest.Species;
 import daybreak.abilitywar.ability.SubscribeEvent;
-import daybreak.abilitywar.ability.event.AbilityRestrictionClearEvent;
-import daybreak.abilitywar.config.ability.AbilitySettings.SettingObject;
 import daybreak.abilitywar.game.AbstractGame.CustomEntity;
 import daybreak.abilitywar.game.AbstractGame.Participant;
 import daybreak.abilitywar.game.AbstractGame.Participant.ActionbarNotification.ActionbarChannel;
@@ -56,9 +54,7 @@ public class Elva extends AbilityBase {
 			return value > 0;
 		}
 
-	};
-
-	private static final SettingObject<Integer> speed = new Config<Integer>(Elva.class, "발사속도(틱)", 4) {
+	}, speed = new Config<Integer>(Elva.class, "발사속도(틱)", 4) {
 
 		@Override
 		public boolean Condition(Integer value) {
@@ -67,7 +63,7 @@ public class Elva extends AbilityBase {
 
 	};
 
-	private static final SettingObject<Double> damage = new Config<Double>(Elva.class, "마법화살대미지", 2.0) {
+	private static final Config<Double> damage = new Config<Double>(Elva.class, "마법화살대미지", 2.0) {
 
 		@Override
 		public boolean Condition(Double value) {
@@ -128,11 +124,6 @@ public class Elva extends AbilityBase {
 
 	}.setPeriod(TimeUnit.TICKS, 4);
 
-	@SubscribeEvent(onlyRelevant = true)
-	public void onAbilityRestrictionClear(AbilityRestrictionClearEvent e) {
-		bow.setBehavior(RestrictionBehavior.PAUSE_RESUME).start();
-	}
-
 	@SubscribeEvent
 	public void onProjectileLaunch(EntityShootBowEvent e) {
 		if (getPlayer().equals(e.getEntity()) && e.getProjectile() instanceof Arrow) {
@@ -180,7 +171,8 @@ public class Elva extends AbilityBase {
 					stop(false);
 					return;
 				}
-				for (Damageable damageable : LocationUtil.getConflictingDamageables(entity.getBoundingBox())) {
+				for (Damageable damageable : LocationUtil.getConflictingEntities(Damageable.class,entity.getBoundingBox(), LocationPlusUtil
+						.STRICT(getParticipant()))) {
 					if (!shooter.equals(damageable) && !damageable.isDead()) {
 						damageable.damage(damage.getValue(), shooter);
 						stop(false);

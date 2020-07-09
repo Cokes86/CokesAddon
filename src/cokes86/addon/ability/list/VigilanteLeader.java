@@ -3,9 +3,14 @@ package cokes86.addon.ability.list;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.function.Predicate;
 
+import cokes86.addon.utils.LocationPlusUtil;
+import daybreak.abilitywar.game.interfaces.TeamGame;
+import daybreak.abilitywar.game.manager.object.DeathManager;
 import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.potion.PotionEffect;
@@ -16,7 +21,6 @@ import daybreak.abilitywar.ability.AbilityBase;
 import daybreak.abilitywar.ability.AbilityManifest;
 import daybreak.abilitywar.ability.SubscribeEvent;
 import daybreak.abilitywar.ability.decorator.ActiveHandler;
-import daybreak.abilitywar.ability.event.AbilityRestrictionClearEvent;
 import daybreak.abilitywar.game.AbstractGame;
 import daybreak.abilitywar.game.AbstractGame.Participant;
 import daybreak.abilitywar.game.AbstractGame.Participant.ActionbarNotification.ActionbarChannel;
@@ -51,6 +55,20 @@ public class VigilanteLeader extends AbilityBase implements ActiveHandler {
 	int addNum;
 	protected ActionbarChannel channel = this.newActionbarChannel();
 
+	Predicate<Entity> predicate = entity -> {
+		if (entity.equals(getPlayer())) return false;
+		if (entity instanceof Player) {
+			if (!getGame().isParticipating(entity.getUniqueId())) return false;
+			AbstractGame.Participant target = getGame().getParticipant(entity.getUniqueId());
+			if (getGame() instanceof DeathManager.Handler) {
+				DeathManager.Handler game = (DeathManager.Handler)getGame();
+				if (game.getDeathManager().isExcluded(entity.getUniqueId())) return false;
+			}
+			return target.attributes().TARGETABLE.getValue();
+		}
+		return true;
+	};
+
 	public VigilanteLeader(Participant participant) {
 		super(participant);
 	}
@@ -66,7 +84,7 @@ public class VigilanteLeader extends AbilityBase implements ActiveHandler {
 					ParticleLib.REDSTONE.spawnParticle(getPlayer(), l, color);
 				}
 
-				ArrayList<Player> inAjit = LocationUtil.getNearbyPlayers(ajit, r.getValue(), r.getValue());
+				ArrayList<Player> inAjit = LocationUtil.getNearbyEntities(Player.class, ajit, r.getValue(), r.getValue(), predicate);
 				addNum = 1;
 				
 				for (Player p : inAjit) {
@@ -86,7 +104,7 @@ public class VigilanteLeader extends AbilityBase implements ActiveHandler {
 			if (ajit == null) {
 				ajit = getPlayer().getLocation().clone();
 				getPlayer().sendMessage("자신의 자경단이 결성되었습니다!");
-				for (Player p : LocationUtil.getNearbyPlayers(ajit, r.getValue(), r.getValue())) {
+				for (Player p : LocationUtil.getNearbyEntities(Player.class, ajit, r.getValue(), r.getValue(), predicate)) {
 					if (getGame().isParticipating(p) && !p.equals(getPlayer())) {
 						vigilantes.add(getGame().getParticipant(p));
 						getPlayer().sendMessage(p.getName() + "을 자경단원으로 영입했습니다.");
@@ -122,10 +140,5 @@ public class VigilanteLeader extends AbilityBase implements ActiveHandler {
 		if (update == Update.RESTRICTION_CLEAR) {
 			passive.start();
 		}
-	}
-
-	@SubscribeEvent(onlyRelevant = true)
-	public void onRestrictionClear(AbilityRestrictionClearEvent e) {
-		passive.start();
 	}
 }

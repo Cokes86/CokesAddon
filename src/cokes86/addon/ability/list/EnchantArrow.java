@@ -23,20 +23,26 @@ import daybreak.abilitywar.utils.library.SoundLib;
 				"활로 플레이어를 적중할 시 인챈트 스택이 1씩 상승하며,",
 				"스택당 추가 $[damage]%의 대미지를 입힙니다. (최대 7회)",
 				"적중에 실패할 시 인챈트 스택이 0이 됩니다.",
-				"인챈트 스택이 0인 상태로 적중에 실패할 시 고정 2의 대미지를 입습니다.",
+				"인챈트 스택이 0인 상태로 적중에 실패할 시 고정 $[risk]의 대미지를 입습니다.",
 				"자신이 쏜 화살은 명중 시 바로 사라집니다.",
 				"※능력 아이디어: RainStar_"
 })
 public class EnchantArrow extends AbilityBase {
 	int enchantStack = 0;
 	ActionbarChannel ac = newActionbarChannel();
-	public static Config<Integer> damage = new Config<Integer>(EnchantArrow.class, "추가대미지(%)", 15) {
+	private static final Config<Integer> damage = new Config<Integer>(EnchantArrow.class, "추가대미지(%)", 15) {
 
 		@Override
 		public boolean Condition(Integer value) {
 			return value > 0;
 		}
 		
+	}, risk = new Config<Integer>(EnchantArrow.class, "리스크", 1) {
+
+		@Override
+		public boolean Condition(Integer value) {
+			return value >= 0;
+		}
 	};
 
 	public EnchantArrow(Participant participant) {
@@ -55,7 +61,7 @@ public class EnchantArrow extends AbilityBase {
 			if (e.getHitEntity() == null) {
 				SoundLib.ENTITY_VILLAGER_NO.playSound(getPlayer());
 				if (enchantStack == 0) {
-					getPlayer().setHealth(Math.max(0.0, getPlayer().getHealth()-2));
+					getPlayer().setHealth(Math.max(0.0, getPlayer().getHealth()-risk.getValue()));
 				} else {
 					enchantStack = 0;
 				}

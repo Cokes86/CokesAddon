@@ -24,6 +24,7 @@ import daybreak.abilitywar.utils.base.math.geometry.Circle;
 import daybreak.abilitywar.utils.library.ParticleLib;
 import daybreak.abilitywar.utils.library.ParticleLib.RGB;
 import daybreak.abilitywar.utils.library.SoundLib;
+import org.bukkit.event.entity.EntityRegainHealthEvent;
 
 @AbilityManifest(name = "리인카네이션", rank = Rank.S, species = Species.OTHERS, explain = {
 		"자신이 죽을 위기에 처했을 때, 이를 무시하고 체력이 1로 고정됩니다. $[cooldown]", "지속시간 $[duration]동안 상대방에게 주는 대미지가 $[damage]% 증가합니다.",
@@ -74,11 +75,18 @@ public class Reincarnation extends AbilityBase {
 			if (reincarnation.isRunning())
 				e.setCancelled(true);
 			else if (!reincarnation.isRunning() && getPlayer().getHealth() - e.getFinalDamage() <= 0
-					&& !cool.isRunning()) {
+					&& !cool.isRunning() && !e.isCancelled()) {
 				e.setDamage(0);
 				getPlayer().setHealth(1);
 				reincarnation.setPeriod(TimeUnit.TICKS, 1).start();
 			}
+		}
+	}
+
+	@SubscribeEvent
+	public void onEntityRegainHealth(EntityRegainHealthEvent e) {
+		if (e.getEntity().equals(getPlayer()) && reincarnation.isRunning()) {
+			e.setCancelled(true);
 		}
 	}
 
@@ -95,7 +103,7 @@ public class Reincarnation extends AbilityBase {
 
 		if (e.getEntity() instanceof Player && damager.equals(getPlayer())) {
 			Player target = (Player) e.getEntity();
-			if (reincarnation.isRunning() && getGame().isParticipating(target)) {
+			if (reincarnation.isRunning() && getGame().isParticipating(target) && !e.isCancelled()) {
 				hitted += 1;
 				e.setDamage(e.getDamage() * (1 + damage.getValue() / 100.0D));
 				if (hitted == hit.getValue()) {

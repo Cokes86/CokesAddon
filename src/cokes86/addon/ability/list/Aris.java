@@ -1,11 +1,18 @@
 package cokes86.addon.ability.list;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.function.Predicate;
 
+import cokes86.addon.utils.LocationPlusUtil;
+import daybreak.abilitywar.game.interfaces.TeamGame;
+import daybreak.abilitywar.game.manager.object.DeathManager;
 import daybreak.abilitywar.utils.base.collect.Pair;
 import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.entity.EntityDamageByBlockEvent;
@@ -38,7 +45,7 @@ import daybreak.abilitywar.utils.base.minecraft.DamageUtil;
 		"매 2초마다 1의 고정대미지를 입습니다. 그 이외의 대미지는 받지 않습니다.",
 		"지속시간과 쿨타임동안 §d사슬 카운터§f는 증가하지 않습니다." })
 public class Aris extends AbilityBase implements ActiveHandler {
-	public static final Config<Integer> range = new Config<Integer>(Aris.class, "범위", 7) {
+	private static final Config<Integer> range = new Config<Integer>(Aris.class, "범위", 7) {
 		@Override
 		public boolean Condition(Integer value) {
 			return value > 0;
@@ -49,7 +56,6 @@ public class Aris extends AbilityBase implements ActiveHandler {
 			return value > 0;
 		}
 	};
-
 
 	private final Map<Player, Pair<Location, ActionbarChannel>> holding = new HashMap<>();
 
@@ -79,7 +85,7 @@ public class Aris extends AbilityBase implements ActiveHandler {
 		}
 	}
 
-	DurationTimer d = new ChainTimer();
+	DurationTimer d = new ChainTimer(null);
 	CooldownTimer c = new CooldownTimer(cool.getValue());
 
 	public Aris(Participant participant) {
@@ -90,13 +96,14 @@ public class Aris extends AbilityBase implements ActiveHandler {
 	public boolean ActiveSkill(Material mt, ClickType ct) {
 		if (mt.equals(Material.IRON_INGOT) && ct.equals(ClickType.RIGHT_CLICK)) {
 			if ((!d.isDuration() || d == null) && chain != 0) {
-				if (LocationUtil.getNearbyPlayers(getPlayer(), range.getValue(), range.getValue()).isEmpty()) {
+				ArrayList<Player> players = LocationUtil.getNearbyEntities(Player.class, getPlayer().getLocation(), range.getValue(), range.getValue(), LocationPlusUtil.STRICT(getParticipant()));
+				if (players.isEmpty()) {
 					getPlayer().sendMessage("주변에 플레이어가 존재하지 않습니다.");
-				} else {
-					this.d = new ChainTimer();
-					d.start();
-					return true;
+					return false;
 				}
+				this.d = new ChainTimer(players);
+				d.start();
+				return true;
 			}
 		}
 		return false;
@@ -134,18 +141,19 @@ public class Aris extends AbilityBase implements ActiveHandler {
 	}
 	
 	class ChainTimer extends DurationTimer {
+		private final List<Player> players;
 
-		public ChainTimer() {
+		public ChainTimer(List<Player> players) {
 			super(Aris.this.chain*20);
 			this.setPeriod(TimeUnit.TICKS, 1);
+			this.players = players;
 		}
-		
+
 		@Override
 		protected void onDurationStart() {
 			passive.stop(false);
 			ac.update(null);
-			for (Player p : LocationUtil.getNearbyPlayers(getPlayer(), range.getValue(),
-					range.getValue())) {
+			for (Player p : players) {
 				ActionbarChannel channel = getGame().getParticipant(p).actionbar().newChannel();
 				holding.put(p, Pair.of(p.getLocation().clone().add(0, chain/2.0 + 4, 0), channel));
 			}

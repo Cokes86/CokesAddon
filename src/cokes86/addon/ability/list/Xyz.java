@@ -3,6 +3,7 @@ package cokes86.addon.ability.list;
 import java.util.HashMap;
 import java.util.Map;
 
+import daybreak.abilitywar.utils.library.PotionEffects;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -115,8 +116,10 @@ public class Xyz extends AbilityBase implements ActiveHandler {
 		}
 		
 		protected void onSilentEnd() {
-			for (ActionbarChannel ac : acs.values()) {
-				ac.unregister();
+			for (Participant ac : acs.keySet()) {
+				acs.get(ac).unregister();
+				PotionEffects.INCREASE_DAMAGE.removePotionEffect(ac.getPlayer());
+				PotionEffects.SPEED.removePotionEffect(ac.getPlayer());
 			}
 			acs.clear();
 			bar.remove();

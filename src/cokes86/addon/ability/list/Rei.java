@@ -78,7 +78,7 @@ public class Rei extends AbilityBase {
 
 	@SubscribeEvent(priority = 5)
 	public void onEntityDamage(EntityDamageEvent e) {
-		if (e.getEntity().equals(getPlayer()) && !c.isRunning()) {
+		if (e.getEntity().equals(getPlayer()) && !c.isRunning() && !e.isCancelled()) {
 			double damage = e.getFinalDamage();
 			if (getPlayer().getHealth() - damage <= 0) {
 				e.setDamage(0);

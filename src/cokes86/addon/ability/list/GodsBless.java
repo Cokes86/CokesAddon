@@ -25,7 +25,7 @@ import daybreak.abilitywar.utils.base.minecraft.Bar;
 import daybreak.abilitywar.utils.library.PotionEffects;
 
 @AbilityManifest(
-		name = "신의가호",
+		name = "신의 가호",
 		rank = Rank.S,
 		species = Species.HUMAN,
 		explain = {"철괴 우클릭 시 자신의 정체를 공개하고 $[dura]동안 대기시간을 가집니다.",
@@ -36,7 +36,7 @@ import daybreak.abilitywar.utils.library.PotionEffects;
 		"자신이 사망하거나 대기시간이 끝날 경우 해당 능력은 비활성화됩니다."}
 )
 public class GodsBless extends AbilityBase implements ActiveHandler {
-	public static final Config<Integer> dura = new Config<Integer>(GodsBless.class, "대기시간", 4) {
+	private static final Config<Integer> dura = new Config<Integer>(GodsBless.class, "대기시간", 4) {
 		@Override
 		public boolean Condition(Integer value) {
 			return value >= 0;

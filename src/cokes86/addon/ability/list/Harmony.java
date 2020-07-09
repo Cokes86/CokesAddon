@@ -1,5 +1,6 @@
 package cokes86.addon.ability.list;
 
+import cokes86.addon.utils.LocationPlusUtil;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
 
@@ -7,8 +8,6 @@ import daybreak.abilitywar.ability.AbilityBase;
 import daybreak.abilitywar.ability.AbilityManifest;
 import daybreak.abilitywar.ability.AbilityManifest.Rank;
 import daybreak.abilitywar.ability.AbilityManifest.Species;
-import daybreak.abilitywar.ability.SubscribeEvent;
-import daybreak.abilitywar.ability.event.AbilityRestrictionClearEvent;
 import daybreak.abilitywar.config.Configuration.Settings;
 import daybreak.abilitywar.game.AbstractGame.Participant;
 import daybreak.abilitywar.utils.base.concurrent.TimeUnit;
@@ -26,11 +25,6 @@ public class Harmony extends AbilityBase {
 		super(arg0);
 	}
 	
-	@SubscribeEvent(onlyRelevant = true)
-	public void onAbilityRestrictionClear(AbilityRestrictionClearEvent e) {
-		passive.start();
-	}
-	
 	protected void onUpdate(Update update) {
 		if (update == Update.RESTRICTION_CLEAR) {
 			passive.start();
@@ -41,7 +35,7 @@ public class Harmony extends AbilityBase {
 		@Override
 		protected void run(int arg0) {
 			int a = 0;
-			for (Player p : LocationUtil.getNearbyPlayers(getPlayer(), 10, 10)) {
+			for (Player p : LocationUtil.getNearbyEntities(Player.class, getPlayer().getLocation(), 10, 10, LocationPlusUtil.STRICT(getParticipant()))) {
 				a++;
 				p.setHealth(Math.min(p.getHealth()+0.5, Settings.getDefaultMaxHealth()));
 				for (Location l : Line.iteratorBetween(getPlayer().getLocation(), p.getLocation(), 10).iterable()) {

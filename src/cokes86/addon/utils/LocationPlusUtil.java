@@ -2,6 +2,8 @@ package cokes86.addon.utils;
 
 import java.util.function.Predicate;
 
+import daybreak.abilitywar.game.interfaces.TeamGame;
+import daybreak.abilitywar.game.manager.object.DeathManager;
 import org.bukkit.Location;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
@@ -47,18 +49,33 @@ public class LocationPlusUtil {
 	}
 	
 	public static Predicate<Entity> HAVE_ABILITY() {
-		return new Predicate<Entity> () {
-
-			@Override
-			public boolean test(Entity entity) {
-				if (GameManager.isGameRunning() && entity instanceof Player) {
-					AbstractGame game = GameManager.getGame();
-					Player player = (Player)entity;
-					return (game.isParticipating(player) && game.getParticipant(player).hasAbility());
-				}
-				return false;
+		return entity -> {
+			if (GameManager.isGameRunning() && entity instanceof Player) {
+				AbstractGame game = GameManager.getGame();
+				Player player = (Player)entity;
+				return (game.isParticipating(player) && game.getParticipant(player).hasAbility());
 			}
-			
+			return false;
+		};
+	}
+
+	public static Predicate<Entity> STRICT(AbstractGame.Participant participant) {
+		return entity -> {
+			if (entity.equals(participant.getPlayer())) return false;
+			if (entity instanceof Player) {
+				if (!participant.getGame().isParticipating(entity.getUniqueId())) return false;
+				AbstractGame.Participant target = participant.getGame().getParticipant(entity.getUniqueId());
+				if (participant.getGame() instanceof DeathManager.Handler) {
+					DeathManager.Handler game = (DeathManager.Handler)participant.getGame();
+					if (game.getDeathManager().isExcluded(entity.getUniqueId())) return false;
+				}
+				if (participant.getGame() instanceof TeamGame) {
+					TeamGame game = (TeamGame) participant.getGame();
+					return (!game.hasTeam(participant) || game.hasTeam(target) || game.getTeam(participant).equals(game.getTeam(target)));
+				}
+				return target.attributes().TARGETABLE.getValue();
+			}
+			return true;
 		};
 	}
 }

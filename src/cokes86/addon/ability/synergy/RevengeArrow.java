@@ -2,6 +2,7 @@ package cokes86.addon.ability.synergy;
 
 import java.util.Iterator;
 
+import cokes86.addon.utils.LocationPlusUtil;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.World;
@@ -113,7 +114,7 @@ public class RevengeArrow extends Synergy {
 					stop(false);
 					return;
 				}
-				for (Damageable damageable : LocationUtil.getConflictingDamageables(entity.getBoundingBox())) {
+				for (Damageable damageable : LocationUtil.getConflictingEntities(Damageable.class,entity.getBoundingBox(), LocationPlusUtil.STRICT(getParticipant()))) {
 					if (!shooter.equals(damageable) && !damageable.isDead() && damageable instanceof Player) {
 						damageable.damage(DamageUtil.getPenetratedDamage(shooter, (Player) damageable, damage), shooter);
 						stop(false);
