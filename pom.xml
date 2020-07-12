@@ -5,42 +5,53 @@
 
 	<groupId>Cokes_86.plugins</groupId>
 	<artifactId>CokesAddon</artifactId>
-	<version>1.0.0</version>
-	<packaging>jar</packaging>
+	<version>${revision}</version>
+	<packaging>pom</packaging>
 
-	<name>AbilityAddon</name>
-	
-	<dependencies>
-		<dependency>
-			<groupId>org.bukkit</groupId>
-			<artifactId>craftbukkit</artifactId>
-			<version>1.12.2-R0.1-SNAPSHOT</version>
-			<scope>provided</scope>
-		</dependency>
-		<dependency>
-			<groupId>DayBreak.AbilityWar</groupId>
-			<artifactId>AbilityWar</artifactId>
-			<version>2.1.8.8</version>
-			<scope>provided</scope>
-		</dependency>
-	</dependencies>
+	<modules>
+		<module>Addon</module>
+		<module>compatibility/v1_9_R1</module>
+		<module>compatibility/v1_9_R2</module>
+		<module>compatibility/v1_10_R1</module>
+		<module>compatibility/v1_11_R1</module>
+		<module>compatibility/v1_12_R1</module>
+		<module>compatibility/v1_13_R1</module>
+		<module>compatibility/v1_13_R2</module>
+		<module>compatibility/v1_14_R1</module>
+		<module>Jar</module>
+
+	</modules>
+
+	<name>CokesAddon</name>
 
 	<properties>
+		<revision>1.0.0</revision>
 		<encoding>UTF-8</encoding>
 		<maven.compiler.target>1.8</maven.compiler.target>
 		<maven.compiler.source>1.8</maven.compiler.source>
+		<bukkit-api-version>1.15-R0.1-SNAPSHOT</bukkit-api-version>
+		<abilitywar-version>2.1.9.0</abilitywar-version>
 	</properties>
 
 	<build>
 		<defaultGoal>clean package</defaultGoal>
-
 		<sourceDirectory>src</sourceDirectory>
-		<resources>
-			<resource>
-				<directory>resource</directory>
-				<filtering>true</filtering>
-			</resource>
-		</resources>
+		<pluginManagement>
+			<plugins>
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-jar-plugin</artifactId>
+					<configuration>
+						<archive>
+							<addMavenDescriptor>false</addMavenDescriptor>
+							<manifest>
+								<addClasspath>false</addClasspath>
+							</manifest>
+						</archive>
+					</configuration>
+				</plugin>
+			</plugins>
+		</pluginManagement>
 	</build>
 
 </project>
