@@ -17,7 +17,7 @@ public class AddonAbilityFactory {
 	protected static Map<String, Class<? extends Synergy>> synergies = new HashMap<>();
 	
 	static {
-		registerAbility("cokes86.addon.ability.list.phantomthief."+ ServerVersion.getVersion().name()+".PhantomThief");
+		registerAbility("cokes86.addon.ability.list.phantomthief."+ ServerVersion.getVersion().name());
 		registerAbility(Seth.class);
 		registerAbility(Rabbit.class);
 		registerAbility(Ovisni.class);
@@ -37,7 +37,7 @@ public class AddonAbilityFactory {
 		registerAbility(Revenge.class);
 		registerAbility(EnchantArrow.class);
 		registerAbility(VigilanteLeader.class);
-		registerAbility(Pocker.class);
+		registerAbility(Poker.class);
 		registerAbility(DataMining.class);
 		registerAbility(Xyz.class);
 		registerAbility(Keily.class);
@@ -48,7 +48,7 @@ public class AddonAbilityFactory {
 		registerAbility(Wily.class);
 		registerAbility(Harmony.class);
 		
-		registerSynergy(Pocker.class, Pocker.class, RoyalStraightFlush.class);
+		registerSynergy(Poker.class, Poker.class, RoyalStraightFlush.class);
 		registerSynergy(GodsBless.class, Xyz.class, TheEnd.class);
 		registerSynergy(GodsBless.class, GodsBless.class, TheEnd.class);
 		registerSynergy(Xyz.class, Xyz.class, TheEnd.class);

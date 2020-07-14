@@ -3,10 +3,11 @@
   <parent>
     <artifactId>CokesAddon</artifactId>
     <groupId>Cokes_86.plugins</groupId>
-    <version>1.0.0</version>
+    <version>${revision}</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <artifactId>Jar</artifactId>
+  <version>${revision}</version>
   <build>
     <finalName>CokesAddon-${project.version}</finalName>
     <plugins>

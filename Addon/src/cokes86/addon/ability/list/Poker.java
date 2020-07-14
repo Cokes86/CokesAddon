@@ -13,7 +13,6 @@ import cokes86.addon.configuration.ability.Config;
 import cokes86.addon.utils.DamagePlusUtil;
 import daybreak.abilitywar.ability.AbilityBase;
 import daybreak.abilitywar.ability.AbilityManifest;
-import daybreak.abilitywar.ability.Scheduled;
 import daybreak.abilitywar.ability.SubscribeEvent;
 import daybreak.abilitywar.ability.decorator.ActiveHandler;
 import daybreak.abilitywar.game.AbstractGame.Participant;
@@ -31,9 +30,9 @@ import daybreak.abilitywar.utils.library.SoundLib;
 		"§e트리플§f : 3개의 숫자가 모두 같은 경우입니다.",
 		"자신을 제외한 모든 플레이어에게 (트리플의 수 * 1.5)의 관통대미지를 줍니다."}
 )
-public class Pocker extends AbilityBase implements ActiveHandler {
+public class Poker extends AbilityBase implements ActiveHandler {
 	int[] num = new int[3];
-	private static final Config<Integer> cool = new Config<Integer>(Pocker.class, "쿨타임", 30, 1) {
+	private static final Config<Integer> cool = new Config<Integer>(Poker.class, "쿨타임", 30, 1) {
 		@Override
 		public boolean Condition(Integer value) {
 			return value >= 0;
@@ -42,13 +41,12 @@ public class Pocker extends AbilityBase implements ActiveHandler {
 	int additional = 0;
 	ActionbarChannel ac = newActionbarChannel();
 
-	public Pocker(Participant participant) {
+	public Poker(Participant participant) {
 		super(participant);
 	}
 	
 	CooldownTimer c = new CooldownTimer(cool.getValue());
-	
-	@Scheduled
+
 	Timer p = new Timer() {
 		@Override
 		protected void run(int var1) {

@@ -128,7 +128,6 @@ public class Elva extends AbilityBase {
 	public void onProjectileLaunch(EntityShootBowEvent e) {
 		if (getPlayer().equals(e.getEntity()) && e.getProjectile() instanceof Arrow) {
 			e.setCancelled(true);
-			getPlayer().updateInventory();
 		}
 	}
 	

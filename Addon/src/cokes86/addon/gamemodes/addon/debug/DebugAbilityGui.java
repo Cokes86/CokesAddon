@@ -121,13 +121,15 @@ public class DebugAbilityGui implements Listener {
 						ChatColor.translateAlternateColorCodes('&', "&f" + manifest.species().getSpeciesName()),
 						joiner.toString(), "");
 				Function<MatchResult, String> valueProvider = matchResult -> {
-					assert matchResult != null;
-					Field field = registration.getFields().get(matchResult.group(1));
-					if (field != null && Modifier.isStatic(field.getModifiers()))
-						try {
-							return String.valueOf(ReflectionUtil.setAccessible(field).get(null));
-						} catch (IllegalAccessException ignored) {
-						}
+					try {
+						Field field = registration.getAbilityClass().getDeclaredField(matchResult.group(1));
+						if (field != null && Modifier.isStatic(field.getModifiers()))
+							try {
+								return String.valueOf(ReflectionUtil.setAccessible(field).get(null));
+							} catch (IllegalAccessException ignored) {
+							}
+					} catch (NoSuchFieldException ignored) {
+					}
 					return "?";
 				};
 				for (String explain : manifest.explain())

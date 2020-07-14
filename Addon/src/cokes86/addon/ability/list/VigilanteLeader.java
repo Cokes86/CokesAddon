@@ -5,8 +5,6 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.function.Predicate;
 
-import cokes86.addon.utils.LocationPlusUtil;
-import daybreak.abilitywar.game.interfaces.TeamGame;
 import daybreak.abilitywar.game.manager.object.DeathManager;
 import org.bukkit.Location;
 import org.bukkit.Material;

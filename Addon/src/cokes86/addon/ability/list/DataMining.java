@@ -93,7 +93,7 @@ public class DataMining extends AbilityBase implements ActiveHandler {
 		}
 	}
 
-	@SubscribeEvent(priority = 100)
+	@SubscribeEvent(priority = 4)
 	public void onEntityDamageByEntity(EntityDamageByEntityEvent e) {
 		if (e.getEntity() instanceof Player) {
 			Player entity = (Player) e.getEntity();

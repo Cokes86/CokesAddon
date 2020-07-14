@@ -97,14 +97,14 @@ public class AddonAbilityGui implements Listener {
 					"");
 			
 			Function<MatchResult, String> valueProvider = matchResult -> {
-				Field field = registration.getFields().get(matchResult.group(1));
-				if (field != null) {
-					if (Modifier.isStatic(field.getModifiers())) {
+				try {
+					Field field = registration.getAbilityClass().getDeclaredField(matchResult.group(1));
+					if (field != null && Modifier.isStatic(field.getModifiers()))
 						try {
 							return String.valueOf(ReflectionUtil.setAccessible(field).get(null));
 						} catch (IllegalAccessException ignored) {
 						}
-					}
+				} catch (NoSuchFieldException ignored) {
 				}
 				return "?";
 			};

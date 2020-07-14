@@ -12,7 +12,6 @@ import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
 import cokes86.addon.configuration.ability.Config;
 import daybreak.abilitywar.ability.AbilityBase;
 import daybreak.abilitywar.ability.AbilityManifest;
-import daybreak.abilitywar.ability.Scheduled;
 import daybreak.abilitywar.ability.SubscribeEvent;
 import daybreak.abilitywar.ability.decorator.ActiveHandler;
 import daybreak.abilitywar.game.AbstractGame.Participant;
@@ -40,7 +39,6 @@ public class Keily extends AbilityBase implements ActiveHandler {
 	boolean falling = false;
 	final int count = WRECK.isEnabled(GameManager.getGame()) ? (int) ((100 - Configuration.Settings.getCooldownDecrease().getPercentage()) / 100.0 * dura.getValue()) : dura.getValue();
 
-	@Scheduled
 	private final Timer stackAdder = new Timer() {
 		@Override
 		protected void run(int count) {

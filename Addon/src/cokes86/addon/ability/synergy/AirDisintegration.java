@@ -19,7 +19,6 @@ import cokes86.addon.configuration.synergy.Config;
 import daybreak.abilitywar.ability.AbilityManifest;
 import daybreak.abilitywar.ability.AbilityManifest.Rank;
 import daybreak.abilitywar.ability.AbilityManifest.Species;
-import daybreak.abilitywar.ability.Scheduled;
 import daybreak.abilitywar.ability.SubscribeEvent;
 import daybreak.abilitywar.ability.decorator.ActiveHandler;
 import daybreak.abilitywar.game.AbstractGame.Participant;
@@ -56,8 +55,7 @@ public class AirDisintegration extends Synergy implements ActiveHandler {
 	private LinkedList<LivingEntity> entities = null;
 	boolean falling = false;
 	CooldownTimer cooldown = new CooldownTimer(cool.getValue());
-	
-	@Scheduled
+
 	Timer passive = new Timer() {
 
 		@Override
@@ -114,6 +112,12 @@ public class AirDisintegration extends Synergy implements ActiveHandler {
 
 	public AirDisintegration(Participant participant) {
 		super(participant);
+	}
+
+	public void onUpdate(Update update) {
+		if (update == Update.RESTRICTION_CLEAR) {
+			passive.start();
+		}
 	}
 
 	@Override
