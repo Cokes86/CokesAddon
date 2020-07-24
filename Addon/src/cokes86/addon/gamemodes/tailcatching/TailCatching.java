@@ -5,9 +5,7 @@ import cokes86.addon.configuration.gamemode.GameConfiguration;
 import cokes86.addon.configuration.gamemode.GameNodes;
 import daybreak.abilitywar.AbilityWar;
 import daybreak.abilitywar.config.Configuration;
-import daybreak.abilitywar.game.AbstractGame;
-import daybreak.abilitywar.game.Game;
-import daybreak.abilitywar.game.GameManifest;
+import daybreak.abilitywar.game.*;
 import daybreak.abilitywar.game.event.GameCreditEvent;
 import daybreak.abilitywar.game.interfaces.Winnable;
 import daybreak.abilitywar.game.manager.AbilityList;
@@ -15,14 +13,15 @@ import daybreak.abilitywar.game.manager.object.DeathManager;
 import daybreak.abilitywar.game.manager.object.DefaultKitHandler;
 import daybreak.abilitywar.game.script.manager.ScriptManager;
 import daybreak.abilitywar.utils.base.Messager;
-import daybreak.abilitywar.utils.base.collect.Pair;
 import daybreak.abilitywar.utils.base.concurrent.TimeUnit;
 import daybreak.abilitywar.utils.base.minecraft.PlayerCollector;
 import daybreak.abilitywar.utils.library.SoundLib;
 import org.bukkit.*;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
 import org.bukkit.event.HandlerList;
+import org.bukkit.event.Listener;
 import org.bukkit.event.entity.PlayerDeathEvent;
 
 import javax.naming.OperationNotSupportedException;
@@ -31,10 +30,12 @@ import java.util.*;
 import static daybreak.abilitywar.game.GameManager.stopGame;
 
 @GameManifest(name = "꼬리잡기 능력자 전쟁", description = { "§f한국의 민속놀이가 능력자 전쟁으로!", "§f자신의 목표를 찾아 죽여내자!" })
-public class TailCatching extends Game implements DefaultKitHandler, Winnable, AbstractGame.Observer {
+@Category(value = Category.GameCategory.GAME)
+@GameAliases(value = {"꼬리잡기", "꼬능전"})
+public class TailCatching extends Game implements DefaultKitHandler, Winnable, AbstractGame.Observer, Listener {
     private final boolean invincible;
     ArrayList<Participant> list;
-    Map<Participant, Pair<Participant.ActionbarNotification.ActionbarChannel, Participant.ActionbarNotification.ActionbarChannel>> channel = new HashMap<>();
+    Map<Participant, Participant.ActionbarNotification.ActionbarChannel> channel = new HashMap<>();
     private final int range;
 
     public TailCatching() {
@@ -77,7 +78,7 @@ public class TailCatching extends Game implements DefaultKitHandler, Winnable, A
                 }
                 this.list = new ArrayList<>(getParticipants());
                 for (Participant participant : list) {
-                    channel.put(participant, Pair.of(participant.actionbar().newChannel(), participant.actionbar().newChannel()));
+                    channel.put(participant, participant.actionbar().newChannel());
                 }
                 suffle();
                 break;
@@ -194,28 +195,25 @@ public class TailCatching extends Game implements DefaultKitHandler, Winnable, A
         }
     }
 
-    @EventHandler
+    @EventHandler(priority = EventPriority.LOW)
     public void onPlayerDeath(PlayerDeathEvent e) {
         Player killed = e.getEntity(), killer = e.getEntity().getKiller();
         if (killer != null && isParticipating(killed) && isParticipating(killer)) {
             Participant killedParticipant = getParticipant(killed), killerParticipant = getParticipant(killer);
             if (list.contains(killedParticipant) && list.contains(killerParticipant)) {
-                channel.get(killedParticipant).getLeft().unregister();
-                channel.get(killedParticipant).getRight().unregister();
+                channel.get(killedParticipant).unregister();
                 channel.remove(killedParticipant);
 
                 int killedIndex = list.indexOf(killedParticipant), killerIndex = list.indexOf(killerParticipant);
 
                 if (killerIndex + 1 != killedIndex) {
                     killer.setHealth(0);
-                    channel.get(killerParticipant).getLeft().unregister();
-                    channel.get(killerParticipant).getRight().unregister();
+                    channel.get(killerParticipant).unregister();
                     channel.remove(killerParticipant);
                     Bukkit.broadcastMessage("[꼬리잡기] 이런! 자신의 타겟을 못잡은 "+killer.getName()+"님도 힘께 죽습니다!");
                 } else if (!(killerIndex == list.size()-1 && killedIndex == 0)) {
                     killer.setHealth(0);
-                    channel.get(killerParticipant).getLeft().unregister();
-                    channel.get(killerParticipant).getRight().unregister();
+                    channel.get(killerParticipant).unregister();
                     channel.remove(killerParticipant);
                     Bukkit.broadcastMessage("[꼬리잡기] 이런! 자신의 타겟을 못잡은 "+killer.getName()+"님도 힘께 죽습니다!");
                 }
@@ -292,11 +290,9 @@ public class TailCatching extends Game implements DefaultKitHandler, Winnable, A
                         double length = participant1.getPlayer().getLocation().subtract(participant2.getPlayer().getLocation()).length();
 
                         if ((index1 + 1 == index2 || (index1 == list.size()-1 && index2 == 0)) && length <= range) {
-                            channel.get(participant1).getLeft().update("§c§l타겟 접근 중");
-                            channel.get(participant2).getRight().update("§c§l누군가가 당신을 노리는 중");
+                            channel.get(participant1).update("§c§l타겟 접근 중");
                         } else {
-                            channel.get(participant1).getLeft().update(null);
-                            channel.get(participant2).getRight().update(null);
+                            channel.get(participant1).update(null);
                         }
                     }
                 }

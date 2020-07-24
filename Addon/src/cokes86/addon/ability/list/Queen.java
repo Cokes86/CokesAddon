@@ -28,14 +28,13 @@ public class Queen extends AbilityBase implements ActiveHandler, TargetHandler {
 	double defaultHealth = Settings.getDefaultMaxHealth();
 
 	private static final Config<Integer> cool = new Config<Integer>(Queen.class, "쿨타임", 120, 1) {
-
 		@Override
-		public boolean Condition(Integer value) {
+		public boolean condition(Integer value) {
 			return value >= 0;
 		}
 		
 	};
-	CooldownTimer cooldown = new CooldownTimer(cool.getValue());
+	Cooldown cooldown = new Cooldown(cool.getValue());
 	
 	public Queen(Participant arg0) {
 		super(arg0);

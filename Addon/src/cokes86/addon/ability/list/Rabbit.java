@@ -1,9 +1,8 @@
 package cokes86.addon.ability.list;
 
-import cokes86.addon.utils.LocationPlusUtil;
+import daybreak.abilitywar.game.manager.object.DeathManager;
+import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
-import org.bukkit.potion.PotionEffect;
-import org.bukkit.potion.PotionEffectType;
 
 import cokes86.addon.configuration.ability.Config;
 import daybreak.abilitywar.ability.AbilityBase;
@@ -15,6 +14,8 @@ import daybreak.abilitywar.utils.base.concurrent.TimeUnit;
 import daybreak.abilitywar.utils.base.math.LocationUtil;
 import daybreak.abilitywar.utils.library.PotionEffects;
 
+import java.util.function.Predicate;
+
 @AbilityManifest(
 		name = "토끼",
 		rank = Rank.B,
@@ -25,14 +26,28 @@ import daybreak.abilitywar.utils.library.PotionEffects;
 public class Rabbit extends AbilityBase {
 	private static final Config<Integer> range = new Config<Integer>(Rabbit.class, "범위", 7) {
 		@Override
-		public boolean Condition(Integer value) {
+		public boolean condition(Integer value) {
 			return value > 0;
 		}
 	};
 
 	public Rabbit(Participant arg0) {
 		super(arg0);
+		Passive.register();
 	}
+
+	private final Predicate<Entity> predicate = entity -> {
+		if (entity.equals(getPlayer())) return false;
+		if (entity instanceof Player) {
+			if (!getGame().isParticipating(entity.getUniqueId())) return false;
+			if (getGame() instanceof DeathManager.Handler) {
+				DeathManager.Handler game = (DeathManager.Handler) getGame();
+				return !game.getDeathManager().isExcluded(entity.getUniqueId());
+			}
+			return getGame().getParticipant(entity.getUniqueId()).attributes().TARGETABLE.getValue();
+		}
+		return true;
+	};
 	
 	protected void onUpdate(Update update) {
 		if (update == Update.RESTRICTION_CLEAR) {
@@ -43,12 +58,12 @@ public class Rabbit extends AbilityBase {
 		}
 	}
 
-	Timer Passive = new Timer() {
+	AbilityTimer Passive = new AbilityTimer() {
 		@Override
 		protected void run(int arg0) {
-			getPlayer().addPotionEffect(new PotionEffect(PotionEffectType.JUMP, Integer.MAX_VALUE, 1));
-			if (!LocationUtil.getNearbyEntities(Player.class, getPlayer().getLocation(), range.getValue(), range.getValue(), LocationPlusUtil.STRICT(getParticipant())).isEmpty()) {
-				getPlayer().addPotionEffect(new PotionEffect(PotionEffectType.SPEED, Integer.MAX_VALUE, 1));
+			PotionEffects.JUMP.addPotionEffect(getPlayer(), Integer.MAX_VALUE,1,true);
+			if (!LocationUtil.getNearbyEntities(Player.class, getPlayer().getLocation(), range.getValue(), range.getValue(), predicate).isEmpty()) {
+				PotionEffects.SPEED.addPotionEffect(getPlayer(), Integer.MAX_VALUE,1,true);
 			} else {
 				PotionEffects.SPEED.removePotionEffect(getPlayer());
 			}

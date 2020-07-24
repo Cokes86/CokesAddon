@@ -1,9 +1,13 @@
 package cokes86.addon.ability.synergy;
 
 import java.util.Random;
+import java.util.function.Predicate;
 
-import cokes86.addon.utils.LocationPlusUtil;
+import daybreak.abilitywar.game.AbstractGame;
+import daybreak.abilitywar.game.interfaces.TeamGame;
+import daybreak.abilitywar.game.manager.object.DeathManager;
 import org.bukkit.Material;
+import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 
 import cokes86.addon.configuration.synergy.Config;
@@ -35,11 +39,28 @@ public class RoyalStraightFlush extends Synergy implements ActiveHandler {
 				}
 	};
 	
-	CooldownTimer cooldown = new CooldownTimer(cool.getValue());
+	Cooldown cooldown = new Cooldown(cool.getValue());
 	
 	public RoyalStraightFlush(Participant participant) {
 		super(participant);
 	}
+
+	private final Predicate<Entity> predicate = entity -> {
+		if (entity.equals(getPlayer())) return false;
+		if (entity instanceof Player) {
+			if (!getGame().isParticipating(entity.getUniqueId())) return false;
+			AbstractGame.Participant target = getGame().getParticipant(entity.getUniqueId());
+			if (getGame() instanceof DeathManager.Handler) {
+				DeathManager.Handler game = (DeathManager.Handler) getGame();
+				if (game.getDeathManager().isExcluded(entity.getUniqueId())) return false;
+			}
+			if (getGame() instanceof TeamGame) {
+				TeamGame game = (TeamGame) getGame();
+				return (!game.hasTeam(getParticipant()) || game.hasTeam(target) || game.getTeam(getParticipant()).equals(game.getTeam(target)));
+			}
+		}
+		return true;
+	};
 
 	@Override
 	public boolean ActiveSkill(Material arg0, ClickType arg1) {
@@ -49,7 +70,7 @@ public class RoyalStraightFlush extends Synergy implements ActiveHandler {
 				int a = new Random().nextInt(20), b = new Random().nextInt(20);
 				getPlayer().sendMessage("숫자를 뽑습니다 : "+a+", "+b);
 				getPlayer().sendMessage("총 "+(a+b)/2.0+"대미지를 상대방에게 줍니다.");
-				for (Player p : LocationUtil.getNearbyEntities(Player.class, getPlayer().getLocation(), r, r, LocationPlusUtil.STRICT(getParticipant()))) {
+				for (Player p : LocationUtil.getNearbyEntities(Player.class, getPlayer().getLocation(), r, r, predicate)) {
 					p.damage((a+b)/2.0);
 					SoundLib.ENTITY_FIREWORK_ROCKET_TWINKLE_FAR.playSound(p);
 				}

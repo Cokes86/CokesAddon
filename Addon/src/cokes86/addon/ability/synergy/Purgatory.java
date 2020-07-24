@@ -28,7 +28,7 @@ import daybreak.abilitywar.utils.base.minecraft.Bar;
 		"이후 지속시간이 종료될 시 모든 플레이어는 모든 죄를 씻고 능력을 재추첨받습니다."
 })
 public class Purgatory extends Synergy implements ActiveHandler {
-	DurationTimer timer = new DurationTimer(10) {
+	Duration timer = new Duration(10) {
 		Bar bar;
 		
 		protected void onDurationStart() {

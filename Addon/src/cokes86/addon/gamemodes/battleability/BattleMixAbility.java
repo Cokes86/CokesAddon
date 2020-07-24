@@ -6,9 +6,7 @@ import daybreak.abilitywar.AbilityWar;
 import daybreak.abilitywar.ability.AbilityBase;
 import daybreak.abilitywar.ability.AbilityFactory;
 import daybreak.abilitywar.config.Configuration;
-import daybreak.abilitywar.game.AbstractGame;
-import daybreak.abilitywar.game.GameManager;
-import daybreak.abilitywar.game.GameManifest;
+import daybreak.abilitywar.game.*;
 import daybreak.abilitywar.game.event.GameCreditEvent;
 import daybreak.abilitywar.game.interfaces.Winnable;
 import daybreak.abilitywar.game.list.mix.AbstractMix;
@@ -41,7 +39,9 @@ import java.util.Random;
         "§f줄어들기 전에 얼른 사냥해라!",
         "§f※게임 시작 전에 게임 스폰을 지정해주세요."
 })
-public class BattleMixAbility extends AbstractMix implements DefaultKitHandler, Winnable, AbstractGame.Observer, Border.Handler {
+@Category(value = Category.GameCategory.GAME)
+@GameAliases(value = {"자기장믹스", "자믹스"})
+public class BattleMixAbility extends AbstractMix implements DefaultKitHandler, Winnable, AbstractGame.Observer {
     private final Location location;
     private final World world;
     private final double size;
@@ -58,11 +58,6 @@ public class BattleMixAbility extends AbstractMix implements DefaultKitHandler, 
 
         location = wb.getCenter();
         size = wb.getSize();
-    }
-
-    @Override
-    public Border getBorder() {
-        return border;
     }
 
     @Override
@@ -255,7 +250,7 @@ public class BattleMixAbility extends AbstractMix implements DefaultKitHandler, 
                 WorldBorder wb = world.getWorldBorder();
 
                 if (isRestricted()) {
-                    getBorder().start(false);
+                    getInvincibility().start(false);
                 } else {
                     Bukkit.broadcastMessage(ChatColor.translateAlternateColorCodes('&', "&4초반 무적&c이 적용되지 않습니다."));
                     setRestricted(false);

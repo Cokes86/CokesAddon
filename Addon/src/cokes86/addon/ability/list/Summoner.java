@@ -4,7 +4,8 @@ import java.util.ArrayList;
 import java.util.Random;
 import java.util.function.Predicate;
 
-import cokes86.addon.utils.LocationPlusUtil;
+import daybreak.abilitywar.game.interfaces.TeamGame;
+import daybreak.abilitywar.utils.base.minecraft.nms.NMS;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.entity.Entity;
@@ -18,6 +19,7 @@ import daybreak.abilitywar.ability.decorator.ActiveHandler;
 import daybreak.abilitywar.game.AbstractGame;
 import daybreak.abilitywar.game.AbstractGame.Participant;
 import daybreak.abilitywar.game.manager.object.DeathManager;
+import org.bukkit.entity.Player;
 
 @AbilityManifest(
 		name = "소환사",
@@ -29,55 +31,64 @@ import daybreak.abilitywar.game.manager.object.DeathManager;
 )
 public class Summoner extends AbilityBase implements ActiveHandler {
 	public static Config<Integer> duration = new Config<Integer>(Summoner.class, "대기시간", 3, 2) {
-		public boolean Condition(Integer value) {
+		public boolean condition(Integer value) {
 			return value >= 0;
 		}
 	};
 	Location l;
 	Participant target;
+	boolean active = true;
 
 	public Summoner(Participant arg0) {
 		super(arg0);
 	}
 
+	private final Predicate<Entity> predicate = entity -> {
+		if (entity.equals(getPlayer())) return false;
+		if (entity instanceof Player) {
+			if (!getGame().isParticipating(entity.getUniqueId())) return false;
+			AbstractGame.Participant target = getGame().getParticipant(entity.getUniqueId());
+			if (getGame() instanceof DeathManager.Handler) {
+				DeathManager.Handler game = (DeathManager.Handler) getGame();
+				if (game.getDeathManager().isExcluded(entity.getUniqueId())) return false;
+			}
+			if (getGame() instanceof TeamGame) {
+				TeamGame game = (TeamGame) getGame();
+				return (!game.hasTeam(getParticipant()) || game.hasTeam(target) || game.getTeam(getParticipant()).equals(game.getTeam(target)));
+			}
+			return target.attributes().TARGETABLE.getValue();
+		}
+		return true;
+	};
+
 	@Override
 	public boolean ActiveSkill(Material arg0, ClickType arg1) {
-		if (arg0.equals(Material.IRON_INGOT) && arg1.equals(ClickType.RIGHT_CLICK) && !Active.isRunning()) {
-				AbstractGame g = getGame();
-				ArrayList<Participant> par = new ArrayList<>(g.getParticipants());
-				par.remove(getParticipant());
-				if (getGame() instanceof DeathManager.Handler) {
-					ArrayList<Participant> par2 = new ArrayList<>(par);
-					for (Participant participant : par2) {
-						if (((DeathManager.Handler) getGame()).getDeathManager().isExcluded(participant.getPlayer())) {
-							par.remove(participant);
-						}
-					}
-				}
-				for (Participant p : new ArrayList<>(par)) {
-					Predicate<Entity> predicate = LocationPlusUtil.STRICT(getParticipant());
-					if (!predicate.test(p.getPlayer())) par.remove(p);
-				}
-				Random r = new Random();
+		if (arg0.equals(Material.IRON_INGOT) && arg1.equals(ClickType.RIGHT_CLICK) && !Active.isRunning() && active) {
+			AbstractGame g = getGame();
+			ArrayList<Participant> par = new ArrayList<>(g.getParticipants());
+			par.removeIf(p -> !predicate.test(p.getPlayer()));
+			Random r = new Random();
 
-				if (par.size() > 0) {
-					target = par.get(r.nextInt(par.size()));
-					getPlayer().sendMessage(target.getPlayer().getName()+"님을 소환합니다.");
-					Active.start();
-					return true;
-				} else {
-					getPlayer().sendMessage("자신을 제외한 플레이어가 존재하지 않습니다.");
-					return false;
-				}
+			if (par.size() > 0) {
+				target = par.get(r.nextInt(par.size()));
+				getPlayer().sendMessage(target.getPlayer().getName()+"님을 소환합니다.");
+				Active.start();
+				return true;
+			} else {
+				getPlayer().sendMessage("자신을 제외한 플레이어가 존재하지 않습니다.");
+				return false;
 			}
+		}
 		return false;
 	}
 
-	Timer Active = new Timer(duration.getValue()) {
+	AbilityTimer Active = new AbilityTimer(duration.getValue()) {
 		@Override
 		protected void onEnd() {
+			NMS.clearTitle(target.getPlayer());
 			target.getPlayer().teleport(l);
 			onSilentEnd();
+			active = false;
 		}
 
 		@Override
@@ -92,7 +103,7 @@ public class Summoner extends AbilityBase implements ActiveHandler {
 
 		@Override
 		protected void onStart() {
-			target.getPlayer().sendTitle("경   고", "소환사가 당신을 소환하고 있습니다", 5, duration.getValue() * 20 - 10, 5);
+			NMS.sendTitle(target.getPlayer(), "경   고", "소환사가 당신을 소환하고 있습니다", 5, duration.getValue() * 20 - 10, 5);
 			l = getPlayer().getLocation();
 		}
 	};

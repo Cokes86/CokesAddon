@@ -22,24 +22,40 @@ import daybreak.abilitywar.utils.library.SoundLib;
 import daybreak.google.common.base.Strings;
 
 @AbilityManifest(name = "케일리", rank = AbilityManifest.Rank.S, species = AbilityManifest.Species.HUMAN, explain = {
-		"자신은 폭발공격을 받지 않습니다.", "$[dura]마다 스위치를 1개씩 얻으며 최대 3개까지 얻습니다.",
-		"철괴 우클릭 시 스위치를 전부 소모해 자신의 위치에서 (소모한 스위치 * 1.3F)의 위력으로 폭발하고",
-		"2초간 공중에 날 수 있습니다. $[cool]", "또한 능력 사용 직후 1회에 한해 낙하데미지를 받지 않습니다."})
+		"자신은 폭발공격을 받지 않습니다.", "$[dura]마다 스위치를 1개씩 얻으며 최대 $[max_switch]개까지 얻습니다.",
+		"철괴 우클릭 시 스위치를 전부 소모해 자신의 위치에서 (소모한 스위치 * $[fuse])의 위력으로 폭발하고",
+		"$[duration]간 공중에 날 수 있습니다. $[cool]", "또한 능력 사용 직후 1회에 한해 낙하데미지를 받지 않습니다."})
 public class Keily extends AbilityBase implements ActiveHandler {
 	private static final Config<Integer> dura = new Config<Integer>(Keily.class, "카운터생성주기", 45, 2) {
-		public boolean Condition(Integer value) {
+		public boolean condition(Integer value) {
 			return value > 0;
 		}
 	}, cool = new Config<Integer>(Keily.class, "쿨타임", 45, 1) {
-		public boolean Condition(Integer value) {
+		public boolean condition(Integer value) {
 			return value > 0;
+		}
+	}, duration = new Config<Integer>(Keily.class, "비행지속시간", 2, 2) {
+		@Override
+		public boolean condition(Integer value) {
+			return value >= 0;
+		}
+	}, max_switch = new Config<Integer>(Keily.class, "최대_스위치", 3) {
+		@Override
+		public boolean condition(Integer value) {
+			return value > 0;
+		}
+	};
+	private static final Config<Float> fuse = new Config<Float>(Keily.class, "폭발_위력", 1.3f) {
+		@Override
+		public boolean condition(Float value) {
+			return value > 0.0;
 		}
 	};
 	
 	boolean falling = false;
 	final int count = WRECK.isEnabled(GameManager.getGame()) ? (int) ((100 - Configuration.Settings.getCooldownDecrease().getPercentage()) / 100.0 * dura.getValue()) : dura.getValue();
 
-	private final Timer stackAdder = new Timer() {
+	private final AbilityTimer stackAdder = new AbilityTimer() {
 		@Override
 		protected void run(int count) {
 		if (!c.isRunning() && !flying.isRunning()) {
@@ -47,11 +63,11 @@ public class Keily extends AbilityBase implements ActiveHandler {
 				switchCounter++;
 			}
 			channel.update(ChatColor.DARK_GREEN.toString().concat(Strings.repeat("●", switchCounter)
-					.concat(Strings.repeat("○", 3 - switchCounter))));
+					.concat(Strings.repeat("○", max_switch.getValue() - switchCounter))));
 		}
 		}
 	}.setPeriod(TimeUnit.SECONDS, count);
-	CooldownTimer c = new CooldownTimer(cool.getValue());
+	Cooldown c = new Cooldown(cool.getValue());
 
 	ActionbarChannel channel = newActionbarChannel();
 	int switchCounter = 0;
@@ -62,7 +78,7 @@ public class Keily extends AbilityBase implements ActiveHandler {
 		}
 	}
 	
-	DurationTimer flying = new DurationTimer(2) {
+	Duration flying = new Duration(duration.getValue()) {
 
 		@Override
 		protected void onDurationStart() {
@@ -92,16 +108,17 @@ public class Keily extends AbilityBase implements ActiveHandler {
 
 	public Keily(Participant arg0) {
 		super(arg0);
+		stackAdder.register();
 	}
 
 	@Override
 	public boolean ActiveSkill(Material arg0, ClickType arg1) {
 		if (arg0.equals(Material.IRON_INGOT) && arg1.equals(ClickType.RIGHT_CLICK)) {
 			if (switchCounter > 0 && !flying.isRunning() && !c.isCooldown()) {
-				getPlayer().getWorld().createExplosion(getPlayer().getLocation(), switchCounter * 1.3F, false);
+				getPlayer().getWorld().createExplosion(getPlayer().getLocation(), switchCounter * fuse.getValue(), false);
 				switchCounter = 0;
 				channel.update(ChatColor.DARK_GREEN.toString().concat(Strings.repeat("●", switchCounter)
-						.concat(Strings.repeat("○", 3 - switchCounter))));
+						.concat(Strings.repeat("○", max_switch.getValue() - switchCounter))));
 				flying.start();
 				return true;
 			}

@@ -1,12 +1,17 @@
 package cokes86.addon.ability.synergy;
 
 import java.util.Iterator;
+import java.util.function.Predicate;
 
-import cokes86.addon.utils.LocationPlusUtil;
+import daybreak.abilitywar.game.AbstractGame;
+import daybreak.abilitywar.game.interfaces.TeamGame;
+import daybreak.abilitywar.game.manager.object.DeathManager;
+import daybreak.abilitywar.utils.base.minecraft.damage.Damages;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.World;
 import org.bukkit.entity.Damageable;
+import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Projectile;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
@@ -24,7 +29,6 @@ import daybreak.abilitywar.game.list.mix.synergy.Synergy;
 import daybreak.abilitywar.utils.base.concurrent.TimeUnit;
 import daybreak.abilitywar.utils.base.math.LocationUtil;
 import daybreak.abilitywar.utils.base.math.geometry.Line;
-import daybreak.abilitywar.utils.base.minecraft.DamageUtil;
 import daybreak.abilitywar.utils.base.minecraft.entity.decorator.Deflectable;
 import daybreak.abilitywar.utils.library.ParticleLib;
 import daybreak.abilitywar.utils.library.ParticleLib.RGB;
@@ -68,13 +72,30 @@ public class RevengeArrow extends Synergy {
 					Vector vector = damager.getLocation().clone().subtract(getPlayer().getLocation().clone()).toVector()
 							.normalize();
 					new Bullet(getPlayer(), getPlayer().getLocation().clone().add(vector.multiply(.25)), vector,
-							RGB.of(100, 100, 100), e.getFinalDamage() / 2).start();
+							RGB.of(100, 100, 100), e.getDamage() / 2).start();
 				}
 			}
 		}
 	}
 
-	public class Bullet extends Timer {
+	private final Predicate<Entity> predicate = entity -> {
+		if (entity.equals(getPlayer())) return false;
+		if (entity instanceof Player) {
+			if (!getGame().isParticipating(entity.getUniqueId())) return false;
+			AbstractGame.Participant target = getGame().getParticipant(entity.getUniqueId());
+			if (getGame() instanceof DeathManager.Handler) {
+				DeathManager.Handler game = (DeathManager.Handler) getGame();
+				if (game.getDeathManager().isExcluded(entity.getUniqueId())) return false;
+			}
+			if (getGame() instanceof TeamGame) {
+				TeamGame game = (TeamGame) getGame();
+				return (!game.hasTeam(getParticipant()) || game.hasTeam(target) || game.getTeam(getParticipant()).equals(game.getTeam(target)));
+			}
+		}
+		return true;
+	};
+
+	public class Bullet extends AbilityTimer {
 
 		private final Player shooter;
 		private final CustomEntity entity;
@@ -114,9 +135,9 @@ public class RevengeArrow extends Synergy {
 					stop(false);
 					return;
 				}
-				for (Damageable damageable : LocationUtil.getConflictingEntities(Damageable.class,entity.getBoundingBox(), LocationPlusUtil.STRICT(getParticipant()))) {
-					if (!shooter.equals(damageable) && !damageable.isDead() && damageable instanceof Player) {
-						damageable.damage(DamageUtil.getPenetratedDamage(shooter, (Player) damageable, damage), shooter);
+				for (Damageable damageable : LocationUtil.getConflictingEntities(Damageable.class,entity.getBoundingBox(), predicate)) {
+					if (!shooter.equals(damageable) && !damageable.isDead()) {
+						Damages.damageArrow(damageable, getPlayer(), (float) damage);
 						stop(false);
 						return;
 					}

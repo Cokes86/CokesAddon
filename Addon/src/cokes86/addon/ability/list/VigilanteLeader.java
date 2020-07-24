@@ -8,6 +8,7 @@ import java.util.function.Predicate;
 import daybreak.abilitywar.game.manager.object.DeathManager;
 import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.entity.Arrow;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
@@ -31,19 +32,19 @@ import daybreak.abilitywar.utils.library.ParticleLib.RGB;
 @AbilityManifest(name = "자경단장", rank = AbilityManifest.Rank.B, species = AbilityManifest.Species.HUMAN, explain = {
 		"게임 중 최초로 철괴 우클릭 시 범위 $[r]블럭 이내 모든 범위를 자경단 아지트로 만듭니다.",
 		"또한 해당 범위 안에 있던 플레이어 전부 자경단원으로 소속됩니다.",
-		"이후 철괴 우클릭 시 힘1 버프를 (참가자의 수*0.5)초 부여합니다. $[cool]",
+		"이후 철괴 우클릭 시 힘1 버프를 참가자의 수만큼 부여합니다. $[cool]",
 		"자경단 아지트 내에서 참가자는 2명, 자경단원은 3명, 자경단장은 4명 취급하며",
 		"자경단 아지트 밖에서 자경단장은 2명 취급합니다.",
-		"자경단원은 자경단장을 공격할 때, 대미지가 30% 감소합니다."})
+		"자경단원은 자경단장을 공격할 때, 자경단장이 받는 대미지가 30% 감소합니다."})
 public class VigilanteLeader extends AbilityBase implements ActiveHandler {
 	public static Config<Integer> r = new Config<Integer>(VigilanteLeader.class, "아지트범위", 10) {
 		@Override
-		public boolean Condition(Integer value) {
+		public boolean condition(Integer value) {
 			return value > 0;
 		}
 	}, cool = new Config<Integer>(VigilanteLeader.class, "쿨타임", 90, 1) {
 		@Override
-		public boolean Condition(Integer value) {
+		public boolean condition(Integer value) {
 			return value >= 0;
 		}
 	};
@@ -69,10 +70,11 @@ public class VigilanteLeader extends AbilityBase implements ActiveHandler {
 
 	public VigilanteLeader(Participant participant) {
 		super(participant);
+		passive.start();
 	}
 
-	CooldownTimer c = new CooldownTimer(cool.getValue());
-	Timer passive = new Timer() {
+	Cooldown c = new Cooldown(cool.getValue());
+    AbilityTimer passive = new AbilityTimer() {
 		@Override
 		protected void run(int count) {
 			if (ajit != null) {
@@ -113,8 +115,8 @@ public class VigilanteLeader extends AbilityBase implements ActiveHandler {
 			} else {
 				if (!c.isCooldown()) {
 					getPlayer().addPotionEffect(new PotionEffect(PotionEffectType.INCREASE_DAMAGE,
-							(getGame().getParticipants().size() + addNum) * 10, 0));
-					getPlayer().sendMessage((getGame().getParticipants().size() + addNum) * 0.5 + "초의 힘버프가 제공되었습니다.");
+							(getGame().getParticipants().size() + addNum) * 20, 0));
+					getPlayer().sendMessage((getGame().getParticipants().size() + addNum) + "초의 힘버프가 제공되었습니다.");
 					c.start();
 					return true;
 				}
@@ -125,10 +127,17 @@ public class VigilanteLeader extends AbilityBase implements ActiveHandler {
 
 	@SubscribeEvent(onlyRelevant = true)
 	public void onEntityDamageByEntity(EntityDamageByEntityEvent e) {
-		if (e.getEntity().equals(getPlayer()) && e.getDamager() instanceof Player) {
-			Player t = (Player) e.getDamager();
-			AbstractGame g = getGame();
-			if (g.isParticipating(t) && vigilantes.contains(g.getParticipant(t))) {
+		Entity damager = e.getDamager();
+		if (damager instanceof Arrow) {
+			Arrow arrow = (Arrow) damager;
+			if (arrow.getShooter() instanceof Entity) {
+				damager = (Entity) arrow.getShooter();
+			}
+		}
+		
+		if (e.getEntity().equals(getPlayer()) && damager instanceof Player) {
+			Player t = (Player) damager;
+			if (getGame().isParticipating(t) && vigilantes.contains(getGame().getParticipant(t))) {
 				e.setDamage(e.getDamage() * 7 / 10);
 			}
 		}

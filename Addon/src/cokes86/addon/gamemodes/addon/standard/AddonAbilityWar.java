@@ -10,6 +10,7 @@ import java.util.Random;
 
 import javax.naming.OperationNotSupportedException;
 
+import daybreak.abilitywar.game.*;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
@@ -22,10 +23,6 @@ import cokes86.addon.ability.AddonAbilityFactory;
 import daybreak.abilitywar.ability.AbilityBase;
 import daybreak.abilitywar.config.Configuration;
 import daybreak.abilitywar.config.Configuration.Settings.DeveloperSettings;
-import daybreak.abilitywar.game.AbstractGame;
-import daybreak.abilitywar.game.Game;
-import daybreak.abilitywar.game.GameManager;
-import daybreak.abilitywar.game.GameManifest;
 import daybreak.abilitywar.game.event.GameCreditEvent;
 import daybreak.abilitywar.game.manager.object.AbilitySelect;
 import daybreak.abilitywar.game.manager.object.DefaultKitHandler;
@@ -38,6 +35,8 @@ import daybreak.abilitywar.utils.base.minecraft.PlayerCollector;
 import daybreak.abilitywar.utils.library.SoundLib;
 
 @GameManifest(name = "애드온 능력자 전쟁", description = { "§f기존의 능력자 전쟁과 같은데 능력이 코크스애드온의 능력들 뿐이다?!" })
+@Category(value = Category.GameCategory.GAME)
+@GameAliases(value = {"애드온", "애능전"})
 public class AddonAbilityWar extends Game implements DefaultKitHandler {
 	private final boolean invincible;
 

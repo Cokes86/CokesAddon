@@ -2,7 +2,11 @@ package cokes86.addon.ability.list;
 
 import java.text.DecimalFormat;
 
+import daybreak.abilitywar.utils.base.minecraft.damage.Damages;
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import org.bukkit.attribute.Attributable;
+import org.bukkit.attribute.Attribute;
 import org.bukkit.entity.Arrow;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
@@ -16,20 +20,17 @@ import daybreak.abilitywar.ability.AbilityManifest.Species;
 import daybreak.abilitywar.ability.SubscribeEvent;
 import daybreak.abilitywar.game.AbstractGame.Participant;
 import daybreak.abilitywar.game.AbstractGame.Participant.ActionbarNotification.ActionbarChannel;
-import daybreak.abilitywar.utils.base.minecraft.DamageUtil;
 
-@AbilityManifest(
-		name = "복수",
-		rank = Rank.A,
-		species = Species.HUMAN,
-		explain = {"상대방을 공격할 시 최근에 플레이어에게 받았던 대미지의 $[per]% 만큼의 고정대미지를 상대방에게 추가적으로 입힙니다."}
-)
+@AbilityManifest(name = "복수", rank = Rank.A, species = Species.HUMAN, explain = {
+		"상대방을 공격할 시 최근에 플레이어에게 받았던 대미지의 $[per]% 만큼의 고정대미지를 상대방에게 추가적으로 입힙니다."
+})
 public class Revenge extends AbilityBase {
 	DecimalFormat df = new DecimalFormat("0.00");
 	double finalDamage = 0;
+	boolean damage = false;
 	public static Config<Integer> per = new Config<Integer>(Revenge.class, "반사대미지(%)", 40) {
 		@Override
-		public boolean Condition(Integer value) {
+		public boolean condition(Integer value) {
 			return value >= 0;
 		}
 	};
@@ -50,7 +51,7 @@ public class Revenge extends AbilityBase {
 	public void onEntityDamageByEntity(EntityDamageByEntityEvent e) {
 		if (e.getEntity().equals(getPlayer()) && (e.getDamager() instanceof Player || e.getDamager() instanceof Arrow)) {
 			finalDamage = e.getFinalDamage();
-			ac.update(ChatColor.BLUE+ "반사고정대미지 : "+df.format(finalDamage * per.getValue() / (double)100));
+			ac.update(ChatColor.BLUE+ "반사고정대미지 : "+df.format(finalDamage * per.getValue() / 100.00));
 		} else {
 			Entity damager = e.getDamager();
 			if (damager instanceof Arrow) {
@@ -60,11 +61,12 @@ public class Revenge extends AbilityBase {
 				}
 			}
 			
-			if (damager.equals(getPlayer()) && e.getEntity() instanceof Player) {
-				double plus = finalDamage * per.getValue() / (double)100;
-				if (plus != 0) {
-					Player p = (Player) e.getEntity();
-					e.setDamage(DamageUtil.getPenetratedDamage(getPlayer(), p, e.getFinalDamage()+plus));
+			if (damager.equals(getPlayer()) && e.getEntity() instanceof Player && !e.getEntity().equals(getPlayer())) {
+				float plus = (float) (finalDamage * per.getValue() / 100.0f);
+				damage = !damage;
+				e.setCancelled(damage);
+				if (damage) {
+					Damages.damageFixed(e.getEntity(), getPlayer(), (float) (e.getFinalDamage()+plus));
 				}
 			}
 		}

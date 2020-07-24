@@ -4,6 +4,7 @@ import static daybreak.abilitywar.game.GameManager.getGame;
 
 import java.util.Arrays;
 
+import daybreak.abilitywar.game.Category;
 import daybreak.abilitywar.game.manager.object.WRECK;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -29,6 +30,7 @@ import daybreak.abilitywar.utils.base.language.korean.KoreanUtil.Josa;
 import daybreak.abilitywar.utils.base.minecraft.PlayerCollector;
 
 @GameManifest(name = "코크스애드온 디버그", description = { "§r어빌리티 테스트용." })
+@Category(value = Category.GameCategory.DEBUG)
 public class DebugWar extends AbstractGame implements Listener, WRECK.Handler {
 	private final WRECK wreck = newWRECK();
 

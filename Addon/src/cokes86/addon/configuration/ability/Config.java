@@ -40,9 +40,5 @@ public abstract class Config<T> extends SettingObject<T> {
 		}
 	}
 	
-	public abstract boolean Condition(T value);
-	
-	public boolean condition(T value) {
-		return Condition(value);
-	}
+	public abstract boolean condition(T value);
 }

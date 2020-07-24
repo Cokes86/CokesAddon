@@ -2,12 +2,18 @@ package cokes86.addon.ability.synergy;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.function.Predicate;
 
+import daybreak.abilitywar.game.AbstractGame;
+import daybreak.abilitywar.game.interfaces.TeamGame;
+import daybreak.abilitywar.game.manager.object.DeathManager;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.boss.BarColor;
 import org.bukkit.boss.BarStyle;
+import org.bukkit.entity.Entity;
+import org.bukkit.entity.Player;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.potion.PotionEffect;
@@ -31,17 +37,17 @@ import daybreak.abilitywar.utils.base.minecraft.Bar;
 		"철괴 우클릭시 모든 플레이어가 스폰으로 이동한 뒤",
 		"자신의 좌표가 $[du]동안 공개됩니다.",
 		"지속시간동안 자신은 받는 대미지가 $[reduce]% 감소하며",
-		"지속시간 종료시 자신이 사망하지 않았다면 자신을 제외한",
+		"지속시간 종료시 자신이 사망하지 않았다면 자신과 팀을 제외한",
 		"모든 플레이어의 채력을 0으로 변경합니다.",
 		"해당 능력은 사망하거나 지속시간 종료시 비활성화됩니다."
 })
 public class TheEnd extends Synergy implements ActiveHandler {
-	public static Config<Integer> du = new Config<Integer>(TheEnd.class, "지속시간", 60, 2) {
+	public static Config<Integer> du = new Config<Integer>(TheEnd.class, "지속시간", 40, 2) {
 		@Override
 		public boolean condition(Integer arg0) {
 			return arg0 > 0;
 		}
-	}, reduce = new Config<Integer>(TheEnd.class, "감소대미지(%)", 20) {
+	}, reduce = new Config<Integer>(TheEnd.class, "감소대미지(%)", 40) {
 		@Override
 		public boolean condition(Integer arg0) {
 			return arg0 > 0;
@@ -52,6 +58,22 @@ public class TheEnd extends Synergy implements ActiveHandler {
 	Map<Participant, ActionbarChannel> acs = new HashMap<>();
 	Bar bar;
 	ActionbarChannel ac = newActionbarChannel();
+	private final Predicate<Entity> predicate = entity -> {
+		if (entity.equals(getPlayer())) return false;
+		if (entity instanceof Player) {
+			if (!getGame().isParticipating(entity.getUniqueId())) return false;
+			AbstractGame.Participant target = getGame().getParticipant(entity.getUniqueId());
+			if (getGame() instanceof DeathManager.Handler) {
+				DeathManager.Handler game = (DeathManager.Handler)getGame();
+				if (game.getDeathManager().isExcluded(entity.getUniqueId())) return false;
+			}
+			if (getGame() instanceof TeamGame) {
+				TeamGame game = (TeamGame) getGame();
+				return (!game.hasTeam(getParticipant()) || game.hasTeam(target) || game.getTeam(getParticipant()).equals(game.getTeam(target)));
+			}
+		}
+		return true;
+	};
 
 	public TheEnd(Participant participant) {
 		super(participant);
@@ -68,17 +90,17 @@ public class TheEnd extends Synergy implements ActiveHandler {
 		}
 		return false;
 	}
-	
-	Timer timer = new Timer(du.getValue() * 20) {
+
+	AbilityTimer timer = new AbilityTimer(du.getValue() * 20) {
 		protected void onStart() {
 			for (Participant p : getGame().getParticipants()) {
-				if (!p.equals(getParticipant())) {
+				if (predicate.test(p.getPlayer())) {
 					p.getPlayer().addPotionEffect(new PotionEffect(PotionEffectType.INCREASE_DAMAGE, du.getValue()*20, 0));
 					p.getPlayer().addPotionEffect(new PotionEffect(PotionEffectType.SPEED, du.getValue()*20, 1));
 					acs.put(p, p.actionbar().newChannel());
-					Location spawn = Settings.getSpawnLocation();
-					p.getPlayer().teleport(spawn);
 				}
+				Location spawn = Settings.getSpawnLocation();
+				p.getPlayer().teleport(spawn);
 			}
 			String a = "x: " + (int)getPlayer().getLocation().getX() + " y: " + (int)getPlayer().getLocation().getY()
 					+ " z: " + (int)getPlayer().getLocation().getZ();

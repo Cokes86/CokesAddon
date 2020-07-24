@@ -10,10 +10,11 @@ import daybreak.abilitywar.ability.decorator.ActiveHandler;
 import daybreak.abilitywar.game.AbstractGame.Participant;
 import daybreak.abilitywar.game.event.participant.ParticipantDeathEvent;
 import daybreak.abilitywar.utils.base.concurrent.TimeUnit;
-import daybreak.abilitywar.utils.base.minecraft.compat.nms.Hologram;
-import daybreak.abilitywar.utils.base.minecraft.compat.nms.NMSHandler;
+import daybreak.abilitywar.utils.base.minecraft.nms.NMS;
+import daybreak.abilitywar.utils.base.minecraft.nms.IHologram;
 import daybreak.google.common.base.Strings;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.Map.Entry;
 import org.bukkit.Material;
@@ -35,17 +36,17 @@ public class Ovisni extends AbilityBase implements ActiveHandler {
 
 	public static final Config<Integer> COOLDOWN_CONFIG = new Config<Integer>(Ovisni.class, "쿨타임", 30, 1) {
 		@Override
-		public boolean Condition(Integer value) {
+		public boolean condition(Integer value) {
 			return value > 0;
 		}
 	}, MAX_COUNTER_CONFIG = new Config<Integer>(Ovisni.class, "최대카운터", 7) {
 		@Override
-		public boolean Condition(Integer value) {
+		public boolean condition(Integer value) {
 			return value > 0;
 		}
 	}, DELAY = new Config<Integer>(Ovisni.class, "지속딜레이", 10, 2) {
 		@Override
-		public boolean Condition(Integer value) {
+		public boolean condition(Integer value) {
 			return value>0;
 		}
 	};
@@ -54,7 +55,7 @@ public class Ovisni extends AbilityBase implements ActiveHandler {
 
 	private final Map<Participant, OvisniStack> stackMap = new HashMap<>();
 
-	private final CooldownTimer cooldownTimer = new CooldownTimer(COOLDOWN_CONFIG.getValue());
+	private final Cooldown cooldownTimer = new Cooldown(COOLDOWN_CONFIG.getValue());
 
 	public Ovisni(Participant participant) {
 		super(participant);
@@ -65,7 +66,7 @@ public class Ovisni extends AbilityBase implements ActiveHandler {
 		if (material == Material.IRON_INGOT) {
 			if (clickType == ClickType.RIGHT_CLICK) {
 				if (!cooldownTimer.isCooldown()) {
-					for (Entry<Participant, OvisniStack> entry : stackMap.entrySet()) {
+					for (Entry<Participant, OvisniStack> entry : new HashSet<>(stackMap.entrySet())) {
 						entry.getKey().getPlayer().damage(entry.getValue().stack * 2, getPlayer());
 						entry.getValue().stop(false);
 					}
@@ -93,7 +94,7 @@ public class Ovisni extends AbilityBase implements ActiveHandler {
 			}
 		}
 
-		if (getPlayer().equals(damager) && getGame().isGameStarted() && e.getEntity() instanceof Player) {
+		if (getPlayer().equals(damager) && getGame().isGameStarted() && e.getEntity() instanceof Player && !e.getEntity().equals(getPlayer())) {
 			if (getGame().isParticipating(e.getEntity().getUniqueId())) {
 				final Participant victim = getGame().getParticipant(e.getEntity().getUniqueId());
 				if (!stackMap.containsKey(victim)) {
@@ -102,6 +103,15 @@ public class Ovisni extends AbilityBase implements ActiveHandler {
 					stackMap.get(victim).addStack();
 				}
 			}
+		}
+	}
+	
+	public void onUpdate(Update update) {
+		if (update == Update.ABILITY_DESTROY || update == Update.RESTRICTION_SET) {
+			for (OvisniStack stack : stackMap.values()) {
+				stack.stop(false);
+			}
+			stackMap.clear();
 		}
 	}
 
@@ -119,18 +129,18 @@ public class Ovisni extends AbilityBase implements ActiveHandler {
 		}
 	}
 
-	private class OvisniStack extends Timer {
+	private class OvisniStack extends AbilityTimer {
 
 		private int stack;
 		private final Participant target;
-		private final Hologram hologram;
+		private final IHologram hologram;
 
 		private OvisniStack(Participant target) {
 			super();
 			this.setPeriod(TimeUnit.TICKS, 1);
 			this.target = target;
 			final Player targetPlayer = target.getPlayer();
-			this.hologram = NMSHandler.getNMS().newHologram(targetPlayer.getWorld(), targetPlayer.getLocation().getX(), targetPlayer.getLocation().getY() + targetPlayer.getEyeHeight() + 0.6, targetPlayer.getLocation().getZ());
+			this.hologram = NMS.newHologram(targetPlayer.getWorld(), targetPlayer.getLocation().getX(), targetPlayer.getLocation().getY() + targetPlayer.getEyeHeight() + 0.6, targetPlayer.getLocation().getZ());
 			this.hologram.setText(Strings.repeat("§2◆", stack).concat(Strings.repeat("§2◇", maxCounter - stack)));
 			this.hologram.display(getPlayer());
 			this.stack = 1;
@@ -156,6 +166,7 @@ public class Ovisni extends AbilityBase implements ActiveHandler {
 		protected void onSilentEnd() {
 			hologram.hide(getPlayer());
 			stackMap.remove(target);
+			hologram.unregister();
 		}
 
 		private void addStack() {

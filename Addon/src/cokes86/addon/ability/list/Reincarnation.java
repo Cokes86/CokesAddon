@@ -27,8 +27,11 @@ import daybreak.abilitywar.utils.library.SoundLib;
 import org.bukkit.event.entity.EntityRegainHealthEvent;
 
 @AbilityManifest(name = "리인카네이션", rank = Rank.S, species = Species.OTHERS, explain = {
-		"자신이 죽을 위기에 처했을 때, 이를 무시하고 체력이 1로 고정됩니다. $[cooldown]", "지속시간 $[duration]동안 상대방에게 주는 대미지가 $[damage]% 증가합니다.",
-		"지속시간동안 상대방에게 총 $[hit]번 공격에 성공했을 경우", "지속시간이 종료 시 체력이 20이 되어 부활합니다.", "그러지 못하였을 경우 사망합니다.",
+		"자신이 죽을 위기에 처했을 때, 이를 무시하고 체력이 1로 고정됩니다. $[cooldown]",
+		"지속시간 $[duration]동안 상대방에게 주는 대미지가 $[damage]% 증가합니다.",
+		"지속시간동안 상대방에게 총 $[hit]번 공격에 성공했을 경우",
+		"지속시간이 종료 시 체력이 20이 되어 부활합니다.",
+		"그러지 못하였을 경우 사망합니다.",
 		"※능력 아이디어: Sato207" })
 public class Reincarnation extends AbilityBase {
 	ActionbarChannel ac = newActionbarChannel();
@@ -36,28 +39,28 @@ public class Reincarnation extends AbilityBase {
 	public static Config<Integer> duration = new Config<Integer>(Reincarnation.class, "지속시간", 20, 2) {
 
 		@Override
-		public boolean Condition(Integer value) {
+		public boolean condition(Integer value) {
 			return value > 0;
 		}
 
 	}, cooldown = new Config<Integer>(Reincarnation.class, "쿨타임", 900, 1) {
 
 		@Override
-		public boolean Condition(Integer value) {
+		public boolean condition(Integer value) {
 			return value > 0;
 		}
 
 	}, damage = new Config<Integer>(Reincarnation.class, "추가대미지(%)", 50) {
 
 		@Override
-		public boolean Condition(Integer value) {
+		public boolean condition(Integer value) {
 			return value > 0;
 		}
 
 	}, hit = new Config<Integer>(Reincarnation.class, "타격횟수", 10) {
 
 		@Override
-		public boolean Condition(Integer value) {
+		public boolean condition(Integer value) {
 			return value > 0;
 		}
 
@@ -67,9 +70,10 @@ public class Reincarnation extends AbilityBase {
 
 	public Reincarnation(Participant arg0) {
 		super(arg0);
+		reincarnation.register();
 	}
 
-	@SubscribeEvent(priority = 5)
+	@SubscribeEvent(priority = 6)
 	public void onEntityDamage(EntityDamageEvent e) {
 		if (e.getEntity().equals(getPlayer())) {
 			if (reincarnation.isRunning())
@@ -90,7 +94,7 @@ public class Reincarnation extends AbilityBase {
 		}
 	}
 
-	@SubscribeEvent(priority = 5)
+	@SubscribeEvent(priority = 6)
 	public void onEntityDamageByEntity(EntityDamageByEntityEvent e) {
 		onEntityDamage(e);
 		Entity damager = e.getDamager();
@@ -119,12 +123,12 @@ public class Reincarnation extends AbilityBase {
 		}
 	}
 
-	@SubscribeEvent(priority = 5)
+	@SubscribeEvent(priority = 6)
 	public void onEntityDamageByBlock(EntityDamageByBlockEvent e) {
 		onEntityDamage(e);
 	}
 
-	Timer reincarnation = new Timer(duration.getValue() * 20) {
+	AbilityTimer reincarnation = new AbilityTimer(duration.getValue() * 20) {
 
 		protected void onStart() {
 			SoundLib.ITEM_SHIELD_BLOCK.playSound(getPlayer());
@@ -158,5 +162,6 @@ public class Reincarnation extends AbilityBase {
 			cool.start();
 			ac.update(null);
 		}
-	}, cool = new CooldownTimer(cooldown.getValue());
+	};
+	Cooldown cool = new Cooldown(cooldown.getValue());
 }

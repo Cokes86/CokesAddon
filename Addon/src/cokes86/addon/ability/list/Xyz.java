@@ -2,13 +2,19 @@ package cokes86.addon.ability.list;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.function.Predicate;
 
+import daybreak.abilitywar.game.AbstractGame;
+import daybreak.abilitywar.game.interfaces.TeamGame;
+import daybreak.abilitywar.game.manager.object.DeathManager;
 import daybreak.abilitywar.utils.library.PotionEffects;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.boss.BarColor;
 import org.bukkit.boss.BarStyle;
+import org.bukkit.entity.Entity;
+import org.bukkit.entity.Player;
 import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
@@ -25,23 +31,18 @@ import daybreak.abilitywar.utils.base.TimeUtil;
 import daybreak.abilitywar.utils.base.concurrent.TimeUnit;
 import daybreak.abilitywar.utils.base.minecraft.Bar;
 
-@AbilityManifest(
-		name="엑시즈",
-		rank = AbilityManifest.Rank.S,
-		species = AbilityManifest.Species.DEMIGOD,
-		explain = {
-				"철괴 우클릭 시 게임스폰으로 이동하고 자신의 좌표가 공개됩니다.",
-				"자신을 제외한 모든 플레이어가 게임스폰으로 이동한 후",
-				"신속2, 힘1을 $[du] 부여합니다.",
-				"단, 버프 시간동안 엑시즈를 죽이지 못하였을 시",
-				"버프를 가지고 있던 플레이어는 사망합니다.",
-				"해당 능력은 한 번 사용 후 비활성화됩니다.",
-				"※능력 아이디어: HappyAngels"
-		}
-		)
+@AbilityManifest(name="엑시즈", rank = AbilityManifest.Rank.S, species = AbilityManifest.Species.DEMIGOD, explain = {
+		"철괴 우클릭 시 게임스폰으로 이동하고 자신의 좌표가 공개됩니다.",
+		"자신과 팀을 제외한 모든 플레이어가 게임스폰으로 이동한 후",
+		"신속2, 힘1을 $[du] 부여합니다.",
+		"단, 버프 시간동안 엑시즈를 죽이지 못하였을 시",
+		"버프를 가지고 있던 플레이어는 사망합니다.",
+		"해당 능력은 한 번 사용 후 비활성화됩니다.",
+		"※능력 아이디어: HappyAngels"
+})
 public class Xyz extends AbilityBase implements ActiveHandler {
 	public static Config<Integer> du = new Config<Integer>(Xyz.class,"엑시즈타임", 40, 2) {
-		public boolean Condition(Integer value) {
+		public boolean condition(Integer value) {
 			return value > 0;
 		}
 	};
@@ -50,9 +51,26 @@ public class Xyz extends AbilityBase implements ActiveHandler {
 	Map<Participant, ActionbarChannel> acs = new HashMap<>();
 	Bar bar;
 	ActionbarChannel ac = newActionbarChannel();
+	private final Predicate<Entity> predicate = entity -> {
+		if (entity.equals(getPlayer())) return false;
+		if (entity instanceof Player) {
+			if (!getGame().isParticipating(entity.getUniqueId())) return false;
+			AbstractGame.Participant target = getGame().getParticipant(entity.getUniqueId());
+			if (getGame() instanceof DeathManager.Handler) {
+				DeathManager.Handler game = (DeathManager.Handler)getGame();
+				if (game.getDeathManager().isExcluded(entity.getUniqueId())) return false;
+			}
+			if (getGame() instanceof TeamGame) {
+				TeamGame game = (TeamGame) getGame();
+				return (!game.hasTeam(getParticipant()) || game.hasTeam(target) || game.getTeam(getParticipant()).equals(game.getTeam(target)));
+			}
+		}
+		return true;
+	};
 
 	public Xyz(Participant arg0) throws IllegalStateException {
 		super(arg0);
+		timer.register();
 	}
 
 	@Override
@@ -74,17 +92,17 @@ public class Xyz extends AbilityBase implements ActiveHandler {
 			timer.stop(true);
 		}
 	}
-	
-	Timer timer = new Timer(du.getValue() * 20) {
+
+	AbilityTimer timer = new AbilityTimer(du.getValue() * 20) {
 		protected void onStart() {
 			for (Participant p : getGame().getParticipants()) {
-				if (!p.equals(getParticipant())) {
+				if (predicate.test(p.getPlayer())) {
 					p.getPlayer().addPotionEffect(new PotionEffect(PotionEffectType.INCREASE_DAMAGE, du.getValue()*20, 0));
 					p.getPlayer().addPotionEffect(new PotionEffect(PotionEffectType.SPEED, du.getValue()*20, 1));
 					acs.put(p, p.actionbar().newChannel());
-					Location spawn = Settings.getSpawnLocation();
-					p.getPlayer().teleport(spawn);
 				}
+				Location spawn = Settings.getSpawnLocation();
+				p.getPlayer().teleport(spawn);
 			}
 			String a = "x: " + (int)getPlayer().getLocation().getX() + " y: " + (int)getPlayer().getLocation().getY()
 					+ " z: " + (int)getPlayer().getLocation().getZ();

@@ -2,15 +2,21 @@ package cokes86.addon.ability.list;
 
 import java.util.Arrays;
 import java.util.Random;
+import java.util.function.Predicate;
 
+import daybreak.abilitywar.game.AbstractGame;
+import daybreak.abilitywar.game.interfaces.TeamGame;
+import daybreak.abilitywar.game.manager.object.DeathManager;
+import daybreak.abilitywar.utils.base.minecraft.damage.Damages;
 import org.bukkit.Material;
 import org.bukkit.entity.Arrow;
+import org.bukkit.entity.Entity;
+import org.bukkit.entity.Player;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 
 import cokes86.addon.configuration.ability.Config;
-import cokes86.addon.utils.DamagePlusUtil;
 import daybreak.abilitywar.ability.AbilityBase;
 import daybreak.abilitywar.ability.AbilityManifest;
 import daybreak.abilitywar.ability.SubscribeEvent;
@@ -25,7 +31,7 @@ import daybreak.abilitywar.utils.library.SoundLib;
 		species = AbilityManifest.Species.HUMAN,
 		explain = {"철괴 우클릭 시 1~10 사이의 숫자를 3개 뽑습니다. 이 3개의 숫자의 조합에 따라 각종 효과를 얻습니다. $[cool]",
 		"탑: 아무런 조합이 되지 않는 경우. 가장 높은 수가 9 또는 10일 경우 신속1 버프를 (높은 수)초 만큼 부여합니다.",
-		"§a페어§f : 2개의 숫자가 같은 경우입니다. (페어의 수 * 2)초 만큼 재생3 버프를 부여합니다.",
+		"§a페어§f : 2개의 숫자가 같은 경우입니다. (페어의 수 * 2)초 만큼 재생2 버프를 부여합니다.",
 		"§b스트레이트§f : 3개의 숫자가 연달아 나오는 경우입니다. 다음 공격은 (가장 높은 수)의 대미지를 추가로 입힙니다.",
 		"§e트리플§f : 3개의 숫자가 모두 같은 경우입니다.",
 		"자신을 제외한 모든 플레이어에게 (트리플의 수 * 1.5)의 관통대미지를 줍니다."}
@@ -34,7 +40,7 @@ public class Poker extends AbilityBase implements ActiveHandler {
 	int[] num = new int[3];
 	private static final Config<Integer> cool = new Config<Integer>(Poker.class, "쿨타임", 30, 1) {
 		@Override
-		public boolean Condition(Integer value) {
+		public boolean condition(Integer value) {
 			return value >= 0;
 		}
 	};
@@ -43,11 +49,12 @@ public class Poker extends AbilityBase implements ActiveHandler {
 
 	public Poker(Participant participant) {
 		super(participant);
+		p.register();
 	}
 	
-	CooldownTimer c = new CooldownTimer(cool.getValue());
+	Cooldown c = new Cooldown(cool.getValue());
 
-	Timer p = new Timer() {
+	AbilityTimer p = new AbilityTimer() {
 		@Override
 		protected void run(int var1) {
 			if (additional > 0) ac.update("다음 추가대미지: "+additional);
@@ -61,6 +68,24 @@ public class Poker extends AbilityBase implements ActiveHandler {
 	 		p.start();
 		}
 	}
+
+	Predicate<Entity> predicate = entity -> {
+		if (entity.equals(getPlayer())) return false;
+		if (entity instanceof Player) {
+			if (!getGame().isParticipating(entity.getUniqueId())) return false;
+			AbstractGame.Participant target = getGame().getParticipant(entity.getUniqueId());
+			if (getGame() instanceof DeathManager.Handler) {
+				DeathManager.Handler game = (DeathManager.Handler)getGame();
+				if (game.getDeathManager().isExcluded(entity.getUniqueId())) return false;
+			}
+			if (getGame() instanceof TeamGame) {
+				TeamGame game = (TeamGame) getGame();
+				return (!game.hasTeam(getParticipant()) || game.hasTeam(target) || game.getTeam(getParticipant()).equals(game.getTeam(target)));
+			}
+			return target.attributes().TARGETABLE.getValue();
+		}
+		return true;
+	};
 
 	@Override
 	public boolean ActiveSkill(Material materialType, ClickType ct) {
@@ -84,8 +109,8 @@ public class Poker extends AbilityBase implements ActiveHandler {
 						getPlayer().sendMessage("이런! 탑입니다! " + str);
 						break;
 					case "Pair":
-						getPlayer().sendMessage("좋습니다! §a페어§f입니다! 재생3 버프를 " + (number * 2) + "초간 받습니다.");
-						getPlayer().addPotionEffect(new PotionEffect(PotionEffectType.REGENERATION, number * 2 * 20, 2));
+						getPlayer().sendMessage("좋습니다! §a페어§f입니다! 재생2 버프를 " + (number * 2) + "초간 받습니다.");
+						getPlayer().addPotionEffect(new PotionEffect(PotionEffectType.REGENERATION, number * 2 * 20, 1));
 						break;
 					case "Straight":
 						getPlayer().sendMessage("와우! §b스트레이트§f입니다! 다음 공격은 추가적으로 " + (number) + "의 대미지를 줍니다.");
@@ -95,7 +120,9 @@ public class Poker extends AbilityBase implements ActiveHandler {
 						getPlayer().sendMessage("완벽합니다! §e트리플§f입니다! 자신을 제외한 모든 플레이어에게 " + (number * 1.5) + "만큼의 대미지를 줍니다.");
 						for (Participant p : getGame().getParticipants()) {
 							if (p.equals(getParticipant())) continue;
-							DamagePlusUtil.penetratingDamage(number * 1.5, p.getPlayer(), getPlayer());
+							if (predicate.test(p.getPlayer())) {
+								Damages.damageFixed(p.getPlayer(), getPlayer(), number * 1.5f);
+							}
 						}
 						SoundLib.UI_TOAST_CHALLENGE_COMPLETE.broadcastSound();
 						break;
@@ -109,18 +136,17 @@ public class Poker extends AbilityBase implements ActiveHandler {
 	
 	@SubscribeEvent
 	public void onEntityDamageByEntity(EntityDamageByEntityEvent e) {
-		if (e.getDamager().equals(getPlayer())) {
-			if (additional > 0) {
-				e.setDamage(e.getDamage()+additional);
-				additional = 0;
+		Entity damager = e.getDamager();
+		if (damager instanceof Arrow) {
+			Arrow arrow = (Arrow) e.getDamager();
+			if (arrow.getShooter() instanceof Entity) {
+				damager = (Entity) arrow.getShooter();
 			}
-		} else if (e.getDamager() instanceof Arrow) {
-			if (((Arrow) e.getDamager()).getShooter().equals(getPlayer())) {
-				if (additional > 0) {
-					e.setDamage(e.getDamage()+additional);
-					additional = 0;
-				}
-			}
+		}
+
+		if (damager.equals(getPlayer()) && additional > 0) {
+			e.setDamage(e.getDamage()+additional);
+			additional = 0;
 		}
 	}
 	

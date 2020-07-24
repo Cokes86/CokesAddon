@@ -2,16 +2,20 @@ package cokes86.addon.ability.list;
 
 import java.util.ArrayList;
 import java.util.Random;
+import java.util.function.Predicate;
 
-import cokes86.addon.utils.LocationPlusUtil;
+import daybreak.abilitywar.game.AbstractGame;
+import daybreak.abilitywar.game.interfaces.TeamGame;
+import daybreak.abilitywar.game.manager.object.DeathManager;
+import daybreak.abilitywar.utils.base.minecraft.damage.Damages;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.Note;
+import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
 
 import cokes86.addon.configuration.ability.Config;
-import cokes86.addon.utils.DamagePlusUtil;
 import daybreak.abilitywar.ability.AbilityBase;
 import daybreak.abilitywar.ability.AbilityManifest;
 import daybreak.abilitywar.ability.AbilityManifest.Rank;
@@ -21,7 +25,6 @@ import daybreak.abilitywar.game.AbstractGame.Participant;
 import daybreak.abilitywar.utils.base.concurrent.TimeUnit;
 import daybreak.abilitywar.utils.base.math.LocationUtil;
 import daybreak.abilitywar.utils.base.math.geometry.Circle;
-import daybreak.abilitywar.utils.base.minecraft.DamageUtil;
 import daybreak.abilitywar.utils.library.ParticleLib;
 import daybreak.abilitywar.utils.library.SoundLib;
 
@@ -31,30 +34,48 @@ import daybreak.abilitywar.utils.library.SoundLib;
 public class Rune extends AbilityBase implements ActiveHandler {
 	public static Config<Integer> damage = new Config<Integer>(Rune.class, "반복횟수", 7) {
 		@Override
-		public boolean Condition(Integer value) {
+		public boolean condition(Integer value) {
 			return value > 0;
 		}
 	}, cool = new Config<Integer>(Rune.class, "쿨타임", 60, 1) {
-		public boolean Condition(Integer value) {
+		public boolean condition(Integer value) {
 			return value >= 0;
 		}
 	}, range = new Config<Integer>(Rune.class, "범위", 5) {
-		public boolean Condition(Integer value) {
+		public boolean condition(Integer value) {
 			return value > 0;
 		}
 	};
 
-	CooldownTimer c = new CooldownTimer(cool.getValue());
-	DurationTimer d = new DurationTimer(damage.getValue(), c) {
+	private final Predicate<Entity> predicate = entity -> {
+		if (entity.equals(getPlayer())) return false;
+		if (entity instanceof Player) {
+			if (!getGame().isParticipating(entity.getUniqueId())) return false;
+			AbstractGame.Participant target = getGame().getParticipant(entity.getUniqueId());
+			if (getGame() instanceof DeathManager.Handler) {
+				DeathManager.Handler game = (DeathManager.Handler) getGame();
+				if (game.getDeathManager().isExcluded(entity.getUniqueId())) return false;
+			}
+			if (getGame() instanceof TeamGame) {
+				TeamGame game = (TeamGame) getGame();
+				return (!game.hasTeam(getParticipant()) || game.hasTeam(target) || game.getTeam(getParticipant()).equals(game.getTeam(target)));
+			}
+			return target.attributes().TARGETABLE.getValue();
+		}
+		return true;
+	};
+
+	Cooldown c = new Cooldown(cool.getValue());
+	Duration d = new Duration(damage.getValue(), c) {
 
 		@Override
 		protected void onDurationProcess(int seconds) {
-			ArrayList<Player> ps = LocationUtil.getNearbyEntities(Player.class, getPlayer().getLocation(), range.getValue(), range.getValue(), LocationPlusUtil.STRICT(getParticipant()));
+			ArrayList<Player> ps = LocationUtil.getNearbyEntities(Player.class, getPlayer().getLocation(), range.getValue(), range.getValue(), predicate);
 			if (ps.size() > 0) {
 				int a = new Random().nextInt(ps.size());
 				Player target = ps.get(a);
-				if (!target.isDead() && DamageUtil.canDamage(getPlayer(), target, DamageCause.ENTITY_ATTACK, 1)) {
-					DamagePlusUtil.penetratingDamage(1, target, getPlayer());
+				if (!target.isDead() && Damages.canDamage(target, getPlayer(), DamageCause.ENTITY_ATTACK, 1)) {
+					Damages.damageFixed(target,getPlayer(), 1);
 					SoundLib.XYLOPHONE.playInstrument(getPlayer(), new Note(1, Note.Tone.C, false));
 					SoundLib.XYLOPHONE.playInstrument(target, new Note(1, Note.Tone.C, false));
 				}

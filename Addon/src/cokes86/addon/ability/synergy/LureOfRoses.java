@@ -1,6 +1,6 @@
 package cokes86.addon.ability.synergy;
 
-import cokes86.addon.utils.LocationPlusUtil;
+import daybreak.abilitywar.game.manager.object.DeathManager;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Projectile;
@@ -20,6 +20,8 @@ import daybreak.abilitywar.game.AbstractGame.Participant;
 import daybreak.abilitywar.game.list.mix.synergy.Synergy;
 import daybreak.abilitywar.utils.base.concurrent.TimeUnit;
 import daybreak.abilitywar.utils.base.math.LocationUtil;
+
+import java.util.function.Predicate;
 
 @AbilityManifest(name="장미의 유혹", rank = Rank.S, species= Species.OTHERS, explain= {
 		"상대방을 공격할 시 가시 카운터를 1씩 올리고,",
@@ -75,13 +77,25 @@ public class LureOfRoses extends Synergy {
 	public void onEntityDamageByBlock(EntityDamageByBlockEvent e) {
 		onEntityDamage(e);
 	}
+
+	private final Predicate<Entity> predicate = entity -> {
+		if (entity.equals(getPlayer())) return false;
+		if (entity instanceof Player) {
+			if (!getGame().isParticipating(entity.getUniqueId())) return false;
+			if (getGame() instanceof DeathManager.Handler) {
+				DeathManager.Handler game = (DeathManager.Handler) getGame();
+				return !game.getDeathManager().isExcluded(entity.getUniqueId());
+			}
+		}
+		return true;
+	};
 	
-	CooldownTimer cooldown = new CooldownTimer(cool.getValue());
-	DurationTimer duration = new DurationTimer(counter, cooldown) {
+	Cooldown cooldown = new Cooldown(cool.getValue());
+	Duration duration = new Duration(counter, cooldown) {
 
 		@Override
 		protected void onDurationProcess(int arg0) {
-			for (Player p : LocationUtil.getNearbyEntities(Player.class, getPlayer().getLocation(), 10, 10, LocationPlusUtil.STRICT(getParticipant()))) {
+			for (Player p : LocationUtil.getNearbyEntities(Player.class, getPlayer().getLocation(), 10, 10, predicate)) {
 				p.addPotionEffect(new PotionEffect(PotionEffectType.BLINDNESS, 20, 0));
 			}
 			getPlayer().setHealth(getPlayer().getHealth()+1);

@@ -23,7 +23,7 @@ import java.util.Objects;
 		species = Species.HUMAN,
 		explain = {
 				"활로 플레이어를 적중할 시 인챈트 스택이 1씩 상승하며,",
-				"스택당 추가 $[damage]%의 대미지를 입힙니다. (최대 7회)",
+				"스택당 추가 $[damage]%의 대미지를 입힙니다. (최대 $[max_stack]회, 합적용)",
 				"적중에 실패할 시 인챈트 스택이 0이 됩니다.",
 				"인챈트 스택이 0인 상태로 적중에 실패할 시 고정 $[risk]의 대미지를 입습니다.",
 				"자신이 쏜 화살은 명중 시 바로 사라집니다.",
@@ -35,15 +35,20 @@ public class EnchantArrow extends AbilityBase {
 	private static final Config<Integer> damage = new Config<Integer>(EnchantArrow.class, "추가대미지(%)", 15) {
 
 		@Override
-		public boolean Condition(Integer value) {
+		public boolean condition(Integer value) {
 			return value > 0;
 		}
 		
 	}, risk = new Config<Integer>(EnchantArrow.class, "리스크", 1) {
 
 		@Override
-		public boolean Condition(Integer value) {
+		public boolean condition(Integer value) {
 			return value >= 0;
+		}
+	}, max_stack = new Config<Integer>(EnchantArrow.class, "최대스택", 7) {
+		@Override
+		public boolean condition(Integer value) {
+			return value>0;
 		}
 	};
 
@@ -80,7 +85,7 @@ public class EnchantArrow extends AbilityBase {
 			if (Objects.equals(arrow.getShooter(), getPlayer())) {
 				e.setDamage(e.getDamage()*(1+enchantStack*damage.getValue()/100.0));
 				enchantStack++;
-				if (enchantStack >= 7) enchantStack = 7;
+				if (enchantStack >= max_stack.getValue()) enchantStack = max_stack.getValue();
 				ac.update("인챈트 스택: "+enchantStack);
 				arrow.remove();
 			}

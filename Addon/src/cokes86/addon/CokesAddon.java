@@ -76,7 +76,7 @@ public class CokesAddon extends Addon implements Listener {
 	public void onGameCredit(GameCreditEvent e) {
 		e.addCredit("§a코크스에드온 §f적용중. 총 "+AddonAbilityFactory.getAddonAbilities().size()+"개의 능력이 추가되었습니다.");
 		if (e.getGame() instanceof AbstractMix) {
-			e.addCredit("§a믹스! 새로운 시너지 "+AddonAbilityFactory.nameSynergyValues().size()+"개가 추가되었습니다!");
+			e.addCredit("§a믹스! §f새로운 시너지 "+AddonAbilityFactory.nameSynergyValues().size()+"개가 추가되었습니다!");
 		}
 		e.addCredit("§a코크스에드온 §f제작자 : Cokes_86  [§7디스코드 §f: Cokes_86#9329]");
 	}

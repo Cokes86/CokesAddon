@@ -1,8 +1,10 @@
 package cokes86.addon.ability.list;
 
+import daybreak.abilitywar.ability.SubscribeEvent;
 import org.bukkit.Material;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
+import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 
@@ -26,24 +28,23 @@ import daybreak.abilitywar.utils.library.SoundLib;
 		"봉인한 능력의 등급에 따라 자신에게 각종 버프를 $[dura]간 부여합니다."}
 )
 public class Sealer extends AbilityBase implements TargetHandler {
-	public static Config<Integer> cool = new Config<Integer>(Sealer.class,"쿨타임",60, 1) {
-		public boolean Condition(Integer value) {
+	public static Config<Integer> cool = new Config<Integer>(Sealer.class, "쿨타임", 60, 1) {
+		public boolean condition(Integer value) {
 			return value >= 0;
 		}
-	},
-	dura = new Config<Integer>(Sealer.class, "지속시간", 7, 2) {
+	}, dura = new Config<Integer>(Sealer.class, "지속시간", 7, 2) {
 		@Override
-		public boolean Condition(Integer value) {
-			return value >= 0;
-		}
+		public boolean condition(Integer value) {
+					return value >= 0;
+				}
 	};
-	
+
 	Participant target = null;
-	
-	CooldownTimer c = new CooldownTimer(cool.getValue());
-	DurationTimer t = new DurationTimer(dura.getValue(), c) {
+
+	Cooldown c = new Cooldown(cool.getValue());
+	Duration t = new Duration(dura.getValue(), c) {
 		ActionbarChannel ac;
-		
+
 		@Override
 		protected void onDurationStart() {
 			target.getAbility().setRestricted(true);
@@ -54,8 +55,8 @@ public class Sealer extends AbilityBase implements TargetHandler {
 
 		@Override
 		protected void onDurationProcess(int seconds) {
-			ac.update("능력 활성화까지 "+TimeUtil.parseTimeAsString(getFixedCount())+" 남음");
-			target.getPlayer().sendMessage("§a능력 활성화까지 "+TimeUtil.parseTimeAsString(getFixedCount())+" 남음");
+			ac.update("능력 활성화까지 " + TimeUtil.parseTimeAsString(getFixedCount()) + " 남음");
+			target.getPlayer().sendMessage("§a능력 활성화까지 " + TimeUtil.parseTimeAsString(getFixedCount()) + " 남음");
 			SoundLib.BLOCK_ANVIL_PLACE.playSound(target.getPlayer());
 		}
 
@@ -63,7 +64,7 @@ public class Sealer extends AbilityBase implements TargetHandler {
 		protected void onDurationEnd() {
 			onDurationSilentEnd();
 		}
-		
+
 		@Override
 		protected void onDurationSilentEnd() {
 			ac.update("§a능력 봉인이 풀렸습니다");
@@ -74,6 +75,13 @@ public class Sealer extends AbilityBase implements TargetHandler {
 
 	public Sealer(Participant participant) {
 		super(participant);
+	}
+
+	@SubscribeEvent
+	public void onPlayerDeath(PlayerDeathEvent e) {
+		if (t.isRunning() && (e.getEntity().equals(getPlayer())) || e.getEntity().equals(target.getPlayer())) {
+			t.stop(true);
+		}
 	}
 
 	@Override

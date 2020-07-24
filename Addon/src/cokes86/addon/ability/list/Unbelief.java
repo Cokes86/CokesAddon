@@ -1,11 +1,17 @@
 package cokes86.addon.ability.list;
 
-import org.bukkit.Location;
-import org.bukkit.event.entity.EntityDamageByBlockEvent;
+import daybreak.abilitywar.ability.decorator.ActiveHandler;
+import daybreak.abilitywar.game.AbstractGame;
+import daybreak.abilitywar.game.event.participant.ParticipantDeathEvent;
+import daybreak.abilitywar.game.interfaces.TeamGame;
+import daybreak.abilitywar.game.manager.object.DeathManager;
+import daybreak.abilitywar.utils.base.math.LocationUtil;
+import daybreak.abilitywar.utils.library.SoundLib;
+import org.bukkit.Material;
+import org.bukkit.entity.Arrow;
+import org.bukkit.entity.Entity;
+import org.bukkit.entity.Player;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
-import org.bukkit.event.entity.EntityDamageEvent;
-import org.bukkit.potion.PotionEffect;
-import org.bukkit.potion.PotionEffectType;
 
 import cokes86.addon.configuration.ability.Config;
 import daybreak.abilitywar.ability.AbilityBase;
@@ -15,97 +21,130 @@ import daybreak.abilitywar.ability.AbilityManifest.Species;
 import daybreak.abilitywar.ability.SubscribeEvent;
 import daybreak.abilitywar.game.AbstractGame.Participant;
 import daybreak.abilitywar.game.AbstractGame.Participant.ActionbarNotification.ActionbarChannel;
-import daybreak.abilitywar.utils.base.TimeUtil;
-import daybreak.abilitywar.utils.base.concurrent.TimeUnit;
-import daybreak.abilitywar.utils.base.math.LocationUtil;
-import daybreak.abilitywar.utils.base.math.geometry.Circle;
-import daybreak.abilitywar.utils.library.ParticleLib;
-import daybreak.abilitywar.utils.library.ParticleLib.RGB;
+
+import java.util.function.Predicate;
 
 @AbilityManifest(name = "불신", rank = Rank.A, species = Species.HUMAN, explain = {
-		"$[cool]마다 공격 1회를 무효로 하는 방어막을 생성합니다. (최대 1개)", "방어막을 가지고 있는 동안 나약함1 디버프를 부여합니다.",
-		"방어막을 가지고 있지 않는 동안 힘1 버프를 부여합니다.", "※능력 아이디어: RainStar_" })
-public class Unbelief extends AbilityBase {
-	public static Config<Integer> cool = new Config<Integer>(Unbelief.class, "방어막생성시간", 30, 2) {
+		"게임 중 1회에 한해 $[range]칸 이내의 상대방을 철괴로 우클릭 시 불신 전용 2인 팀을 만듭니다.",
+		"팀끼리는 서로 공격할 수 없습니다.",
+		"팀을 맺은 상대방이 자신을 $[hit]회 타격할 시 팀이 깨지며",
+		"팀을 맺었던 플레이어 한정으로 공격할 시 $[damage]의 추가대미지가 생깁니다.",
+		"※능력 아이디어: RainStar_"
+})
+public class Unbelief extends AbilityBase implements ActiveHandler {
+	private static final Config<Integer> hit = new Config<Integer>(Unbelief.class, "공격횟수", 5) {
 		@Override
-		public boolean Condition(Integer value) {
-			return value >= 0;
+		public boolean condition(Integer value) {
+			return value > 0;
+		}
+	}, damage = new Config<Integer>(Unbelief.class, "추가대미지", 2) {
+		@Override
+		public boolean condition(Integer value) {
+			return value > 0;
+		}
+	}, range = new Config<Integer>(Unbelief.class, "우클릭범위", 10) {
+		@Override
+		public boolean condition(Integer value) {
+			return value > 0;
 		}
 	};
 
-	ActionbarChannel shield = newActionbarChannel();
-	RGB color = RGB.of(0, 0, 0);
+	boolean attackable = false;
+
+	private final Predicate<Entity> predicate = entity -> {
+		if (entity.equals(getPlayer())) return false;
+		if (entity instanceof Player) {
+			if (!getGame().isParticipating(entity.getUniqueId())) return false;
+			AbstractGame.Participant target = getGame().getParticipant(entity.getUniqueId());
+			if (getGame() instanceof DeathManager.Handler) {
+				DeathManager.Handler game = (DeathManager.Handler)getGame();
+				if (game.getDeathManager().isExcluded(entity.getUniqueId())) return false;
+			}
+			if (getGame() instanceof TeamGame) {
+				TeamGame game = (TeamGame) getGame();
+				return (!game.hasTeam(getParticipant()) || game.hasTeam(target) || game.getTeam(getParticipant()).equals(game.getTeam(target)));
+			}
+			return target.attributes().TARGETABLE.getValue();
+		}
+		return true;
+	};
+
+	ActionbarChannel notice = newActionbarChannel();
+	private Participant teammate;
+	private ActionbarChannel teamNotice = null;
+	private int hitted = 0;
 
 	public Unbelief(Participant arg0) {
 		super(arg0);
 	}
 
-	protected void onUpdate(Update update) {
-		if (update == Update.RESTRICTION_CLEAR) {
-			ShieldOff.start();
+	public void onUpdate(Update update) {
+		if (update == Update.ABILITY_DESTROY || update == Update.RESTRICTION_SET) {
+			teamNotice.unregister();
 		}
 	}
 
 	@SubscribeEvent
-	public void onEntityDamage(EntityDamageEvent e) {
-		if (e.getEntity().equals(getPlayer())) {
-			if (ShieldOn.isRunning()) {
-				e.setDamage(0);
-				ShieldOn.stop(false);
-			}
+	public void onParticipantDeath(ParticipantDeathEvent e) {
+		if (e.getParticipant().equals(getParticipant()) || (teammate != null && e.getParticipant().equals(teammate))) {
+			notice.update(null);
+			teamNotice.unregister();
 		}
 	}
 
 	@SubscribeEvent
 	public void onEntityDamageByEntity(EntityDamageByEntityEvent e) {
-		onEntityDamage(e);
-	}
-
-	@SubscribeEvent
-	public void onEntityDamageByBlock(EntityDamageByBlockEvent e) {
-		onEntityDamage(e);
-	}
-
-	Timer ShieldOff = new Timer(cool.getValue()) {
-		@Override
-		protected void onEnd() {
-			shield.update("보호막 생성!");
-			getPlayer().sendMessage("보호막이 생성되었습니다.");
-			getPlayer().removePotionEffect(PotionEffectType.INCREASE_DAMAGE);
-			ShieldOn.start();
-		}
-		
-		protected void onSilentEnd() {
-			getPlayer().removePotionEffect(PotionEffectType.INCREASE_DAMAGE);
-		}
-
-		@Override
-		protected void run(int arg0) {
-			shield.update("보호막 생성중 (남은 시간: " + TimeUtil.parseTimeAsString(getFixedCount())+")");
-			getPlayer().addPotionEffect(new PotionEffect(PotionEffectType.INCREASE_DAMAGE, Integer.MAX_VALUE, 0));
-		}
-	}, ShieldOn = new Timer() {
-		@Override
-		protected void run(int arg0) {
-			for (Location l : Circle.iteratorOf(getPlayer().getLocation(), 1, 20).iterable()) {
-				for (int a= 0; a<5;a++) {
-					l.setY(LocationUtil.getFloorYAt(l.getWorld(), getPlayer().getLocation().getY(), l.getBlockX(), l.getBlockZ()) + (0.1+0.2*a));
-					ParticleLib.REDSTONE.spawnParticle(l, color);
-				}
-
-				getPlayer().addPotionEffect(new PotionEffect(PotionEffectType.WEAKNESS, Integer.MAX_VALUE, 0));
+		Entity damager = e.getDamager();
+		if (damager instanceof Arrow) {
+			Arrow arrow = (Arrow) damager;
+			if (arrow.getShooter() instanceof Entity) {
+				damager = (Entity) arrow.getShooter();
 			}
 		}
 
-		@Override
-		protected void onEnd() {
-			getPlayer().removePotionEffect(PotionEffectType.WEAKNESS);
-			ShieldOff.start();
+		if (teammate != null) {
+			if (damager.equals(teammate.getPlayer()) && e.getEntity().equals(getPlayer())) {
+				if (!attackable) {
+					hitted += 1;
+					e.setCancelled(true);
+					damager.sendMessage("팀을 공격할 수 없습니다.");
+					if (hitted == hit.getValue()) {
+						SoundLib.ENTITY_ENDER_DRAGON_GROWL.playSound(getPlayer());
+						SoundLib.ENTITY_ENDER_DRAGON_GROWL.playSound(teammate.getPlayer());
+
+						getPlayer().sendMessage("팀이 깨졌습니다. 이제 당신은 "+teammate.getPlayer().getName()+"님을 믿지 못합니다.");
+						teammate.getPlayer().sendMessage("팀이 깨졌습니다. 이제 공격할 수 있습니다.");
+						notice.update(null);
+						teamNotice.unregister();
+						attackable = true;
+					}
+				}
+			} else if (damager.equals(getPlayer()) && e.getEntity().equals(teammate.getPlayer())) {
+				if (attackable) {
+					e.setDamage(e.getDamage()+damage.getValue());
+				} else {
+					e.setCancelled(true);
+					damager.sendMessage("팀을 공격할 수 없습니다.");
+				}
+			}
 		}
-		
-		@Override
-		protected void onSilentEnd() {
-			getPlayer().removePotionEffect(PotionEffectType.WEAKNESS);
+	}
+
+	@Override
+	public boolean ActiveSkill(Material material, ClickType clickType) {
+		if (teammate == null && material == Material.IRON_INGOT && clickType == ClickType.RIGHT_CLICK) {
+			Player player = LocationUtil.getEntityLookingAt(Player.class, getPlayer(), range.getValue(), predicate);
+			if (player != null) {
+				teammate = getGame().getParticipant(player.getUniqueId());
+				teamNotice = teammate.actionbar().newChannel();
+
+				getPlayer().sendMessage("§e"+player.getName()+"§f님과 팀을 맺습니다.");
+				player.sendMessage("§e"+getPlayer().getName()+"§f님과 팀을 맺습니다. 팀을 총 "+hit.getValue()+"번 공격할 시 팀이 깨집니다.");
+
+				notice.update("§e팀 §f: "+player.getName());
+				teamNotice.update("§e팀 §f: "+getPlayer().getName());
+			}
 		}
-	}.setPeriod(TimeUnit.TICKS, 5);
+		return false;
+	}
 }

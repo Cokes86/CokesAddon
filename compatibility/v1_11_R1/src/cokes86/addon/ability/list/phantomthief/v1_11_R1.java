@@ -1,70 +1,29 @@
 package cokes86.addon.ability.list.phantomthief;
 
-import cokes86.addon.ability.list.phantomthief.NullAbility;
-import cokes86.addon.ability.list.phantomthief.PhantomThief;
-import cokes86.addon.configuration.ability.Config;
-import cokes86.addon.utils.LocationPlusUtil;
 import daybreak.abilitywar.AbilityWar;
-import daybreak.abilitywar.ability.AbilityBase;
-import daybreak.abilitywar.ability.AbilityFactory;
-import daybreak.abilitywar.ability.AbilityManifest;
-import daybreak.abilitywar.ability.SubscribeEvent;
-import daybreak.abilitywar.ability.decorator.ActiveHandler;
-import daybreak.abilitywar.ability.decorator.TargetHandler;
 import daybreak.abilitywar.game.AbstractGame;
-import daybreak.abilitywar.game.list.mix.Mix;
-import daybreak.abilitywar.game.list.mix.synergy.SynergyFactory;
-import daybreak.abilitywar.game.manager.effect.Stun;
-import daybreak.abilitywar.utils.base.TimeUtil;
 import daybreak.abilitywar.utils.base.collect.Pair;
-import daybreak.abilitywar.utils.base.concurrent.TimeUnit;
-import daybreak.abilitywar.utils.base.math.LocationUtil;
-import daybreak.abilitywar.utils.base.minecraft.compat.nms.NMSHandler;
 import daybreak.abilitywar.utils.base.reflect.ReflectionUtil;
-import daybreak.abilitywar.utils.base.reflect.ReflectionUtil.FieldUtil;
-import daybreak.abilitywar.utils.library.SoundLib;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelOutboundHandlerAdapter;
 import io.netty.channel.ChannelPromise;
 import net.minecraft.server.v1_11_R1.*;
-import net.minecraft.server.v1_11_R1.DataWatcher.Item;
 import org.bukkit.Bukkit;
-import org.bukkit.Location;
-import org.bukkit.Material;
-import org.bukkit.Note;
 import org.bukkit.craftbukkit.v1_11_R1.CraftServer;
 import org.bukkit.craftbukkit.v1_11_R1.entity.CraftPlayer;
 import org.bukkit.craftbukkit.v1_11_R1.inventory.CraftItemStack;
-import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
-import org.bukkit.entity.Projectile;
-import org.bukkit.event.entity.EntityDamageByEntityEvent;
-import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
-import org.bukkit.potion.PotionEffect;
-import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scheduler.BukkitRunnable;
-import org.bukkit.util.Vector;
 
-import java.lang.reflect.InvocationTargetException;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
-import java.util.function.Predicate;
+import java.util.*;
 
-@AbilityManifest(name = "팬텀 시프", rank = AbilityManifest.Rank.S, species = AbilityManifest.Species.HUMAN, explain = {
-        "철괴 좌클릭시 가장 멀리있는 플레이어의 등 뒤 10칸으로 워프 후, 팬텀 모드가 10초 지속됩니다.",
-        "팬텀 모드 동안에는 투명화, 갑옷 삭제효과를 받는 대신, 공격할 수 없고 공격받을 수 없습니다.", "팬텀 모드 동안 대상에게 철괴로 우클릭시 팬텀 모드가 즉시 종료되고,",
-        "발광효과를 15초동안 받습니다. 이때 대상은 이 사실을 알 수 있습니다.", "발광효과동안 대상에게 공격을 받지 않았을 경우 해당 플레이어의 능력을 훔치고,",
-        "대상은 30초 뒤 팬텀시프로 능력이 바뀝니다.", "반대로 공격을 받았을 경우 1초간 스턴상태가 되며 모두에게 자신의 능력이 공개됩니다.", "※능력 아이디어: RainStar_" })
-public class v1_11_R1 extends PhantomThief {
-    private final Map<UUID, ChannelOutboundHandlerAdapter> channelHandlers = new HashMap<>();
+public class v1_11_R1 extends PhantomMathod {
     private static final DataWatcherObject<Byte> BYTE_DATA_WATCHER_OBJECT;
 
-    public v1_11_R1(AbstractGame.Participant participant) {
-        super(participant, v1_11_R1.class);
+    public v1_11_R1(PhantomThief thief) {
+        super(thief);
     }
 
     static {
@@ -75,24 +34,10 @@ public class v1_11_R1 extends PhantomThief {
         }
     }
 
-    @SubscribeEvent
-    public void onJoin(PlayerJoinEvent e) {
-        final CraftPlayer player = (CraftPlayer) e.getPlayer();
-        if (player.equals(getPlayer())) return;
-        injectPlayer(player);
-    }
+    private final Map<UUID, Pair<CraftPlayer, ChannelOutboundHandlerAdapter>> channelHandlers = new HashMap<>();
 
-    @SubscribeEvent
-    public void onQuit(PlayerQuitEvent e) {
-        final CraftPlayer player = (CraftPlayer) e.getPlayer();
-        if (player.equals(getPlayer())) return;
-        if (channelHandlers.containsKey(player.getUniqueId())) {
-            player.getHandle().playerConnection.networkManager.channel.pipeline().remove(channelHandlers.get(player.getUniqueId()));
-            channelHandlers.remove(player.getUniqueId());
-        }
-    }
-
-    public void show() {
+    @Override
+    protected void show() {
         getParticipant().attributes().TARGETABLE.setValue(true);
         final PacketPlayOutEntityEquipment[] packets = {
                 new PacketPlayOutEntityEquipment(getPlayer().getEntityId(), EnumItemSlot.MAINHAND, CraftItemStack.asNMSCopy(getPlayer().getInventory().getItemInMainHand())),
@@ -102,13 +47,14 @@ public class v1_11_R1 extends PhantomThief {
                 new PacketPlayOutEntityEquipment(getPlayer().getEntityId(), EnumItemSlot.LEGS, CraftItemStack.asNMSCopy(getPlayer().getInventory().getLeggings())),
                 new PacketPlayOutEntityEquipment(getPlayer().getEntityId(), EnumItemSlot.FEET, CraftItemStack.asNMSCopy(getPlayer().getInventory().getBoots()))
         };
-        for (Map.Entry<UUID, ChannelOutboundHandlerAdapter> entry : channelHandlers.entrySet()) {
-            CraftPlayer player = (CraftPlayer) Bukkit.getPlayer(entry.getKey());
-            if (player != null) {
-                player.getHandle().playerConnection.networkManager.channel.pipeline().remove(entry.getValue());
-                for (PacketPlayOutEntityEquipment packet : packets) {
-                    player.getHandle().playerConnection.sendPacket(packet);
-                }
+        for (Map.Entry<UUID, Pair<CraftPlayer, ChannelOutboundHandlerAdapter>> entry : channelHandlers.entrySet()) {
+            final CraftPlayer player = entry.getValue().getLeft();
+            try {
+                player.getHandle().playerConnection.networkManager.channel.pipeline().remove(entry.getValue().getRight());
+            } catch (NoSuchElementException ignored) {}
+            if (!player.isValid()) continue;
+            for (PacketPlayOutEntityEquipment packet : packets) {
+                player.getHandle().playerConnection.sendPacket(packet);
             }
         }
         channelHandlers.clear();
@@ -120,7 +66,8 @@ public class v1_11_R1 extends PhantomThief {
         }.runTaskLater(AbilityWar.getPlugin(), 2L);
     }
 
-    public void hide() {
+    @Override
+    protected void hide() {
         getParticipant().attributes().TARGETABLE.setValue(false);
         final CraftPlayer craftPlayer = (CraftPlayer) getPlayer();
         craftPlayer.getHandle().getDataWatcher().set(new DataWatcherObject<>(10, DataWatcherRegistry.b), 0);
@@ -142,21 +89,31 @@ public class v1_11_R1 extends PhantomThief {
         }
     }
 
-    private void injectPlayer(CraftPlayer player) {
+    @Override
+    protected void injectPlayer(Player player) {
+        if (!player.isValid()) return;
+        if (channelHandlers.containsKey(player.getUniqueId())) {
+            final Pair<CraftPlayer, ChannelOutboundHandlerAdapter> pair = channelHandlers.get(player.getUniqueId());
+            if (!pair.getLeft().isValid()) {
+                try {
+                    pair.getLeft().getHandle().playerConnection.networkManager.channel.pipeline().remove(pair.getRight());
+                } catch (NoSuchElementException ignored) {}
+            } else return;
+        }
         final ChannelOutboundHandlerAdapter handler = new ChannelOutboundHandlerAdapter() {
             @Override
             public void write(ChannelHandlerContext ctx, Object packet, ChannelPromise promise) throws Exception {
                 if (packet instanceof PacketPlayOutEntityEquipment) {
-                    if ((int) FieldUtil.getValue(packet, "a") == getPlayer().getEntityId()) {
-                        FieldUtil.setValue(packet, "c", ItemStack.a);
+                    if ((int) ReflectionUtil.FieldUtil.getValue(packet, "a") == getPlayer().getEntityId()) {
+                        ReflectionUtil.FieldUtil.setValue(packet, "c", ItemStack.a);
                     }
                 } else if (packet instanceof PacketPlayOutEntityMetadata) {
-                    if ((int) FieldUtil.getValue(packet, "a") == getPlayer().getEntityId()) {
-                        List<Item<?>> items = FieldUtil.getValue(packet, "b");
+                    if ((int) ReflectionUtil.FieldUtil.getValue(packet, "a") == getPlayer().getEntityId()) {
+                        List<DataWatcher.Item<?>> items = ReflectionUtil.FieldUtil.getValue(packet, "b");
                         if (items.size() != 0) {
-                            Item<?> item = items.get(0);
+                            DataWatcher.Item<?> item = items.get(0);
                             if (BYTE_DATA_WATCHER_OBJECT.equals(item.a())) {
-                                Item<Byte> byteItem = (Item<Byte>) item;
+                                DataWatcher.Item<Byte> byteItem = (DataWatcher.Item<Byte>) item;
                                 byteItem.a((byte) (byteItem.b() | 1 << 5));
                                 ((CraftPlayer) getPlayer()).getHandle().setInvisible(true);
                             }
@@ -166,7 +123,39 @@ public class v1_11_R1 extends PhantomThief {
                 super.write(ctx, packet, promise);
             }
         };
-        channelHandlers.put(player.getUniqueId(), handler);
-        player.getHandle().playerConnection.networkManager.channel.pipeline().addBefore("packet_handler", hashCode() + ":" + player.getName(), handler);
+        channelHandlers.put(player.getUniqueId(), Pair.of((CraftPlayer)player, handler));
+        ((CraftPlayer)player).getHandle().playerConnection.networkManager.channel.pipeline().addBefore("packet_handler", hashCode() + ":" + player.getName(), handler);
+    }
+
+    @Override
+    protected void onPlayerJoin(PlayerJoinEvent e) {
+        final CraftPlayer player = (CraftPlayer) e.getPlayer();
+        if (player.equals(getPlayer())) return;
+        new BukkitRunnable() {
+            @Override
+            public void run() {
+                for (PacketPlayOutEntityEquipment packet : new PacketPlayOutEntityEquipment[] {
+                        new PacketPlayOutEntityEquipment(getPlayer().getEntityId(), EnumItemSlot.MAINHAND, ItemStack.a),
+                        new PacketPlayOutEntityEquipment(getPlayer().getEntityId(), EnumItemSlot.OFFHAND, ItemStack.a),
+                        new PacketPlayOutEntityEquipment(getPlayer().getEntityId(), EnumItemSlot.HEAD, ItemStack.a),
+                        new PacketPlayOutEntityEquipment(getPlayer().getEntityId(), EnumItemSlot.CHEST, ItemStack.a),
+                        new PacketPlayOutEntityEquipment(getPlayer().getEntityId(), EnumItemSlot.LEGS, ItemStack.a),
+                        new PacketPlayOutEntityEquipment(getPlayer().getEntityId(), EnumItemSlot.FEET, ItemStack.a)
+                }) {
+                    player.getHandle().playerConnection.sendPacket(packet);
+                }
+                injectPlayer(player);
+            }
+        }.runTaskLater(AbilityWar.getPlugin(), 2L);
+    }
+
+    @Override
+    protected void onPlayerQuit(PlayerQuitEvent e) {
+        final CraftPlayer player = (CraftPlayer) e.getPlayer();
+        if (player.equals(getPlayer())) return;
+        if (channelHandlers.containsKey(player.getUniqueId())) {
+            player.getHandle().playerConnection.networkManager.channel.pipeline().remove(channelHandlers.get(player.getUniqueId()).getRight());
+            channelHandlers.remove(player.getUniqueId());
+        }
     }
 }

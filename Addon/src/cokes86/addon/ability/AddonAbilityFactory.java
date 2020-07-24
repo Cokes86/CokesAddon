@@ -3,13 +3,13 @@ package cokes86.addon.ability;
 import java.util.*;
 
 import cokes86.addon.ability.list.*;
+import cokes86.addon.ability.list.phantomthief.PhantomThief;
 import cokes86.addon.ability.synergy.*;
 import daybreak.abilitywar.ability.*;
 import daybreak.abilitywar.ability.list.*;
 import daybreak.abilitywar.game.list.mix.synergy.*;
 import daybreak.abilitywar.game.manager.AbilityList;
 import daybreak.abilitywar.utils.base.logging.Logger;
-import daybreak.abilitywar.utils.base.minecraft.version.ServerVersion;
 
 public class AddonAbilityFactory {
 	private static final Logger logger = Logger.getLogger(AddonAbilityFactory.class);
@@ -17,7 +17,6 @@ public class AddonAbilityFactory {
 	protected static Map<String, Class<? extends Synergy>> synergies = new HashMap<>();
 	
 	static {
-		registerAbility("cokes86.addon.ability.list.phantomthief."+ ServerVersion.getVersion().name());
 		registerAbility(Seth.class);
 		registerAbility(Rabbit.class);
 		registerAbility(Ovisni.class);
@@ -45,8 +44,11 @@ public class AddonAbilityFactory {
 		registerAbility(Reincarnation.class);
 		registerAbility(Queen.class);
 		registerAbility(Freud.class);
-		registerAbility(Wily.class);
 		registerAbility(Harmony.class);
+		registerAbility(Cutter.class);
+
+		if (PhantomThief.initPhantomThief()) registerAbility(PhantomThief.class);
+		else logger.error("팬텀 시프는 해당 버전에서 지원하지 않습니다.");
 		
 		registerSynergy(Poker.class, Poker.class, RoyalStraightFlush.class);
 		registerSynergy(GodsBless.class, Xyz.class, TheEnd.class);
@@ -56,6 +58,7 @@ public class AddonAbilityFactory {
 		registerSynergy(Revenge.class, Elva.class, RevengeArrow.class);
 		registerSynergy(Aris.class, Assassin.class, AirDisintegration.class);
 		registerSynergy(Muse.class, Sealer.class, Purgatory.class);
+		registerSynergy(EnchantArrow.class, EnchantArrow.class, ReaperArrow.class);
 	}
 	
 	public static void registerAbility(Class<? extends AbilityBase> clazz) {
@@ -76,18 +79,7 @@ public class AddonAbilityFactory {
 	public static void registerAbility(String className) {
 		try{
 			Class<? extends AbilityBase> clazz = Class.forName(className).asSubclass(AbilityBase.class);
-			if (!abilities.containsValue(clazz)) {
-				AbilityFactory.registerAbility(clazz);
-				if (AbilityFactory.isRegistered(clazz)) {
-					AbilityList.registerAbility(clazz);
-					AbilityManifest am = clazz.getAnnotation(AbilityManifest.class);
-					abilities.put(am.name(), clazz);
-				} else {
-					System.out.println("등록에 실패하였습니다. : "+clazz.getName());
-				}
-			} else {
-				System.out.println("이미 애드온에 등록된 능력입니다 : "+clazz.getName());
-			}
+			registerAbility(clazz);
 		} catch (ClassNotFoundException e) {
 			logger.error("§e" + className + " §f클래스는 존재하지 않습니다.");
 		} catch (ClassCastException e) {

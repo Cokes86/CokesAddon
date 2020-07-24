@@ -30,8 +30,9 @@ import daybreak.abilitywar.utils.base.collect.Pair;
 		"플레이어끼리 전투가 발생할 시 그 사실을 알 수 있으며, 각 플레이어의 체력과 피해량을 알 수 있습니다.",
 		"§c마이닝 스택§f이 1만큼 상승할 때 마다",
 		"$[defenseUp]%씩 데미지가 감소하거나, $[damageUp]만큼의 추가데미지를 주는",
-		"버프를 랜덤하게 받으며, §c마이닝 스택§f은 최대 20까지 쌓입니다.",
-		"철괴 좌클릭시 사실 여부 메세지를 끄고 킬 수 있습니다."
+		"버프를 랜덤하게 받으며, §c마이닝 스택§f은 버프마다 각각 $[max_count]회씩 쌓입니다.",
+		"철괴 좌클릭시 사실 여부 메세지를 끄고 킬 수 있습니다.",
+		"※능력 아이디어: RainStar_"
 		}
 )
 public class DataMining extends AbilityBase implements ActiveHandler {
@@ -43,13 +44,19 @@ public class DataMining extends AbilityBase implements ActiveHandler {
 
 	private static final Config<Double> damageUp = new Config<Double>(DataMining.class, "대미지성장치", 0.25) {
 		@Override
-		public boolean Condition(Double value) {
+		public boolean condition(Double value) {
 			return value > 0;
 		}
 	}, defenseUp = new Config<Double>(DataMining.class, "감소성장치", 2.5) {
 		@Override
-		public boolean Condition(Double value) {
+		public boolean condition(Double value) {
 			return value > 0;
+		}
+	};
+	private static final Config<Integer> max_count = new Config<Integer>(DataMining.class, "각_스택_최대치", 10) {
+		@Override
+		public boolean condition(Integer value) {
+			return value>0;
 		}
 	};
 
@@ -61,13 +68,13 @@ public class DataMining extends AbilityBase implements ActiveHandler {
 		Random r = new Random();
 		double a = r.nextDouble()*2;
 		if (a > 1) {
-			if (damage == damageUp.getValue()*10) {
+			if (damage == damageUp.getValue() * max_count.getValue()) {
 				defense += defenseUp.getValue();
 			} else {
 				damage += damageUp.getValue();
 			}
 		} else {
-			if (defense == defenseUp.getValue()*10) {
+			if (defense == defenseUp.getValue() * max_count.getValue()) {
 				damage += damageUp.getValue();
 			} else {
 				defense += defenseUp.getValue();
@@ -85,7 +92,7 @@ public class DataMining extends AbilityBase implements ActiveHandler {
 	public void onAbilityActiveSkill(AbilityActiveSkillEvent e) {
 		if (!e.getParticipant().equals(getParticipant())) {
 			if (message) getPlayer().sendMessage("§e" + e.getPlayer().getName() + "§f님이 능력을 사용하였습니다.");
-			if (count != 20) {
+			if (count != max_count.getValue()) {
 				count++;
 				Active();
 			}

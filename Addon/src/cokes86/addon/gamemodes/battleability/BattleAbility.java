@@ -4,6 +4,8 @@ import java.util.List;
 
 import javax.naming.OperationNotSupportedException;
 
+import daybreak.abilitywar.game.Category;
+import daybreak.abilitywar.game.GameAliases;
 import daybreak.abilitywar.game.manager.object.Invincibility;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -36,7 +38,9 @@ import daybreak.abilitywar.utils.base.minecraft.PlayerCollector;
 import daybreak.abilitywar.utils.library.SoundLib;
 
 @GameManifest(name = "자기장 능력자 전쟁", description = {"§f맵의 크기가 서서히 줄어든다!", "§f줄어들기 전에 얼른 사냥해라!", "§f※게임 시작 전에 게임 스폰을 지정해주세요."})
-public class BattleAbility extends Game implements DefaultKitHandler, Winnable, Observer, Border.Handler {
+@Category(value = Category.GameCategory.GAME)
+@GameAliases(value = {"자기장", "자능전"})
+public class BattleAbility extends Game implements DefaultKitHandler, Winnable, Observer{
 	Location location;
 	World world;
 	double size;
@@ -171,7 +175,7 @@ public class BattleAbility extends Game implements DefaultKitHandler, Winnable, 
 			WorldBorder wb = world.getWorldBorder();
 			
 			if (isRestricted()) {
-				getBorder().start(false);
+				getInvincibility().start(false);
 			} else {
 				Bukkit.broadcastMessage(ChatColor.translateAlternateColorCodes('&', "&4초반 무적&c이 적용되지 않습니다."));
 				setRestricted(false);
@@ -247,11 +251,6 @@ public class BattleAbility extends Game implements DefaultKitHandler, Winnable, 
 			wb.setCenter(location);
 			wb.setSize(size);
 		}
-	}
-
-	@Override
-	public Border getBorder() {
-		return border;
 	}
 
 	@Override

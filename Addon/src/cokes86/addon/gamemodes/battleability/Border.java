@@ -92,10 +92,6 @@ public class Border extends Invincibility {
 		}
 	}
 
-	public interface Handler {
-		Border getBorder();
-	}
-
 	private class InvincibilityTimer extends AbstractGame.GameTimer {
 
 		private Bar bossBar = null;

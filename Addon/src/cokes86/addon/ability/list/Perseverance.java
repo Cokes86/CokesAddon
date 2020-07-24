@@ -27,25 +27,25 @@ import daybreak.abilitywar.utils.base.concurrent.TimeUnit;
 public class Perseverance extends AbilityBase {
 	private static final Config<Integer> dura = new Config<Integer>(Perseverance.class, "그로기시간", 3 ,2) {
 		@Override
-		public boolean Condition(Integer value) {
+		public boolean condition(Integer value) {
 			return value >=0;
 		}
 	},
 	max = new Config<Integer>(Perseverance.class, "최대치(%)", 200) {
 		@Override
-		public boolean Condition(Integer value) {
+		public boolean condition(Integer value) {
 			return value > 0;
 		}
 	},
 	upg = new Config<Integer>(Perseverance.class, "성장치(%p)", 20) {
 		@Override
-		public boolean Condition(Integer value) {
+		public boolean condition(Integer value) {
 			return value > 0;
 		}
 	};
 	private static final Config<Double> period = new Config<Double>(Perseverance.class, "주기", 3.5) {
 		@Override
-		public boolean Condition(Double value) {
+		public boolean condition(Double value) {
 			return value > 0;
 		}
 	};
@@ -62,9 +62,11 @@ public class Perseverance extends AbilityBase {
 
 	public Perseverance(Participant participant) {
 		super(participant);
+		passive_1.register();
+		passive_2.register();
 	}
-	
-	Timer passive_1 = new Timer() {
+
+	AbilityTimer passive_1 = new AbilityTimer() {
 
 		@Override
 		protected void run(int seconds) {
@@ -74,8 +76,8 @@ public class Perseverance extends AbilityBase {
 			ac.update("상대방에게 주는 대미지: " + (give) + "%");
 		}
 	}.setPeriod(TimeUnit.TICKS, 1);
-	
-	Timer passive_2 = new Timer(dura.getValue()) {
+
+	AbilityTimer passive_2 = new AbilityTimer(dura.getValue()) {
 
 		@Override
 		protected void run(int seconds) {		

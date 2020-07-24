@@ -28,12 +28,12 @@ public class Resurrection extends AbilityBase {
 	public static boolean spawn = Settings.getSpawnEnable();
 	public static Config<Integer> cool = new Config<Integer>(Resurrection.class,"무적시간",1, 2) {
 		@Override
-		public boolean Condition(Integer value) {
+		public boolean condition(Integer value) {
 			return value >= 0;
 		}
 	};
 
-	Timer t = new Timer(cool.getValue()) {
+	AbilityTimer t = new AbilityTimer(cool.getValue()) {
 		@Override
 		protected void run(int Count) {
 		}
@@ -54,7 +54,7 @@ public class Resurrection extends AbilityBase {
 		}
 	}
 
-	@SubscribeEvent
+	@SubscribeEvent(priority = 6)
 	public void onEntityDamage(EntityDamageEvent e) {
 		if (e.getEntity().equals(getPlayer())) {
 			if (!t.isRunning()) {
@@ -79,12 +79,12 @@ public class Resurrection extends AbilityBase {
 		}
 	}
 	
-	@SubscribeEvent
+	@SubscribeEvent(priority = 6)
 	public void onEntityDamageByEntity(EntityDamageByEntityEvent e) {
 		onEntityDamage(e);
 	}
 	
-	@SubscribeEvent
+	@SubscribeEvent(priority = 6)
 	public void onEntityDamageByBlock(EntityDamageByBlockEvent e) {
 		onEntityDamage(e);
 	}

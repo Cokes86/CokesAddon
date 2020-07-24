@@ -36,31 +36,32 @@ public class Blocks extends AbilityBase implements ActiveHandler {
 
 	private static final Config<Integer> stone = new Config<Integer>(Blocks.class, "돌_받는대미지감소량(%)", 20) {
 		@Override
-		public boolean Condition(Integer value) {
+		public boolean condition(Integer value) {
 			return value > 0 && value < 100;
 		}
 	}, glass = new Config<Integer>(Blocks.class, "유리_받는대미지(%)", 200) {
 		@Override
-		public boolean Condition(Integer value) {
+		public boolean condition(Integer value) {
 			return value > 100;
 		}
 	};
 	private static final Config<Double> inv = new Config<Double>(Blocks.class, "모래_무적시간", 0.3,
 			"#0.0 단위로 작성") {
 		@Override
-		public boolean Condition(Double value) {
+		public boolean condition(Double value) {
 			return value > 0 && Math.ceil(value * 10) == value * 10;
 		}
 	};
 
 	public Blocks(Participant arg0) {
 		super(arg0);
+		passive.register();
 	}
 
 	protected void onUpdate(Update update) {
 		switch (update) {
 		case RESTRICTION_CLEAR:
-			Passive.start();
+			passive.start();
 			break;
 		case ABILITY_DESTROY:
 		case RESTRICTION_SET:
@@ -70,14 +71,14 @@ public class Blocks extends AbilityBase implements ActiveHandler {
 		}
 	}
 
-	Timer Passive = new Timer() {
+	AbilityTimer passive = new AbilityTimer() {
 		@Override
 		protected void run(int count) {
 			ac.update("상태: " + condition.getName());
 		}
 	}.setPeriod(TimeUnit.TICKS, 1);
 
-	Timer invTimer = new Timer() {
+	AbilityTimer invTimer = new AbilityTimer() {
 		@Override
 		protected void run(int count) {
 			if (count == inv.getValue() * 20)

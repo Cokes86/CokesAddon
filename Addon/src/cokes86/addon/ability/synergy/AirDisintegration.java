@@ -1,39 +1,40 @@
 package cokes86.addon.ability.synergy;
 
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.Map;
-import java.util.function.Predicate;
-
-import cokes86.addon.utils.LocationPlusUtil;
-import org.bukkit.ChatColor;
-import org.bukkit.Location;
-import org.bukkit.Material;
-import org.bukkit.entity.Entity;
-import org.bukkit.entity.LivingEntity;
-import org.bukkit.event.entity.EntityDamageByEntityEvent;
-import org.bukkit.event.entity.EntityDamageEvent;
-import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
-
 import cokes86.addon.configuration.synergy.Config;
 import daybreak.abilitywar.ability.AbilityManifest;
 import daybreak.abilitywar.ability.AbilityManifest.Rank;
 import daybreak.abilitywar.ability.AbilityManifest.Species;
 import daybreak.abilitywar.ability.SubscribeEvent;
 import daybreak.abilitywar.ability.decorator.ActiveHandler;
+import daybreak.abilitywar.game.AbstractGame;
 import daybreak.abilitywar.game.AbstractGame.Participant;
 import daybreak.abilitywar.game.AbstractGame.Participant.ActionbarNotification.ActionbarChannel;
+import daybreak.abilitywar.game.interfaces.TeamGame;
 import daybreak.abilitywar.game.list.mix.synergy.Synergy;
+import daybreak.abilitywar.game.manager.object.DeathManager;
 import daybreak.abilitywar.game.manager.object.WRECK;
 import daybreak.abilitywar.utils.base.concurrent.TimeUnit;
 import daybreak.abilitywar.utils.base.math.LocationUtil;
-import daybreak.abilitywar.utils.base.minecraft.DamageUtil;
 import daybreak.abilitywar.utils.library.SoundLib;
+import org.bukkit.ChatColor;
+import org.bukkit.Location;
+import org.bukkit.Material;
+import org.bukkit.entity.Entity;
+import org.bukkit.entity.LivingEntity;
+import org.bukkit.entity.Player;
+import org.bukkit.event.entity.EntityDamageByEntityEvent;
+import org.bukkit.event.entity.EntityDamageEvent;
+import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
+
+import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.Map;
+import java.util.function.Predicate;
 
 @AbilityManifest(name = "공중 분해", rank = Rank.A, species = Species.HUMAN, explain = {
 		"5초마다 §d사슬 카운터§f를 1씩 상승하며 최대 8만큼 상승합니다.",
 		"철괴 우클릭시 §d사슬 카운터§f를 전부 소모하여 플레이어를 (§d사슬 카운터§f/2+5)블럭만큼 공중에 고정시킨 후",
-		"3틱마다 고정된 플레이어 중 한명에게 이동하고 누적된 §d사슬 카운터§f만큼의 고정대미지를 준 후 떨어트립니다. $[cool]",
+		"3틱마다 고정된 플레이어 중 한명에게 이동하고 누적된 (§d사슬 카운터§f*2)만큼의 고정대미지를 준 후 떨어트립니다. $[cool]",
 		"능력 사용 이후 1회에 한정해 낙하대미지를 받지 않습니다."
 })
 public class AirDisintegration extends Synergy implements ActiveHandler {
@@ -51,12 +52,27 @@ public class AirDisintegration extends Synergy implements ActiveHandler {
 
 	int chain = 0;
 	ActionbarChannel ac = newActionbarChannel();
-	private final Predicate<Entity> STRICT_PREDICATE = LocationPlusUtil.STRICT(getParticipant());
+	private final Predicate<Entity> STRICT_PREDICATE = entity -> {
+		if (entity.equals(getPlayer())) return false;
+		if (entity instanceof Player) {
+			if (!getGame().isParticipating(entity.getUniqueId())) return false;
+			AbstractGame.Participant target = getGame().getParticipant(entity.getUniqueId());
+			if (getGame() instanceof DeathManager.Handler) {
+				DeathManager.Handler game = (DeathManager.Handler) getGame();
+				if (game.getDeathManager().isExcluded(entity.getUniqueId())) return false;
+			}
+			if (getGame() instanceof TeamGame) {
+				TeamGame game = (TeamGame) getGame();
+				return (!game.hasTeam(getParticipant()) || game.hasTeam(target) || game.getTeam(getParticipant()).equals(game.getTeam(target)));
+			}
+		}
+		return true;
+	};
 	private LinkedList<LivingEntity> entities = null;
 	boolean falling = false;
-	CooldownTimer cooldown = new CooldownTimer(cool.getValue());
+	Cooldown cooldown = new Cooldown(cool.getValue());
 
-	Timer passive = new Timer() {
+	AbilityTimer passive = new AbilityTimer() {
 
 		@Override
 		protected void run(int arg0) {
@@ -74,7 +90,7 @@ public class AirDisintegration extends Synergy implements ActiveHandler {
 
 	};
 	
-	private final Timer skill = new Timer() {
+	private final AbilityTimer skill = new AbilityTimer() {
 		final Map<LivingEntity, Location> stun = new HashMap<>();
 		
 		public void onStart() {
@@ -94,7 +110,7 @@ public class AirDisintegration extends Synergy implements ActiveHandler {
 					if (count % 3 == 0) {
 						LivingEntity e = entities.remove();
 						getPlayer().teleport(e);
-						e.damage(DamageUtil.getPenetratedDamage(getPlayer(), e, chain), getPlayer());
+						e.damage(chain*2, getPlayer());
 						SoundLib.ENTITY_PLAYER_ATTACK_SWEEP.playSound(getPlayer());
 						SoundLib.ENTITY_EXPERIENCE_ORB_PICKUP.playSound(getPlayer());
 						stun.remove(e);
@@ -112,6 +128,8 @@ public class AirDisintegration extends Synergy implements ActiveHandler {
 
 	public AirDisintegration(Participant participant) {
 		super(participant);
+		passive.register();
+		skill.register();
 	}
 
 	public void onUpdate(Update update) {
