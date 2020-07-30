@@ -3,7 +3,7 @@ package cokes86.addon.ability.list;
 import daybreak.abilitywar.ability.decorator.ActiveHandler;
 import daybreak.abilitywar.game.AbstractGame;
 import daybreak.abilitywar.game.event.participant.ParticipantDeathEvent;
-import daybreak.abilitywar.game.interfaces.TeamGame;
+import daybreak.abilitywar.game.team.interfaces.Teamable;
 import daybreak.abilitywar.game.manager.object.DeathManager;
 import daybreak.abilitywar.utils.base.math.LocationUtil;
 import daybreak.abilitywar.utils.library.SoundLib;
@@ -60,9 +60,9 @@ public class Unbelief extends AbilityBase implements ActiveHandler {
 				DeathManager.Handler game = (DeathManager.Handler)getGame();
 				if (game.getDeathManager().isExcluded(entity.getUniqueId())) return false;
 			}
-			if (getGame() instanceof TeamGame) {
-				TeamGame game = (TeamGame) getGame();
-				return (!game.hasTeam(getParticipant()) || game.hasTeam(target) || game.getTeam(getParticipant()).equals(game.getTeam(target)));
+			if (getGame() instanceof Teamable) {
+				Teamable game = (Teamable) getGame();
+				return (!game.hasTeam(getParticipant()) || !game.hasTeam(target) || !game.getTeam(getParticipant()).equals(game.getTeam(target)));
 			}
 			return target.attributes().TARGETABLE.getValue();
 		}
@@ -80,7 +80,7 @@ public class Unbelief extends AbilityBase implements ActiveHandler {
 
 	public void onUpdate(Update update) {
 		if (update == Update.ABILITY_DESTROY || update == Update.RESTRICTION_SET) {
-			teamNotice.unregister();
+			if (teamNotice != null) teamNotice.unregister();
 		}
 	}
 

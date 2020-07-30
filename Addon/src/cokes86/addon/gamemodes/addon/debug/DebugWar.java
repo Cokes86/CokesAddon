@@ -158,6 +158,9 @@ public class DebugWar extends AbstractGame implements Listener, WRECK.Handler {
 			Bukkit.broadcastMessage(
 					ChatColor.translateAlternateColorCodes('&', "&f" + sender.getName() + "&a님이 플레이어들의 능력을 확인하였습니다."));
 			break;
+		default:
+			super.executeCommand(commandType, sender, command, args, plugin);
+			break;
 		}
 	}
 

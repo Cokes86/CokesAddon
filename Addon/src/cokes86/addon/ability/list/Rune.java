@@ -5,8 +5,8 @@ import java.util.Random;
 import java.util.function.Predicate;
 
 import daybreak.abilitywar.game.AbstractGame;
-import daybreak.abilitywar.game.interfaces.TeamGame;
 import daybreak.abilitywar.game.manager.object.DeathManager;
+import daybreak.abilitywar.game.team.interfaces.Teamable;
 import daybreak.abilitywar.utils.base.minecraft.damage.Damages;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -56,9 +56,9 @@ public class Rune extends AbilityBase implements ActiveHandler {
 				DeathManager.Handler game = (DeathManager.Handler) getGame();
 				if (game.getDeathManager().isExcluded(entity.getUniqueId())) return false;
 			}
-			if (getGame() instanceof TeamGame) {
-				TeamGame game = (TeamGame) getGame();
-				return (!game.hasTeam(getParticipant()) || game.hasTeam(target) || game.getTeam(getParticipant()).equals(game.getTeam(target)));
+			if (getGame() instanceof Teamable) {
+				Teamable game = (Teamable) getGame();
+				return (!game.hasTeam(getParticipant()) || !game.hasTeam(target) || !game.getTeam(getParticipant()).equals(game.getTeam(target)));
 			}
 			return target.attributes().TARGETABLE.getValue();
 		}
@@ -75,7 +75,11 @@ public class Rune extends AbilityBase implements ActiveHandler {
 				int a = new Random().nextInt(ps.size());
 				Player target = ps.get(a);
 				if (!target.isDead() && Damages.canDamage(target, getPlayer(), DamageCause.ENTITY_ATTACK, 1)) {
-					Damages.damageFixed(target,getPlayer(), 1);
+					if (target.getHealth() > 1) {
+						target.setHealth(target.getHealth()-1);
+					} else {
+						target.damage(20, getPlayer());
+					}
 					SoundLib.XYLOPHONE.playInstrument(getPlayer(), new Note(1, Note.Tone.C, false));
 					SoundLib.XYLOPHONE.playInstrument(target, new Note(1, Note.Tone.C, false));
 				}

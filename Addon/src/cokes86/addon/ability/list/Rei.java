@@ -1,7 +1,9 @@
 package cokes86.addon.ability.list;
 
 import daybreak.abilitywar.utils.base.language.korean.KoreanUtil;
-import daybreak.abilitywar.utils.base.minecraft.damage.Damages;
+import daybreak.abilitywar.utils.base.minecraft.nms.NMS;
+
+import org.bukkit.GameMode;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.entity.Arrow;
 import org.bukkit.entity.Entity;
@@ -71,8 +73,19 @@ public class Rei extends AbilityBase {
 		if (e.getEntity() instanceof Player && !e.getEntity().equals(getPlayer()) && damager.equals(getPlayer()) && !c.isRunning()) {
 			e.setDamage(e.getDamage() + damage.getValue());
 			double max_Health = getPlayer().getAttribute(Attribute.GENERIC_MAX_HEALTH).getBaseValue();
-			if (getPlayer().getHealth() > max_Health * cost.getValue() / 100.0f) {
-				Damages.damageFixed(getPlayer(), getPlayer(), (float) (max_Health * cost.getValue() / 100.0f));
+			double health = getPlayer().getHealth();
+			float Absorption = NMS.getAbsorptionHearts(getPlayer());
+			double damage = max_Health * cost.getValue() / 100.0f;
+			if (getPlayer().getGameMode().equals(GameMode.SURVIVAL) || getPlayer().getGameMode().equals(GameMode.ADVENTURE)) {
+				if (Absorption >= damage) {
+					NMS.setAbsorptionHearts(getPlayer(), (float) (Absorption - damage));
+				} else {
+					double temp = damage - Absorption;
+					if (health > temp) {
+						NMS.setAbsorptionHearts(getPlayer(), 0);
+						getPlayer().setHealth(Math.max(0.0, health - temp));
+					}
+				}
 			}
 		}
 	}

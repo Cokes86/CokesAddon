@@ -5,7 +5,7 @@ import java.util.Random;
 import java.util.function.Predicate;
 
 import daybreak.abilitywar.game.AbstractGame;
-import daybreak.abilitywar.game.interfaces.TeamGame;
+import daybreak.abilitywar.game.team.interfaces.Teamable;
 import daybreak.abilitywar.game.manager.object.DeathManager;
 import daybreak.abilitywar.utils.base.minecraft.damage.Damages;
 import org.bukkit.Location;
@@ -126,9 +126,9 @@ public class Freud extends AbilityBase implements ActiveHandler {
 				DeathManager.Handler game = (DeathManager.Handler) getGame();
 				if (game.getDeathManager().isExcluded(entity.getUniqueId())) return false;
 			}
-			if (getGame() instanceof TeamGame) {
-				TeamGame game = (TeamGame) getGame();
-				return (!game.hasTeam(getParticipant()) || game.hasTeam(target) || game.getTeam(getParticipant()).equals(game.getTeam(target)));
+			if (getGame() instanceof Teamable) {
+				Teamable game = (Teamable) getGame();
+				return (!game.hasTeam(getParticipant()) || !game.hasTeam(target) || !game.getTeam(getParticipant()).equals(game.getTeam(target)));
 			}
 			return target.attributes().TARGETABLE.getValue();
 		}
@@ -147,7 +147,7 @@ public class Freud extends AbilityBase implements ActiveHandler {
 			Player target = LocationUtil.getNearestEntity(Player.class, getPlayer().getLocation(), predicate);
 			if (target != null) {
 				mana -= magic.getMana();
-				new Bullet<>(getPlayer(), getPlayer().getLocation(), target, magic).start();
+				new Bullet(getPlayer(), getPlayer().getLocation(), target, magic).start();
 				magic = Magic.getRandomMagic();
 				return true;
 			}
@@ -156,15 +156,15 @@ public class Freud extends AbilityBase implements ActiveHandler {
 		return false;
 	}
 	
-	public class Bullet<Shooter extends Entity & ProjectileSource> extends AbilityTimer {
+	public class Bullet extends AbilityTimer {
 
-		private final Shooter shooter;
+		private final LivingEntity shooter;
 		private final CustomEntity entity;
 		private Vector velocity;
 		private final Magic magic;
 		private final Entity target;
 
-		private Bullet(Shooter shooter, Location startLocation, Entity target, Magic magic) {
+		private Bullet(LivingEntity shooter, Location startLocation, Entity target, Magic magic) {
 			super(40);
 			setPeriod(TimeUnit.TICKS, 1);
 			this.shooter = shooter;
@@ -190,6 +190,9 @@ public class Freud extends AbilityBase implements ActiveHandler {
 				for (Damageable damageable : LocationUtil.getConflictingEntities(Damageable.class,entity.getBoundingBox(), predicate)) {
 					if (!shooter.equals(damageable) && !damageable.isDead()) {
 						magic.onDamaged(damageable, getPlayer());
+						if (magic.equals(Magic.EXPLOSION)) {
+							damageable.getVelocity().setY(0);
+						}
 						stop(false);
 						return;
 					}
@@ -219,7 +222,7 @@ public class Freud extends AbilityBase implements ActiveHandler {
 			public void onDeflect(Participant deflector, Vector newDirection) {
 				stop(false);
 				Player deflectedPlayer = deflector.getPlayer();
-				new Bullet<>(deflectedPlayer, lastLocation, Bullet.this.shooter, magic).start();
+				new Bullet(deflectedPlayer, lastLocation, Bullet.this.shooter, magic).start();
 			}
 
 			@Override

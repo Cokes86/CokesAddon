@@ -92,7 +92,7 @@ public class DataMining extends AbilityBase implements ActiveHandler {
 	public void onAbilityActiveSkill(AbilityActiveSkillEvent e) {
 		if (!e.getParticipant().equals(getParticipant())) {
 			if (message) getPlayer().sendMessage("§e" + e.getPlayer().getName() + "§f님이 능력을 사용하였습니다.");
-			if (count != max_count.getValue()) {
+			if (count != max_count.getValue()*2) {
 				count++;
 				Active();
 			}

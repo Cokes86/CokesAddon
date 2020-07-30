@@ -1,8 +1,6 @@
 package cokes86.addon.ability.list.phantomthief;
 
-import cokes86.addon.ability.list.phantomthief.PhantomMathod;
 import daybreak.abilitywar.AbilityWar;
-import daybreak.abilitywar.game.AbstractGame;
 import daybreak.abilitywar.utils.base.collect.Pair;
 import daybreak.abilitywar.utils.base.reflect.ReflectionUtil;
 import io.netty.channel.ChannelHandlerContext;

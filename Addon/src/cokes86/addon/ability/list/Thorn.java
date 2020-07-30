@@ -62,7 +62,7 @@ public class Thorn extends AbilityBase implements ActiveHandler {
 		if (e.getEntity().equals(getPlayer()) && d.isRunning()) {
 			if (e.getDamager() instanceof Arrow) {
 				Arrow a = (Arrow) e.getDamager();
-				if (a.getShooter() instanceof Player) {
+				if (a.getShooter() instanceof Player && !a.getShooter().equals(getPlayer())) {
 					Player shooter = (Player) a.getShooter();
 					double dam = e.getFinalDamage();
 					Damages.damageArrow(shooter, getPlayer(), (float) (dam * damage.getValue() / 100));

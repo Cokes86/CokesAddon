@@ -9,7 +9,7 @@ import daybreak.abilitywar.ability.decorator.ActiveHandler;
 import daybreak.abilitywar.game.AbstractGame;
 import daybreak.abilitywar.game.AbstractGame.Participant;
 import daybreak.abilitywar.game.AbstractGame.Participant.ActionbarNotification.ActionbarChannel;
-import daybreak.abilitywar.game.interfaces.TeamGame;
+import daybreak.abilitywar.game.team.interfaces.Teamable;
 import daybreak.abilitywar.game.list.mix.synergy.Synergy;
 import daybreak.abilitywar.game.manager.object.DeathManager;
 import daybreak.abilitywar.game.manager.object.WRECK;
@@ -61,9 +61,9 @@ public class AirDisintegration extends Synergy implements ActiveHandler {
 				DeathManager.Handler game = (DeathManager.Handler) getGame();
 				if (game.getDeathManager().isExcluded(entity.getUniqueId())) return false;
 			}
-			if (getGame() instanceof TeamGame) {
-				TeamGame game = (TeamGame) getGame();
-				return (!game.hasTeam(getParticipant()) || game.hasTeam(target) || game.getTeam(getParticipant()).equals(game.getTeam(target)));
+			if (getGame() instanceof Teamable) {
+				Teamable game = (Teamable) getGame();
+				return (!game.hasTeam(getParticipant()) || !game.hasTeam(target) || !game.getTeam(getParticipant()).equals(game.getTeam(target)));
 			}
 		}
 		return true;

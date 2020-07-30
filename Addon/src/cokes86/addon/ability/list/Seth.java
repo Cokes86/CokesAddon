@@ -5,7 +5,7 @@ import java.util.ArrayList;
 import java.util.function.Predicate;
 
 import daybreak.abilitywar.game.AbstractGame;
-import daybreak.abilitywar.game.interfaces.TeamGame;
+import daybreak.abilitywar.game.team.interfaces.Teamable;
 import daybreak.abilitywar.game.manager.object.DeathManager;
 import org.bukkit.Material;
 import org.bukkit.entity.Entity;
@@ -52,7 +52,7 @@ public class Seth extends AbilityBase implements ActiveHandler {
 		public boolean condition(Integer value) {
 			return value > 0;
 		}
-	}, debuff = new Config<Integer>(Seth.class, "디버프시간", 10, 2) {
+	}, debuff = new Config<Integer>(Seth.class, "디버프시간", 5, 2) {
 		@Override
 		public boolean condition(Integer value) {
 			return value >= 1;
@@ -111,9 +111,9 @@ public class Seth extends AbilityBase implements ActiveHandler {
 				DeathManager.Handler game = (DeathManager.Handler) getGame();
 				if (game.getDeathManager().isExcluded(entity.getUniqueId())) return false;
 			}
-			if (getGame() instanceof TeamGame) {
-				TeamGame game = (TeamGame) getGame();
-				return (!game.hasTeam(getParticipant()) || game.hasTeam(target) || game.getTeam(getParticipant()).equals(game.getTeam(target)));
+			if (getGame() instanceof Teamable) {
+				Teamable game = (Teamable) getGame();
+				return (!game.hasTeam(getParticipant()) || !game.hasTeam(target) || !game.getTeam(getParticipant()).equals(game.getTeam(target)));
 			}
 		}
 		return true;
@@ -125,13 +125,18 @@ public class Seth extends AbilityBase implements ActiveHandler {
 			if (!c.isCooldown()) {
 				int range = Seth.range.getValue();
 				ArrayList<Player> ps = LocationUtil.getNearbyEntities(Player.class, getPlayer().getLocation(), range, range, predicate);
-				for (Player p : ps) {
-					p.teleport(getPlayer().getLocation());
-					p.addPotionEffect(new PotionEffect(PotionEffectType.WEAKNESS, debuff.getValue() * 20, 0));
-					SoundLib.ENTITY_PLAYER_ATTACK_SWEEP.playSound(p);
+				if (ps.size() > 0) {
+					for (Player p : ps) {
+						p.teleport(getPlayer().getLocation());
+						p.addPotionEffect(new PotionEffect(PotionEffectType.WEAKNESS, debuff.getValue() * 20, 0));
+						SoundLib.ENTITY_PLAYER_ATTACK_SWEEP.playSound(p);
+					}
+					SoundLib.ENTITY_PLAYER_ATTACK_SWEEP.playSound(getPlayer());
+					c.start();
+					return true;
+				} else {
+					getPlayer().sendMessage("주변에 플레이어가 존재하지 않습니다.");
 				}
-				SoundLib.ENTITY_PLAYER_ATTACK_SWEEP.playSound(getPlayer());
-				c.start();
 			}
 		}
 		return false;

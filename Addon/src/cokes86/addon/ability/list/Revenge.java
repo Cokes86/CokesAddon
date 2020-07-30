@@ -3,10 +3,7 @@ package cokes86.addon.ability.list;
 import java.text.DecimalFormat;
 
 import daybreak.abilitywar.utils.base.minecraft.damage.Damages;
-import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
-import org.bukkit.attribute.Attributable;
-import org.bukkit.attribute.Attribute;
 import org.bukkit.entity.Arrow;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;

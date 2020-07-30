@@ -51,7 +51,7 @@ public class BattleAbility extends Game implements DefaultKitHandler, Winnable, 
 		setRestricted(Settings.InvincibilitySettings.isEnabled());
 		attachObserver(this);
 		Bukkit.getPluginManager().registerEvents(this, AbilityWar.getPlugin());
-		world = Settings.getSpawnLocation().getWorld();
+		world = Bukkit.getWorld(Settings.getSpawnLocation().world);
 		WorldBorder wb = world.getWorldBorder();
 		
 		location = wb.getCenter();
@@ -150,7 +150,7 @@ public class BattleAbility extends Game implements DefaultKitHandler, Winnable, 
 
 			giveDefaultKit(getParticipants());
 
-			Location spawn = Settings.getSpawnLocation();
+			Location spawn = Settings.getSpawnLocation().toBukkitLocation();
 			for (Participant participant : getParticipants()) {
 				participant.getPlayer().teleport(spawn);
 			}

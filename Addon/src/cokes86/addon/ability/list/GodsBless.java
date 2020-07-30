@@ -1,10 +1,9 @@
 package cokes86.addon.ability.list;
 
-
 import java.util.function.Predicate;
 
 import daybreak.abilitywar.game.AbstractGame;
-import daybreak.abilitywar.game.interfaces.TeamGame;
+import daybreak.abilitywar.game.team.interfaces.Teamable;
 import daybreak.abilitywar.game.manager.object.DeathManager;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -114,9 +113,9 @@ public class GodsBless extends AbilityBase implements ActiveHandler {
 				DeathManager.Handler game = (DeathManager.Handler)getGame();
 				if (game.getDeathManager().isExcluded(entity.getUniqueId())) return false;
 			}
-			if (getGame() instanceof TeamGame) {
-				TeamGame game = (TeamGame) getGame();
-				return (!game.hasTeam(getParticipant()) || game.hasTeam(target) || game.getTeam(getParticipant()).equals(game.getTeam(target)));
+			if (getGame() instanceof Teamable) {
+				Teamable game = (Teamable) getGame();
+				return (!game.hasTeam(getParticipant()) || !game.hasTeam(target) || !game.getTeam(getParticipant()).equals(game.getTeam(target)));
 			}
 		}
 		return true;

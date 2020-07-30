@@ -5,7 +5,7 @@ import java.util.Random;
 import java.util.function.Predicate;
 
 import daybreak.abilitywar.game.AbstractGame;
-import daybreak.abilitywar.game.interfaces.TeamGame;
+import daybreak.abilitywar.game.team.interfaces.Teamable;
 import daybreak.abilitywar.game.manager.object.DeathManager;
 import daybreak.abilitywar.utils.base.minecraft.damage.Damages;
 import org.bukkit.Material;
@@ -34,7 +34,7 @@ import daybreak.abilitywar.utils.library.SoundLib;
 		"§a페어§f : 2개의 숫자가 같은 경우입니다. (페어의 수 * 2)초 만큼 재생2 버프를 부여합니다.",
 		"§b스트레이트§f : 3개의 숫자가 연달아 나오는 경우입니다. 다음 공격은 (가장 높은 수)의 대미지를 추가로 입힙니다.",
 		"§e트리플§f : 3개의 숫자가 모두 같은 경우입니다.",
-		"자신을 제외한 모든 플레이어에게 (트리플의 수 * 1.5)의 관통대미지를 줍니다."}
+		"자신과 팀을 제외한 모든 플레이어에게 (트리플의 수 * 1.5)의 관통대미지를 줍니다."}
 )
 public class Poker extends AbilityBase implements ActiveHandler {
 	int[] num = new int[3];
@@ -78,9 +78,9 @@ public class Poker extends AbilityBase implements ActiveHandler {
 				DeathManager.Handler game = (DeathManager.Handler)getGame();
 				if (game.getDeathManager().isExcluded(entity.getUniqueId())) return false;
 			}
-			if (getGame() instanceof TeamGame) {
-				TeamGame game = (TeamGame) getGame();
-				return (!game.hasTeam(getParticipant()) || game.hasTeam(target) || game.getTeam(getParticipant()).equals(game.getTeam(target)));
+			if (getGame() instanceof Teamable) {
+				Teamable game = (Teamable) getGame();
+				return (!game.hasTeam(getParticipant()) || !game.hasTeam(target) || !game.getTeam(getParticipant()).equals(game.getTeam(target)));
 			}
 			return target.attributes().TARGETABLE.getValue();
 		}

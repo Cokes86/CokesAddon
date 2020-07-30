@@ -5,7 +5,7 @@ import java.util.Map;
 import java.util.function.Predicate;
 
 import daybreak.abilitywar.game.AbstractGame;
-import daybreak.abilitywar.game.interfaces.TeamGame;
+import daybreak.abilitywar.game.team.interfaces.Teamable;
 import daybreak.abilitywar.game.manager.object.DeathManager;
 import daybreak.abilitywar.utils.library.PotionEffects;
 import org.bukkit.Bukkit;
@@ -60,9 +60,9 @@ public class Xyz extends AbilityBase implements ActiveHandler {
 				DeathManager.Handler game = (DeathManager.Handler)getGame();
 				if (game.getDeathManager().isExcluded(entity.getUniqueId())) return false;
 			}
-			if (getGame() instanceof TeamGame) {
-				TeamGame game = (TeamGame) getGame();
-				return (!game.hasTeam(getParticipant()) || game.hasTeam(target) || game.getTeam(getParticipant()).equals(game.getTeam(target)));
+			if (getGame() instanceof Teamable) {
+				Teamable game = (Teamable) getGame();
+				return (!game.hasTeam(getParticipant()) || !game.hasTeam(target) || !game.getTeam(getParticipant()).equals(game.getTeam(target)));
 			}
 		}
 		return true;
@@ -95,20 +95,19 @@ public class Xyz extends AbilityBase implements ActiveHandler {
 
 	AbilityTimer timer = new AbilityTimer(du.getValue() * 20) {
 		protected void onStart() {
+			Location spawn = Settings.getSpawnLocation().toBukkitLocation();
 			for (Participant p : getGame().getParticipants()) {
 				if (predicate.test(p.getPlayer())) {
 					p.getPlayer().addPotionEffect(new PotionEffect(PotionEffectType.INCREASE_DAMAGE, du.getValue()*20, 0));
 					p.getPlayer().addPotionEffect(new PotionEffect(PotionEffectType.SPEED, du.getValue()*20, 1));
 					acs.put(p, p.actionbar().newChannel());
 				}
-				Location spawn = Settings.getSpawnLocation();
 				p.getPlayer().teleport(spawn);
 			}
 			String a = "x: " + (int)getPlayer().getLocation().getX() + " y: " + (int)getPlayer().getLocation().getY()
 					+ " z: " + (int)getPlayer().getLocation().getZ();
 			bar= new Bar("엑시즈 "+getPlayer().getName()+" 위치 "+a, BarColor.GREEN, BarStyle.SOLID);
-			
-			Location spawn = Settings.getSpawnLocation();
+
 			getPlayer().teleport(spawn);
 		}
 

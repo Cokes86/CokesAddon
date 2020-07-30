@@ -9,7 +9,7 @@ import daybreak.abilitywar.ability.decorator.ActiveHandler;
 import daybreak.abilitywar.ability.decorator.TargetHandler;
 import daybreak.abilitywar.game.AbstractGame;
 import daybreak.abilitywar.game.event.participant.ParticipantDeathEvent;
-import daybreak.abilitywar.game.interfaces.TeamGame;
+import daybreak.abilitywar.game.team.interfaces.Teamable;
 import daybreak.abilitywar.game.list.mix.Mix;
 import daybreak.abilitywar.game.list.mix.synergy.Synergy;
 import daybreak.abilitywar.game.list.mix.synergy.SynergyFactory;
@@ -94,7 +94,7 @@ public class PhantomThief extends AbilityBase implements ActiveHandler, TargetHa
 
     public static boolean initPhantomThief() {
         try {
-            Class.forName("cokes86.addon.ability.list.phantomthief." + ServerVersion.getName());
+            Class.forName("cokes86.addon.ability.list.phantomthief." + ServerVersion.getName()).asSubclass(PhantomMathod.class);
             return true;
         } catch (Exception e){
             return false;
@@ -210,7 +210,7 @@ public class PhantomThief extends AbilityBase implements ActiveHandler, TargetHa
                 joiner.add("§r" + explain.next());
             }
         } else {
-            String[] explain = new String[] {
+            for (String str : new String[] {
                     "철괴 좌클릭 시 가장 멀리있는 플레이어의 등 뒤 10칸으로 워프 후, 팬텀 모드가 "+duration.toString()+" 지속됩니다. "+cooldown.toString(),
                     "팬텀 모드 동안에는 투명화, 갑옷 삭제효과를 받는 대신, 공격할 수 없고 공격받을 수 없습니다.",
                     "팬텀 모드 동안 대상에게 철괴로 우클릭시 팬텀 모드가 즉시 종료되고,",
@@ -220,8 +220,7 @@ public class PhantomThief extends AbilityBase implements ActiveHandler, TargetHa
                     "반대로 공격을 받았을 경우 1초간 스턴상태가 되며 모두에게 자신의 능력이 공개됩니다.",
                     "타게팅에 실패하거나 공격을 받아 스턴상태가 되었을 경우 쿨타임이 반으로 감소합니다.",
                     "※능력 아이디어: RainStar_"
-            };
-            for (String str : explain) {
+            }) {
                 joiner.add(str);
             }
         }
@@ -260,12 +259,15 @@ public class PhantomThief extends AbilityBase implements ActiveHandler, TargetHa
                     DeathManager.Handler game = (DeathManager.Handler) getGame();
                     if (game.getDeathManager().isExcluded(entity.getUniqueId())) return false;
                 }
-                if (getGame() instanceof TeamGame) {
-                    TeamGame game = (TeamGame) getGame();
-                    return (!game.hasTeam(getParticipant()) || game.hasTeam(target) || game.getTeam(getParticipant()).equals(game.getTeam(target)));
+                if (getGame() instanceof Teamable) {
+                    Teamable game = (Teamable) getGame();
+                    return (!game.hasTeam(getParticipant()) || !game.hasTeam(target) || !game.getTeam(getParticipant()).equals(game.getTeam(target)));
                 }
                 if (!target.hasAbility()) return false;
-                if ((target.getAbility() instanceof Mix && ((Mix) target.getAbility()).hasAbility())) return true;
+                if (target.getAbility() instanceof Mix) {
+                	Mix mix = (Mix) target.getAbility();
+                	if (!mix.hasAbility()) return false;
+                }
                 return target.attributes().TARGETABLE.getValue();
             }
             return false;

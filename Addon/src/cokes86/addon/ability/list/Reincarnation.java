@@ -1,7 +1,8 @@
 package cokes86.addon.ability.list;
 
+import java.util.ArrayList;
 import org.bukkit.Location;
-import org.bukkit.Note;
+import org.bukkit.attribute.Attribute;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Projectile;
@@ -24,19 +25,20 @@ import daybreak.abilitywar.utils.base.math.geometry.Circle;
 import daybreak.abilitywar.utils.library.ParticleLib;
 import daybreak.abilitywar.utils.library.ParticleLib.RGB;
 import daybreak.abilitywar.utils.library.SoundLib;
+import daybreak.abilitywar.utils.base.language.korean.KoreanUtil;
 import org.bukkit.event.entity.EntityRegainHealthEvent;
 
 @AbilityManifest(name = "리인카네이션", rank = Rank.S, species = Species.OTHERS, explain = {
 		"자신이 죽을 위기에 처했을 때, 이를 무시하고 체력이 1로 고정됩니다. $[cooldown]",
 		"지속시간 $[duration]동안 상대방에게 주는 대미지가 $[damage]% 증가합니다.",
-		"지속시간동안 상대방에게 총 $[hit]번 공격에 성공했을 경우",
-		"지속시간이 종료 시 체력이 20이 되어 부활합니다.",
-		"그러지 못하였을 경우 사망합니다.",
+		"지속시간이 종료 시 상대방을 $[hit]번 공격에 성공했을 경우 자신의 체력이 $[respawn] 되어 부활하고,",
+		"이후 추가 타격마다 $[heal]%씩 누적되어 추가적으로 회복합니다.",
+		"하지만 타격 횟수를 채우지 못하였을 경우, 사망하게 됩니다.",
 		"※능력 아이디어: Sato207" })
 public class Reincarnation extends AbilityBase {
 	ActionbarChannel ac = newActionbarChannel();
 
-	public static Config<Integer> duration = new Config<Integer>(Reincarnation.class, "지속시간", 20, 2) {
+	public static Config<Integer> duration = new Config<Integer>(Reincarnation.class, "지속시간", 30, 2) {
 
 		@Override
 		public boolean condition(Integer value) {
@@ -50,21 +52,36 @@ public class Reincarnation extends AbilityBase {
 			return value > 0;
 		}
 
-	}, damage = new Config<Integer>(Reincarnation.class, "추가대미지(%)", 50) {
+	}, damage = new Config<Integer>(Reincarnation.class, "추가대미지(%)", 20) {
 
 		@Override
 		public boolean condition(Integer value) {
 			return value > 0;
 		}
 
-	}, hit = new Config<Integer>(Reincarnation.class, "타격횟수", 10) {
+	}, hit = new Config<Integer>(Reincarnation.class, "타격횟수", 5) {
 
 		@Override
 		public boolean condition(Integer value) {
 			return value > 0;
 		}
 
+	}, heal = new Config<Integer>(Reincarnation.class, "회복수치량(%)", 5) {
+		@Override
+		public boolean condition(Integer value) {
+			return value > 0;
+		}
+	}, respawn = new Config<Integer>(Reincarnation.class, "회복량", 2) {
+		@Override
+		public boolean condition(Integer value) {
+			return value > 0;
+		}
+		
+		public String toString() {
+			return getValue().toString() + KoreanUtil.getJosa(getValue().toString(), KoreanUtil.Josa.이가);
+		}
 	};
+
 
 	int hitted = 0;
 
@@ -112,12 +129,6 @@ public class Reincarnation extends AbilityBase {
 				e.setDamage(e.getDamage() * (1 + damage.getValue() / 100.0D));
 				if (hitted == hit.getValue()) {
 					SoundLib.ENTITY_PLAYER_LEVELUP.playSound(getPlayer());
-				} else if (hitted == hit.getValue() / 2) {
-					SoundLib.PIANO.playInstrument(getPlayer(), new Note(2, Note.Tone.A, false));
-				} else if (hitted == hit.getValue() / 5) {
-					SoundLib.PIANO.playInstrument(getPlayer(), new Note(1, Note.Tone.E, false));
-				} else if (hitted == hit.getValue() / 10) {
-					SoundLib.PIANO.playInstrument(getPlayer(), new Note(1, Note.Tone.C, false));
 				}
 			}
 		}
@@ -131,7 +142,8 @@ public class Reincarnation extends AbilityBase {
 	AbilityTimer reincarnation = new AbilityTimer(duration.getValue() * 20) {
 
 		protected void onStart() {
-			SoundLib.ITEM_SHIELD_BLOCK.playSound(getPlayer());
+			ArrayList<Player> nearby = LocationUtil.getNearbyEntities(Player.class, getPlayer().getLocation(), 5, 5, null);
+			SoundLib.ITEM_SHIELD_BLOCK.playSound(nearby);
 		}
 
 		@Override
@@ -154,7 +166,9 @@ public class Reincarnation extends AbilityBase {
 		@Override
 		protected void onEnd() {
 			if (hitted >= hit.getValue()) {
-				getPlayer().setHealth(20.00);
+				double max_Health = getPlayer().getAttribute(Attribute.GENERIC_MAX_HEALTH).getValue();
+				double return_heal = Math.min(max_Health, respawn.getValue() + max_Health * (hitted - hit.getValue()) * heal.getValue() / 100.0);
+				getPlayer().setHealth(return_heal);
 			} else {
 				getPlayer().setHealth(0);
 			}

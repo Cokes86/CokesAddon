@@ -30,7 +30,7 @@ public class Border extends Invincibility {
 
 	private final int size = Config.getInt(GameNodes.BattleAbility_startSize);
 	private final int time = Config.getInt(GameNodes.BattleAbility_time);
-	private final World world = Settings.getSpawnLocation().getWorld();
+	private final World world = Bukkit.getWorld(Settings.getSpawnLocation().world);
 	private final WorldBorder wb = world.getWorldBorder();
 
 	private final Game game;
@@ -118,7 +118,7 @@ public class Border extends Invincibility {
 		protected void onStart() {
 			game.setRestricted(true);
 			Bukkit.broadcastMessage(startMessage);
-			wb.setCenter(Settings.getSpawnLocation());
+			wb.setCenter(Settings.getSpawnLocation().toBukkitLocation());
 			wb.setSize(size);
 			Bukkit.getPluginManager().callEvent(new InvincibilityStatusChangeEvent(game, true));
 		}

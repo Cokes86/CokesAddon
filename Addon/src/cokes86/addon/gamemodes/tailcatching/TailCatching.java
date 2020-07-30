@@ -150,7 +150,7 @@ public class TailCatching extends Game implements DefaultKitHandler, Winnable, A
                     Bukkit.broadcastMessage(line);
 
                     if (Configuration.Settings.getSpawnEnable()) {
-                        Location spawn = Configuration.Settings.getSpawnLocation();
+                        Location spawn = Configuration.Settings.getSpawnLocation().toBukkitLocation();
                         for (Participant participant : getParticipants()) {
                             participant.getPlayer().teleport(spawn);
                         }

@@ -53,7 +53,7 @@ public class BattleMixAbility extends AbstractMix implements DefaultKitHandler, 
         setRestricted(Configuration.Settings.InvincibilitySettings.isEnabled());
         attachObserver(this);
         Bukkit.getPluginManager().registerEvents(this, AbilityWar.getPlugin());
-        world = Configuration.Settings.getSpawnLocation().getWorld();
+        world = Bukkit.getWorld(Configuration.Settings.getSpawnLocation().world);
         WorldBorder wb = world.getWorldBorder();
 
         location = wb.getCenter();
@@ -225,7 +225,7 @@ public class BattleMixAbility extends AbstractMix implements DefaultKitHandler, 
 
                 giveDefaultKit(getParticipants());
 
-                Location spawn = Configuration.Settings.getSpawnLocation();
+                Location spawn = Configuration.Settings.getSpawnLocation().toBukkitLocation();
                 for (Participant participant : getParticipants()) {
                     participant.getPlayer().teleport(spawn);
                 }

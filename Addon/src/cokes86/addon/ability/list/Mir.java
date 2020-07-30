@@ -8,7 +8,7 @@ import daybreak.abilitywar.ability.AbilityManifest.Species;
 import daybreak.abilitywar.ability.SubscribeEvent;
 import daybreak.abilitywar.ability.decorator.ActiveHandler;
 import daybreak.abilitywar.game.AbstractGame.Participant;
-import daybreak.abilitywar.game.interfaces.TeamGame;
+import daybreak.abilitywar.game.team.interfaces.Teamable;
 import daybreak.abilitywar.game.manager.object.DeathManager;
 import daybreak.abilitywar.utils.annotations.Beta;
 import daybreak.abilitywar.utils.base.concurrent.TimeUnit;
@@ -101,10 +101,10 @@ public class Mir extends AbilityBase implements ActiveHandler {
 					|| !getGame().getParticipant(entity.getUniqueId()).attributes().TARGETABLE.getValue()) {
 				return false;
 			}
-			if (getGame() instanceof TeamGame) {
-				final TeamGame teamGame = (TeamGame) getGame();
+			if (getGame() instanceof Teamable) {
+				final Teamable Teamable = (Teamable) getGame();
 				final Participant entityParticipant = getGame().getParticipant(entity.getUniqueId());
-				return !teamGame.hasTeam(entityParticipant) || !teamGame.hasTeam(getParticipant()) || (!teamGame.getTeam(entityParticipant).equals(teamGame.getTeam(getParticipant())));
+				return !Teamable.hasTeam(entityParticipant) || !Teamable.hasTeam(getParticipant()) || (!Teamable.getTeam(entityParticipant).equals(Teamable.getTeam(getParticipant())));
 			}
 			return getGame().getParticipant(entity.getUniqueId()).attributes().TARGETABLE.getValue();
 		}

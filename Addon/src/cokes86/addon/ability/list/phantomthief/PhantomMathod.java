@@ -1,7 +1,6 @@
 package cokes86.addon.ability.list.phantomthief;
 
 import daybreak.abilitywar.game.AbstractGame;
-import org.bukkit.entity.Phantom;
 import org.bukkit.entity.Player;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;

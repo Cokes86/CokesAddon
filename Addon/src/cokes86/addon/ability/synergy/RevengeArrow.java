@@ -4,9 +4,10 @@ import java.util.Iterator;
 import java.util.function.Predicate;
 
 import daybreak.abilitywar.game.AbstractGame;
-import daybreak.abilitywar.game.interfaces.TeamGame;
+import daybreak.abilitywar.game.team.interfaces.Teamable;
 import daybreak.abilitywar.game.manager.object.DeathManager;
 import daybreak.abilitywar.utils.base.minecraft.damage.Damages;
+import daybreak.abilitywar.utils.library.item.ItemLib;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.World;
@@ -15,7 +16,6 @@ import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Projectile;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
-import org.bukkit.inventory.ItemStack;
 import org.bukkit.projectiles.ProjectileSource;
 import org.bukkit.util.Vector;
 
@@ -57,18 +57,7 @@ public class RevengeArrow extends Synergy {
 
 			if (damager != null) {
 				if (getPlayer().getInventory().contains(Material.ARROW)) {
-					for (int a = 0; a < getPlayer().getInventory().getSize(); a++) {
-						if (getPlayer().getInventory().getItem(a).getType() == Material.ARROW) {
-							ItemStack arrow = getPlayer().getInventory().getItem(a);
-							if (arrow.getAmount() == 1) {
-								getPlayer().getInventory().setItem(a, new ItemStack(Material.AIR));
-							} else {
-								getPlayer().getInventory().setItem(a,
-										new ItemStack(Material.ARROW, arrow.getAmount() - 1));
-							}
-							break;
-						}
-					}
+					ItemLib.removeItem(getPlayer().getInventory(), Material.ARROW, 1);
 					Vector vector = damager.getLocation().clone().subtract(getPlayer().getLocation().clone()).toVector()
 							.normalize();
 					new Bullet(getPlayer(), getPlayer().getLocation().clone().add(vector.multiply(.25)), vector,
@@ -87,9 +76,9 @@ public class RevengeArrow extends Synergy {
 				DeathManager.Handler game = (DeathManager.Handler) getGame();
 				if (game.getDeathManager().isExcluded(entity.getUniqueId())) return false;
 			}
-			if (getGame() instanceof TeamGame) {
-				TeamGame game = (TeamGame) getGame();
-				return (!game.hasTeam(getParticipant()) || game.hasTeam(target) || game.getTeam(getParticipant()).equals(game.getTeam(target)));
+			if (getGame() instanceof Teamable) {
+				Teamable game = (Teamable) getGame();
+				return (!game.hasTeam(getParticipant()) || !game.hasTeam(target) || !game.getTeam(getParticipant()).equals(game.getTeam(target)));
 			}
 		}
 		return true;

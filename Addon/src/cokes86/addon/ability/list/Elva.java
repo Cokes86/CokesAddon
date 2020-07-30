@@ -4,7 +4,7 @@ import java.util.Iterator;
 import java.util.function.Predicate;
 
 import daybreak.abilitywar.game.AbstractGame;
-import daybreak.abilitywar.game.interfaces.TeamGame;
+import daybreak.abilitywar.game.team.interfaces.Teamable;
 import daybreak.abilitywar.game.manager.object.DeathManager;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -24,7 +24,6 @@ import daybreak.abilitywar.ability.SubscribeEvent;
 import daybreak.abilitywar.game.AbstractGame.CustomEntity;
 import daybreak.abilitywar.game.AbstractGame.Participant;
 import daybreak.abilitywar.game.AbstractGame.Participant.ActionbarNotification.ActionbarChannel;
-import daybreak.abilitywar.game.AbstractGame.RestrictionBehavior;
 import daybreak.abilitywar.utils.base.ProgressBar;
 import daybreak.abilitywar.utils.base.concurrent.TimeUnit;
 import daybreak.abilitywar.utils.base.math.LocationUtil;
@@ -34,10 +33,13 @@ import daybreak.abilitywar.utils.library.ParticleLib;
 import daybreak.abilitywar.utils.library.ParticleLib.RGB;
 import daybreak.abilitywar.utils.library.SoundLib;
 
-@AbilityManifest(name = "엘바", rank = Rank.B, species = Species.OTHERS, explain = { "활을 비주류 손에 들고 있을 경우",
-		"마법의 화살이 전방으로 $[speed]틱 간격으로 자동으로 발사되며 최대 $[maxarrow]발까지 발사됩니다.",
-		"마법의 화살은 $[damage]의 대미지를 주며, 화살을 다 소비할 시 재장전합니다.", "기존의 화살은 사용할 수 없습니다.", "마법의 화살은 대미지를 주거나, 블럭에 닿을 시 소멸합니다.",
-		"※능력 아이디어: Sato207" })
+@AbilityManifest(name = "엘바", rank = Rank.B, species = Species.OTHERS, explain = {
+	"활을 비주류 손에 들고 있을 경우",
+	"마법의 화살이 전방으로 $[speed]틱 간격으로 자동으로 발사되며 최대 $[maxarrow]발까지 발사됩니다.",
+	"마법의 화살은 $[damage]의 대미지를 주며, 화살을 다 소비할 시 재장전합니다.",
+	"기존의 화살은 사용할 수 없습니다.",
+	"마법의 화살은 대미지를 주거나, 블럭에 닿을 시 소멸합니다.",
+	"※능력 아이디어: Sato207" })
 public class Elva extends AbilityBase {
 	Vector velocity = null;
 	RGB color = RGB.of(0, 255, 102);
@@ -60,7 +62,7 @@ public class Elva extends AbilityBase {
 
 	};
 
-	private static final Config<Double> damage = new Config<Double>(Elva.class, "마법화살대미지", 2.0) {
+	private static final Config<Double> damage = new Config<Double>(Elva.class, "마법화살대미지", 2.5) {
 
 		@Override
 		public boolean condition(Double value) {
@@ -85,9 +87,9 @@ public class Elva extends AbilityBase {
 				DeathManager.Handler game = (DeathManager.Handler) getGame();
 				if (game.getDeathManager().isExcluded(entity.getUniqueId())) return false;
 			}
-			if (getGame() instanceof TeamGame) {
-				TeamGame game = (TeamGame) getGame();
-				return (!game.hasTeam(getParticipant()) || game.hasTeam(target) || game.getTeam(getParticipant()).equals(game.getTeam(target)));
+			if (getGame() instanceof Teamable) {
+				Teamable game = (Teamable) getGame();
+				return (!game.hasTeam(getParticipant()) || !game.hasTeam(target) || !game.getTeam(getParticipant()).equals(game.getTeam(target)));
 			}
 			return target.attributes().TARGETABLE.getValue();
 		}
@@ -141,10 +143,12 @@ public class Elva extends AbilityBase {
 
 	}.setPeriod(TimeUnit.TICKS, 4);
 
+	@SuppressWarnings("deprecation")
 	@SubscribeEvent
 	public void onProjectileLaunch(EntityShootBowEvent e) {
 		if (getPlayer().equals(e.getEntity()) && e.getProjectile() instanceof Arrow) {
 			e.setCancelled(true);
+			getPlayer().updateInventory();
 		}
 	}
 	
@@ -154,7 +158,7 @@ public class Elva extends AbilityBase {
 		}
 	}
 
-	public class Bullet extends Timer {
+	public class Bullet extends AbilityTimer {
 
 		private final LivingEntity shooter;
 		private final CustomEntity entity;
@@ -236,7 +240,7 @@ public class Elva extends AbilityBase {
 
 	}
 
-	public Vector getForwardVector(Location location) {
+	public static Vector getForwardVector(Location location) {
 		float yaw = location.getYaw(), pitch = location.getPitch();
 
 		double radYaw = Math.toRadians(yaw), radPitch = Math.toRadians(pitch);

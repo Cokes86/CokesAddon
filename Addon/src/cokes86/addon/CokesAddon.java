@@ -3,6 +3,7 @@ package cokes86.addon;
 import java.io.IOException;
 
 import cokes86.addon.gamemodes.tailcatching.TailCatching;
+import cokes86.addon.gamemodes.targethunting.TargetHunting;
 import daybreak.abilitywar.game.list.mix.AbstractMix;
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.InvalidConfigurationException;
@@ -48,6 +49,9 @@ public class CokesAddon extends Addon implements Listener {
 
 		//TailCatching
 		GameFactory.registerMode(TailCatching.class);
+
+		//Target Hunting
+		GameFactory.registerMode(TargetHunting.class);
 
 		// Load Complete
 		Bukkit.getConsoleSender().sendMessage("[AbilityAddon] 애드온이 활성화되었습니다.");

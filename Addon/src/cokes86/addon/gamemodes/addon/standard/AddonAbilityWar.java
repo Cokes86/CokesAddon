@@ -144,7 +144,7 @@ public class AddonAbilityWar extends Game implements DefaultKitHandler {
 				Bukkit.broadcastMessage(line);
 
 				if (Configuration.Settings.getSpawnEnable()) {
-					Location spawn = Configuration.Settings.getSpawnLocation();
+					Location spawn = Configuration.Settings.getSpawnLocation().toBukkitLocation();
 					for (Participant participant : getParticipants()) {
 						participant.getPlayer().teleport(spawn);
 					}
@@ -328,6 +328,9 @@ public class AddonAbilityWar extends Game implements DefaultKitHandler {
 
 			Bukkit.broadcastMessage(
 					ChatColor.translateAlternateColorCodes('&', "&f" + sender.getName() + "&a님이 플레이어들의 능력을 확인하였습니다."));
+			break;
+		default:
+			super.executeCommand(commandType, sender, command, args, plugin);
 			break;
 		}
 	}
