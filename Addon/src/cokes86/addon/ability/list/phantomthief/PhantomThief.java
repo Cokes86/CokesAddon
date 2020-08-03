@@ -4,6 +4,7 @@ import cokes86.addon.configuration.ability.Config;
 import daybreak.abilitywar.ability.AbilityBase;
 import daybreak.abilitywar.ability.AbilityFactory;
 import daybreak.abilitywar.ability.AbilityManifest;
+import daybreak.abilitywar.ability.NotAvailable;
 import daybreak.abilitywar.ability.SubscribeEvent;
 import daybreak.abilitywar.ability.decorator.ActiveHandler;
 import daybreak.abilitywar.ability.decorator.TargetHandler;
@@ -13,6 +14,7 @@ import daybreak.abilitywar.game.team.interfaces.Teamable;
 import daybreak.abilitywar.game.list.mix.Mix;
 import daybreak.abilitywar.game.list.mix.synergy.Synergy;
 import daybreak.abilitywar.game.list.mix.synergy.SynergyFactory;
+import daybreak.abilitywar.game.list.mix.triplemix.AbstractTripleMix;
 import daybreak.abilitywar.game.manager.effect.Stun;
 import daybreak.abilitywar.game.manager.object.DeathManager;
 import daybreak.abilitywar.utils.base.TimeUtil;
@@ -44,6 +46,7 @@ import java.util.function.Predicate;
 
 @SuppressWarnings(value={"unused"})
 @AbilityManifest(name="팬텀 시프", rank = AbilityManifest.Rank.S, species = AbilityManifest.Species.HUMAN, explain = {"$(Explain)"})
+@NotAvailable(AbstractTripleMix.class)
 public class PhantomThief extends AbilityBase implements ActiveHandler, TargetHandler {
     private static AbilityBase newAbility = null;
     private static final Object Explain = new Object() {

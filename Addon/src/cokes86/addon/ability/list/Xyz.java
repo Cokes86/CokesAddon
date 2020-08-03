@@ -126,7 +126,7 @@ public class Xyz extends AbilityBase implements ActiveHandler {
 		protected void onEnd() {
 			if (xyz) {
 				for (Participant p : acs.keySet()) {
-					p.getPlayer().setHealth(0.0);
+					if (predicate.test(p.getPlayer())) p.getPlayer().setHealth(0.0);
 				}
 			}
 			onSilentEnd();

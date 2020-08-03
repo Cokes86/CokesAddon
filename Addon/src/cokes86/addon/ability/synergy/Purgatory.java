@@ -18,7 +18,7 @@ import daybreak.abilitywar.ability.decorator.ActiveHandler;
 import daybreak.abilitywar.game.AbstractGame.Participant;
 import daybreak.abilitywar.game.list.mix.Mix;
 import daybreak.abilitywar.game.list.mix.synergy.Synergy;
-import daybreak.abilitywar.game.manager.object.AbilitySelect.AbilitySelectStrategy;
+import daybreak.abilitywar.game.manager.object.AbilitySelect.AbilityCollector;
 import daybreak.abilitywar.utils.base.minecraft.Bar;
 
 @AbilityManifest(name="연옥", rank = Rank.S, species = Species.OTHERS, explain= {
@@ -94,7 +94,7 @@ public class Purgatory extends Synergy implements ActiveHandler {
 	}
 	
 	public Class<? extends AbilityBase> getRandomAbility() {
-		List<Class<? extends AbilityBase>> list = AbilitySelectStrategy.EVERY_ABILITY_EXCLUDING_BLACKLISTED.getAbilities();
+		List<Class<? extends AbilityBase>> list = AbilityCollector.EVERY_ABILITY_EXCLUDING_BLACKLISTED.collect(getGame().getClass());
 		for (Participant participant : getGame().getParticipants()) {
 			if (participant.hasAbility()) list.remove(participant.getAbility().getClass());
 		}

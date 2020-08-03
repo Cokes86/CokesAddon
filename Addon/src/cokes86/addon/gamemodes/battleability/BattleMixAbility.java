@@ -78,7 +78,7 @@ public class BattleMixAbility extends AbstractMix implements DefaultKitHandler, 
 
             @Override
             protected void drawAbility(Collection<? extends Participant> selectors) {
-                abilities = AbilitySelectStrategy.EVERY_ABILITY_EXCLUDING_BLACKLISTED.getAbilities();
+                abilities = AbilityCollector.EVERY_ABILITY_EXCLUDING_BLACKLISTED.collect(BattleMixAbility.class);
                 if (abilities.size() > 0) {
                     Random random = new Random();
 

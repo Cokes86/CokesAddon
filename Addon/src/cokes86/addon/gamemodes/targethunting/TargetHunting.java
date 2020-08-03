@@ -299,7 +299,7 @@ public class TargetHunting extends Game implements Winnable, DeathManager.Handle
     }
 
     private List<Class<? extends AbilityBase>> getTargetAbilities() {
-        List<Class<? extends AbilityBase>> abilities = AbilitySelect.AbilitySelectStrategy.EVERY_ABILITY_EXCLUDING_BLACKLISTED.getAbilities();
+        List<Class<? extends AbilityBase>> abilities = AbilitySelect.AbilityCollector.EVERY_ABILITY_EXCLUDING_BLACKLISTED.collect(TargetHunting.class);
         for (Class<? extends AbilityBase> clazz : new ArrayList<>(abilities)) {
             if (AbilityFactory.getRegistration(clazz).getManifest().rank() == AbilityManifest.Rank.A || AbilityFactory.getRegistration(clazz).getManifest().rank() == AbilityManifest.Rank.S) continue;
             abilities.remove(clazz);
