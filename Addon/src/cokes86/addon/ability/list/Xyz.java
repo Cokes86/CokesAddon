@@ -33,8 +33,8 @@ import daybreak.abilitywar.utils.base.minecraft.Bar;
 
 @AbilityManifest(name="엑시즈", rank = AbilityManifest.Rank.S, species = AbilityManifest.Species.DEMIGOD, explain = {
 		"철괴 우클릭 시 게임스폰으로 이동하고 자신의 좌표가 공개됩니다.",
-		"자신과 팀을 제외한 모든 플레이어가 게임스폰으로 이동한 후",
-		"신속2, 힘1을 $[du] 부여합니다.",
+		"모든 플레이어가 게임스폰으로 이동한 후",
+		"자신과 팀을 제외한 플레이어들은 신속2, 힘1을 $[du] 부여합니다.",
 		"단, 버프 시간동안 엑시즈를 죽이지 못하였을 시",
 		"버프를 가지고 있던 플레이어는 사망합니다.",
 		"해당 능력은 한 번 사용 후 비활성화됩니다.",

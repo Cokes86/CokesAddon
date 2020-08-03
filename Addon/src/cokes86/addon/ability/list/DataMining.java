@@ -5,6 +5,7 @@ import java.util.Random;
 
 import cokes86.addon.configuration.ability.Config;
 import daybreak.abilitywar.game.manager.object.DeathManager;
+
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Projectile;
@@ -33,8 +34,7 @@ import daybreak.abilitywar.utils.base.collect.Pair;
 		"버프를 랜덤하게 받으며, §c마이닝 스택§f은 버프마다 각각 $[max_count]회씩 쌓입니다.",
 		"철괴 좌클릭시 사실 여부 메세지를 끄고 킬 수 있습니다.",
 		"※능력 아이디어: RainStar_"
-		}
-)
+})
 public class DataMining extends AbilityBase implements ActiveHandler {
 	DecimalFormat df = new DecimalFormat("0.00");
 	int count = 0;
@@ -172,6 +172,7 @@ public class DataMining extends AbilityBase implements ActiveHandler {
 				count++;
 				getPlayer().sendMessage("§e" + count + ". §f" + p.getPlayer().getName() + " §7: §e" + name);
 			}
+			getPlayer().sendMessage( "§2========================");
 		} else if (arg0.equals(Material.IRON_INGOT) && arg1.equals(ClickType.LEFT_CLICK)) {
 			message = (!message);
 			if (message) getPlayer().sendMessage("사실 확인 메세지를 볼 수 있게 됩니다.");

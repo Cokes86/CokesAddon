@@ -30,17 +30,14 @@ import daybreak.abilitywar.utils.base.TimeUtil;
 import daybreak.abilitywar.utils.base.minecraft.Bar;
 import daybreak.abilitywar.utils.library.PotionEffects;
 
-@AbilityManifest(
-		name = "신의 가호",
-		rank = Rank.A,
-		species = Species.HUMAN,
-		explain = {"철괴 우클릭 시 자신의 정체를 공개하고 $[dura]동안 대기시간을 가집니다.",
+@AbilityManifest(name = "신의 가호", rank = Rank.A, species = Species.HUMAN, explain = {
+		"철괴 우클릭 시 자신의 정체를 공개하고 $[dura]동안 대기시간을 가집니다.",
 		"대기시간동안 자신은 움직일 수 없습니다.",
 		"해당 대기시간이 끝날 시 자신과 팀을 제외한 모든 플레이어는 부활 효과를 무시하고 사망합니다.",
 		"대기시간이 지속시간의 1/2만큼 남았을 때, 자신에게 발광효과를 부여합니다.",
 		"대기시간이 지속시간의 1/4만큼 남았을 때, 모두에게 자신의 좌표를 실시간으로 공개합니다.",
-		"자신이 사망하거나 대기시간이 끝날 경우 해당 능력은 비활성화됩니다."}
-)
+		"자신이 사망하거나 대기시간이 끝날 경우 해당 능력은 비활성화됩니다."
+})
 public class GodsBless extends AbilityBase implements ActiveHandler {
 	private static final Config<Integer> dura = new Config<Integer>(GodsBless.class, "대기시간(분)", 4) {
 		@Override

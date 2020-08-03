@@ -1,8 +1,6 @@
 package cokes86.addon.ability.list.phantomthief;
 
 import daybreak.abilitywar.AbilityWar;
-import daybreak.abilitywar.ability.SubscribeEvent;
-import daybreak.abilitywar.game.AbstractGame;
 import daybreak.abilitywar.utils.base.collect.Pair;
 import daybreak.abilitywar.utils.base.reflect.ReflectionUtil;
 import io.netty.channel.ChannelHandlerContext;
@@ -131,7 +129,7 @@ public class v1_10_R1 extends PhantomMathod {
                     }
                 } else if (packet instanceof PacketPlayOutEntityMetadata) {
                     if ((int) ReflectionUtil.FieldUtil.getValue(packet, "a") == getPlayer().getEntityId()) {
-                        List<Item> items = ReflectionUtil.FieldUtil.getValue(packet, "b");
+                        List<Item<?>> items = ReflectionUtil.FieldUtil.getValue(packet, "b");
                         if (items.size() != 0) {
                             Item<?> item = items.get(0);
                             if (BYTE_DATA_WATCHER_OBJECT.equals(item.a())) {

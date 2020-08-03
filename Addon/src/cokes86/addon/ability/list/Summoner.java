@@ -112,7 +112,7 @@ public class Summoner extends AbilityBase implements ActiveHandler {
 		    	y -= 0.1;
 			}
 
-			for (Location particle : Circle.iteratorOf(location, 2, 16).iterable()) {
+			for (Location particle : Circle.iteratorOf(location, 1, 16).iterable()) {
 				particle.setY(LocationUtil.getFloorYAt(particle.getWorld(), particle.getY(), particle.getBlockX(), particle.getBlockZ())+y);
 				ParticleLib.REDSTONE.spawnParticle(particle, ParticleLib.RGB.fromRGB(Color.CYAN.getRGB()));
 			}

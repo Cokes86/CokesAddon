@@ -79,6 +79,7 @@ public class Ovisni extends AbilityBase implements ActiveHandler {
 				for (Entry<Participant, OvisniStack> entry : stackMap.entrySet()) {
 					getPlayer().sendMessage("§f" + entry.getKey().getPlayer().getName() + " §7: §2" + entry.getValue().stack);
 				}
+				getPlayer().sendMessage( "§e========================");
 			}
 		}
 		return false;

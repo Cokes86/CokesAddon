@@ -1,7 +1,10 @@
 package cokes86.addon.ability.list;
 
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Random;
+import java.util.Set;
+import java.util.UUID;
 import java.util.function.Predicate;
 
 import daybreak.abilitywar.game.AbstractGame;
@@ -15,6 +18,8 @@ import org.bukkit.entity.Damageable;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
+import org.bukkit.event.entity.EntityDamageEvent;
+import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
 import org.bukkit.projectiles.ProjectileSource;
 import org.bukkit.util.Vector;
 
@@ -23,6 +28,7 @@ import daybreak.abilitywar.ability.AbilityBase;
 import daybreak.abilitywar.ability.AbilityManifest;
 import daybreak.abilitywar.ability.AbilityManifest.Rank;
 import daybreak.abilitywar.ability.AbilityManifest.Species;
+import daybreak.abilitywar.ability.SubscribeEvent;
 import daybreak.abilitywar.ability.decorator.ActiveHandler;
 import daybreak.abilitywar.game.AbstractGame.CustomEntity;
 import daybreak.abilitywar.game.AbstractGame.Participant;
@@ -49,6 +55,7 @@ public class Freud extends AbilityBase implements ActiveHandler {
 	private Magic magic;
 	private int mana = 100;
 	private final ActionbarChannel ac = newActionbarChannel();
+	private final Set<UUID> explosion = new HashSet<>();
 	
 	private static final Config<Integer> mana_burn = new Config<Integer>(Freud.class, "마나소모량.화상", 30) {
 		@Override
@@ -75,7 +82,7 @@ public class Freud extends AbilityBase implements ActiveHandler {
 		public boolean condition(Integer value) {
 			return value>0;
 		}
-	}, damage_explosion = new Config<Integer>(Freud.class, "고정대미지.폭발", 4) {
+	}, damage_explosion = new Config<Integer>(Freud.class, "고정대미지.폭발", 2) {
 		@Override
 		public boolean condition(Integer value) {
 			return value>0;
@@ -91,7 +98,7 @@ public class Freud extends AbilityBase implements ActiveHandler {
 			return value>0;
 		}
 	};
-	private static final Config<Float> fuse = new Config<Float>(Freud.class, "폭발위력", 2f) {
+	private static final Config<Float> fuse = new Config<Float>(Freud.class, "폭발위력", 0.4f) {
 		@Override
 		public boolean condition(Float value) {
 			return value > 0;
@@ -116,6 +123,16 @@ public class Freud extends AbilityBase implements ActiveHandler {
 		}
 		
 	};
+	
+	@SubscribeEvent
+	public void onEntityDamage(EntityDamageEvent e) {
+		if (e.getCause().equals(DamageCause.BLOCK_EXPLOSION) || e.getCause().equals(DamageCause.ENTITY_EXPLOSION)) {
+			if (explosion.contains(e.getEntity().getUniqueId())) {
+				e.getEntity().getVelocity().setY(0);
+				explosion.remove(e.getEntity().getUniqueId());
+			}
+		}
+	}
 
 	private final Predicate<Entity> predicate = entity -> {
 		if (entity.equals(getPlayer())) return false;
@@ -176,17 +193,26 @@ public class Freud extends AbilityBase implements ActiveHandler {
 			this.magic = magic;
 			this.lastLocation = startLocation;
 			this.target = target;
+			
+			if (magic == Magic.EXPLOSION) {
+				explosion.add(target.getUniqueId());
+			}
 		}
 
 		private Location lastLocation;
 
 		@Override
 		protected void run(int i) {
-			this.velocity = target.getLocation().clone().subtract(getPlayer().getLocation().clone()).toVector().normalize().multiply(0.65);
+			this.velocity = target.getLocation().clone().subtract(lastLocation.clone()).toVector().normalize().multiply(0.65);
 			Location newLocation = lastLocation.clone().add(velocity);
 			for (Iterator<Location> iterator = Line.iteratorBetween(lastLocation, newLocation, 40); iterator.hasNext(); ) {
 				Location location = iterator.next();
 				entity.setLocation(location);
+				Material type = location.getBlock().getType();
+				if (type.isSolid()) {
+					stop(false);
+					return;
+				}
 				for (Damageable damageable : LocationUtil.getConflictingEntities(Damageable.class,entity.getBoundingBox(), predicate)) {
 					if (!shooter.equals(damageable) && !damageable.isDead()) {
 						magic.onDamaged(damageable, getPlayer());

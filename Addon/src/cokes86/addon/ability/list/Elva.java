@@ -12,7 +12,6 @@ import org.bukkit.World;
 import org.bukkit.entity.*;
 import org.bukkit.event.entity.EntityShootBowEvent;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.projectiles.ProjectileSource;
 import org.bukkit.util.Vector;
 
 import cokes86.addon.configuration.ability.Config;
@@ -28,21 +27,22 @@ import daybreak.abilitywar.utils.base.ProgressBar;
 import daybreak.abilitywar.utils.base.concurrent.TimeUnit;
 import daybreak.abilitywar.utils.base.math.LocationUtil;
 import daybreak.abilitywar.utils.base.math.geometry.Line;
-import daybreak.abilitywar.utils.base.minecraft.entity.decorator.Deflectable;
 import daybreak.abilitywar.utils.library.ParticleLib;
 import daybreak.abilitywar.utils.library.ParticleLib.RGB;
 import daybreak.abilitywar.utils.library.SoundLib;
 
 @AbilityManifest(name = "엘바", rank = Rank.B, species = Species.OTHERS, explain = {
-	"활을 비주류 손에 들고 있을 경우",
-	"마법의 화살이 전방으로 $[speed]틱 간격으로 자동으로 발사되며 최대 $[maxarrow]발까지 발사됩니다.",
-	"마법의 화살은 $[damage]의 대미지를 주며, 화살을 다 소비할 시 재장전합니다.",
-	"기존의 화살은 사용할 수 없습니다.",
-	"마법의 화살은 대미지를 주거나, 블럭에 닿을 시 소멸합니다.",
-	"※능력 아이디어: Sato207" })
+		"활을 비주류 손에 들고 있을 경우",
+		"마법의 화살이 전방으로 $[speed]틱 간격으로 자동으로 발사되며 최대 $[maxarrow]발까지 발사됩니다.",
+		"마법의 화살은 $[damage]의 대미지를 주며, 화살을 다 소비할 시 재장전합니다.",
+		"기존의 화살은 사용할 수 없습니다.",
+		"마법의 화살은 대미지를 주거나, 블럭에 닿을 시 소멸합니다.",
+		"해당 화살은 플렉터가 튕겨낼 수 없습니다.",
+		"※능력 아이디어: Sato207"
+})
 public class Elva extends AbilityBase {
 	Vector velocity = null;
-	RGB color = RGB.of(0, 255, 102);
+	RGB color = RGB.of(1, 255, 102);
 	int arrow;
 	ActionbarChannel ac = newActionbarChannel();
 
@@ -182,8 +182,7 @@ public class Elva extends AbilityBase {
 		@Override
 		protected void run(int i) {
 			Location newLocation = lastLocation.clone().add(forward);
-			for (Iterator<Location> iterator = Line.iteratorBetween(lastLocation, newLocation, 10); iterator
-					.hasNext();) {
+			for (Iterator<Location> iterator = Line.iteratorBetween(lastLocation, newLocation, 10); iterator.hasNext();) {
 				Location location = iterator.next();
 				entity.setLocation(location);
 				Material type = location.getBlock().getType();
@@ -213,31 +212,11 @@ public class Elva extends AbilityBase {
 			entity.remove();
 		}
 
-		public class ArrowEntity extends CustomEntity implements Deflectable {
-
+		public class ArrowEntity extends CustomEntity {
 			public ArrowEntity(World world, double x, double y, double z) {
 				getGame().super(world, x, y, z);
 			}
-
-			@Override
-			public void onDeflect(Participant deflector, Vector newDirection) {
-				stop(false);
-				Player deflectedPlayer = deflector.getPlayer();
-				new Bullet(deflectedPlayer, lastLocation, newDirection, color).start();
-			}
-
-			@Override
-			public ProjectileSource getShooter() {
-				return shooter;
-			}
-
-			@Override
-			public Vector getDirection() {
-				return Elva.Bullet.this.forward.clone();
-			}
-
 		}
-
 	}
 
 	public static Vector getForwardVector(Location location) {

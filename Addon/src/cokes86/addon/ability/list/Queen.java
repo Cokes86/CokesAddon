@@ -49,7 +49,7 @@ public class Queen extends AbilityBase implements ActiveHandler, TargetHandler {
 				double plus = target.getHealth()/2;
 				
 				getPlayer().getAttribute(Attribute.GENERIC_MAX_HEALTH).setBaseValue(defaultHealth + plus);
-				getPlayer().setHealth(getPlayer().getHealth() + plus);
+				getPlayer().setHealth(Math.min(defaultHealth + plus, getPlayer().getHealth() + plus));
 				cooldown.start();
 			}
 		}

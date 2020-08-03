@@ -30,7 +30,7 @@ import org.bukkit.event.entity.EntityRegainHealthEvent;
 
 @AbilityManifest(name = "리인카네이션", rank = Rank.S, species = Species.OTHERS, explain = {
 		"자신이 죽을 위기에 처했을 때, 이를 무시하고 체력이 1로 고정됩니다. $[cooldown]",
-		"지속시간 $[duration]동안 상대방에게 주는 대미지가 $[damage]% 증가합니다.",
+		"지속시간 $[duration]동안 상대방에게 주는 대미지가 $[damage]% 감소합니다.",
 		"지속시간이 종료 시 상대방을 $[hit]번 공격에 성공했을 경우 자신의 체력이 $[respawn] 되어 부활하고,",
 		"이후 추가 타격마다 $[heal]%씩 누적되어 추가적으로 회복합니다.",
 		"하지만 타격 횟수를 채우지 못하였을 경우, 사망하게 됩니다.",
@@ -38,7 +38,7 @@ import org.bukkit.event.entity.EntityRegainHealthEvent;
 public class Reincarnation extends AbilityBase {
 	ActionbarChannel ac = newActionbarChannel();
 
-	public static Config<Integer> duration = new Config<Integer>(Reincarnation.class, "지속시간", 30, 2) {
+	public static Config<Integer> duration = new Config<Integer>(Reincarnation.class, "지속시간", 25, 2) {
 
 		@Override
 		public boolean condition(Integer value) {
@@ -52,7 +52,7 @@ public class Reincarnation extends AbilityBase {
 			return value > 0;
 		}
 
-	}, damage = new Config<Integer>(Reincarnation.class, "추가대미지(%)", 20) {
+	}, damage = new Config<Integer>(Reincarnation.class, "감소대미지(%)", 30) {
 
 		@Override
 		public boolean condition(Integer value) {
@@ -95,8 +95,7 @@ public class Reincarnation extends AbilityBase {
 		if (e.getEntity().equals(getPlayer())) {
 			if (reincarnation.isRunning())
 				e.setCancelled(true);
-			else if (!reincarnation.isRunning() && getPlayer().getHealth() - e.getFinalDamage() <= 0
-					&& !cool.isRunning() && !e.isCancelled()) {
+			else if (!reincarnation.isRunning() && getPlayer().getHealth() - e.getFinalDamage() <= 0 && !cool.isRunning() && !e.isCancelled()) {
 				e.setDamage(0);
 				getPlayer().setHealth(1);
 				reincarnation.setPeriod(TimeUnit.TICKS, 1).start();
@@ -126,7 +125,7 @@ public class Reincarnation extends AbilityBase {
 			Player target = (Player) e.getEntity();
 			if (reincarnation.isRunning() && getGame().isParticipating(target) && !e.isCancelled()) {
 				hitted += 1;
-				e.setDamage(e.getDamage() * (1 + damage.getValue() / 100.0D));
+				e.setDamage(e.getDamage() * (damage.getValue() / 100.0D));
 				if (hitted == hit.getValue()) {
 					SoundLib.ENTITY_PLAYER_LEVELUP.playSound(getPlayer());
 				}

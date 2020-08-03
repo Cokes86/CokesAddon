@@ -58,13 +58,12 @@ public class Keily extends AbilityBase implements ActiveHandler {
 	private final AbilityTimer stackAdder = new AbilityTimer() {
 		@Override
 		protected void run(int count) {
-		if (!c.isRunning() && !flying.isRunning()) {
-			if (switchCounter < 3) {
-				switchCounter++;
+			if (!c.isRunning() && !flying.isRunning()) {
+				if (switchCounter < 3) {
+					switchCounter++;
+				}
+				channel.update(ChatColor.DARK_GREEN.toString().concat(Strings.repeat("●", switchCounter).concat(Strings.repeat("○", max_switch.getValue() - switchCounter))));
 			}
-			channel.update(ChatColor.DARK_GREEN.toString().concat(Strings.repeat("●", switchCounter)
-					.concat(Strings.repeat("○", max_switch.getValue() - switchCounter))));
-		}
 		}
 	}.setPeriod(TimeUnit.SECONDS, count);
 	Cooldown c = new Cooldown(cool.getValue());
@@ -117,8 +116,7 @@ public class Keily extends AbilityBase implements ActiveHandler {
 			if (switchCounter > 0 && !flying.isRunning() && !c.isCooldown()) {
 				getPlayer().getWorld().createExplosion(getPlayer().getLocation(), switchCounter * fuse.getValue(), false);
 				switchCounter = 0;
-				channel.update(ChatColor.DARK_GREEN.toString().concat(Strings.repeat("●", switchCounter)
-						.concat(Strings.repeat("○", max_switch.getValue() - switchCounter))));
+				channel.update(ChatColor.DARK_GREEN.toString().concat(Strings.repeat("●", switchCounter).concat(Strings.repeat("○", max_switch.getValue() - switchCounter))));
 				flying.start();
 				return true;
 			}

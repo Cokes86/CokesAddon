@@ -64,7 +64,7 @@ public class Thorn extends AbilityBase implements ActiveHandler {
 				Arrow a = (Arrow) e.getDamager();
 				if (a.getShooter() instanceof Player && !a.getShooter().equals(getPlayer())) {
 					Player shooter = (Player) a.getShooter();
-					double dam = e.getFinalDamage();
+					double dam = e.getDamage();
 					Damages.damageArrow(shooter, getPlayer(), (float) (dam * damage.getValue() / 100));
 					SoundLib.PIANO.playInstrument(shooter, new Note(1, Tone.F, false));
 					e.setDamage(0);

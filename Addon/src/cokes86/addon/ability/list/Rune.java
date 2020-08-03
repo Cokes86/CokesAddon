@@ -85,10 +85,8 @@ public class Rune extends AbilityBase implements ActiveHandler {
 				}
 			}
 
-			for (Location l : Circle.iteratorOf(getPlayer().getLocation(), range.getValue(), range.getValue() * 9)
-					.iterable()) {
-				l.setY(LocationUtil.getFloorYAt(l.getWorld(), getPlayer().getLocation().getY(), l.getBlockX(),
-						l.getBlockZ()) + 0.1);
+			for (Location l : Circle.iteratorOf(getPlayer().getLocation(), range.getValue(), range.getValue() * 9).iterable()) {
+				l.setY(LocationUtil.getFloorYAt(l.getWorld(), getPlayer().getLocation().getY(), l.getBlockX(), l.getBlockZ()) + 0.1);
 				ParticleLib.REDSTONE.spawnParticle(l, new ParticleLib.RGB(0, 179, 255));
 			}
 		}

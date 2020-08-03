@@ -28,9 +28,9 @@ import daybreak.abilitywar.ability.AbilityManifest.Rank;
 import daybreak.abilitywar.ability.AbilityManifest.Species;
 import daybreak.abilitywar.ability.SubscribeEvent;
 import daybreak.abilitywar.ability.decorator.ActiveHandler;
+import daybreak.abilitywar.config.enums.CooldownDecrease;
 import daybreak.abilitywar.game.AbstractGame.Participant;
 import daybreak.abilitywar.game.AbstractGame.Participant.ActionbarNotification.ActionbarChannel;
-import daybreak.abilitywar.game.manager.object.WRECK;
 import daybreak.abilitywar.utils.base.TimeUtil;
 import daybreak.abilitywar.utils.base.concurrent.TimeUnit;
 import daybreak.abilitywar.utils.base.math.LocationUtil;
@@ -49,7 +49,7 @@ public class Aris extends AbilityBase implements ActiveHandler {
 		public boolean condition(Integer value) {
 			return value > 0;
 		}
-	}, cool = new Config<Integer>(Aris.class, "쿨타임", 30,1) {
+	}, cool = new Config<Integer>(Aris.class, "쿨타임", 40, 1) {
 		@Override
 		public boolean condition(Integer value) {
 			return value > 0;
@@ -89,7 +89,7 @@ public class Aris extends AbilityBase implements ActiveHandler {
 		@Override
 		protected void run(int arg0) {
 			if (!c.isRunning()) {
-				if (arg0 % (WRECK.isEnabled(getGame()) ? 2 : 5) == 0) {
+				if (arg0 % 5 == 0) {
 					chain++;
 					if (chain >= max_count.getValue())
 						chain = max_count.getValue();
@@ -108,7 +108,7 @@ public class Aris extends AbilityBase implements ActiveHandler {
 	}
 
 	ChainTimer d = new ChainTimer();
-	Cooldown c = new Cooldown(cool.getValue());
+	Cooldown c = new Cooldown(cool.getValue(), CooldownDecrease._50);
 
 	public Aris(Participant participant) {
 		super(participant);
