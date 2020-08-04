@@ -32,7 +32,7 @@ import java.util.Objects;
 public class EnchantArrow extends AbilityBase {
 	int enchantStack = 0;
 	ActionbarChannel ac = newActionbarChannel();
-	private static final Config<Integer> damage = new Config<Integer>(EnchantArrow.class, "추가대미지(%)", 20) {
+	private static final Config<Integer> damage = new Config<Integer>(EnchantArrow.class, "추가대미지(%)", 15) {
 
 		@Override
 		public boolean condition(Integer value) {
