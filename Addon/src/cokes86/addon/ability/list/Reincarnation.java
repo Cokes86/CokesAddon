@@ -52,7 +52,7 @@ public class Reincarnation extends AbilityBase {
 			return value > 0;
 		}
 
-	}, damage = new Config<Integer>(Reincarnation.class, "감소대미지(%)", 30) {
+	}, damage = new Config<Integer>(Reincarnation.class, "감소대미지(%)", 50) {
 
 		@Override
 		public boolean condition(Integer value) {
