@@ -9,6 +9,7 @@ import java.util.function.Predicate;
 import daybreak.abilitywar.game.AbstractGame;
 import daybreak.abilitywar.game.team.interfaces.Teamable;
 import daybreak.abilitywar.game.manager.object.DeathManager;
+import daybreak.abilitywar.game.manager.object.WRECK;
 import daybreak.abilitywar.utils.base.collect.Pair;
 import daybreak.abilitywar.utils.base.minecraft.damage.Damages;
 import org.bukkit.Location;
@@ -41,7 +42,8 @@ import daybreak.abilitywar.utils.base.math.LocationUtil;
 		"공중에는 누적된 §d사슬 카운터§f만큼 초로 환산되어 고정시키며,",
 		"(§d사슬 카운터§f/2 + 4)블럭만큼 위로 고정시킵니다.",
 		"공중에 고정되어있는 플레이어는 그동안 움직일 수 없으며,",
-		"매 2초마다 1의 고정대미지를 입습니다. 그 이외의 대미지는 받지 않습니다.",
+		"매 2초마다 1의 고정대미지를 입습니다. 그 이외의 대미지는 받지 않으며,",
+		"고정대미지는 체력이 1 이하인 상태에서는 받지 않습니다.",
 		"지속시간과 쿨타임동안 §d사슬 카운터§f는 증가하지 않습니다." })
 public class Aris extends AbilityBase implements ActiveHandler {
 	private static final Config<Integer> range = new Config<Integer>(Aris.class, "범위", 7) {
@@ -85,11 +87,11 @@ public class Aris extends AbilityBase implements ActiveHandler {
 	ActionbarChannel ac = newActionbarChannel();
 
 	AbilityTimer passive = new AbilityTimer() {
-
+		int count = (int) (5 * (WRECK.isEnabled(getGame()) ? WRECK.calculateDecreasedAmount(50) : 1));
 		@Override
 		protected void run(int arg0) {
 			if (!c.isRunning()) {
-				if (arg0 % 5 == 0) {
+				if (arg0 % count == 0) {
 					chain++;
 					if (chain >= max_count.getValue())
 						chain = max_count.getValue();
@@ -146,12 +148,6 @@ public class Aris extends AbilityBase implements ActiveHandler {
 
 	@SubscribeEvent
 	public void onEntityDamageByEntity(EntityDamageByEntityEvent e) {
-		if (e.getEntity() instanceof Player) {
-			Player t = (Player) e.getEntity();
-			if (holding.containsKey(t) && e.getDamager().equals(getPlayer())) {
-				return;
-			}
-		}
 		onEntityDamage(e);
 	}
 
@@ -190,9 +186,8 @@ public class Aris extends AbilityBase implements ActiveHandler {
 			for (Player player : holding.keySet()) {
 				holding.get(player).getRight().update("고정 지속시간: " + TimeUtil.parseTimeAsString(getFixedCount()));
 				player.teleport(holding.get(player).getLeft());
-				if (seconds % 40 == 0
-						&& Damages.canDamage(player, getPlayer(), DamageCause.ENTITY_ATTACK, 1)) {
-					Damages.damageFixed(player, getPlayer(), 1);
+				if (seconds % 40 == 0 && Damages.canDamage(player, getPlayer(), DamageCause.ENTITY_ATTACK, 1) && player.getHealth() > 1) {
+					player.setHealth(player.getHealth() - 1);
 				}
 			}
 		}

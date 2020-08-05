@@ -14,9 +14,7 @@ import daybreak.abilitywar.utils.base.minecraft.nms.NMS;
 import daybreak.abilitywar.utils.base.minecraft.nms.IHologram;
 import daybreak.google.common.base.Strings;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Map;
-import java.util.Map.Entry;
 import org.bukkit.Material;
 import org.bukkit.entity.Arrow;
 import org.bukkit.entity.Entity;
@@ -64,21 +62,18 @@ public class Ovisni extends AbilityBase implements ActiveHandler {
 	@Override
 	public boolean ActiveSkill(Material material, ClickType clickType) {
 		if (material == Material.IRON_INGOT) {
-			if (clickType == ClickType.RIGHT_CLICK) {
-				if (!cooldownTimer.isCooldown()) {
-					for (Entry<Participant, OvisniStack> entry : new HashSet<>(stackMap.entrySet())) {
-						entry.getKey().getPlayer().damage(entry.getValue().stack * 2, getPlayer());
-						entry.getValue().stop(false);
-					}
+			if (clickType == ClickType.RIGHT_CLICK && !cooldownTimer.isCooldown()) {
+				if (!stackMap.isEmpty()) {
+					stackMap.values().forEach(timer -> timer.damage());
 					stackMap.clear();
 					cooldownTimer.start();
+					return true;
+				} else {
+					getPlayer().sendMessage("§2맹독 카운터§f를 가진 플레이어가 존재하지 않습니다.");
 				}
-				return true;
 			} else if (clickType == ClickType.LEFT_CLICK) {
 				getPlayer().sendMessage("§e===== §2맹독 카운터§f 수치 §e=====");
-				for (Entry<Participant, OvisniStack> entry : stackMap.entrySet()) {
-					getPlayer().sendMessage("§f" + entry.getKey().getPlayer().getName() + " §7: §2" + entry.getValue().stack);
-				}
+				stackMap.forEach((key, value) -> getPlayer().sendMessage("§f"+key.getPlayer().getName() + " §7: §2" + value.stack));
 				getPlayer().sendMessage( "§e========================");
 			}
 		}
@@ -109,9 +104,7 @@ public class Ovisni extends AbilityBase implements ActiveHandler {
 	
 	public void onUpdate(Update update) {
 		if (update == Update.ABILITY_DESTROY || update == Update.RESTRICTION_SET) {
-			for (OvisniStack stack : stackMap.values()) {
-				stack.stop(false);
-			}
+			stackMap.values().forEach(value -> value.stop(false));
 			stackMap.clear();
 		}
 	}
@@ -120,9 +113,7 @@ public class Ovisni extends AbilityBase implements ActiveHandler {
 	private void onParticipantDeath(ParticipantDeathEvent e) {
 		final Player player = e.getPlayer();
 		if (player.equals(getPlayer())) {
-			for (OvisniStack stack : stackMap.values()) {
-				stack.stop(false);
-			}
+			stackMap.values().forEach(value -> value.stop(false));
 			stackMap.clear();
 		} else if (getGame().isParticipating(player)) {
 			final Participant participant = getGame().getParticipant(player);
@@ -174,6 +165,11 @@ public class Ovisni extends AbilityBase implements ActiveHandler {
 			if (stack < maxCounter) {
 				stack++;
 			}
+		}
+		
+		private boolean damage() {
+			target.getPlayer().damage(stack * 2, getPlayer());
+			return stop(false);
 		}
 	}
 }

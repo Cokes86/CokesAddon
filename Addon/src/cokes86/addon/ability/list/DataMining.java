@@ -3,17 +3,16 @@ package cokes86.addon.ability.list;
 import java.text.DecimalFormat;
 import java.util.Random;
 
-import cokes86.addon.configuration.ability.Config;
-import daybreak.abilitywar.game.manager.object.DeathManager;
-
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Projectile;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 
+import cokes86.addon.configuration.ability.Config;
 import daybreak.abilitywar.ability.AbilityBase;
 import daybreak.abilitywar.ability.AbilityFactory.AbilityRegistration;
 import daybreak.abilitywar.ability.AbilityManifest;
+import daybreak.abilitywar.ability.NotAvailable;
 import daybreak.abilitywar.ability.SubscribeEvent;
 import daybreak.abilitywar.ability.decorator.ActiveHandler;
 import daybreak.abilitywar.ability.event.AbilityActiveSkillEvent;
@@ -23,6 +22,8 @@ import daybreak.abilitywar.game.AbstractGame.Participant.ActionbarNotification.A
 import daybreak.abilitywar.game.list.mix.Mix;
 import daybreak.abilitywar.game.list.mix.synergy.Synergy;
 import daybreak.abilitywar.game.list.mix.synergy.SynergyFactory;
+import daybreak.abilitywar.game.list.mix.triplemix.AbstractTripleMix;
+import daybreak.abilitywar.game.manager.object.DeathManager;
 import daybreak.abilitywar.utils.base.collect.Pair;
 
 @AbilityManifest(name = "데이터마이닝", rank = AbilityManifest.Rank.S, species = AbilityManifest.Species.HUMAN, explain = {
@@ -35,6 +36,7 @@ import daybreak.abilitywar.utils.base.collect.Pair;
 		"철괴 좌클릭시 사실 여부 메세지를 끄고 킬 수 있습니다.",
 		"※능력 아이디어: RainStar_"
 })
+@NotAvailable(AbstractTripleMix.class)
 public class DataMining extends AbilityBase implements ActiveHandler {
 	DecimalFormat df = new DecimalFormat("0.00");
 	int count = 0;

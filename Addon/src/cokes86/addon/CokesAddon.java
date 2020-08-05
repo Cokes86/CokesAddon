@@ -50,11 +50,11 @@ public class CokesAddon extends Addon implements Listener {
 		//TailCatching
 		GameFactory.registerMode(TailCatching.class);
 
-		//Target Hunting
-		GameFactory.registerMode(TargetHunting.class);
+		//Target Hunting (BETA)
+		if (Settings.DeveloperSettings.isEnabled()) GameFactory.registerMode(TargetHunting.class);
 
 		// Load Complete
-		Bukkit.getConsoleSender().sendMessage("[AbilityAddon] 애드온이 활성화되었습니다.");
+		Bukkit.getConsoleSender().sendMessage("[CokesAddon] 애드온이 활성화되었습니다.");
 
 		// Load Configuration
 		Bukkit.getServer().getScheduler().scheduleSyncDelayedTask(getPlugin(), new ConfigLoader());

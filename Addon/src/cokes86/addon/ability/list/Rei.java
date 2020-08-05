@@ -18,6 +18,7 @@ import daybreak.abilitywar.ability.AbilityManifest;
 import daybreak.abilitywar.ability.AbilityManifest.Rank;
 import daybreak.abilitywar.ability.AbilityManifest.Species;
 import daybreak.abilitywar.ability.SubscribeEvent;
+import daybreak.abilitywar.config.enums.CooldownDecrease;
 import daybreak.abilitywar.game.AbstractGame.Participant;
 import daybreak.abilitywar.utils.library.SoundLib;
 
@@ -56,7 +57,7 @@ public class Rei extends AbilityBase {
 		super(participant);
 	}
 
-	Cooldown c = new Cooldown(cool.getValue());
+	Cooldown c = new Cooldown(cool.getValue(), CooldownDecrease._90);
 
 	@SubscribeEvent(priority = 5)
 	public void onEntityDamageByEntity(EntityDamageByEntityEvent e) {

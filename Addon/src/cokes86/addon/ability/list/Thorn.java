@@ -29,7 +29,7 @@ public class Thorn extends AbilityBase implements ActiveHandler {
 		public boolean condition(Integer value) {
 			return value >= 0;
 		}
-	}, damage = new Config<Integer>(Thorn.class, "반사대미지(%)", 20) {
+	}, damage = new Config<Integer>(Thorn.class, "반사대미지(%)", 40) {
 		public boolean condition(Integer value) {
 			return value > 0;
 		}
