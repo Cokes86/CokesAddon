@@ -14,38 +14,42 @@ import daybreak.abilitywar.ability.SubscribeEvent;
 import daybreak.abilitywar.game.AbstractGame.Participant;
 import daybreak.abilitywar.game.AbstractGame.Participant.ActionbarNotification.ActionbarChannel;
 import daybreak.abilitywar.utils.library.SoundLib;
+import daybreak.google.common.base.Strings;
 
 import java.util.Objects;
 
-@AbilityManifest(
-		name = "인챈트 애로우",
-		rank = Rank.S,
-		species = Species.HUMAN,
-		explain = {
-				"활로 플레이어를 적중할 시 인챈트 스택이 1씩 상승하며,",
-				"스택당 추가 $[damage]%의 대미지를 입힙니다. (최대 $[max_stack]회, 합적용)",
-				"적중에 실패할 시 인챈트 스택이 0이 됩니다.",
-				"인챈트 스택이 0인 상태로 적중에 실패할 시 고정 $[risk]의 대미지를 입습니다.",
-				"자신이 쏜 화살은 명중 시 바로 사라집니다.",
-				"※능력 아이디어: RainStar_"
+@AbilityManifest(name = "인챈트 애로우", rank = Rank.S, species = Species.HUMAN, explain = {
+		"활로 플레이어를 적중할 시 인챈트 스택이 거리에 비례하여 1에서 $[max_stack_up]만큼 상승하며,",
+		"스택당 추가 $[damage]%의 대미지를 입힙니다. (최대 $[max_stack]회, 합적용)",
+		"적중에 실패할 시 인챈트 스택이 거리에 비례하여 1에서 $[max_stack_down]만큼 감소합니다.",
+		"인챈트 스택이 0인 상태로 적중에 실패할 시 고정 $[risk]의 대미지를 입습니다.",
+		"자신이 쏜 화살은 명중 시 바로 사라집니다.",
+		"※능력 아이디어: RainStar_"
 })
 public class EnchantArrow extends AbilityBase {
 	int enchantStack = 0;
 	ActionbarChannel ac = newActionbarChannel();
-	private static final Config<Integer> damage = new Config<Integer>(EnchantArrow.class, "추가대미지(%)", 20) {
-
+	private static final Config<Integer> damage = new Config<Integer>(EnchantArrow.class, "추가대미지(%)", 15) {
 		@Override
 		public boolean condition(Integer value) {
 			return value > 0;
 		}
-		
 	}, risk = new Config<Integer>(EnchantArrow.class, "리스크", 1) {
-
 		@Override
 		public boolean condition(Integer value) {
 			return value >= 0;
 		}
-	}, max_stack = new Config<Integer>(EnchantArrow.class, "최대스택", 7) {
+	}, max_stack = new Config<Integer>(EnchantArrow.class, "최대스택", 9) {
+		@Override
+		public boolean condition(Integer value) {
+			return value>0;
+		}
+	}, max_stack_up = new Config<Integer>(EnchantArrow.class, "최대스택상승치", 3) {
+		@Override
+		public boolean condition(Integer value) {
+			return value>0;
+		}
+	}, max_stack_down = new Config<Integer>(EnchantArrow.class, "최대스택감소치", 3) {
 		@Override
 		public boolean condition(Integer value) {
 			return value>0;
@@ -58,7 +62,7 @@ public class EnchantArrow extends AbilityBase {
 	
 	public void onUpdate(Update update) {
 		if (update == Update.RESTRICTION_CLEAR) {
-			ac.update("인챈트 스택: " + enchantStack);
+			ac.update(Strings.repeat("§b>", enchantStack).concat(Strings.repeat(">", max_stack.getValue() - enchantStack)).toString());
 		}
 	}
 	
@@ -70,23 +74,26 @@ public class EnchantArrow extends AbilityBase {
 				if (enchantStack == 0) {
 					getPlayer().setHealth(Math.max(0.0, getPlayer().getHealth()-risk.getValue()));
 				} else {
-					enchantStack = 0;
+					final double length = getPlayer().getLocation().clone().subtract(e.getEntity().getLocation().clone()).length();
+					enchantStack -= Math.min(max_stack_down.getValue(), Math.max(1, 3-length/5));
+					if (enchantStack < 0) enchantStack = 0;
 				}
 			}
 			e.getEntity().remove();
-			ac.update("인챈트 스택: "+enchantStack);
+			ac.update(Strings.repeat("§b>", enchantStack).concat(Strings.repeat(">", max_stack.getValue() - enchantStack)).toString());
 		}
 	}
 	
 	@SubscribeEvent
 	private void onEntityDamageByEntity(EntityDamageByEntityEvent e) {
-		if (e.getEntity() instanceof Player && e.getDamager() instanceof Arrow) {
+		if (e.getEntity() instanceof Player && e.getDamager() instanceof Arrow && !e.getEntity().equals(getPlayer())) {
 			Arrow arrow = (Arrow) e.getDamager();
 			if (Objects.equals(arrow.getShooter(), getPlayer())) {
 				e.setDamage(e.getDamage()*(1+enchantStack*damage.getValue()/100.0));
-				enchantStack++;
+				final double length = getPlayer().getLocation().clone().subtract(e.getEntity().getLocation().clone()).length();
+				enchantStack += Math.min(max_stack_up.getValue(), length/5 + 1);
 				if (enchantStack >= max_stack.getValue()) enchantStack = max_stack.getValue();
-				ac.update("인챈트 스택: "+enchantStack);
+				ac.update(Strings.repeat("§b>", enchantStack).concat(Strings.repeat(">", max_stack.getValue() - enchantStack)).toString());
 				arrow.remove();
 			}
 		}
