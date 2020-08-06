@@ -81,7 +81,7 @@ public class AddonAbilityGui implements Listener {
 		for (AbilityRegistration registration : values.values()) {
 			AbilityManifest manifest = registration.getManifest();
 			
-			ItemStack is = MaterialX.GREEN_WOOL.parseItem();
+			ItemStack is = MaterialX.GREEN_WOOL.createItem();
 			ItemMeta im = is.getItemMeta();
 			im.setDisplayName(ChatColor.translateAlternateColorCodes('&', "&b" + manifest.name()));
 			
@@ -123,7 +123,7 @@ public class AddonAbilityGui implements Listener {
 		}
 
 		if (page > 1) {
-			ItemStack previousPage = MaterialX.ARROW.parseItem();
+			ItemStack previousPage = MaterialX.ARROW.createItem();
 			ItemMeta previousMeta = previousPage.getItemMeta();
 			previousMeta.setDisplayName(ChatColor.translateAlternateColorCodes('&', "&b이전 페이지"));
 			previousPage.setItemMeta(previousMeta);
@@ -131,14 +131,14 @@ public class AddonAbilityGui implements Listener {
 		}
 
 		if (page != MaxPage) {
-			ItemStack nextPage = MaterialX.ARROW.parseItem();
+			ItemStack nextPage = MaterialX.ARROW.createItem();
 			ItemMeta nextMeta = nextPage.getItemMeta();
 			nextMeta.setDisplayName(ChatColor.translateAlternateColorCodes('&', "&b다음 페이지"));
 			nextPage.setItemMeta(nextMeta);
 			this.AbilityGUI.setItem(50, nextPage);
 		}
 
-		ItemStack Page = MaterialX.PAPER.parseItem();
+		ItemStack Page = MaterialX.PAPER.createItem();
 		ItemMeta PageMeta = Page.getItemMeta();
 		PageMeta.setDisplayName(ChatColor.translateAlternateColorCodes('&', "&6페이지 &e" + page + " &6/ &e" + MaxPage));
 		Page.setItemMeta(PageMeta);
@@ -169,7 +169,7 @@ public class AddonAbilityGui implements Listener {
 					openGUI(this.PlayerPage + 1);
 				}
 			}
-			if (e.getCurrentItem() != null && e.getCurrentItem().getType().equals(MaterialX.GREEN_WOOL.parseMaterial())
+			if (e.getCurrentItem() != null && e.getCurrentItem().getType().equals(MaterialX.GREEN_WOOL.getMaterial())
 					&& e.getCurrentItem().hasItemMeta() && e.getCurrentItem().getItemMeta().hasDisplayName()) {
 				String AbilityName = ChatColor.stripColor(e.getCurrentItem().getItemMeta().getDisplayName());
 
