@@ -129,7 +129,7 @@ public class Mir extends AbilityBase implements ActiveHandler {
 				armorStand.setInvulnerable(true);
 			}
 
-			ItemStack chestplate = MaterialX.LEATHER_CHESTPLATE.parseItem();
+			ItemStack chestplate = MaterialX.LEATHER_CHESTPLATE.createItem();
             LeatherArmorMeta meta = (LeatherArmorMeta) chestplate.getItemMeta();
             assert meta != null;
             meta.setColor(element.rgb.getColor());
@@ -184,7 +184,7 @@ public class Mir extends AbilityBase implements ActiveHandler {
 	public Element getRandomElement() {
 		Random random = new Random();
 		Element after = Element.values()[random.nextInt(Element.values().length)];
-		if (!after.equals(element)) return after;
+		if (element == null || !after.equals(element)) return after;
 		else return getRandomElement();
 	}
 
@@ -233,10 +233,10 @@ public class Mir extends AbilityBase implements ActiveHandler {
     }
 
 	enum Element {
-		IFRIT(MaterialX.REDSTONE_BLOCK.parseMaterial(), ParticleLib.RGB.of(255,1,1), range_ifrit.getValue()),
-		SHADE(MaterialX.COAL_BLOCK.parseMaterial(), ParticleLib.RGB.of(1,1,1), range_shade.getValue()),
-		THUNDERBIRD(MaterialX.LAPIS_BLOCK.parseMaterial(), ParticleLib.RGB.of(1,1,255), range_thunder.getValue()),
-		GNOME(MaterialX.DIRT.parseMaterial(), ParticleLib.RGB.of(179,109,65), range_gnome.getValue());
+		IFRIT(MaterialX.REDSTONE_BLOCK.getMaterial(), ParticleLib.RGB.of(255,1,1), range_ifrit.getValue()),
+		SHADE(MaterialX.COAL_BLOCK.getMaterial(), ParticleLib.RGB.of(1,1,1), range_shade.getValue()),
+		THUNDERBIRD(MaterialX.LAPIS_BLOCK.getMaterial(), ParticleLib.RGB.of(1,1,255), range_thunder.getValue()),
+		GNOME(MaterialX.DIRT.getMaterial(), ParticleLib.RGB.of(179,109,65), range_gnome.getValue());
 
 		private final Material helmet;
 		private final ParticleLib.RGB rgb;

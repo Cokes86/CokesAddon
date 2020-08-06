@@ -209,9 +209,9 @@ public class Blocks extends AbilityBase implements ActiveHandler {
 	}
 
 	enum Pickaxe {
-		WOOD(MaterialX.WOODEN_PICKAXE.parseMaterial(), 4), STONE(MaterialX.STONE_PICKAXE.parseMaterial(), 5),
-		IRON(MaterialX.IRON_PICKAXE.parseMaterial(), 6), GOLD(MaterialX.GOLDEN_PICKAXE.parseMaterial(), 4),
-		DIAMOND(MaterialX.DIAMOND_PICKAXE.parseMaterial(), 7);
+		WOOD(MaterialX.WOODEN_PICKAXE.getMaterial(), 4), STONE(MaterialX.STONE_PICKAXE.getMaterial(), 5),
+		IRON(MaterialX.IRON_PICKAXE.getMaterial(), 6), GOLD(MaterialX.GOLDEN_PICKAXE.getMaterial(), 4),
+		DIAMOND(MaterialX.DIAMOND_PICKAXE.getMaterial(), 7), NETHERITE(MaterialX.NETHERITE_PICKAXE.getMaterial(), 8);
 
 		Material m;
 		double damage;
