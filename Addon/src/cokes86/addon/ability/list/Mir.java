@@ -170,8 +170,10 @@ public class Mir extends AbilityBase implements ActiveHandler {
 
 		@Override
 		protected void onDurationSilentEnd() {
-			armorStand.remove();
-			armorStand = null;
+			if (armorStand != null) {
+				armorStand.remove();
+				armorStand = null;
+			}
 		}
 	}.setPeriod(TimeUnit.TICKS, 2);
 
