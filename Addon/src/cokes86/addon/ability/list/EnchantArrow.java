@@ -62,7 +62,7 @@ public class EnchantArrow extends AbilityBase {
 	
 	public void onUpdate(Update update) {
 		if (update == Update.RESTRICTION_CLEAR) {
-			ac.update(Strings.repeat("§b>", enchantStack).concat(Strings.repeat(">", max_stack.getValue() - enchantStack)).toString());
+			ac.update("§b".concat(Strings.repeat(">", enchantStack)).concat("§f").concat(Strings.repeat(">", max_stack.getValue() - enchantStack)).toString());
 		}
 	}
 	
@@ -80,7 +80,7 @@ public class EnchantArrow extends AbilityBase {
 				}
 			}
 			e.getEntity().remove();
-			ac.update(Strings.repeat("§b>", enchantStack).concat(Strings.repeat(">", max_stack.getValue() - enchantStack)).toString());
+			ac.update("§b".concat(Strings.repeat(">", enchantStack)).concat("§f").concat(Strings.repeat(">", max_stack.getValue() - enchantStack)).toString());
 		}
 	}
 	
@@ -93,7 +93,7 @@ public class EnchantArrow extends AbilityBase {
 				final double length = getPlayer().getLocation().clone().subtract(e.getEntity().getLocation().clone()).length();
 				enchantStack += Math.min(max_stack_up.getValue(), length/5 + 1);
 				if (enchantStack >= max_stack.getValue()) enchantStack = max_stack.getValue();
-				ac.update(Strings.repeat("§b>", enchantStack).concat(Strings.repeat(">", max_stack.getValue() - enchantStack)).toString());
+				ac.update("§b".concat(Strings.repeat(">", enchantStack)).concat("§f").concat(Strings.repeat(">", max_stack.getValue() - enchantStack)).toString());
 				arrow.remove();
 			}
 		}

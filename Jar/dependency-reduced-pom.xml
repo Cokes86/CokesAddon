@@ -9,7 +9,7 @@
   <artifactId>Jar</artifactId>
   <version>${revision}</version>
   <build>
-    <finalName>CokesAddon-${project.version}</finalName>
+    <finalName>CokesAddon</finalName>
     <plugins>
       <plugin>
         <artifactId>maven-shade-plugin</artifactId>

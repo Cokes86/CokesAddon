@@ -15,6 +15,8 @@ import daybreak.abilitywar.utils.base.minecraft.nms.IHologram;
 import daybreak.google.common.base.Strings;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Map.Entry;
+
 import org.bukkit.Material;
 import org.bukkit.entity.Arrow;
 import org.bukkit.entity.Entity;
@@ -49,8 +51,6 @@ public class Ovisni extends AbilityBase implements ActiveHandler {
 		}
 	};
 
-	private final int maxCounter = MAX_COUNTER_CONFIG.getValue();
-
 	private final Map<Participant, OvisniStack> stackMap = new HashMap<>();
 
 	private final Cooldown cooldownTimer = new Cooldown(COOLDOWN_CONFIG.getValue());
@@ -64,7 +64,10 @@ public class Ovisni extends AbilityBase implements ActiveHandler {
 		if (material == Material.IRON_INGOT) {
 			if (clickType == ClickType.RIGHT_CLICK && !cooldownTimer.isCooldown()) {
 				if (!stackMap.isEmpty()) {
-					stackMap.values().forEach(timer -> timer.damage());
+					for (Entry<Participant, OvisniStack> entry : stackMap.entrySet()) {
+						entry.getKey().getPlayer().damage(entry.getValue().stack * 2, getPlayer());
+						entry.getValue().stop(false);
+					}
 					stackMap.clear();
 					cooldownTimer.start();
 					return true;
@@ -117,7 +120,10 @@ public class Ovisni extends AbilityBase implements ActiveHandler {
 			stackMap.clear();
 		} else if (getGame().isParticipating(player)) {
 			final Participant participant = getGame().getParticipant(player);
-			stackMap.get(participant).stop(false);
+			if (stackMap.containsKey(participant)) {
+				stackMap.get(participant).stop(false);
+				stackMap.remove(participant);
+			}
 		}
 	}
 
@@ -126,6 +132,7 @@ public class Ovisni extends AbilityBase implements ActiveHandler {
 		private int stack;
 		private final Participant target;
 		private final IHologram hologram;
+		private final int maxCounter = MAX_COUNTER_CONFIG.getValue();
 
 		private OvisniStack(Participant target) {
 			super();
@@ -157,7 +164,6 @@ public class Ovisni extends AbilityBase implements ActiveHandler {
 		@Override
 		protected void onSilentEnd() {
 			hologram.hide(getPlayer());
-			stackMap.remove(target);
 			hologram.unregister();
 		}
 
@@ -165,11 +171,6 @@ public class Ovisni extends AbilityBase implements ActiveHandler {
 			if (stack < maxCounter) {
 				stack++;
 			}
-		}
-		
-		private boolean damage() {
-			target.getPlayer().damage(stack * 2, getPlayer());
-			return stop(false);
 		}
 	}
 }
