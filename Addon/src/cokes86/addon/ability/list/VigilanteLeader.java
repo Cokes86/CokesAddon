@@ -5,13 +5,13 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.function.Predicate;
 
-import daybreak.abilitywar.game.manager.object.DeathManager;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.entity.Arrow;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
+import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 
@@ -23,6 +23,7 @@ import daybreak.abilitywar.ability.decorator.ActiveHandler;
 import daybreak.abilitywar.game.AbstractGame;
 import daybreak.abilitywar.game.AbstractGame.Participant;
 import daybreak.abilitywar.game.AbstractGame.Participant.ActionbarNotification.ActionbarChannel;
+import daybreak.abilitywar.game.manager.object.DeathManager;
 import daybreak.abilitywar.utils.base.concurrent.TimeUnit;
 import daybreak.abilitywar.utils.base.math.LocationUtil;
 import daybreak.abilitywar.utils.base.math.geometry.Circle;
@@ -37,6 +38,7 @@ import daybreak.abilitywar.utils.library.ParticleLib.RGB;
 		"자경단 아지트 밖에서 자경단장은 2명 취급합니다.",
 		"자경단원은 자경단장을 공격할 때, 자경단장이 받는 대미지가 30% 감소합니다."})
 public class VigilanteLeader extends AbilityBase implements ActiveHandler {
+	private int num = getGame().getParticipants().size();
 	public static Config<Integer> r = new Config<Integer>(VigilanteLeader.class, "아지트범위", 10) {
 		@Override
 		public boolean condition(Integer value) {
@@ -55,7 +57,6 @@ public class VigilanteLeader extends AbilityBase implements ActiveHandler {
 	protected ActionbarChannel channel = this.newActionbarChannel();
 
 	Predicate<Entity> predicate = entity -> {
-		if (entity.equals(getPlayer())) return false;
 		if (entity instanceof Player) {
 			if (!getGame().isParticipating(entity.getUniqueId())) return false;
 			AbstractGame.Participant target = getGame().getParticipant(entity.getUniqueId());
@@ -93,7 +94,7 @@ public class VigilanteLeader extends AbilityBase implements ActiveHandler {
 					else addNum += 1;
 				}
 
-				channel.update("인원 수: " + getGame().getParticipants().size() + "+" + addNum + "");
+				channel.update("인원 수: " + num + "+" + addNum + "");
 			}
 		}
 	}.setPeriod(TimeUnit.TICKS, 2);
@@ -146,6 +147,16 @@ public class VigilanteLeader extends AbilityBase implements ActiveHandler {
 	public void onUpdate(Update update) {
 		if (update == Update.RESTRICTION_CLEAR) {
 			passive.start();
+		}
+	}
+	
+	@SubscribeEvent
+	public void onPlayerDeath(PlayerDeathEvent e) {
+		if (getGame() instanceof DeathManager.Handler) {
+			DeathManager.Handler game = (DeathManager.Handler) getGame();
+			if (game.getDeathManager().isExcluded(e.getEntity().getUniqueId())) {
+				num -= 1;
+			}
 		}
 	}
 }

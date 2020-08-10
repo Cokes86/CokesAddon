@@ -1,10 +1,13 @@
 package cokes86.addon;
 
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
+import java.net.URL;
+import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
+import java.util.List;
 
-import cokes86.addon.gamemodes.tailcatching.TailCatching;
-import cokes86.addon.gamemodes.targethunting.TargetHunting;
-import daybreak.abilitywar.game.list.mix.AbstractMix;
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.event.EventHandler;
@@ -15,11 +18,15 @@ import cokes86.addon.configuration.ConfigFile;
 import cokes86.addon.configuration.gamemode.GameConfiguration;
 import cokes86.addon.gamemodes.addon.debug.DebugWar;
 import cokes86.addon.gamemodes.addon.standard.AddonAbilityWar;
-import cokes86.addon.gamemodes.battleability.*;
+import cokes86.addon.gamemodes.battleability.BattleAbility;
+import cokes86.addon.gamemodes.battleability.BattleMixAbility;
+import cokes86.addon.gamemodes.tailcatching.TailCatching;
+import cokes86.addon.gamemodes.targethunting.TargetHunting;
 import daybreak.abilitywar.addon.Addon;
 import daybreak.abilitywar.config.Configuration.Settings;
 import daybreak.abilitywar.config.ability.AbilitySettings;
 import daybreak.abilitywar.game.event.GameCreditEvent;
+import daybreak.abilitywar.game.list.mix.AbstractMix;
 import daybreak.abilitywar.game.manager.GameFactory;
 
 public class CokesAddon extends Addon implements Listener {
@@ -55,6 +62,18 @@ public class CokesAddon extends Addon implements Listener {
 
 		// Load Complete
 		Bukkit.getConsoleSender().sendMessage("[CokesAddon] 애드온이 활성화되었습니다.");
+		
+		//Bug Info
+		try {
+			if (!getBugLists().isEmpty()) {
+				Bukkit.getConsoleSender().sendMessage("[CokesAddon] 해당 버전에는 아래와 같은 버그가 있습니다. 게임 플레이시 유의해주세요.");
+				for (String str : getBugLists()) {
+					Bukkit.getConsoleSender().sendMessage("[CokesAddon] "+str);
+				}
+			}
+		} catch (IllegalStateException | IOException e) {
+			e.printStackTrace();
+		}
 
 		// Load Configuration
 		Bukkit.getServer().getScheduler().scheduleSyncDelayedTask(getPlugin(), new ConfigLoader());
@@ -83,6 +102,20 @@ public class CokesAddon extends Addon implements Listener {
 			e.addCredit("§a믹스! §f새로운 시너지 "+AddonAbilityFactory.nameSynergyValues().size()+"개가 추가되었습니다!");
 		}
 		e.addCredit("§a코크스에드온 §f제작자 : Cokes_86  [§7디스코드 §f: Cokes_86#9329]");
+	}
+	
+	public List<String> getBugLists() throws IllegalStateException, IOException {
+		final BufferedReader reader = new BufferedReader(new InputStreamReader(new URL("https://github.com/Cokes86/CokesAddon/blob/master/Bugs.txt").openStream(), StandardCharsets.UTF_8));
+		ArrayList<String> result = new ArrayList<>();
+		{
+			String line;
+			while ((line = reader.readLine()) != null) {
+				if (line.endsWith("("+getDescription().getVersion()+")")) {
+					result.add(line.replaceAll("("+getDescription().getVersion()+")", ""));
+				}
+			}
+		}
+		return result;
 	}
 
 	static class ConfigLoader implements Runnable {

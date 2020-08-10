@@ -47,8 +47,13 @@ public class AddonAbilityFactory {
 		registerAbility(Harmony.class);
 		registerAbility(Cutter.class);
 
-		if (PhantomThief.initPhantomThief()) registerAbility(PhantomThief.class);
-		else logger.error("팬텀 시프는 해당 버전에서 지원하지 않습니다.");
+		if (PhantomThief.initPhantomThief()) {
+			registerAbility(PhantomThief.class);
+			AbilityFactory.registerAbility(PhantomThief.NullAbility.class);
+		}
+		else {
+			logger.error("팬텀 시프는 해당 버전에서 지원하지 않습니다.");
+		}
 		
 		registerSynergy(Poker.class, Poker.class, RoyalStraightFlush.class);
 		registerSynergy(GodsBless.class, Xyz.class, TheEnd.class);
