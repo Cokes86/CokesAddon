@@ -94,8 +94,8 @@ public class PhantomThief extends AbilityBase implements ActiveHandler, TargetHa
 		}
 	};
 
-	final Duration phantom_1 = new Phantom1(), phantom_2 = new Phantom2();
 	final Cooldown c = new Cooldown(cooldown.getValue());
+	final Duration phantom_1 = new Phantom1(), phantom_2 = new Phantom2();
 	AbstractGame.Participant target;
 
 	public static boolean initPhantomThief() {
@@ -281,7 +281,7 @@ public class PhantomThief extends AbilityBase implements ActiveHandler, TargetHa
 
 	class Phantom1 extends Duration {
 		public Phantom1() {
-			super(duration.getValue());
+			super(duration.getValue(), c);
 		}
 
 		public void onDurationStart() {
@@ -297,8 +297,7 @@ public class PhantomThief extends AbilityBase implements ActiveHandler, TargetHa
 		}
 
 		public void onDurationEnd() {
-			onSilentEnd();
-			c.start();
+			onDurationSilentEnd();
 		}
 	}
 

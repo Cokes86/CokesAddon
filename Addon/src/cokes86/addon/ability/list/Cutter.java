@@ -43,7 +43,7 @@ public class Cutter extends AbilityBase implements ActiveHandler {
     public boolean ActiveSkill(Material material, ClickType clickType) {
         if (material == Material.IRON_INGOT && clickType == ClickType.RIGHT_CLICK && !cooldownTimer.isCooldown() && !durationTimer.isDuration()) {
             if (getPlayer().getHealth() > risk.getValue()) {
-                getPlayer().setHealth(getPlayer().getHealth() - risk.getValue());
+                getPlayer().setHealth(Math.min(getPlayer().getHealth() - risk.getValue(), getPlayer().getAttribute(Attribute.GENERIC_MAX_HEALTH).getValue()));
                 durationTimer.start();
                 return true;
             } else {

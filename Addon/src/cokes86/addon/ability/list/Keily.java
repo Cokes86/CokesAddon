@@ -77,7 +77,7 @@ public class Keily extends AbilityBase implements ActiveHandler {
 		}
 	}
 	
-	Duration flying = new Duration(duration.getValue()) {
+	Duration flying = new Duration(duration.getValue(), c) {
 
 		@Override
 		protected void onDurationStart() {
@@ -92,8 +92,7 @@ public class Keily extends AbilityBase implements ActiveHandler {
 
 		@Override
 		protected void onDurationEnd() {
-			onSilentEnd();
-			c.start();
+			onDurationSilentEnd();
 		}
 
 		@Override

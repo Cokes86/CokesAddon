@@ -115,7 +115,6 @@ public class Aris extends AbilityBase implements ActiveHandler {
 	public Aris(Participant participant) {
 		super(participant);
 		passive.register();
-		d.register();
 	}
 
 	@Override
