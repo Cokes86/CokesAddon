@@ -28,6 +28,9 @@ import daybreak.abilitywar.config.ability.AbilitySettings;
 import daybreak.abilitywar.game.event.GameCreditEvent;
 import daybreak.abilitywar.game.list.mix.AbstractMix;
 import daybreak.abilitywar.game.manager.GameFactory;
+import daybreak.google.gson.JsonElement;
+import daybreak.google.gson.JsonObject;
+import daybreak.google.gson.JsonParser;
 
 public class CokesAddon extends Addon implements Listener {
 	public final static AbilitySettings config = new AbilitySettings(ConfigFile.createFile("AddonAbilities.yml"));
@@ -105,17 +108,22 @@ public class CokesAddon extends Addon implements Listener {
 	}
 	
 	public List<String> getBugLists() throws IllegalStateException, IOException {
-		final BufferedReader reader = new BufferedReader(new InputStreamReader(new URL("https://github.com/Cokes86/CokesAddon/blob/master/Bugs.txt").openStream(), StandardCharsets.UTF_8));
-		ArrayList<String> result = new ArrayList<>();
+		final BufferedReader reader = new BufferedReader(new InputStreamReader(new URL("https://pastebin.com/raw/GSnXXu64").openStream(), StandardCharsets.UTF_8));
+		final StringBuilder result = new StringBuilder();
 		{
 			String line;
 			while ((line = reader.readLine()) != null) {
-				if (line.endsWith("("+getDescription().getVersion()+")")) {
-					result.add(line.replaceAll("("+getDescription().getVersion()+")", ""));
-				}
+				result.append(line);
 			}
 		}
-		return result;
+		final JsonObject json = JsonParser.parseString(result.toString()).getAsJsonObject();
+		final List<String> bugs = new ArrayList<>();
+		if (json.has(this.getDescription().getVersion()) && json.get(this.getDescription().getVersion()).isJsonArray()) {
+			for (JsonElement line : json.get(this.getDescription().getVersion()).getAsJsonArray()) {
+				bugs.add(line.getAsString());
+			}
+		}
+		return bugs;
 	}
 
 	static class ConfigLoader implements Runnable {

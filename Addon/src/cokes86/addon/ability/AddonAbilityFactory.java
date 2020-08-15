@@ -46,6 +46,9 @@ public class AddonAbilityFactory {
 		registerAbility(Freud.class);
 		registerAbility(Harmony.class);
 		registerAbility(Cutter.class);
+		
+		//1.1
+		registerAbility(Fish.class);
 
 		if (PhantomThief.initPhantomThief()) {
 			registerAbility(PhantomThief.class);
