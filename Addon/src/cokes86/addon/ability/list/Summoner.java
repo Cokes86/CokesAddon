@@ -39,8 +39,8 @@ public class Summoner extends AbilityBase implements ActiveHandler {
 			return value >= 0;
 		}
 	};
-	Participant target;
-	boolean usable = true;
+	private Participant target;
+	private boolean usable = true;
 
 	public Summoner(Participant arg0) {
 		super(arg0);

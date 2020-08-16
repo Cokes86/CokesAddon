@@ -18,23 +18,15 @@ import daybreak.abilitywar.utils.library.SoundLib;
 
 @AbilityManifest(name = "부활", rank = Rank.S, species = Species.DEMIGOD, explain = {
 		"자신의 체력이 0이 되었을 시 모든 체력을 회복하고 모든 버프가 사라집니다.",
-		"이후 게임 스폰으로 이동합니다. (게임 스폰으로 이동할 수 없을 경우, $[cool]간 무적이 됩니다.)",
-		"$(explain)"
+		"이후 게임 스폰으로 이동합니다. (게임 스폰으로 이동할 수 없을 경우, $[cool]간 무적이 됩니다.)"
 })
 public class Resurrection extends AbilityBase {
 	public static boolean spawn = Settings.getSpawnEnable();
-	public static boolean usable = true;
+	private boolean usable = true;
 	private static final Config<Integer> cool = new Config<Integer>(Resurrection.class,"무적시간",1, 2) {
 		@Override
 		public boolean condition(Integer value) {
 			return value >= 0;
-		}
-	};
-	
-	@SuppressWarnings("unused")
-	private static final Object explain = new Object() {
-		public String toString() {
-			return usable ? "이 능력은 게임 중 1회 사용할 수 있습니다." : "이미 사용한 능력입니다.";
 		}
 	};
 
