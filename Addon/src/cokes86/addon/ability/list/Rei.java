@@ -1,8 +1,5 @@
 package cokes86.addon.ability.list;
 
-import daybreak.abilitywar.utils.base.language.korean.KoreanUtil;
-import daybreak.abilitywar.utils.base.minecraft.nms.NMS;
-
 import org.bukkit.GameMode;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.entity.Arrow;
@@ -12,14 +9,15 @@ import org.bukkit.event.entity.EntityDamageByBlockEvent;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
 
-import cokes86.addon.configuration.ability.Config;
-import daybreak.abilitywar.ability.AbilityBase;
+import cokes86.addon.ability.CokesAbility;
 import daybreak.abilitywar.ability.AbilityManifest;
 import daybreak.abilitywar.ability.AbilityManifest.Rank;
 import daybreak.abilitywar.ability.AbilityManifest.Species;
 import daybreak.abilitywar.ability.SubscribeEvent;
 import daybreak.abilitywar.config.enums.CooldownDecrease;
 import daybreak.abilitywar.game.AbstractGame.Participant;
+import daybreak.abilitywar.utils.base.language.korean.KoreanUtil;
+import daybreak.abilitywar.utils.base.minecraft.nms.NMS;
 import daybreak.abilitywar.utils.library.SoundLib;
 
 @AbilityManifest(name = "레이", rank = Rank.S, species = Species.HUMAN, explain = {
@@ -29,7 +27,7 @@ import daybreak.abilitywar.utils.library.SoundLib;
 		"코스트로 지불할 체력이 부족한 경우 코스트를 소비하지 않습니다.",
 		"※제작자 자캐 기반 능력자"
 })
-public class Rei extends AbilityBase {
+public class Rei extends CokesAbility {
 	private static final Config<Double> damage = new Config<Double>(Rei.class, "추가대미지", 3.0) {
 		public boolean condition(Double value) {
 			return value >= 0.0;

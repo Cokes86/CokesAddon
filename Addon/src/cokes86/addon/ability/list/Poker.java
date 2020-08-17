@@ -4,10 +4,6 @@ import java.util.Arrays;
 import java.util.Random;
 import java.util.function.Predicate;
 
-import daybreak.abilitywar.game.AbstractGame;
-import daybreak.abilitywar.game.team.interfaces.Teamable;
-import daybreak.abilitywar.game.manager.object.DeathManager;
-import daybreak.abilitywar.utils.base.minecraft.damage.Damages;
 import org.bukkit.Material;
 import org.bukkit.entity.Arrow;
 import org.bukkit.entity.Entity;
@@ -16,13 +12,16 @@ import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 
-import cokes86.addon.configuration.ability.Config;
-import daybreak.abilitywar.ability.AbilityBase;
+import cokes86.addon.ability.CokesAbility;
 import daybreak.abilitywar.ability.AbilityManifest;
 import daybreak.abilitywar.ability.SubscribeEvent;
 import daybreak.abilitywar.ability.decorator.ActiveHandler;
+import daybreak.abilitywar.game.AbstractGame;
 import daybreak.abilitywar.game.AbstractGame.Participant;
 import daybreak.abilitywar.game.AbstractGame.Participant.ActionbarNotification.ActionbarChannel;
+import daybreak.abilitywar.game.manager.object.DeathManager;
+import daybreak.abilitywar.game.team.interfaces.Teamable;
+import daybreak.abilitywar.utils.base.minecraft.damage.Damages;
 import daybreak.abilitywar.utils.library.SoundLib;
 
 @AbilityManifest(name = "포커", rank = AbilityManifest.Rank.B, species = AbilityManifest.Species.HUMAN, explain = {
@@ -33,7 +32,7 @@ import daybreak.abilitywar.utils.library.SoundLib;
 		"§e트리플§f : 3개의 숫자가 모두 같은 경우입니다.",
 		"자신과 팀을 제외한 모든 플레이어에게 (트리플의 수 * 1.5)의 관통대미지를 줍니다."
 })
-public class Poker extends AbilityBase implements ActiveHandler {
+public class Poker extends CokesAbility implements ActiveHandler {
 	int[] num = new int[3];
 	private static final Config<Integer> cool = new Config<Integer>(Poker.class, "쿨타임", 30, 1) {
 		@Override

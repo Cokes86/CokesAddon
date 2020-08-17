@@ -5,8 +5,7 @@ import java.util.Objects;
 import org.bukkit.entity.Arrow;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 
-import cokes86.addon.configuration.ability.Config;
-import daybreak.abilitywar.ability.AbilityBase;
+import cokes86.addon.ability.CokesAbility;
 import daybreak.abilitywar.ability.AbilityManifest;
 import daybreak.abilitywar.ability.AbilityManifest.Rank;
 import daybreak.abilitywar.ability.AbilityManifest.Species;
@@ -24,7 +23,7 @@ import daybreak.abilitywar.utils.base.concurrent.TimeUnit;
 		"$[dura]초동안 상대방을 공격할 수 없게 됩니다.",
 		"※능력 아이디어: RainStar_"}
 )
-public class Perseverance extends AbilityBase {
+public class Perseverance extends CokesAbility {
 	private static final Config<Integer> dura = new Config<Integer>(Perseverance.class, "그로기시간", 3 ,2) {
 		@Override
 		public boolean condition(Integer value) {

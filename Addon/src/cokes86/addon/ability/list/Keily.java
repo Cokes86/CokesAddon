@@ -1,7 +1,5 @@
 package cokes86.addon.ability.list;
 
-import daybreak.abilitywar.config.Configuration;
-import daybreak.abilitywar.game.GameManager;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.event.entity.EntityDamageByBlockEvent;
@@ -9,13 +7,14 @@ import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
 
-import cokes86.addon.configuration.ability.Config;
-import daybreak.abilitywar.ability.AbilityBase;
+import cokes86.addon.ability.CokesAbility;
 import daybreak.abilitywar.ability.AbilityManifest;
 import daybreak.abilitywar.ability.SubscribeEvent;
 import daybreak.abilitywar.ability.decorator.ActiveHandler;
+import daybreak.abilitywar.config.Configuration;
 import daybreak.abilitywar.game.AbstractGame.Participant;
 import daybreak.abilitywar.game.AbstractGame.Participant.ActionbarNotification.ActionbarChannel;
+import daybreak.abilitywar.game.GameManager;
 import daybreak.abilitywar.game.manager.object.WRECK;
 import daybreak.abilitywar.utils.base.concurrent.TimeUnit;
 import daybreak.abilitywar.utils.library.SoundLib;
@@ -25,7 +24,7 @@ import daybreak.google.common.base.Strings;
 		"자신은 폭발공격을 받지 않습니다.", "$[dura]마다 스위치를 1개씩 얻으며 최대 $[max_switch]개까지 얻습니다.",
 		"철괴 우클릭 시 스위치를 전부 소모해 자신의 위치에서 (소모한 스위치 * $[fuse])의 위력으로 폭발하고",
 		"$[duration]간 공중에 날 수 있습니다. $[cool]", "또한 능력 사용 직후 1회에 한해 낙하데미지를 받지 않습니다."})
-public class Keily extends AbilityBase implements ActiveHandler {
+public class Keily extends CokesAbility implements ActiveHandler {
 	private static final Config<Integer> dura = new Config<Integer>(Keily.class, "카운터생성주기", 45, 2) {
 		public boolean condition(Integer value) {
 			return value > 0;

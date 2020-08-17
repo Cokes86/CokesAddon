@@ -1,20 +1,19 @@
 package cokes86.addon.ability.list;
 
-import daybreak.abilitywar.game.manager.object.DeathManager;
+import java.util.function.Predicate;
+
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 
-import cokes86.addon.configuration.ability.Config;
-import daybreak.abilitywar.ability.AbilityBase;
+import cokes86.addon.ability.CokesAbility;
 import daybreak.abilitywar.ability.AbilityManifest;
 import daybreak.abilitywar.ability.AbilityManifest.Rank;
 import daybreak.abilitywar.ability.AbilityManifest.Species;
 import daybreak.abilitywar.game.AbstractGame.Participant;
+import daybreak.abilitywar.game.manager.object.DeathManager;
 import daybreak.abilitywar.utils.base.concurrent.TimeUnit;
 import daybreak.abilitywar.utils.base.math.LocationUtil;
 import daybreak.abilitywar.utils.library.PotionEffects;
-
-import java.util.function.Predicate;
 
 @AbilityManifest(
 		name = "토끼",
@@ -23,7 +22,7 @@ import java.util.function.Predicate;
 		explain = {"항상 점프강화2 버프를 얻습니다.",
 		"주변 $[range]블럭 이내에 플레이어가 있을 시 속도강화2 버프를 얻습니다."}
 )
-public class Rabbit extends AbilityBase {
+public class Rabbit extends CokesAbility {
 	private static final Config<Integer> range = new Config<Integer>(Rabbit.class, "범위", 7) {
 		@Override
 		public boolean condition(Integer value) {

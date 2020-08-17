@@ -1,6 +1,7 @@
 package cokes86.addon.ability.list;
 
 import java.util.ArrayList;
+
 import org.bukkit.Location;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.entity.Entity;
@@ -9,9 +10,9 @@ import org.bukkit.entity.Projectile;
 import org.bukkit.event.entity.EntityDamageByBlockEvent;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
+import org.bukkit.event.entity.EntityRegainHealthEvent;
 
-import cokes86.addon.configuration.ability.Config;
-import daybreak.abilitywar.ability.AbilityBase;
+import cokes86.addon.ability.CokesAbility;
 import daybreak.abilitywar.ability.AbilityManifest;
 import daybreak.abilitywar.ability.AbilityManifest.Rank;
 import daybreak.abilitywar.ability.AbilityManifest.Species;
@@ -20,13 +21,12 @@ import daybreak.abilitywar.game.AbstractGame.Participant;
 import daybreak.abilitywar.game.AbstractGame.Participant.ActionbarNotification.ActionbarChannel;
 import daybreak.abilitywar.utils.base.TimeUtil;
 import daybreak.abilitywar.utils.base.concurrent.TimeUnit;
+import daybreak.abilitywar.utils.base.language.korean.KoreanUtil;
 import daybreak.abilitywar.utils.base.math.LocationUtil;
 import daybreak.abilitywar.utils.base.math.geometry.Circle;
 import daybreak.abilitywar.utils.library.ParticleLib;
 import daybreak.abilitywar.utils.library.ParticleLib.RGB;
 import daybreak.abilitywar.utils.library.SoundLib;
-import daybreak.abilitywar.utils.base.language.korean.KoreanUtil;
-import org.bukkit.event.entity.EntityRegainHealthEvent;
 
 @AbilityManifest(name = "리인카네이션", rank = Rank.S, species = Species.OTHERS, explain = {
 		"자신이 죽을 위기에 처했을 때, 이를 무시하고 체력이 1로 고정됩니다. $[cooldown]",
@@ -35,7 +35,7 @@ import org.bukkit.event.entity.EntityRegainHealthEvent;
 		"이후 추가 타격마다 $[heal]%씩 누적되어 추가적으로 회복합니다.",
 		"하지만 타격 횟수를 채우지 못하였을 경우, 사망하게 됩니다.",
 		"※능력 아이디어: Sato207" })
-public class Reincarnation extends AbilityBase {
+public class Reincarnation extends CokesAbility {
 	ActionbarChannel ac = newActionbarChannel();
 
 	public static Config<Integer> duration = new Config<Integer>(Reincarnation.class, "지속시간", 25, 2) {

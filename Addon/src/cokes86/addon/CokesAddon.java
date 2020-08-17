@@ -14,6 +14,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 
 import cokes86.addon.ability.AddonAbilityFactory;
+import cokes86.addon.ability.CokesAbility;
 import cokes86.addon.configuration.ConfigFile;
 import cokes86.addon.configuration.gamemode.GameConfiguration;
 import cokes86.addon.gamemodes.addon.debug.DebugWar;
@@ -33,7 +34,6 @@ import daybreak.google.gson.JsonObject;
 import daybreak.google.gson.JsonParser;
 
 public class CokesAddon extends Addon implements Listener {
-	public final static AbilitySettings config = new AbilitySettings(ConfigFile.createFile("AddonAbilities.yml"));
 	public final static AbilitySettings sconfig = new AbilitySettings(ConfigFile.createFile("AddonSynergies.yml"));
 
 	@Override
@@ -43,7 +43,7 @@ public class CokesAddon extends Addon implements Listener {
 			AddonAbilityFactory.nameSynergyValues();
 			GameConfiguration.load();
 			
-			config.update();
+			CokesAbility.config.update();
 			sconfig.update();
 		} catch (IOException | InvalidConfigurationException e) {
 			e.printStackTrace();
@@ -91,7 +91,7 @@ public class CokesAddon extends Addon implements Listener {
 			AddonAbilityFactory.nameSynergyValues();
 			GameConfiguration.update();
 			
-			config.update();
+			CokesAbility.config.update();
 			sconfig.update();
 		} catch (IOException | InvalidConfigurationException e) {
 			e.printStackTrace();
@@ -135,7 +135,7 @@ public class CokesAddon extends Addon implements Listener {
 				AddonAbilityFactory.nameSynergyValues();
 				GameConfiguration.load();
 				
-				config.update();
+				CokesAbility.config.update();
 				sconfig.update();
 			} catch (IOException | InvalidConfigurationException e) {
 				Bukkit.getConsoleSender().sendMessage("콘피그를 불러오는 도중 오류가 발생하였습니다.");

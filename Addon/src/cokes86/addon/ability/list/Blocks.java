@@ -11,9 +11,8 @@ import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.util.Vector;
 
-import cokes86.addon.configuration.ability.Config;
+import cokes86.addon.ability.CokesAbility;
 import daybreak.abilitywar.AbilityWar;
-import daybreak.abilitywar.ability.AbilityBase;
 import daybreak.abilitywar.ability.AbilityManifest;
 import daybreak.abilitywar.ability.AbilityManifest.Rank;
 import daybreak.abilitywar.ability.AbilityManifest.Species;
@@ -30,7 +29,7 @@ import daybreak.abilitywar.utils.library.PotionEffects;
 		"§6모래 §f: 낙하 대미지를 입지 않습니다. 피해를 입을 시 $[inv]초간 무적상태가 되어 무적상태에선 넉백당하지 않습니다.",
 		"§f유리 §f: 받는 대미지가 $[glass]% 증폭합니다. 유리상태동안 자신은 블라인드 버프를 얻습니다. 또한 스킬의 대상이 되지 않습니다.",
 		"§5옵시디언 §f: 폭발피해를 입지 않습니다. 넉백당하지 않습니다." })
-public class Blocks extends AbilityBase implements ActiveHandler {
+public class Blocks extends CokesAbility implements ActiveHandler {
 	protected Condition condition = Condition.STONE;
 	protected Participant.ActionbarNotification.ActionbarChannel ac = this.newActionbarChannel();
 

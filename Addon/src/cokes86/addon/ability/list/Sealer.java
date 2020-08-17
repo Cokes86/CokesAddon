@@ -7,7 +7,7 @@ import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 
-import cokes86.addon.configuration.ability.Config;
+import cokes86.addon.ability.CokesAbility;
 import daybreak.abilitywar.ability.AbilityBase;
 import daybreak.abilitywar.ability.AbilityManifest;
 import daybreak.abilitywar.ability.AbilityManifest.Rank;
@@ -29,7 +29,7 @@ import daybreak.abilitywar.utils.library.SoundLib;
 		"§eC 등급§f: 나약함1 | §bB 등급§f: 재생1 | §aA 등급§f: 힘1 | §dS 등급§f: 힘2"
 })
 @NotAvailable({AbstractMix.class, AbstractTripleMix.class})
-public class Sealer extends AbilityBase implements TargetHandler {
+public class Sealer extends CokesAbility implements TargetHandler {
 	private static final Config<Integer> cool = new Config<Integer>(Sealer.class, "쿨타임", 60, 1) {
 		public boolean condition(Integer value) {
 			return value >= 0;

@@ -4,9 +4,6 @@ import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.function.Predicate;
 
-import daybreak.abilitywar.game.AbstractGame;
-import daybreak.abilitywar.game.team.interfaces.Teamable;
-import daybreak.abilitywar.game.manager.object.DeathManager;
 import org.bukkit.Material;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
@@ -14,15 +11,17 @@ import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 
-import cokes86.addon.configuration.ability.Config;
-import daybreak.abilitywar.ability.AbilityBase;
+import cokes86.addon.ability.CokesAbility;
 import daybreak.abilitywar.ability.AbilityManifest;
 import daybreak.abilitywar.ability.AbilityManifest.Rank;
 import daybreak.abilitywar.ability.AbilityManifest.Species;
 import daybreak.abilitywar.ability.SubscribeEvent;
 import daybreak.abilitywar.ability.decorator.ActiveHandler;
+import daybreak.abilitywar.game.AbstractGame;
 import daybreak.abilitywar.game.AbstractGame.Participant;
 import daybreak.abilitywar.game.AbstractGame.Participant.ActionbarNotification.ActionbarChannel;
+import daybreak.abilitywar.game.manager.object.DeathManager;
+import daybreak.abilitywar.game.team.interfaces.Teamable;
 import daybreak.abilitywar.utils.base.concurrent.TimeUnit;
 import daybreak.abilitywar.utils.base.math.LocationUtil;
 import daybreak.abilitywar.utils.library.SoundLib;
@@ -30,7 +29,7 @@ import daybreak.abilitywar.utils.library.SoundLib;
 @AbilityManifest(name = "세트", rank = Rank.S, species = Species.GOD, explain = { "게임 중 플레이어가 사망할때마다 전쟁스택이 1씩 쌓입니다.",
 		"전쟁스택이 남아있는 생존자 대비 일정 비율 이상일 시 힘버프가 주어집니다.", "철괴 우클릭시 자신 기준 $[range]블럭 이내 모든 플레이어를 자신의 위치로 이동시킨 후",
 		"나약함1 디버프를 $[debuff] 부여합니다. $[cool]", "※$[buff1]% 이상 : 힘1  $[buff2]% 이상 : 힘2  $[buff3]% 이상 : 힘3" })
-public class Seth extends AbilityBase implements ActiveHandler {
+public class Seth extends CokesAbility implements ActiveHandler {
 	int max = getGame().getParticipants().size();
 	int kill = 0;
 	DecimalFormat df = new DecimalFormat("0.00");

@@ -1,6 +1,6 @@
 package cokes86.addon.ability.list.phantomthief;
 
-import cokes86.addon.configuration.ability.Config;
+import cokes86.addon.ability.CokesAbility;
 import daybreak.abilitywar.ability.AbilityBase;
 import daybreak.abilitywar.ability.AbilityFactory;
 import daybreak.abilitywar.ability.AbilityManifest;
@@ -48,7 +48,7 @@ import java.util.function.Predicate;
 @AbilityManifest(name = "팬텀 시프", rank = AbilityManifest.Rank.S, species = AbilityManifest.Species.HUMAN, explain = {
 		"$(Explain)" })
 @NotAvailable(AbstractTripleMix.class)
-public class PhantomThief extends AbilityBase implements ActiveHandler, TargetHandler {
+public class PhantomThief extends CokesAbility implements ActiveHandler, TargetHandler {
 	private AbilityBase newAbility = null;
 	private final Object Explain = new Object() {
 		@Override

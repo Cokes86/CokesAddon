@@ -14,11 +14,12 @@ import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
+
+import cokes86.addon.ability.CokesAbility;
+
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 
-import cokes86.addon.configuration.ability.Config;
-import daybreak.abilitywar.ability.AbilityBase;
 import daybreak.abilitywar.ability.AbilityManifest;
 import daybreak.abilitywar.ability.AbilityManifest.Rank;
 import daybreak.abilitywar.ability.AbilityManifest.Species;
@@ -38,7 +39,7 @@ import daybreak.abilitywar.utils.library.PotionEffects;
 		"대기시간이 지속시간의 1/4만큼 남았을 때, 모두에게 자신의 좌표를 실시간으로 공개합니다.",
 		"자신이 사망하거나 대기시간이 끝날 경우 해당 능력은 비활성화됩니다."
 })
-public class GodsBless extends AbilityBase implements ActiveHandler {
+public class GodsBless extends CokesAbility implements ActiveHandler {
 	private static final Config<Integer> dura = new Config<Integer>(GodsBless.class, "대기시간(분)", 4) {
 		@Override
 		public boolean condition(Integer value) {

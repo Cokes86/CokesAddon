@@ -5,8 +5,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.ProjectileHitEvent;
 
-import cokes86.addon.configuration.ability.Config;
-import daybreak.abilitywar.ability.AbilityBase;
+import cokes86.addon.ability.CokesAbility;
 import daybreak.abilitywar.ability.AbilityManifest;
 import daybreak.abilitywar.ability.AbilityManifest.Rank;
 import daybreak.abilitywar.ability.AbilityManifest.Species;
@@ -26,7 +25,7 @@ import java.util.Objects;
 		"자신이 쏜 화살은 명중 시 바로 사라집니다.",
 		"※능력 아이디어: RainStar_"
 })
-public class EnchantArrow extends AbilityBase {
+public class EnchantArrow extends CokesAbility {
 	int enchantStack = 0;
 	ActionbarChannel ac = newActionbarChannel();
 	private static final Config<Integer> damage = new Config<Integer>(EnchantArrow.class, "추가대미지(%)", 15) {

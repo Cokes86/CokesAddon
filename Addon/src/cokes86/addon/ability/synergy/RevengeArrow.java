@@ -19,6 +19,7 @@ import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.projectiles.ProjectileSource;
 import org.bukkit.util.Vector;
 
+import cokes86.addon.configuration.synergy.Config;
 import daybreak.abilitywar.ability.AbilityManifest;
 import daybreak.abilitywar.ability.AbilityManifest.Rank;
 import daybreak.abilitywar.ability.AbilityManifest.Species;
@@ -33,10 +34,18 @@ import daybreak.abilitywar.utils.base.minecraft.entity.decorator.Deflectable;
 import daybreak.abilitywar.utils.library.ParticleLib;
 import daybreak.abilitywar.utils.library.ParticleLib.RGB;
 
-@AbilityManifest(name = "리벤지 애로우", rank = Rank.A, species = Species.OTHERS, explain = { "공격을 받을 시 그의 반에 해당하는 대미지를 가진",
-		"추가 화살이 자동으로 사출되어 상대방의 위치로 직선으로 나가 공격합니다.", "해당 추가화살은 인벤토리의 화살 1개를 소비하여 발사합니다.",
+@AbilityManifest(name = "리벤지 애로우", rank = Rank.A, species = Species.OTHERS, explain = {
+		"공격을 받을 시 그의 $[multiply]배에 해당하는 대미지를 가진",
+		"추가 화살이 자동으로 사출되어 상대방의 위치로 직선으로 나가 공격합니다.",
+		"해당 추가화살은 인벤토리의 화살 1개를 소비하여 발사합니다.",
 		"추가 화살은 블럭에 닿거나 플레이어가 공격을 받을 시 사라집니다." })
 public class RevengeArrow extends Synergy {
+	private static final Config<Double> multiply = new Config<Double>(RevengeArrow.class, "배율", 2.0) {
+		@Override
+		public boolean condition(Double arg0) {
+			return arg0 > 0;
+		}
+	};
 
 	public RevengeArrow(Participant participant) {
 		super(participant);
@@ -61,7 +70,7 @@ public class RevengeArrow extends Synergy {
 					Vector vector = damager.getLocation().clone().subtract(getPlayer().getLocation().clone()).toVector()
 							.normalize();
 					new Bullet(getPlayer(), getPlayer().getLocation().clone().add(vector.multiply(.25)), vector,
-							RGB.of(100, 100, 100), e.getDamage() / 2).start();
+							RGB.of(100, 100, 100), e.getDamage() * multiply.getValue()).start();
 				}
 			}
 		}

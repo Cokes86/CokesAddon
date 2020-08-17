@@ -22,8 +22,7 @@ import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
 import org.bukkit.event.player.PlayerMoveEvent;
 
-import cokes86.addon.configuration.ability.Config;
-import daybreak.abilitywar.ability.AbilityBase;
+import cokes86.addon.ability.CokesAbility;
 import daybreak.abilitywar.ability.AbilityManifest;
 import daybreak.abilitywar.ability.AbilityManifest.Rank;
 import daybreak.abilitywar.ability.AbilityManifest.Species;
@@ -45,7 +44,7 @@ import daybreak.abilitywar.utils.base.math.LocationUtil;
 		"매 2초마다 1의 고정대미지를 입습니다. 그 이외의 대미지는 받지 않으며,",
 		"고정대미지는 체력이 1 이하인 상태에서는 받지 않습니다.",
 		"지속시간과 쿨타임동안 §d사슬 카운터§f는 증가하지 않습니다." })
-public class Aris extends AbilityBase implements ActiveHandler {
+public class Aris extends CokesAbility implements ActiveHandler {
 	private static final Config<Integer> range = new Config<Integer>(Aris.class, "범위", 7) {
 		@Override
 		public boolean condition(Integer value) {

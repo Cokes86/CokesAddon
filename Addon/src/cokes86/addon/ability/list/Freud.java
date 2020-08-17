@@ -23,8 +23,7 @@ import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
 import org.bukkit.projectiles.ProjectileSource;
 import org.bukkit.util.Vector;
 
-import cokes86.addon.configuration.ability.Config;
-import daybreak.abilitywar.ability.AbilityBase;
+import cokes86.addon.ability.CokesAbility;
 import daybreak.abilitywar.ability.AbilityManifest;
 import daybreak.abilitywar.ability.AbilityManifest.Rank;
 import daybreak.abilitywar.ability.AbilityManifest.Species;
@@ -51,7 +50,7 @@ import daybreak.abilitywar.utils.library.PotionEffects;
 		"§8나약함§f: 마나 $[mana_weakness]소모, 상대방에게 고정 $[damage_weakness]의 대미지를 주고 상대방의 나약함 디버프를 $[weakness_duration]초 부여.",
 		"§a폭발§f: 마나 $[mana_explosion]소모, 상대방에게 고정 $[damage_explosion]의 대미지를 주고 $[fuse]의 위력으로 폭발."
 })
-public class Freud extends AbilityBase implements ActiveHandler {
+public class Freud extends CokesAbility implements ActiveHandler {
 	private Magic magic;
 	private int mana = 100;
 	private final ActionbarChannel ac = newActionbarChannel();

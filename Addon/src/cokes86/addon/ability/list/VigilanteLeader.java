@@ -15,8 +15,7 @@ import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 
-import cokes86.addon.configuration.ability.Config;
-import daybreak.abilitywar.ability.AbilityBase;
+import cokes86.addon.ability.CokesAbility;
 import daybreak.abilitywar.ability.AbilityManifest;
 import daybreak.abilitywar.ability.SubscribeEvent;
 import daybreak.abilitywar.ability.decorator.ActiveHandler;
@@ -37,7 +36,7 @@ import daybreak.abilitywar.utils.library.ParticleLib.RGB;
 		"자경단 아지트 내에서 참가자는 2명, 자경단원은 3명, 자경단장은 4명 취급하며",
 		"자경단 아지트 밖에서 자경단장은 2명 취급합니다.",
 		"자경단원은 자경단장을 공격할 때, 자경단장이 받는 대미지가 30% 감소합니다."})
-public class VigilanteLeader extends AbilityBase implements ActiveHandler {
+public class VigilanteLeader extends CokesAbility implements ActiveHandler {
 	private int num = getGame().getParticipants().size();
 	public static Config<Integer> r = new Config<Integer>(VigilanteLeader.class, "아지트범위", 10) {
 		@Override

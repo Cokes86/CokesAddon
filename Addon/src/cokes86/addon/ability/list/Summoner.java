@@ -1,21 +1,16 @@
 package cokes86.addon.ability.list;
 
-import java.awt.*;
+import java.awt.Color;
 import java.util.ArrayList;
 import java.util.Random;
 import java.util.function.Predicate;
 
-import daybreak.abilitywar.game.team.interfaces.Teamable;
-import daybreak.abilitywar.utils.base.math.LocationUtil;
-import daybreak.abilitywar.utils.base.math.geometry.Circle;
-import daybreak.abilitywar.utils.base.minecraft.nms.NMS;
-import daybreak.abilitywar.utils.library.ParticleLib;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.entity.Entity;
+import org.bukkit.entity.Player;
 
-import cokes86.addon.configuration.ability.Config;
-import daybreak.abilitywar.ability.AbilityBase;
+import cokes86.addon.ability.CokesAbility;
 import daybreak.abilitywar.ability.AbilityManifest;
 import daybreak.abilitywar.ability.AbilityManifest.Rank;
 import daybreak.abilitywar.ability.AbilityManifest.Species;
@@ -23,7 +18,11 @@ import daybreak.abilitywar.ability.decorator.ActiveHandler;
 import daybreak.abilitywar.game.AbstractGame;
 import daybreak.abilitywar.game.AbstractGame.Participant;
 import daybreak.abilitywar.game.manager.object.DeathManager;
-import org.bukkit.entity.Player;
+import daybreak.abilitywar.game.team.interfaces.Teamable;
+import daybreak.abilitywar.utils.base.math.LocationUtil;
+import daybreak.abilitywar.utils.base.math.geometry.Circle;
+import daybreak.abilitywar.utils.base.minecraft.nms.NMS;
+import daybreak.abilitywar.utils.library.ParticleLib;
 
 @AbilityManifest(
 		name = "소환사",
@@ -33,7 +32,7 @@ import org.bukkit.entity.Player;
 		"소환되는 위치는 능력을 발동한 시점의 위치입니다.",
 		"이 능력은 게임 중 1회 사용할 수 있습니다."}
 )
-public class Summoner extends AbilityBase implements ActiveHandler {
+public class Summoner extends CokesAbility implements ActiveHandler {
 	public static Config<Integer> duration = new Config<Integer>(Summoner.class, "대기시간", 3, 2) {
 		public boolean condition(Integer value) {
 			return value >= 0;

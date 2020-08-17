@@ -1,24 +1,8 @@
 package cokes86.addon.ability.list;
 
-import cokes86.addon.configuration.ability.Config;
-import daybreak.abilitywar.ability.AbilityBase;
-import daybreak.abilitywar.ability.AbilityManifest;
-import daybreak.abilitywar.ability.AbilityManifest.Rank;
-import daybreak.abilitywar.ability.AbilityManifest.Species;
-import daybreak.abilitywar.ability.SubscribeEvent;
-import daybreak.abilitywar.ability.decorator.ActiveHandler;
-import daybreak.abilitywar.game.AbstractGame.Participant;
-import daybreak.abilitywar.game.team.interfaces.Teamable;
-import daybreak.abilitywar.game.manager.object.DeathManager;
-import daybreak.abilitywar.utils.annotations.Beta;
-import daybreak.abilitywar.utils.base.concurrent.TimeUnit;
-import daybreak.abilitywar.utils.base.language.korean.KoreanUtil;
-import daybreak.abilitywar.utils.base.math.LocationUtil;
-import daybreak.abilitywar.utils.base.math.geometry.Circle;
-import daybreak.abilitywar.utils.base.minecraft.version.ServerVersion;
-import daybreak.abilitywar.utils.library.MaterialX;
-import daybreak.abilitywar.utils.library.ParticleLib;
-import daybreak.abilitywar.utils.library.PotionEffects;
+import java.util.Random;
+import java.util.function.Predicate;
+
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.entity.ArmorStand;
@@ -32,8 +16,24 @@ import org.bukkit.inventory.EntityEquipment;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.LeatherArmorMeta;
 
-import java.util.Random;
-import java.util.function.Predicate;
+import cokes86.addon.ability.CokesAbility;
+import daybreak.abilitywar.ability.AbilityManifest;
+import daybreak.abilitywar.ability.AbilityManifest.Rank;
+import daybreak.abilitywar.ability.AbilityManifest.Species;
+import daybreak.abilitywar.ability.SubscribeEvent;
+import daybreak.abilitywar.ability.decorator.ActiveHandler;
+import daybreak.abilitywar.game.AbstractGame.Participant;
+import daybreak.abilitywar.game.manager.object.DeathManager;
+import daybreak.abilitywar.game.team.interfaces.Teamable;
+import daybreak.abilitywar.utils.annotations.Beta;
+import daybreak.abilitywar.utils.base.concurrent.TimeUnit;
+import daybreak.abilitywar.utils.base.language.korean.KoreanUtil;
+import daybreak.abilitywar.utils.base.math.LocationUtil;
+import daybreak.abilitywar.utils.base.math.geometry.Circle;
+import daybreak.abilitywar.utils.base.minecraft.version.ServerVersion;
+import daybreak.abilitywar.utils.library.MaterialX;
+import daybreak.abilitywar.utils.library.ParticleLib;
+import daybreak.abilitywar.utils.library.PotionEffects;
 
 @AbilityManifest(name = "미르", rank = Rank.B, species = Species.HUMAN, explain = {
 		"철괴 우클릭 시 해당 위치에서 일정 범위 내에 각종 효과를 부여하는 정령을 소환합니다. $[cool]",
@@ -46,7 +46,7 @@ import java.util.function.Predicate;
 		"※제작자 자캐 기반 능력자"
 })
 @Beta
-public class Mir extends AbilityBase implements ActiveHandler {
+public class Mir extends CokesAbility implements ActiveHandler {
 	private static final Config<Integer> cool = new Config<Integer>(Mir.class,"쿨타임", 20 ,1) {
 		@Override
 		public boolean condition(Integer value) {

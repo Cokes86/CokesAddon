@@ -4,10 +4,6 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Predicate;
 
-import daybreak.abilitywar.game.AbstractGame;
-import daybreak.abilitywar.game.team.interfaces.Teamable;
-import daybreak.abilitywar.game.manager.object.DeathManager;
-import daybreak.abilitywar.utils.library.PotionEffects;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -19,17 +15,20 @@ import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 
-import cokes86.addon.configuration.ability.Config;
-import daybreak.abilitywar.ability.AbilityBase;
+import cokes86.addon.ability.CokesAbility;
 import daybreak.abilitywar.ability.AbilityManifest;
 import daybreak.abilitywar.ability.SubscribeEvent;
 import daybreak.abilitywar.ability.decorator.ActiveHandler;
 import daybreak.abilitywar.config.Configuration.Settings;
+import daybreak.abilitywar.game.AbstractGame;
 import daybreak.abilitywar.game.AbstractGame.Participant;
 import daybreak.abilitywar.game.AbstractGame.Participant.ActionbarNotification.ActionbarChannel;
+import daybreak.abilitywar.game.manager.object.DeathManager;
+import daybreak.abilitywar.game.team.interfaces.Teamable;
 import daybreak.abilitywar.utils.base.TimeUtil;
 import daybreak.abilitywar.utils.base.concurrent.TimeUnit;
 import daybreak.abilitywar.utils.base.minecraft.Bar;
+import daybreak.abilitywar.utils.library.PotionEffects;
 
 @AbilityManifest(name="엑시즈", rank = AbilityManifest.Rank.S, species = AbilityManifest.Species.DEMIGOD, explain = {
 		"철괴 우클릭 시 게임스폰으로 이동하고 자신의 좌표가 공개됩니다.",
@@ -40,7 +39,7 @@ import daybreak.abilitywar.utils.base.minecraft.Bar;
 		"해당 능력은 한 번 사용 후 비활성화됩니다.",
 		"※능력 아이디어: HappyAngels"
 })
-public class Xyz extends AbilityBase implements ActiveHandler {
+public class Xyz extends CokesAbility implements ActiveHandler {
 	public static Config<Integer> du = new Config<Integer>(Xyz.class,"엑시즈타임", 40, 2) {
 		public boolean condition(Integer value) {
 			return value > 0;

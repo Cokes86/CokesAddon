@@ -8,7 +8,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.entity.Projectile;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 
-import cokes86.addon.configuration.ability.Config;
+import cokes86.addon.ability.CokesAbility;
 import daybreak.abilitywar.ability.AbilityBase;
 import daybreak.abilitywar.ability.AbilityFactory.AbilityRegistration;
 import daybreak.abilitywar.ability.AbilityManifest;
@@ -37,7 +37,7 @@ import daybreak.abilitywar.utils.base.collect.Pair;
 		"※능력 아이디어: RainStar_"
 })
 @NotAvailable(AbstractTripleMix.class)
-public class DataMining extends AbilityBase implements ActiveHandler {
+public class DataMining extends CokesAbility implements ActiveHandler {
 	DecimalFormat df = new DecimalFormat("0.00");
 	int count = 0;
 	double damage = 0, defense = 0;

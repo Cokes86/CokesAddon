@@ -5,8 +5,8 @@ import java.util.function.Predicate;
 import org.bukkit.Location;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
-import cokes86.addon.configuration.ability.Config;
-import daybreak.abilitywar.ability.AbilityBase;
+
+import cokes86.addon.ability.CokesAbility;
 import daybreak.abilitywar.ability.AbilityManifest;
 import daybreak.abilitywar.ability.AbilityManifest.Rank;
 import daybreak.abilitywar.ability.AbilityManifest.Species;
@@ -22,7 +22,7 @@ import daybreak.abilitywar.utils.library.ParticleLib;
 		"$[duration]마다 주변 $[range]블럭 이내의 플레이어의 수/2 만큼 체력을 회복하고,",
 		"그 주변 플레이어 역시 0.5의 체력을 증가시켜줍니다."
 })
-public class Harmony extends AbilityBase {
+public class Harmony extends CokesAbility {
 	private static final Config<Integer> duration = new Config<Integer>(Harmony.class, "주기", 5, 2){
 		@Override
 		public boolean condition(Integer value) {

@@ -1,18 +1,5 @@
 package cokes86.addon.ability.list;
 
-import cokes86.addon.configuration.ability.Config;
-import daybreak.abilitywar.ability.AbilityBase;
-import daybreak.abilitywar.ability.AbilityManifest;
-import daybreak.abilitywar.ability.AbilityManifest.Rank;
-import daybreak.abilitywar.ability.AbilityManifest.Species;
-import daybreak.abilitywar.ability.SubscribeEvent;
-import daybreak.abilitywar.ability.decorator.ActiveHandler;
-import daybreak.abilitywar.game.AbstractGame.Participant;
-import daybreak.abilitywar.game.event.participant.ParticipantDeathEvent;
-import daybreak.abilitywar.utils.base.concurrent.TimeUnit;
-import daybreak.abilitywar.utils.base.minecraft.nms.NMS;
-import daybreak.abilitywar.utils.base.minecraft.nms.IHologram;
-import daybreak.google.common.base.Strings;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -23,6 +10,19 @@ import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 
+import cokes86.addon.ability.CokesAbility;
+import daybreak.abilitywar.ability.AbilityManifest;
+import daybreak.abilitywar.ability.AbilityManifest.Rank;
+import daybreak.abilitywar.ability.AbilityManifest.Species;
+import daybreak.abilitywar.ability.SubscribeEvent;
+import daybreak.abilitywar.ability.decorator.ActiveHandler;
+import daybreak.abilitywar.game.AbstractGame.Participant;
+import daybreak.abilitywar.game.event.participant.ParticipantDeathEvent;
+import daybreak.abilitywar.utils.base.concurrent.TimeUnit;
+import daybreak.abilitywar.utils.base.minecraft.nms.IHologram;
+import daybreak.abilitywar.utils.base.minecraft.nms.NMS;
+import daybreak.google.common.base.Strings;
+
 @AbilityManifest(name = "오비스니", rank = Rank.A, species = Species.HUMAN, explain = {
 		"상대방을 공격할 시 상대방에게 §2맹독 카운터§f를 1씩 상승시키며",
 		"상대방은 매 $[DELAY]마다 §2맹독 카운터§f만큼의 대미지를 수시로 입습니다.",
@@ -32,7 +32,7 @@ import org.bukkit.event.entity.EntityDamageByEntityEvent;
 		"철괴 좌클릭시 모든 플레이어의 §2맹독 카운터§f를 알 수 있습니다.",
 		"0개는 따로 표시하지 않습니다."
 })
-public class Ovisni extends AbilityBase implements ActiveHandler {
+public class Ovisni extends CokesAbility implements ActiveHandler {
 
 	public static final Config<Integer> COOLDOWN_CONFIG = new Config<Integer>(Ovisni.class, "쿨타임", 30, 1) {
 		@Override

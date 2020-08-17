@@ -49,6 +49,7 @@ public class AddonAbilityFactory {
 		
 		//1.1
 		registerAbility(Fish.class);
+		registerAbility(Disguise.class);
 
 		if (PhantomThief.initPhantomThief()) {
 			registerAbility(PhantomThief.class);
@@ -69,7 +70,7 @@ public class AddonAbilityFactory {
 		registerSynergy(EnchantArrow.class, EnchantArrow.class, ReaperArrow.class);
 	}
 	
-	public static void registerAbility(Class<? extends AbilityBase> clazz) {
+	public static void registerAbility(Class<? extends CokesAbility> clazz) {
 		if (!abilities.containsValue(clazz)) {
 			AbilityFactory.registerAbility(clazz);
 			if (AbilityFactory.isRegistered(clazz)) {
@@ -86,7 +87,7 @@ public class AddonAbilityFactory {
 
 	public static void registerAbility(String className) {
 		try{
-			Class<? extends AbilityBase> clazz = Class.forName(className).asSubclass(AbilityBase.class);
+			Class<? extends CokesAbility> clazz = Class.forName(className).asSubclass(CokesAbility.class);
 			registerAbility(clazz);
 		} catch (ClassNotFoundException e) {
 			logger.error("§e" + className + " §f클래스는 존재하지 않습니다.");

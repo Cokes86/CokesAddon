@@ -2,26 +2,25 @@ package cokes86.addon.ability.list;
 
 import java.text.DecimalFormat;
 
-import daybreak.abilitywar.utils.base.minecraft.damage.Damages;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Arrow;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 
-import cokes86.addon.configuration.ability.Config;
-import daybreak.abilitywar.ability.AbilityBase;
+import cokes86.addon.ability.CokesAbility;
 import daybreak.abilitywar.ability.AbilityManifest;
 import daybreak.abilitywar.ability.AbilityManifest.Rank;
 import daybreak.abilitywar.ability.AbilityManifest.Species;
 import daybreak.abilitywar.ability.SubscribeEvent;
 import daybreak.abilitywar.game.AbstractGame.Participant;
 import daybreak.abilitywar.game.AbstractGame.Participant.ActionbarNotification.ActionbarChannel;
+import daybreak.abilitywar.utils.base.minecraft.damage.Damages;
 
 @AbilityManifest(name = "복수", rank = Rank.A, species = Species.HUMAN, explain = {
 		"상대방을 공격할 시 최근에 플레이어에게 받았던 대미지의 $[per]% 만큼의 고정대미지를 상대방에게 추가적으로 입힙니다."
 })
-public class Revenge extends AbilityBase {
+public class Revenge extends CokesAbility {
 	DecimalFormat df = new DecimalFormat("0.00");
 	double finalDamage = 0;
 	boolean damage = false;

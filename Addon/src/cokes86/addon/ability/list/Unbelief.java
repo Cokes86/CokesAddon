@@ -1,28 +1,27 @@
 package cokes86.addon.ability.list;
 
-import daybreak.abilitywar.ability.decorator.ActiveHandler;
-import daybreak.abilitywar.game.AbstractGame;
-import daybreak.abilitywar.game.event.participant.ParticipantDeathEvent;
-import daybreak.abilitywar.game.team.interfaces.Teamable;
-import daybreak.abilitywar.game.manager.object.DeathManager;
-import daybreak.abilitywar.utils.base.math.LocationUtil;
-import daybreak.abilitywar.utils.library.SoundLib;
+import java.util.function.Predicate;
+
 import org.bukkit.Material;
 import org.bukkit.entity.Arrow;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 
-import cokes86.addon.configuration.ability.Config;
-import daybreak.abilitywar.ability.AbilityBase;
+import cokes86.addon.ability.CokesAbility;
 import daybreak.abilitywar.ability.AbilityManifest;
 import daybreak.abilitywar.ability.AbilityManifest.Rank;
 import daybreak.abilitywar.ability.AbilityManifest.Species;
 import daybreak.abilitywar.ability.SubscribeEvent;
+import daybreak.abilitywar.ability.decorator.ActiveHandler;
+import daybreak.abilitywar.game.AbstractGame;
 import daybreak.abilitywar.game.AbstractGame.Participant;
 import daybreak.abilitywar.game.AbstractGame.Participant.ActionbarNotification.ActionbarChannel;
-
-import java.util.function.Predicate;
+import daybreak.abilitywar.game.event.participant.ParticipantDeathEvent;
+import daybreak.abilitywar.game.manager.object.DeathManager;
+import daybreak.abilitywar.game.team.interfaces.Teamable;
+import daybreak.abilitywar.utils.base.math.LocationUtil;
+import daybreak.abilitywar.utils.library.SoundLib;
 
 @AbilityManifest(name = "불신", rank = Rank.A, species = Species.HUMAN, explain = {
 		"게임 중 1회에 한해 $[range]칸 이내의 상대방을 바라본 체 철괴로 우클릭 시 불신 전용 2인 팀을 만듭니다.",
@@ -31,7 +30,7 @@ import java.util.function.Predicate;
 		"팀을 맺었던 플레이어 한정으로 공격할 시 $[damage]의 추가대미지가 생깁니다.",
 		"※능력 아이디어: RainStar_"
 })
-public class Unbelief extends AbilityBase implements ActiveHandler {
+public class Unbelief extends CokesAbility implements ActiveHandler {
 	private static final Config<Integer> hit = new Config<Integer>(Unbelief.class, "공격횟수", 5) {
 		@Override
 		public boolean condition(Integer value) {

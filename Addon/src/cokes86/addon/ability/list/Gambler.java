@@ -5,8 +5,7 @@ import org.bukkit.event.entity.EntityDamageByBlockEvent;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
 
-import cokes86.addon.configuration.ability.Config;
-import daybreak.abilitywar.ability.AbilityBase;
+import cokes86.addon.ability.CokesAbility;
 import daybreak.abilitywar.ability.AbilityManifest;
 import daybreak.abilitywar.ability.AbilityManifest.Rank;
 import daybreak.abilitywar.ability.AbilityManifest.Species;
@@ -22,7 +21,7 @@ import daybreak.abilitywar.utils.base.TimeUtil;
 		"게임 중 단 한 번 철괴 우클릭 시 다음 차례에는 비율이 바뀌지 않고 고정됩니다.",
 		"※능력 아이디어: RainStar_"
 })
-public class Gambler extends AbilityBase implements ActiveHandler {
+public class Gambler extends CokesAbility implements ActiveHandler {
 	private static final Config<Integer> du = new Config<Integer>(Gambler.class, "주기", 15, 2) {
 		@Override
 		public boolean condition(Integer value) {

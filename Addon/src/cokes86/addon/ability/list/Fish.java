@@ -12,8 +12,7 @@ import org.bukkit.inventory.ItemStack;
 
 import com.google.common.base.Strings;
 
-import cokes86.addon.configuration.ability.Config;
-import daybreak.abilitywar.ability.AbilityBase;
+import cokes86.addon.ability.CokesAbility;
 import daybreak.abilitywar.ability.AbilityManifest;
 import daybreak.abilitywar.ability.AbilityManifest.Rank;
 import daybreak.abilitywar.ability.AbilityManifest.Species;
@@ -36,7 +35,7 @@ import daybreak.abilitywar.utils.library.item.ItemBuilder;
 		"감소할 수분이 없을 경우 1의 고정지를 입습니다.",
 		"철괴 좌클릭 시 자신의 위치에 물을 설치합니다. $[cool]"
 })
-public class Fish extends AbilityBase implements ActiveHandler {
+public class Fish extends CokesAbility implements ActiveHandler {
 	private static final Config<Integer> cool =  new Config<Integer>(Fish.class, "쿨타임", 30, 1) {
 		@Override
 		public boolean condition(Integer value) {

@@ -14,8 +14,7 @@ import org.bukkit.event.entity.EntityShootBowEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.util.Vector;
 
-import cokes86.addon.configuration.ability.Config;
-import daybreak.abilitywar.ability.AbilityBase;
+import cokes86.addon.ability.CokesAbility;
 import daybreak.abilitywar.ability.AbilityManifest;
 import daybreak.abilitywar.ability.AbilityManifest.Rank;
 import daybreak.abilitywar.ability.AbilityManifest.Species;
@@ -40,7 +39,7 @@ import daybreak.abilitywar.utils.library.SoundLib;
 		"해당 화살은 플렉터가 튕겨낼 수 없습니다.",
 		"※능력 아이디어: Sato207"
 })
-public class Elva extends AbilityBase {
+public class Elva extends CokesAbility {
 	Vector velocity = null;
 	RGB color = RGB.of(1, 255, 102);
 	int arrow;

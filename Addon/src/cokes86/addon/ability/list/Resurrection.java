@@ -6,8 +6,7 @@ import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.potion.PotionEffect;
 
-import cokes86.addon.configuration.ability.Config;
-import daybreak.abilitywar.ability.AbilityBase;
+import cokes86.addon.ability.CokesAbility;
 import daybreak.abilitywar.ability.AbilityManifest;
 import daybreak.abilitywar.ability.AbilityManifest.Rank;
 import daybreak.abilitywar.ability.AbilityManifest.Species;
@@ -20,7 +19,7 @@ import daybreak.abilitywar.utils.library.SoundLib;
 		"자신의 체력이 0이 되었을 시 모든 체력을 회복하고 모든 버프가 사라집니다.",
 		"이후 게임 스폰으로 이동합니다. (게임 스폰으로 이동할 수 없을 경우, $[cool]간 무적이 됩니다.)"
 })
-public class Resurrection extends AbilityBase {
+public class Resurrection extends CokesAbility {
 	public static boolean spawn = Settings.getSpawnEnable();
 	private boolean usable = true;
 	private static final Config<Integer> cool = new Config<Integer>(Resurrection.class,"무적시간",1, 2) {
