@@ -29,11 +29,11 @@ import daybreak.abilitywar.utils.library.item.ItemBuilder;
 
 @Beta
 @AbilityManifest(name = "물고기", rank = Rank.B, species = Species.ANIMAL, explain = {
-		"게임 시작 시 물갈퀴IV 인챈트 쿠폰을 얻으며,",
+		"게임 시작 시 물갈퀴III 인챈트 쿠폰을 얻으며,",
 		"우클릭 시 착용한 신발에 해당 인챈트가 부여됩니다.",
 		"자신이 물 속에 있을 시 수중호흡 효과를 얻으며 받는 대미지가 1 감소합니다.",
 		"물 밖에 있을 시 구속효과가 걸리며 이후 3초마다 수분이 감소합니다.",
-		"감소할 수분이 없을 경우 1의 고정대미지를 입습니다.",
+		"감소할 수분이 없을 경우 1의 고정지를 입습니다.",
 		"철괴 좌클릭 시 자신의 위치에 물을 설치합니다. $[cool]"
 })
 public class Fish extends AbilityBase implements ActiveHandler {
@@ -47,7 +47,7 @@ public class Fish extends AbilityBase implements ActiveHandler {
 	private final Cooldown c = new Cooldown(cool.getValue());
 	private int moisture = 10;
 	
-	private ItemStack coupon = (new ItemBuilder()).type(Material.PAPER).displayName("§a물갈퀴IV 인챈트 쿠폰").build();
+	private ItemStack coupon = (new ItemBuilder()).type(Material.PAPER).displayName("§a물갈퀴III 인챈트 쿠폰").build();
 	private boolean kit = true;
 
 	public Fish(Participant arg0) {
@@ -83,7 +83,7 @@ public class Fish extends AbilityBase implements ActiveHandler {
 			if (main.equals(coupon)) {
 				final ItemStack boots = player.getInventory().getBoots();
 				if (boots != null) {
-					boots.addUnsafeEnchantment(Enchantment.DEPTH_STRIDER, 4);
+					boots.addUnsafeEnchantment(Enchantment.DEPTH_STRIDER, 3);
 					player.getInventory().setItemInMainHand(new ItemStack(Material.AIR));
 					player.sendMessage("쿠폰을 사용하였습니다.");
 				} else {
@@ -101,7 +101,7 @@ public class Fish extends AbilityBase implements ActiveHandler {
 			if (main.equals(coupon)) {
 				final ItemStack boots = player.getInventory().getBoots();
 				if (boots != null) {
-					boots.addUnsafeEnchantment(Enchantment.DEPTH_STRIDER, 4);
+					boots.addUnsafeEnchantment(Enchantment.DEPTH_STRIDER, 3);
 					player.getInventory().setItemInMainHand(new ItemStack(Material.AIR));
 					player.sendMessage("쿠폰을 사용하였습니다.");
 				} else {
@@ -113,7 +113,7 @@ public class Fish extends AbilityBase implements ActiveHandler {
 	
 	@SubscribeEvent
 	public void onEntityDamage(EntityDamageEvent e) {
-		if (e.getEntity().equals(getPlayer()) && getPlayer().getLocation().getBlock().isLiquid()) {
+		if (e.getEntity().equals(getPlayer()) && getPlayer().getLocation().getBlock().getType().name().endsWith("WATER")) {
 			e.setDamage(e.getDamage()-1);
 		}
 	}
@@ -134,13 +134,16 @@ public class Fish extends AbilityBase implements ActiveHandler {
 
 		@Override
 		protected void run(int arg0) {
-			if (getPlayer().getLocation().getBlock().isLiquid()) {
+			if (getPlayer().getLocation().getBlock().getType().name().endsWith("WATER")) {
 				if (count != 0) {
 					PotionEffects.SLOW.removePotionEffect(getPlayer());
 					count = 0;
 				}
 				up++;
-				if (up % 20 == 0 && moisture < 10) {moisture++;}
+				if (up % 20 == 0 && moisture < 10) {
+					moisture++;
+					ac.update("§b".concat(Strings.repeat("●", moisture)).concat(Strings.repeat("○", 10 - moisture)));
+				}
 				PotionEffects.WATER_BREATHING.addPotionEffect(getPlayer(), 21, 0, true);
 			} else {
 				if (count == 0) {
@@ -152,12 +155,12 @@ public class Fish extends AbilityBase implements ActiveHandler {
 				if (count % 60 == 0) {
 					if (moisture > 0) {
 						moisture--;
+						ac.update("§b".concat(Strings.repeat("●", moisture)).concat(Strings.repeat("○", 10 - moisture)));
 					} else {
 						Damages.damageFixed(getPlayer(), getPlayer(), 1);
 					}
 				}
 			}
-			ac.update("§b".concat(Strings.repeat("●", moisture)).concat(Strings.repeat("○", 10 - moisture)));
 		}
 		
 	};

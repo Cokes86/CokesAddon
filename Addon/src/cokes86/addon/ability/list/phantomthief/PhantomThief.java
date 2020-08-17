@@ -49,8 +49,8 @@ import java.util.function.Predicate;
 		"$(Explain)" })
 @NotAvailable(AbstractTripleMix.class)
 public class PhantomThief extends AbilityBase implements ActiveHandler, TargetHandler {
-	private static AbilityBase newAbility = null;
-	private static final Object Explain = new Object() {
+	private AbilityBase newAbility = null;
+	private final Object Explain = new Object() {
 		@Override
 		public String toString() {
 			StringJoiner joiner = new StringJoiner("\n");
