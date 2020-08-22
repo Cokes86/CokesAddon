@@ -13,8 +13,8 @@ import daybreak.abilitywar.utils.base.logging.Logger;
 
 public class AddonAbilityFactory {
 	private static final Logger logger = Logger.getLogger(AddonAbilityFactory.class);
-	protected static Map<String, Class<? extends AbilityBase>> abilities = new HashMap<>();
-	protected static Map<String, Class<? extends Synergy>> synergies = new HashMap<>();
+	protected static Map<String, Class<? extends CokesAbility>> abilities = new HashMap<>();
+	protected static Map<String, Class<? extends CokesSynergy>> synergies = new HashMap<>();
 	
 	static {
 		registerAbility(Seth.class);
@@ -97,7 +97,7 @@ public class AddonAbilityFactory {
 
 	}
 	
-	public static void registerSynergy(Class<? extends AbilityBase> first, Class<? extends AbilityBase> second, Class<? extends Synergy> synergy) {
+	public static void registerSynergy(Class<? extends AbilityBase> first, Class<? extends AbilityBase> second, Class<? extends CokesSynergy> synergy) {
 		if (SynergyFactory.getSynergy(first, second) == null) {
 			SynergyFactory.registerSynergy(first, second, synergy);
 			if (!synergies.containsValue(synergy)) {
@@ -109,11 +109,11 @@ public class AddonAbilityFactory {
 		}
 	}
 	
-	public static List<Class<? extends AbilityBase>> getAddonAbilities() {
+	public static List<Class<? extends CokesAbility>> getAddonAbilities() {
 		return new ArrayList<>(abilities.values());
 	}
 	
-	public static List<Class<? extends Synergy>> getAddonSynergies() {
+	public static List<Class<? extends CokesSynergy>> getAddonSynergies() {
 		return new ArrayList<>(synergies.values());
 	}
 	
@@ -125,8 +125,11 @@ public class AddonAbilityFactory {
 		return new ArrayList<>(synergies.keySet());
 	}
 
-	public static Class<? extends AbilityBase> getByString(String abilityName) {
-		if (abilities.containsKey(abilityName)) return abilities.get(abilityName);
-		else return synergies.getOrDefault(abilityName, null);
+	public static Class<? extends CokesAbility> getAbilityByString(String abilityName) {
+		return abilities.getOrDefault(abilityName, null);
+	}
+	
+	public static Class<? extends CokesSynergy> getSynergyByString(String abilityName) {
+		return synergies.getOrDefault(abilityName, null);
 	}
 }

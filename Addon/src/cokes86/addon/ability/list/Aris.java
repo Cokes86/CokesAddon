@@ -6,12 +6,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.function.Predicate;
 
-import daybreak.abilitywar.game.AbstractGame;
-import daybreak.abilitywar.game.team.interfaces.Teamable;
-import daybreak.abilitywar.game.manager.object.DeathManager;
-import daybreak.abilitywar.game.manager.object.WRECK;
-import daybreak.abilitywar.utils.base.collect.Pair;
-import daybreak.abilitywar.utils.base.minecraft.damage.Damages;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.entity.Entity;
@@ -29,11 +23,18 @@ import daybreak.abilitywar.ability.AbilityManifest.Species;
 import daybreak.abilitywar.ability.SubscribeEvent;
 import daybreak.abilitywar.ability.decorator.ActiveHandler;
 import daybreak.abilitywar.config.enums.CooldownDecrease;
+import daybreak.abilitywar.game.AbstractGame;
 import daybreak.abilitywar.game.AbstractGame.Participant;
 import daybreak.abilitywar.game.AbstractGame.Participant.ActionbarNotification.ActionbarChannel;
+import daybreak.abilitywar.game.manager.object.DeathManager;
+import daybreak.abilitywar.game.manager.object.WRECK;
+import daybreak.abilitywar.game.team.interfaces.Teamable;
 import daybreak.abilitywar.utils.base.TimeUtil;
+import daybreak.abilitywar.utils.base.collect.Pair;
 import daybreak.abilitywar.utils.base.concurrent.TimeUnit;
 import daybreak.abilitywar.utils.base.math.LocationUtil;
+import daybreak.abilitywar.utils.base.minecraft.damage.Damages;
+import daybreak.abilitywar.utils.base.minecraft.entity.health.Healths;
 
 @AbilityManifest(name = "아리스", rank = Rank.B, species = Species.HUMAN, explain = {
 		"5초마다 §d사슬 카운터§f를 1씩 상승하며 최대 $[max_count]만큼 상승합니다.",
@@ -120,7 +121,7 @@ public class Aris extends CokesAbility implements ActiveHandler {
 	public boolean ActiveSkill(Material mt, ClickType ct) {
 		if (mt.equals(Material.IRON_INGOT) && ct.equals(ClickType.RIGHT_CLICK)) {
 			if ((!d.isDuration() || d == null) && chain != 0) {
-				ArrayList<Player> players = LocationUtil.getNearbyEntities(Player.class, getPlayer().getLocation(), range.getValue(), range.getValue(), predicate);
+				List<Player> players = LocationUtil.getNearbyEntities(Player.class, getPlayer().getLocation(), range.getValue(), range.getValue(), predicate);
 				if (players.isEmpty()) {
 					getPlayer().sendMessage("주변에 플레이어가 존재하지 않습니다.");
 					return false;
@@ -185,7 +186,7 @@ public class Aris extends CokesAbility implements ActiveHandler {
 				holding.get(player).getRight().update("고정 지속시간: " + TimeUtil.parseTimeAsString(getFixedCount()));
 				player.teleport(holding.get(player).getLeft());
 				if (seconds % 40 == 0 && Damages.canDamage(player, getPlayer(), DamageCause.ENTITY_ATTACK, 1) && player.getHealth() > 1) {
-					player.setHealth(player.getHealth() - 1);
+					Healths.setHealth(player, player.getHealth()-1);
 				}
 			}
 		}

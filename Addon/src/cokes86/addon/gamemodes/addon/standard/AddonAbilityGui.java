@@ -173,7 +173,7 @@ public class AddonAbilityGui implements Listener {
 					&& e.getCurrentItem().hasItemMeta() && e.getCurrentItem().getItemMeta().hasDisplayName()) {
 				String AbilityName = ChatColor.stripColor(e.getCurrentItem().getItemMeta().getDisplayName());
 
-				Class<? extends AbilityBase> abilityClass = AddonAbilityFactory.getByString(AbilityName);
+				Class<? extends AbilityBase> abilityClass = AddonAbilityFactory.getAbilityByString(AbilityName);
 				try {
 					if (abilityClass != null && GameManager.isGameRunning()) {
 						AbstractGame game = GameManager.getGame();

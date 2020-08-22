@@ -13,9 +13,7 @@ import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 
-import cokes86.addon.ability.AddonAbilityFactory;
-import cokes86.addon.ability.CokesAbility;
-import cokes86.addon.configuration.ConfigFile;
+import cokes86.addon.ability.*;
 import cokes86.addon.configuration.gamemode.GameConfiguration;
 import cokes86.addon.gamemodes.addon.debug.DebugWar;
 import cokes86.addon.gamemodes.addon.standard.AddonAbilityWar;
@@ -25,7 +23,6 @@ import cokes86.addon.gamemodes.tailcatching.TailCatching;
 import cokes86.addon.gamemodes.targethunting.TargetHunting;
 import daybreak.abilitywar.addon.Addon;
 import daybreak.abilitywar.config.Configuration.Settings;
-import daybreak.abilitywar.config.ability.AbilitySettings;
 import daybreak.abilitywar.game.event.GameCreditEvent;
 import daybreak.abilitywar.game.list.mix.AbstractMix;
 import daybreak.abilitywar.game.manager.GameFactory;
@@ -34,7 +31,6 @@ import daybreak.google.gson.JsonObject;
 import daybreak.google.gson.JsonParser;
 
 public class CokesAddon extends Addon implements Listener {
-	public final static AbilitySettings sconfig = new AbilitySettings(ConfigFile.createFile("AddonSynergies.yml"));
 
 	@Override
 	public void onEnable() {
@@ -44,7 +40,7 @@ public class CokesAddon extends Addon implements Listener {
 			GameConfiguration.load();
 			
 			CokesAbility.config.update();
-			sconfig.update();
+			CokesSynergy.config.update();
 		} catch (IOException | InvalidConfigurationException e) {
 			e.printStackTrace();
 		}
@@ -92,7 +88,7 @@ public class CokesAddon extends Addon implements Listener {
 			GameConfiguration.update();
 			
 			CokesAbility.config.update();
-			sconfig.update();
+			CokesSynergy.config.update();
 		} catch (IOException | InvalidConfigurationException e) {
 			e.printStackTrace();
 		}
@@ -136,7 +132,7 @@ public class CokesAddon extends Addon implements Listener {
 				GameConfiguration.load();
 				
 				CokesAbility.config.update();
-				sconfig.update();
+				CokesSynergy.config.update();
 			} catch (IOException | InvalidConfigurationException e) {
 				Bukkit.getConsoleSender().sendMessage("콘피그를 불러오는 도중 오류가 발생하였습니다.");
 			}

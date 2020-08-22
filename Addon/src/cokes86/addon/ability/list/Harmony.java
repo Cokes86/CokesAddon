@@ -10,12 +10,12 @@ import cokes86.addon.ability.CokesAbility;
 import daybreak.abilitywar.ability.AbilityManifest;
 import daybreak.abilitywar.ability.AbilityManifest.Rank;
 import daybreak.abilitywar.ability.AbilityManifest.Species;
-import daybreak.abilitywar.config.Configuration.Settings;
 import daybreak.abilitywar.game.AbstractGame.Participant;
 import daybreak.abilitywar.game.manager.object.DeathManager;
 import daybreak.abilitywar.utils.base.concurrent.TimeUnit;
 import daybreak.abilitywar.utils.base.math.LocationUtil;
 import daybreak.abilitywar.utils.base.math.geometry.Line;
+import daybreak.abilitywar.utils.base.minecraft.entity.health.Healths;
 import daybreak.abilitywar.utils.library.ParticleLib;
 
 @AbilityManifest(name = "하모니", rank = Rank.C, species = Species.HUMAN, explain= {
@@ -65,12 +65,12 @@ public class Harmony extends CokesAbility {
 			int a = 0;
 			for (Player p : LocationUtil.getNearbyEntities(Player.class, getPlayer().getLocation(), range.getValue(), range.getValue(), predicate)) {
 				a++;
-				p.setHealth(Math.min(p.getHealth()+0.5, Settings.getDefaultMaxHealth()));
+				Healths.setHealth(p, p.getHealth()+0.5);
 				for (Location l : Line.iteratorBetween(getPlayer().getLocation(), p.getLocation(), range.getValue()).iterable()) {
 					ParticleLib.HEART.spawnParticle(l);
 				}
 			}
-			getPlayer().setHealth(Math.min(getPlayer().getHealth()+a/2.0, Settings.getDefaultMaxHealth()));
+			Healths.setHealth(getPlayer(), getPlayer().getHealth()+a/2.0);
 		}
 	}.setPeriod(TimeUnit.SECONDS, duration.getValue());
 }

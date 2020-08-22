@@ -1,6 +1,7 @@
 package cokes86.addon.ability.synergy;
 
-import daybreak.abilitywar.game.manager.object.DeathManager;
+import java.util.function.Predicate;
+
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Projectile;
@@ -10,18 +11,16 @@ import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 
-import cokes86.addon.configuration.synergy.Config;
+import cokes86.addon.ability.CokesSynergy;
 import daybreak.abilitywar.ability.AbilityManifest;
 import daybreak.abilitywar.ability.AbilityManifest.Rank;
 import daybreak.abilitywar.ability.AbilityManifest.Species;
 import daybreak.abilitywar.ability.SubscribeEvent;
 import daybreak.abilitywar.config.ability.AbilitySettings.SettingObject;
 import daybreak.abilitywar.game.AbstractGame.Participant;
-import daybreak.abilitywar.game.list.mix.synergy.Synergy;
+import daybreak.abilitywar.game.manager.object.DeathManager;
 import daybreak.abilitywar.utils.base.concurrent.TimeUnit;
 import daybreak.abilitywar.utils.base.math.LocationUtil;
-
-import java.util.function.Predicate;
 
 @AbilityManifest(name="장미의 유혹", rank = Rank.S, species= Species.OTHERS, explain= {
 		"상대방을 공격할 시 가시 카운터를 1씩 올리고,",
@@ -32,7 +31,7 @@ import java.util.function.Predicate;
 		"블라인드 효과를 준 후 지속시간동안 자신은 무적상태가 되며,",
 		"0.5초마다 채력을 1씩 회복합니다. $[cool]"
 })
-public class LureOfRoses extends Synergy {
+public class LureOfRoses extends CokesSynergy {
 	int counter=0;
 	
 	private static final SettingObject<Integer> cool = new Config<Integer>(LureOfRoses.class, "쿨타임", 300, 1) {

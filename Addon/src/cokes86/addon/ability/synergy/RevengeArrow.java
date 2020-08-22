@@ -3,11 +3,6 @@ package cokes86.addon.ability.synergy;
 import java.util.Iterator;
 import java.util.function.Predicate;
 
-import daybreak.abilitywar.game.AbstractGame;
-import daybreak.abilitywar.game.team.interfaces.Teamable;
-import daybreak.abilitywar.game.manager.object.DeathManager;
-import daybreak.abilitywar.utils.base.minecraft.damage.Damages;
-import daybreak.abilitywar.utils.library.item.ItemLib;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.World;
@@ -19,27 +14,31 @@ import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.projectiles.ProjectileSource;
 import org.bukkit.util.Vector;
 
-import cokes86.addon.configuration.synergy.Config;
+import cokes86.addon.ability.CokesSynergy;
 import daybreak.abilitywar.ability.AbilityManifest;
 import daybreak.abilitywar.ability.AbilityManifest.Rank;
 import daybreak.abilitywar.ability.AbilityManifest.Species;
 import daybreak.abilitywar.ability.SubscribeEvent;
+import daybreak.abilitywar.game.AbstractGame;
 import daybreak.abilitywar.game.AbstractGame.CustomEntity;
 import daybreak.abilitywar.game.AbstractGame.Participant;
-import daybreak.abilitywar.game.list.mix.synergy.Synergy;
+import daybreak.abilitywar.game.manager.object.DeathManager;
+import daybreak.abilitywar.game.team.interfaces.Teamable;
 import daybreak.abilitywar.utils.base.concurrent.TimeUnit;
 import daybreak.abilitywar.utils.base.math.LocationUtil;
 import daybreak.abilitywar.utils.base.math.geometry.Line;
+import daybreak.abilitywar.utils.base.minecraft.damage.Damages;
 import daybreak.abilitywar.utils.base.minecraft.entity.decorator.Deflectable;
 import daybreak.abilitywar.utils.library.ParticleLib;
 import daybreak.abilitywar.utils.library.ParticleLib.RGB;
+import daybreak.abilitywar.utils.library.item.ItemLib;
 
 @AbilityManifest(name = "리벤지 애로우", rank = Rank.A, species = Species.OTHERS, explain = {
 		"공격을 받을 시 그의 $[multiply]배에 해당하는 대미지를 가진",
 		"추가 화살이 자동으로 사출되어 상대방의 위치로 직선으로 나가 공격합니다.",
 		"해당 추가화살은 인벤토리의 화살 1개를 소비하여 발사합니다.",
 		"추가 화살은 블럭에 닿거나 플레이어가 공격을 받을 시 사라집니다." })
-public class RevengeArrow extends Synergy {
+public class RevengeArrow extends CokesSynergy {
 	private static final Config<Double> multiply = new Config<Double>(RevengeArrow.class, "배율", 2.0) {
 		@Override
 		public boolean condition(Double arg0) {

@@ -1,7 +1,7 @@
 package cokes86.addon.ability.list;
 
-import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 import java.util.function.Predicate;
 
@@ -84,7 +84,7 @@ public class VigilanteLeader extends CokesAbility implements ActiveHandler {
 					ParticleLib.REDSTONE.spawnParticle(getPlayer(), l, color);
 				}
 
-				ArrayList<Player> inAjit = LocationUtil.getNearbyEntities(Player.class, ajit, r.getValue(), r.getValue(), predicate);
+				List<Player> inAjit = LocationUtil.getNearbyEntities(Player.class, ajit, r.getValue(), r.getValue(), predicate);
 				addNum = 1;
 				
 				for (Player p : inAjit) {

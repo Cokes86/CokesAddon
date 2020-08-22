@@ -1,7 +1,6 @@
 package cokes86.addon.ability.list.phantomthief;
 
 import daybreak.abilitywar.AbilityWar;
-import daybreak.abilitywar.game.AbstractGame;
 import daybreak.abilitywar.utils.base.collect.Pair;
 import daybreak.abilitywar.utils.base.reflect.ReflectionUtil;
 import daybreak.abilitywar.utils.base.reflect.ReflectionUtil.FieldUtil;
@@ -71,7 +70,7 @@ public class v1_15_R1 extends PhantomMathod {
     protected void hide() {
         getParticipant().attributes().TARGETABLE.setValue(false);
         final CraftPlayer craftPlayer = (CraftPlayer) getPlayer();
-        craftPlayer.getHandle().getDataWatcher().set(new DataWatcherObject<>(10, DataWatcherRegistry.b), 0);
+        craftPlayer.getHandle().getDataWatcher().set(new DataWatcherObject<>(11, DataWatcherRegistry.b), 0);
         craftPlayer.getHandle().setInvisible(true);
         final PacketPlayOutEntityEquipment[] packets = {
                 new PacketPlayOutEntityEquipment(getPlayer().getEntityId(), EnumItemSlot.MAINHAND, ItemStack.a),

@@ -9,6 +9,7 @@ import org.bukkit.boss.BarColor;
 import org.bukkit.boss.BarStyle;
 import org.bukkit.event.entity.EntityDamageEvent;
 
+import cokes86.addon.ability.CokesSynergy;
 import daybreak.abilitywar.ability.AbilityBase;
 import daybreak.abilitywar.ability.AbilityManifest;
 import daybreak.abilitywar.ability.AbilityManifest.Rank;
@@ -17,7 +18,6 @@ import daybreak.abilitywar.ability.SubscribeEvent;
 import daybreak.abilitywar.ability.decorator.ActiveHandler;
 import daybreak.abilitywar.game.AbstractGame.Participant;
 import daybreak.abilitywar.game.list.mix.Mix;
-import daybreak.abilitywar.game.list.mix.synergy.Synergy;
 import daybreak.abilitywar.game.manager.object.AbilitySelect.AbilityCollector;
 import daybreak.abilitywar.utils.base.minecraft.Bar;
 
@@ -27,7 +27,7 @@ import daybreak.abilitywar.utils.base.minecraft.Bar;
 		"연옥에서는 모든 플레이어는 공격을 할 수 없고 공격받을 수 없습니다.",
 		"이후 지속시간이 종료될 시 모든 플레이어는 모든 죄를 씻고 능력을 재추첨받습니다."
 })
-public class Purgatory extends Synergy implements ActiveHandler {
+public class Purgatory extends CokesSynergy implements ActiveHandler {
 	Duration timer = new Duration(10) {
 		Bar bar;
 		

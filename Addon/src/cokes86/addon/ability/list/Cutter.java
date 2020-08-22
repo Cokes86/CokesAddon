@@ -1,11 +1,12 @@
 package cokes86.addon.ability.list;
 
+import org.bukkit.Material;
+
 import cokes86.addon.ability.CokesAbility;
 import daybreak.abilitywar.ability.AbilityManifest;
 import daybreak.abilitywar.ability.decorator.ActiveHandler;
 import daybreak.abilitywar.game.AbstractGame;
-import org.bukkit.Material;
-import org.bukkit.attribute.Attribute;
+import daybreak.abilitywar.utils.base.minecraft.entity.health.Healths;
 
 @AbilityManifest(name="커터", rank = AbilityManifest.Rank.B, species = AbilityManifest.Species.HUMAN, explain = {
         "체력이 $[risk] 이상에서 철괴 우클릭 시 체력이 $[risk]가 감소합니다. $[cool]",
@@ -28,10 +29,10 @@ public class Cutter extends CokesAbility implements ActiveHandler {
 
     Cooldown cooldownTimer = new Cooldown(cool.getValue());
     Duration durationTimer = new Duration(duration.getValue(), cooldownTimer) {
-        @Override
-        protected void onDurationProcess(int i) {
-            getPlayer().setHealth(Math.min(getPlayer().getAttribute(Attribute.GENERIC_MAX_HEALTH).getValue(), getPlayer().getHealth() + 1));
-        }
+    	@Override
+    	protected void onDurationProcess(int i) {
+    		Healths.setHealth(getPlayer(), getPlayer().getHealth() +1);
+    	}
     };
 
     public Cutter(AbstractGame.Participant participant) {
@@ -42,7 +43,7 @@ public class Cutter extends CokesAbility implements ActiveHandler {
     public boolean ActiveSkill(Material material, ClickType clickType) {
         if (material == Material.IRON_INGOT && clickType == ClickType.RIGHT_CLICK && !cooldownTimer.isCooldown() && !durationTimer.isDuration()) {
             if (getPlayer().getHealth() > risk.getValue()) {
-                getPlayer().setHealth(Math.min(getPlayer().getHealth() - risk.getValue(), getPlayer().getAttribute(Attribute.GENERIC_MAX_HEALTH).getValue()));
+            	Healths.setHealth(getPlayer(), getPlayer().getHealth() - risk.getValue());
                 durationTimer.start();
                 return true;
             } else {

@@ -1,6 +1,6 @@
 package cokes86.addon.ability.list;
 
-import java.util.ArrayList;
+import java.util.List;
 import java.util.Random;
 import java.util.function.Predicate;
 
@@ -24,6 +24,7 @@ import daybreak.abilitywar.utils.base.concurrent.TimeUnit;
 import daybreak.abilitywar.utils.base.math.LocationUtil;
 import daybreak.abilitywar.utils.base.math.geometry.Circle;
 import daybreak.abilitywar.utils.base.minecraft.damage.Damages;
+import daybreak.abilitywar.utils.base.minecraft.entity.health.Healths;
 import daybreak.abilitywar.utils.library.ParticleLib;
 import daybreak.abilitywar.utils.library.SoundLib;
 
@@ -69,13 +70,13 @@ public class Rune extends CokesAbility implements ActiveHandler {
 
 		@Override
 		protected void onDurationProcess(int seconds) {
-			ArrayList<Player> ps = LocationUtil.getNearbyEntities(Player.class, getPlayer().getLocation(), range.getValue(), range.getValue(), predicate);
+			List<Player> ps = LocationUtil.getNearbyEntities(Player.class, getPlayer().getLocation(), range.getValue(), range.getValue(), predicate);
 			if (ps.size() > 0) {
 				int a = new Random().nextInt(ps.size());
 				Player target = ps.get(a);
 				if (!target.isDead() && Damages.canDamage(target, getPlayer(), DamageCause.ENTITY_ATTACK, 1)) {
 					if (target.getHealth() > 1) {
-						target.setHealth(target.getHealth()-1);
+						Healths.setHealth(target, target.getHealth()-1.0);
 					} else {
 						target.damage(20, getPlayer());
 					}

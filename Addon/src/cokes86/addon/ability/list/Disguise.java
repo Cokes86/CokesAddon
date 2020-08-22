@@ -25,7 +25,7 @@ import daybreak.google.common.base.Predicate;
 
 @AbilityManifest(name = "변장술", rank = Rank.A, species = Species.HUMAN, explain = {
 		"7칸 이내의 상대방을 바라본 체 철괴로 우클릭 시 그 대상으로 변장합니다.",
-		"변장하고 있는 동안 다른 참가자에게 받는 모든 대미지는 대상에게 돌아갑니다.",
+		"변장하고 있는 동안 다른 참가자에게 받는 대미지의 $[reflec]%는 대상에게 돌아갑니다.",
 		"대미지를 3회 받으면 변장이 풀립니다. $[cool]"
 })
 @Beta
@@ -40,7 +40,12 @@ public class Disguise extends CokesAbility implements ActiveHandler {
 		public boolean condition(Integer value) {
 			return value > 0;
 		}
-	}, cool = new Config<Integer>(Disguise.class, "쿨타임", 60) {
+	}, cool = new Config<Integer>(Disguise.class, "쿨타임", 180, 1) {
+		@Override
+		public boolean condition(Integer value) {
+			return value >= 0;
+		}
+	}, reflec = new Config<Integer>(Disguise.class, "반사(%)", 50) {
 		@Override
 		public boolean condition(Integer value) {
 			return value > 0;
@@ -96,9 +101,7 @@ public class Disguise extends CokesAbility implements ActiveHandler {
 		}
 		
 		if (e.getEntity().equals(getPlayer()) && target != null && damager instanceof Player && !damager.equals(getPlayer())) {
-			e.setDamage(0);
-			target.getPlayer().damage(e.getDamage(), damager);
-			check++;
+			check += 1;
 			SoundLib.BELL.playInstrument(getPlayer(), Note.natural(2, Tone.C));
 			if (check == count.getValue()) {
 				target = null;
@@ -106,6 +109,9 @@ public class Disguise extends CokesAbility implements ActiveHandler {
 				getPlayer().sendMessage("변장이 풀렸습니다.");
 				cooldown.start();
 			}
+			
+			((Player) damager).damage(e.getDamage() * reflec.getValue() / 100, damager);
+			e.setDamage(0);
 		}
 	}
 }

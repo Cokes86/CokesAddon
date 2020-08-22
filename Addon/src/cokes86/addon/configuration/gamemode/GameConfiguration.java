@@ -60,7 +60,7 @@ public class GameConfiguration {
 
 	private static final EnumMap<GameNodes, CacheG> cache = new EnumMap<>(GameNodes.class);
 
-	@SuppressWarnings("unchecked") // Private only method
+	// Private only method
 	private static <T> T get(GameNodes configNode, Class<T> clazz) throws IllegalStateException {
 		if (!isLoaded()) {
 			logger.log(Level.SEVERE, "콘피그가 불러와지지 않은 상태에서 접근을 시도하였습니다.");
@@ -76,7 +76,7 @@ public class GameConfiguration {
 		return (T) cache.get(configNode).getValue();
 	}
 
-	@SuppressWarnings("unchecked") // Private only method
+	// Private only method
 	private static <T> List<T> getList(GameNodes configNode, Class<T> clazz) throws IllegalStateException {
 		List<?> list = (List<?>) get(configNode, List.class);
 		List<T> newList = new ArrayList<>();

@@ -2,8 +2,6 @@ package cokes86.addon.gamemodes.addon.debug;
 
 import static daybreak.abilitywar.game.GameManager.getGame;
 
-import java.util.Arrays;
-
 import daybreak.abilitywar.game.Category;
 import daybreak.abilitywar.game.manager.object.WRECK;
 import org.bukkit.Bukkit;
@@ -13,20 +11,15 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.Listener;
 import org.bukkit.plugin.Plugin;
 
-import cokes86.addon.ability.AddonAbilityFactory;
 import daybreak.abilitywar.ability.AbilityBase;
 import daybreak.abilitywar.ability.AbilityFactory;
-import daybreak.abilitywar.config.Configuration.Settings.DeveloperSettings;
 import daybreak.abilitywar.game.AbstractGame;
-import daybreak.abilitywar.game.GameManager;
 import daybreak.abilitywar.game.GameManifest;
 import daybreak.abilitywar.game.list.mix.Mix;
 import daybreak.abilitywar.game.list.mix.synergy.Synergy;
 import daybreak.abilitywar.game.list.mix.synergy.SynergyFactory;
 import daybreak.abilitywar.utils.base.Messager;
 import daybreak.abilitywar.utils.base.collect.Pair;
-import daybreak.abilitywar.utils.base.language.korean.KoreanUtil;
-import daybreak.abilitywar.utils.base.language.korean.KoreanUtil.Josa;
 import daybreak.abilitywar.utils.base.minecraft.PlayerCollector;
 
 @GameManifest(name = "코크스애드온 디버그", description = { "§r어빌리티 테스트용." })
@@ -81,38 +74,6 @@ public class DebugWar extends AbstractGame implements Listener, WRECK.Handler {
 					}
 					break;
 				} else Messager.sendErrorMessage(sender, "콘솔에서 사용할 수 없는 명령어입니다.");
-			} else {
-				String name = String.join(" ", Arrays.copyOfRange(args, 1, args.length));
-				
-				if (AddonAbilityFactory.getByString(name) != null) {
-					if (args[0].equalsIgnoreCase("@a")) {
-						try {
-							for (Participant participant : GameManager.getGame().getParticipants()) {
-								participant.setAbility(AddonAbilityFactory.getByString(name));
-							}
-							Bukkit.broadcastMessage("§e" + sender.getName() + "§a님이 §f모든 참가자§a에게 능력을 임의로 부여하였습니다.");
-						} catch (Exception e) {
-							Messager.sendErrorMessage(sender, "능력 설정 도중 오류가 발생하였습니다.");
-							if (DeveloperSettings.isEnabled()) e.printStackTrace();
-						}
-					} else {
-						targetPlayer = Bukkit.getPlayerExact(args[0]);
-						if (targetPlayer != null) {
-							AbstractGame game = GameManager.getGame();
-							if (game.isParticipating(targetPlayer)) {
-								try {
-									game.getParticipant(targetPlayer).setAbility(AddonAbilityFactory.getByString(name));
-									Bukkit.broadcastMessage("§e" + sender.getName() + "§a님이 §f" + targetPlayer.getName() + "§a님에게 능력을 임의로 부여하였습니다.");
-								} catch (Exception e) {
-									Messager.sendErrorMessage(sender, "능력 설정 도중 오류가 발생하였습니다.");
-									if (DeveloperSettings.isEnabled()) e.printStackTrace();
-								}
-							} else
-								Messager.sendErrorMessage(sender, targetPlayer.getName() + "님은 탈락했거나 게임에 참여하지 않았습니다.");
-						} else
-							Messager.sendErrorMessage(sender, args[0] + KoreanUtil.getJosa(args[0], Josa.은는) + " 존재하지 않는 플레이어입니다.");
-					}
-				}
 			}
 			break;
 		case ABLIST:

@@ -17,6 +17,7 @@ import daybreak.abilitywar.ability.SubscribeEvent;
 import daybreak.abilitywar.config.enums.CooldownDecrease;
 import daybreak.abilitywar.game.AbstractGame.Participant;
 import daybreak.abilitywar.utils.base.language.korean.KoreanUtil;
+import daybreak.abilitywar.utils.base.minecraft.entity.health.event.PlayerSetHealthEvent;
 import daybreak.abilitywar.utils.base.minecraft.nms.NMS;
 import daybreak.abilitywar.utils.library.SoundLib;
 
@@ -86,6 +87,16 @@ public class Rei extends CokesAbility {
 					}
 				}
 			}
+		}
+	}
+	
+	@SubscribeEvent(priority = 5)
+	public void onPlayerSetHealth(PlayerSetHealthEvent e) {
+		if (e.getPlayer().equals(getPlayer()) && !c.isRunning() && !e.isCancelled() && e.getHealth()<=0) {
+			e.setCancelled(true);
+			getPlayer().setHealth(respawn.getValue());
+			c.start();
+			SoundLib.ENTITY_FIREWORK_ROCKET_LAUNCH.playSound(getPlayer());
 		}
 	}
 

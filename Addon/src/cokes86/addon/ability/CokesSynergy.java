@@ -1,24 +1,24 @@
 package cokes86.addon.ability;
 
 import cokes86.addon.configuration.ConfigFile;
-import daybreak.abilitywar.ability.AbilityBase;
 import daybreak.abilitywar.config.ability.AbilitySettings;
 import daybreak.abilitywar.config.ability.AbilitySettings.SettingObject;
 import daybreak.abilitywar.game.AbstractGame.Participant;
+import daybreak.abilitywar.game.list.mix.synergy.Synergy;
 import daybreak.abilitywar.utils.base.Formatter;
 import daybreak.abilitywar.utils.base.TimeUtil;
 
-public class CokesAbility extends AbilityBase {
-	public final static AbilitySettings config = new AbilitySettings(ConfigFile.createFile("AddonAbilities.yml"));
+public class CokesSynergy extends Synergy {
+	public final static AbilitySettings config = new AbilitySettings(ConfigFile.createFile("AddonSynergies.yml"));
 
-	protected CokesAbility(Participant arg0) {
-		super(arg0);
+	public CokesSynergy(Participant participant) {
+		super(participant);
 	}
 	
-	public static abstract class Config<T> extends SettingObject<T> {
+	public abstract static class Config<T> extends SettingObject<T> {
 		int option;
 		
-		public Config(Class<? extends AbilityBase> arg0, String arg1, T arg2, String[] arg3, int arg4) {
+		public Config(Class<? extends Synergy> arg0, String arg1, T arg2, String[] arg3, int arg4) {
 			config.super(arg0, arg1, arg2, arg3);
 			if (getValue().getClass().equals(Integer.class) && arg4 >=0 && arg4 <= 2) {
 				option = arg4;
@@ -27,15 +27,11 @@ public class CokesAbility extends AbilityBase {
 			}
 		}
 		
-		public Config(Class<? extends AbilityBase> arg0, String arg1, T arg2, String... arg3) {
-			this(arg0, arg1, arg2, arg3, 0);
-		}
-		
-		public Config(Class<? extends AbilityBase> arg0, String arg1, T arg2, int arg3) {
+		public Config(Class<? extends Synergy> arg0, String arg1, T arg2, int arg3) {
 			this(arg0, arg1, arg2, new String[] {}, arg3);
 		}
 		
-		public Config(Class<? extends AbilityBase> arg0, String arg1, T arg2) {
+		public Config(Class<? extends Synergy> arg0, String arg1, T arg2) {
 			this(arg0, arg1, arg2, new String[] {}, 0);
 		}
 
@@ -49,4 +45,5 @@ public class CokesAbility extends AbilityBase {
 			}
 		}
 	}
+
 }

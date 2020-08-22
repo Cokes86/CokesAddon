@@ -1,16 +1,5 @@
 package cokes86.addon.ability.synergy;
 
-import cokes86.addon.configuration.synergy.Config;
-import daybreak.abilitywar.ability.AbilityManifest;
-import daybreak.abilitywar.ability.SubscribeEvent;
-import daybreak.abilitywar.ability.decorator.ActiveHandler;
-import daybreak.abilitywar.game.AbstractGame;
-import daybreak.abilitywar.game.list.mix.synergy.Synergy;
-import daybreak.abilitywar.utils.annotations.Beta;
-import daybreak.abilitywar.utils.base.minecraft.damage.Damages;
-import daybreak.abilitywar.utils.base.concurrent.TimeUnit;
-import daybreak.abilitywar.utils.library.SoundLib;
-import daybreak.abilitywar.utils.library.ParticleLib;
 import org.bukkit.Material;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.attribute.AttributeInstance;
@@ -20,6 +9,17 @@ import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityShootBowEvent;
 import org.bukkit.event.entity.ProjectileHitEvent;
 
+import cokes86.addon.ability.CokesSynergy;
+import daybreak.abilitywar.ability.AbilityManifest;
+import daybreak.abilitywar.ability.SubscribeEvent;
+import daybreak.abilitywar.ability.decorator.ActiveHandler;
+import daybreak.abilitywar.game.AbstractGame;
+import daybreak.abilitywar.utils.annotations.Beta;
+import daybreak.abilitywar.utils.base.concurrent.TimeUnit;
+import daybreak.abilitywar.utils.base.minecraft.damage.Damages;
+import daybreak.abilitywar.utils.library.ParticleLib;
+import daybreak.abilitywar.utils.library.SoundLib;
+
 @AbilityManifest(name="사신의 화살", rank= AbilityManifest.Rank.S, species = AbilityManifest.Species.GOD, explain = {
         "매 $[duration]마다 사신의 낫이 1개씩 충전됩니다. (최대 5회)",
         "철괴 우클릭 시 사신의 화살을 장전하며, 발사할 수 있습니다. $[cool]",
@@ -27,7 +27,7 @@ import org.bukkit.event.entity.ProjectileHitEvent;
         "1개: $[damage1]%, 2개: $[damage2]%, 3개: $[damage3]%, 4개: $[damage4]%, 5개: $[damage5]%"
 })
 @Beta
-public class ReaperArrow extends Synergy implements ActiveHandler {
+public class ReaperArrow extends CokesSynergy implements ActiveHandler {
     private static final Config<Integer> duration = new Config<Integer>(ReaperArrow.class, "충전시간", 60, 2) {
         @Override
         public boolean condition(Integer value) {

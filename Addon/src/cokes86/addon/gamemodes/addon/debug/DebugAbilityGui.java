@@ -178,7 +178,7 @@ public class DebugAbilityGui implements Listener {
 				if (e.getCurrentItem().getType() == Material.GOLD_BLOCK) {
 					String AbilityName = ChatColor.stripColor(e.getCurrentItem().getItemMeta().getDisplayName());
 
-					Class<? extends AbilityBase> abilityClass = AddonAbilityFactory.getByString(AbilityName);
+					Class<? extends AbilityBase> abilityClass = AddonAbilityFactory.getAbilityByString(AbilityName);
 					try {
 						if (abilityClass != null && GameManager.isGameRunning()) {
 							AbstractGame game = GameManager.getGame();
@@ -208,9 +208,7 @@ public class DebugAbilityGui implements Listener {
 				} else if (e.getCurrentItem().getType() == Material.DIAMOND_BLOCK) {
 					String AbilityName = ChatColor.stripColor(e.getCurrentItem().getItemMeta().getDisplayName());
 
-					@SuppressWarnings("unchecked")
-					Class<? extends Synergy> abilityClass = (Class<? extends Synergy>) AddonAbilityFactory
-							.getByString(AbilityName);
+					Class<? extends Synergy> abilityClass = (Class<? extends Synergy>) AddonAbilityFactory.getSynergyByString(AbilityName);
 					try {
 						if (abilityClass != null && GameManager.isGameRunning()) {
 							AbstractGame game = GameManager.getGame();

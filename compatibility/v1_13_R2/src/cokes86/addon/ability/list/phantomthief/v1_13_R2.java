@@ -1,7 +1,6 @@
 package cokes86.addon.ability.list.phantomthief;
 
 import daybreak.abilitywar.AbilityWar;
-import daybreak.abilitywar.game.AbstractGame;
 import daybreak.abilitywar.utils.base.collect.Pair;
 import daybreak.abilitywar.utils.base.reflect.ReflectionUtil;
 import daybreak.abilitywar.utils.base.reflect.ReflectionUtil.FieldUtil;

@@ -1,6 +1,6 @@
 package cokes86.addon.ability.list;
 
-import java.util.ArrayList;
+import java.util.List;
 
 import org.bukkit.Location;
 import org.bukkit.attribute.Attribute;
@@ -24,6 +24,7 @@ import daybreak.abilitywar.utils.base.concurrent.TimeUnit;
 import daybreak.abilitywar.utils.base.language.korean.KoreanUtil;
 import daybreak.abilitywar.utils.base.math.LocationUtil;
 import daybreak.abilitywar.utils.base.math.geometry.Circle;
+import daybreak.abilitywar.utils.base.minecraft.entity.health.event.PlayerSetHealthEvent;
 import daybreak.abilitywar.utils.library.ParticleLib;
 import daybreak.abilitywar.utils.library.ParticleLib.RGB;
 import daybreak.abilitywar.utils.library.SoundLib;
@@ -89,6 +90,18 @@ public class Reincarnation extends CokesAbility {
 		super(arg0);
 		reincarnation.register();
 	}
+	
+	@SubscribeEvent(priority = 6)
+	public void onPlayerSetHealth(PlayerSetHealthEvent e) {
+		if (e.getPlayer().equals(getPlayer())) {
+			if (reincarnation.isRunning()) e.setCancelled(true);
+			else if (!reincarnation.isRunning() && e.getHealth() <= 0 && !cool.isRunning() && !e.isCancelled()) {
+				e.setCancelled(true);
+				getPlayer().setHealth(1);
+				reincarnation.setPeriod(TimeUnit.TICKS, 1).start();
+			}
+		}
+	}
 
 	@SubscribeEvent(priority = 6)
 	public void onEntityDamage(EntityDamageEvent e) {
@@ -141,7 +154,7 @@ public class Reincarnation extends CokesAbility {
 	AbilityTimer reincarnation = new AbilityTimer(duration.getValue() * 20) {
 
 		protected void onStart() {
-			ArrayList<Player> nearby = LocationUtil.getNearbyEntities(Player.class, getPlayer().getLocation(), 5, 5, null);
+			List<Player> nearby = LocationUtil.getNearbyEntities(Player.class, getPlayer().getLocation(), 5, 5, null);
 			SoundLib.ITEM_SHIELD_BLOCK.playSound(nearby);
 		}
 

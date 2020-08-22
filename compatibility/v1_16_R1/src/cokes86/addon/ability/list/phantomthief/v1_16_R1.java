@@ -2,7 +2,6 @@ package cokes86.addon.ability.list.phantomthief;
 
 import com.mojang.datafixers.util.Pair;
 import daybreak.abilitywar.AbilityWar;
-import daybreak.abilitywar.game.AbstractGame;
 import daybreak.abilitywar.utils.base.reflect.ReflectionUtil.FieldUtil;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelOutboundHandlerAdapter;

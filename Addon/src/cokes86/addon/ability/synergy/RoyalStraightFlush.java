@@ -3,20 +3,19 @@ package cokes86.addon.ability.synergy;
 import java.util.Random;
 import java.util.function.Predicate;
 
-import daybreak.abilitywar.game.AbstractGame;
-import daybreak.abilitywar.game.team.interfaces.Teamable;
-import daybreak.abilitywar.game.manager.object.DeathManager;
 import org.bukkit.Material;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 
-import cokes86.addon.configuration.synergy.Config;
+import cokes86.addon.ability.CokesSynergy;
 import daybreak.abilitywar.ability.AbilityManifest;
 import daybreak.abilitywar.ability.AbilityManifest.Rank;
 import daybreak.abilitywar.ability.AbilityManifest.Species;
 import daybreak.abilitywar.ability.decorator.ActiveHandler;
+import daybreak.abilitywar.game.AbstractGame;
 import daybreak.abilitywar.game.AbstractGame.Participant;
-import daybreak.abilitywar.game.list.mix.synergy.Synergy;
+import daybreak.abilitywar.game.manager.object.DeathManager;
+import daybreak.abilitywar.game.team.interfaces.Teamable;
 import daybreak.abilitywar.utils.base.math.LocationUtil;
 import daybreak.abilitywar.utils.library.SoundLib;
 
@@ -25,7 +24,7 @@ import daybreak.abilitywar.utils.library.SoundLib;
 		"주변 $[range]범위 이내 모든 플레이어에게",
 		"뽑은 두 숫자의 평균에 해당하는 대미지를 줍니다. $[cool]"
 })
-public class RoyalStraightFlush extends Synergy implements ActiveHandler {
+public class RoyalStraightFlush extends CokesSynergy implements ActiveHandler {
 	public static Config<Integer> range = new Config<Integer>(RoyalStraightFlush.class, "범위", 15) {
 		@Override
 		public boolean condition(Integer value) {

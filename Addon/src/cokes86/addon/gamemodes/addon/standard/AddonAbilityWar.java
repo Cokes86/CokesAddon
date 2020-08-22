@@ -10,7 +10,6 @@ import java.util.Random;
 
 import javax.naming.OperationNotSupportedException;
 
-import daybreak.abilitywar.game.*;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
@@ -20,9 +19,16 @@ import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
 
 import cokes86.addon.ability.AddonAbilityFactory;
+import cokes86.addon.ability.CokesAbility;
 import daybreak.abilitywar.ability.AbilityBase;
 import daybreak.abilitywar.config.Configuration;
 import daybreak.abilitywar.config.Configuration.Settings.DeveloperSettings;
+import daybreak.abilitywar.game.AbstractGame;
+import daybreak.abilitywar.game.Category;
+import daybreak.abilitywar.game.Game;
+import daybreak.abilitywar.game.GameAliases;
+import daybreak.abilitywar.game.GameManager;
+import daybreak.abilitywar.game.GameManifest;
 import daybreak.abilitywar.game.event.GameCreditEvent;
 import daybreak.abilitywar.game.manager.object.AbilitySelect;
 import daybreak.abilitywar.game.manager.object.DefaultKitHandler;
@@ -190,7 +196,7 @@ public class AddonAbilityWar extends Game implements DefaultKitHandler {
 
 	public AbilitySelect newAbilitySelect() {
 		return new AbilitySelect(this, getParticipants(), 1) {
-			private List<Class<? extends AbilityBase>> abilities;
+			private List<Class<? extends CokesAbility>> abilities;
 
 			@Override
 			public boolean changeAbility(Participant arg0) {
@@ -198,8 +204,8 @@ public class AddonAbilityWar extends Game implements DefaultKitHandler {
 				if (this.abilities.size() > 0) {
 					Random random = new Random();
 					if (arg0.hasAbility()) {
-						Class<? extends AbilityBase> old = arg0.getAbility().getClass();
-						Class<? extends AbilityBase> newer = this.abilities.get(random.nextInt(this.abilities.size()));
+						Class<? extends CokesAbility> old = (Class<? extends CokesAbility>) arg0.getAbility().getClass();
+						Class<? extends CokesAbility> newer = this.abilities.get(random.nextInt(this.abilities.size()));
 
 						try {
 							arg0.setAbility(newer);
@@ -275,11 +281,11 @@ public class AddonAbilityWar extends Game implements DefaultKitHandler {
 			} else {
 				String name = String.join(" ", Arrays.copyOfRange(args, 1, args.length));
 				
-				if (AddonAbilityFactory.getByString(name) != null) {
+				if (AddonAbilityFactory.getAbilityByString(name) != null) {
 					if (args[0].equalsIgnoreCase("@a")) {
 						try {
 							for (Participant participant : GameManager.getGame().getParticipants()) {
-								participant.setAbility(AddonAbilityFactory.getByString(name));
+								participant.setAbility(AddonAbilityFactory.getAbilityByString(name));
 							}
 							Bukkit.broadcastMessage("§e" + sender.getName() + "§a님이 §f모든 참가자§a에게 능력을 임의로 부여하였습니다.");
 						} catch (Exception e) {
@@ -292,7 +298,7 @@ public class AddonAbilityWar extends Game implements DefaultKitHandler {
 							AbstractGame game = GameManager.getGame();
 							if (game.isParticipating(targetPlayer)) {
 								try {
-									game.getParticipant(targetPlayer).setAbility(AddonAbilityFactory.getByString(name));
+									game.getParticipant(targetPlayer).setAbility(AddonAbilityFactory.getAbilityByString(name));
 									Bukkit.broadcastMessage("§e" + sender.getName() + "§a님이 §f" + targetPlayer.getName() + "§a님에게 능력을 임의로 부여하였습니다.");
 								} catch (Exception e) {
 									Messager.sendErrorMessage(sender, "능력 설정 도중 오류가 발생하였습니다.");

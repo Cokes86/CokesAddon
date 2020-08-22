@@ -16,6 +16,7 @@ import daybreak.abilitywar.ability.decorator.TargetHandler;
 import daybreak.abilitywar.config.Configuration.Settings;
 import daybreak.abilitywar.game.AbstractGame.Participant;
 import daybreak.abilitywar.game.event.GameEndEvent;
+import daybreak.abilitywar.utils.base.minecraft.entity.health.Healths;
 
 @AbilityManifest(name = "여왕", rank= AbilityManifest.Rank.A, species = AbilityManifest.Species.HUMAN, explain = {
 		"상대방을 철괴로 우클릭시 상대방의 남은 체력의 절반만큼",
@@ -49,7 +50,7 @@ public class Queen extends CokesAbility implements ActiveHandler, TargetHandler 
 				double plus = target.getHealth()/2;
 				
 				getPlayer().getAttribute(Attribute.GENERIC_MAX_HEALTH).setBaseValue(defaultHealth + plus);
-				getPlayer().setHealth(Math.min(defaultHealth + plus, getPlayer().getHealth() + plus));
+				Healths.setHealth(getPlayer(), getPlayer().getHealth() + plus);
 				cooldown.start();
 			}
 		}

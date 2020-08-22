@@ -4,8 +4,9 @@ import java.text.DecimalFormat;
 import java.util.Random;
 
 import org.bukkit.Material;
+import org.bukkit.entity.Arrow;
+import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
-import org.bukkit.entity.Projectile;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 
 import cokes86.addon.ability.CokesAbility;
@@ -106,19 +107,15 @@ public class DataMining extends CokesAbility implements ActiveHandler {
 	public void onEntityDamageByEntity(EntityDamageByEntityEvent e) {
 		if (e.getEntity() instanceof Player) {
 			Player entity = (Player) e.getEntity();
-			Player damager;
-			if (e.getDamager() instanceof Player)
-				damager = (Player) e.getDamager();
-			else if (e.getDamager() instanceof Projectile) {
-				Projectile projectile = (Projectile) e.getDamager();
-				if (projectile.getShooter() instanceof Player)
-					damager = (Player) projectile.getShooter();
-				else
-					damager = null;
-			} else
-				damager = null;
+			Entity damager = e.getDamager();
+			if (damager instanceof Arrow) {
+				Arrow arrow = (Arrow) damager;
+				if (arrow.getShooter() instanceof Entity) {
+					damager = (Entity) arrow.getShooter();
+				}
+			}
 			
-			if (damager != null) {
+			if (damager instanceof Player) {
 				if (damager.equals(getPlayer())) {
 					e.setDamage(e.getDamage()+damage);
 				} else if (entity.equals(getPlayer())) {
@@ -127,7 +124,7 @@ public class DataMining extends CokesAbility implements ActiveHandler {
 
 				if (!e.isCancelled()) {
 					if (message) getPlayer().sendMessage(
-							"§e" + damager.getName() + "§f(§c♥" + df.format(damager.getHealth()) + "§f)님이 §e" + entity.getName()
+							"§e" + damager.getName() + "§f(§c♥" + df.format(((Player)damager).getHealth()) + "§f)님이 §e" + entity.getName()
 									+ "§f(§c♥" + df.format(entity.getHealth()) + "§f)님을 공격! (대미지: " + df.format(e.getFinalDamage()) + ")");
 				}
 			}

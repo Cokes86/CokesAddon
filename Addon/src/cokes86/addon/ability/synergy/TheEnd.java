@@ -4,9 +4,6 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Predicate;
 
-import daybreak.abilitywar.game.AbstractGame;
-import daybreak.abilitywar.game.team.interfaces.Teamable;
-import daybreak.abilitywar.game.manager.object.DeathManager;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -19,16 +16,18 @@ import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 
-import cokes86.addon.configuration.synergy.Config;
+import cokes86.addon.ability.CokesSynergy;
 import daybreak.abilitywar.ability.AbilityManifest;
 import daybreak.abilitywar.ability.AbilityManifest.Rank;
 import daybreak.abilitywar.ability.AbilityManifest.Species;
 import daybreak.abilitywar.ability.SubscribeEvent;
 import daybreak.abilitywar.ability.decorator.ActiveHandler;
 import daybreak.abilitywar.config.Configuration.Settings;
+import daybreak.abilitywar.game.AbstractGame;
 import daybreak.abilitywar.game.AbstractGame.Participant;
 import daybreak.abilitywar.game.AbstractGame.Participant.ActionbarNotification.ActionbarChannel;
-import daybreak.abilitywar.game.list.mix.synergy.Synergy;
+import daybreak.abilitywar.game.manager.object.DeathManager;
+import daybreak.abilitywar.game.team.interfaces.Teamable;
 import daybreak.abilitywar.utils.base.TimeUtil;
 import daybreak.abilitywar.utils.base.concurrent.TimeUnit;
 import daybreak.abilitywar.utils.base.minecraft.Bar;
@@ -41,7 +40,7 @@ import daybreak.abilitywar.utils.base.minecraft.Bar;
 		"모든 플레이어의 채력을 0으로 변경합니다.",
 		"해당 능력은 사망하거나 지속시간 종료시 비활성화됩니다."
 })
-public class TheEnd extends Synergy implements ActiveHandler {
+public class TheEnd extends CokesSynergy implements ActiveHandler {
 	public static Config<Integer> du = new Config<Integer>(TheEnd.class, "지속시간", 40, 2) {
 		@Override
 		public boolean condition(Integer arg0) {

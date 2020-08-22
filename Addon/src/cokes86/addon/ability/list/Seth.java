@@ -1,7 +1,7 @@
 package cokes86.addon.ability.list;
 
 import java.text.DecimalFormat;
-import java.util.ArrayList;
+import java.util.List;
 import java.util.function.Predicate;
 
 import org.bukkit.Material;
@@ -123,7 +123,7 @@ public class Seth extends CokesAbility implements ActiveHandler {
 		if (arg0.equals(Material.IRON_INGOT) && arg1.equals(ClickType.RIGHT_CLICK)) {
 			if (!c.isCooldown()) {
 				int range = Seth.range.getValue();
-				ArrayList<Player> ps = LocationUtil.getNearbyEntities(Player.class, getPlayer().getLocation(), range, range, predicate);
+				List<Player> ps = LocationUtil.getNearbyEntities(Player.class, getPlayer().getLocation(), range, range, predicate);
 				if (ps.size() > 0) {
 					for (Player p : ps) {
 						p.teleport(getPlayer().getLocation());
