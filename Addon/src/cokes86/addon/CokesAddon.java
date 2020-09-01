@@ -14,6 +14,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 
 import cokes86.addon.ability.*;
+import cokes86.addon.ability.remake.Remaking;
 import cokes86.addon.configuration.gamemode.GameConfiguration;
 import cokes86.addon.gamemodes.addon.debug.DebugWar;
 import cokes86.addon.gamemodes.addon.standard.AddonAbilityWar;
@@ -31,19 +32,11 @@ import daybreak.google.gson.JsonObject;
 import daybreak.google.gson.JsonParser;
 
 public class CokesAddon extends Addon implements Listener {
+	ConfigLoader loader = new ConfigLoader();
 
 	@Override
 	public void onEnable() {
-		try { // firstLoad
-			AddonAbilityFactory.nameValues();
-			AddonAbilityFactory.nameSynergyValues();
-			GameConfiguration.load();
-			
-			CokesAbility.config.update();
-			CokesSynergy.config.update();
-		} catch (IOException | InvalidConfigurationException e) {
-			e.printStackTrace();
-		}
+		loader.run();
 
 		// AddonAbilityWar
 		GameFactory.registerMode(AddonAbilityWar.class);
@@ -75,23 +68,14 @@ public class CokesAddon extends Addon implements Listener {
 		}
 
 		// Load Configuration
-		Bukkit.getServer().getScheduler().scheduleSyncDelayedTask(getPlugin(), new ConfigLoader());
+		Bukkit.getServer().getScheduler().scheduleSyncDelayedTask(getPlugin(), loader);
 		
 		Bukkit.getPluginManager().registerEvents(this, getPlugin());
 	}
 
 	@Override
 	public void onDisable() {
-		try {
-			AddonAbilityFactory.nameValues();
-			AddonAbilityFactory.nameSynergyValues();
-			GameConfiguration.update();
-			
-			CokesAbility.config.update();
-			CokesSynergy.config.update();
-		} catch (IOException | InvalidConfigurationException e) {
-			e.printStackTrace();
-		}
+		loader.run();
 	}
 	
 	@EventHandler()
@@ -133,6 +117,7 @@ public class CokesAddon extends Addon implements Listener {
 				
 				CokesAbility.config.update();
 				CokesSynergy.config.update();
+				if (Settings.DeveloperSettings.isEnabled()) Remaking.config.update();
 			} catch (IOException | InvalidConfigurationException e) {
 				Bukkit.getConsoleSender().sendMessage("콘피그를 불러오는 도중 오류가 발생하였습니다.");
 			}

@@ -24,6 +24,7 @@ import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.plugin.Plugin;
 
 import cokes86.addon.ability.AddonAbilityFactory;
+import cokes86.addon.ability.remake.Remaking;
 import daybreak.abilitywar.ability.AbilityBase;
 import daybreak.abilitywar.ability.AbilityFactory;
 import daybreak.abilitywar.ability.AbilityFactory.AbilityRegistration;
@@ -112,6 +113,10 @@ public class DebugAbilityGui implements Listener {
 				if (registration.getAbilityClass().getSuperclass().equals(Synergy.class)) {
 					joiner.add(ChatColor.YELLOW + "시너지");
 					itemStack.setType(Material.DIAMOND_BLOCK);
+				}
+				if (registration.getAbilityClass().getSuperclass().equals(Synergy.class)) {
+					joiner.add(ChatColor.GRAY + "리메이크");
+					itemStack.setType(Material.IRON_BLOCK);
 				}
 
 				ItemMeta itemMeta = itemStack.getItemMeta();
@@ -231,6 +236,46 @@ public class DebugAbilityGui implements Listener {
 								}
 								Bukkit.broadcastMessage(ChatColor.translateAlternateColorCodes('&',
 										"&e" + p.getName() + "&a님이 &f전체 유저&a에게 능력을 임의로 부여하였습니다."));
+							}
+						}
+					} catch (SecurityException | InstantiationException | IllegalAccessException
+							| IllegalArgumentException | java.lang.reflect.InvocationTargetException
+							| NoSuchFieldException ex) {
+
+						if (ex.getMessage() != null && !ex.getMessage().isEmpty()) {
+							Messager.sendErrorMessage(p, ex.getMessage());
+						} else {
+							Messager.sendErrorMessage(p, "설정 도중 오류가 발생하였습니다.");
+						}
+					}
+				} else if (e.getCurrentItem().getType() == Material.IRON_BLOCK) {
+					String AbilityName = ChatColor.stripColor(e.getCurrentItem().getItemMeta().getDisplayName());
+
+					Class<? extends Remaking> abilityClass = (Class<? extends Remaking>) AddonAbilityFactory.getRemakingByString(AbilityName);
+					try {
+						if (abilityClass != null && GameManager.isGameRunning()) {
+							AbstractGame game = GameManager.getGame();
+							AbilityRegistration ab = AbilityFactory.getRegistration(abilityClass);
+							if (this.target != null) {
+								target.removeAbility();
+								Mix mix = (Mix) AbilityBase.create(Mix.class, target);
+								mix.setAbility(SynergyFactory.getSynergyBase(ab).getLeft().getAbilityClass(),
+										SynergyFactory.getSynergyBase(ab).getRight().getAbilityClass());
+								target.setAbility(mix);
+								Bukkit.broadcastMessage(ChatColor.translateAlternateColorCodes('&', "&e" + p.getName()
+										+ "&a님이 &f" + this.target.getPlayer().getName() + "&a님에게 능력을 임의로 부여하였습니다."));
+								p.sendMessage("해당 능력은 리메이크 예정인 능력입니다. 버그 또는 개선점이 필요하다면 디스코드 Cokes_86#9329로 연락바랍니다.");
+							} else {
+								for (AbstractGame.Participant participant : game.getParticipants()) {
+									participant.removeAbility();
+									Mix mix = (Mix) AbilityBase.create(Mix.class, participant);
+									mix.setAbility(SynergyFactory.getSynergyBase(ab).getLeft().getAbilityClass(),
+											SynergyFactory.getSynergyBase(ab).getRight().getAbilityClass());
+									participant.setAbility(mix);
+								}
+								Bukkit.broadcastMessage(ChatColor.translateAlternateColorCodes('&',
+										"&e" + p.getName() + "&a님이 &f전체 유저&a에게 능력을 임의로 부여하였습니다."));
+								Bukkit.broadcastMessage("해당 능력은 리메이크 예정인 능력입니다. 버그 또는 개선점이 필요하다면 디스코드 Cokes_86#9329로 연락바랍니다.");
 							}
 						}
 					} catch (SecurityException | InstantiationException | IllegalAccessException

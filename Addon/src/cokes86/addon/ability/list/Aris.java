@@ -37,14 +37,14 @@ import daybreak.abilitywar.utils.base.minecraft.damage.Damages;
 import daybreak.abilitywar.utils.base.minecraft.entity.health.Healths;
 
 @AbilityManifest(name = "아리스", rank = Rank.B, species = Species.HUMAN, explain = {
-		"5초마다 §d사슬 카운터§f를 1씩 상승하며 최대 $[max_count]만큼 상승합니다.",
-		"철괴 우클릭시 $[range]블럭 이내 모든 플레이어를 공중에 고정시킵니다. $[cool]",
-		"공중에는 누적된 §d사슬 카운터§f만큼 초로 환산되어 고정시키며,",
-		"(§d사슬 카운터§f/2 + 4)블럭만큼 위로 고정시킵니다.",
-		"공중에 고정되어있는 플레이어는 그동안 움직일 수 없으며,",
-		"매 2초마다 1의 고정대미지를 입습니다. 그 이외의 대미지는 받지 않으며,",
-		"고정대미지는 체력이 1 이하인 상태에서는 받지 않습니다.",
-		"지속시간과 쿨타임동안 §d사슬 카운터§f는 증가하지 않습니다." })
+		"§7패시브 - §c체인§r: 5초마다 §d사슬 카운터§f를 1씩 상승하며 최대 $[max_count]만큼 상승합니다.",
+		"  액티브 지속시간, 쿨타임 동안은 §d사슬 카운터§f가 증가하지 않는다.",
+		"§7철괴 우클릭 - §c사슬무덤§r: $[range]블럭 이내 모든 플레이어를 공중에 고정시킵니다. $[cool]",
+		"  공중에는 누적된 §d사슬 카운터§f만큼 초로 환산되어 고정시키며,",
+		"  (§d사슬 카운터§f/2 + 4)블럭만큼 위로 고정시킵니다.",
+		"  공중에 고정되어있는 플레이어는 그동안 움직일 수 없으며,",
+		"  매 2초마다 1의 고정대미지를 입습니다. 그 이외의 대미지는 받지 않으며,",
+		"  고정대미지는 체력이 1 이하인 상태에서는 받지 않습니다."})
 public class Aris extends CokesAbility implements ActiveHandler {
 	private static final Config<Integer> range = new Config<Integer>(Aris.class, "범위", 7) {
 		@Override

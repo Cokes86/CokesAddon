@@ -8,6 +8,7 @@ import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.player.PlayerInteractAtEntityEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
+import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.inventory.ItemStack;
 
 import com.google.common.base.Strings;
@@ -20,20 +21,16 @@ import daybreak.abilitywar.ability.SubscribeEvent;
 import daybreak.abilitywar.ability.decorator.ActiveHandler;
 import daybreak.abilitywar.game.AbstractGame.Participant;
 import daybreak.abilitywar.game.AbstractGame.Participant.ActionbarNotification.ActionbarChannel;
-import daybreak.abilitywar.utils.annotations.Beta;
 import daybreak.abilitywar.utils.base.concurrent.TimeUnit;
 import daybreak.abilitywar.utils.base.minecraft.damage.Damages;
 import daybreak.abilitywar.utils.library.PotionEffects;
 import daybreak.abilitywar.utils.library.item.ItemBuilder;
 
-@Beta
 @AbilityManifest(name = "물고기", rank = Rank.B, species = Species.ANIMAL, explain = {
-		"게임 시작 시 물갈퀴III 인챈트 쿠폰을 얻으며,",
-		"우클릭 시 착용한 신발에 해당 인챈트가 부여됩니다.",
-		"자신이 물 속에 있을 시 수중호흡 효과를 얻으며 받는 대미지가 1 감소합니다.",
-		"물 밖에 있을 시 구속효과가 걸리며 이후 3초마다 수분이 감소합니다.",
-		"감소할 수분이 없을 경우 1의 고정지를 입습니다.",
-		"철괴 좌클릭 시 자신의 위치에 물을 설치합니다. $[cool]"
+		"능력 활성화 - 철푸덕: 물갈퀴II 인챈트 쿠폰을 획득, 신발 착용중 쿠폰 우클 시 해당 인챈트가 부여됨.",
+		"물 속 - 첨벙첨벙: 이동속도 1.5배. 수중호흡 효과를 얻으며 받는 대미지가 1 감소.",
+		"물 밖 - 파닥파닥: 구속효과가 걸리며 이후 3초마다 수분이 감소. 감소할 수분이 없을 경우 1의 고정피해.",
+		"철괴 좌클릭 - 촤아악: 자신의 위치에 물을 설치. $[cool]"
 })
 public class Fish extends CokesAbility implements ActiveHandler {
 	private static final Config<Integer> cool =  new Config<Integer>(Fish.class, "쿨타임", 30, 1) {
@@ -125,6 +122,13 @@ public class Fish extends CokesAbility implements ActiveHandler {
 	@SubscribeEvent
 	public void onEntityDamageByBlock(EntityDamageByBlockEvent e) {
 		onEntityDamage(e);
+	}
+	
+	@SubscribeEvent
+	public void onPlayerMove(PlayerMoveEvent e) {
+		if (e.getFrom().getBlock().getType().name().endsWith("WATER") && e.getTo().getBlock().getType().name().endsWith("WATER")) {
+			e.setTo(e.getTo().multiply(1.5));
+		}
 	}
 	
 	private AbilityTimer timer = new AbilityTimer() {

@@ -41,6 +41,7 @@ public class DebugWar extends AbstractGame implements Listener, WRECK.Handler {
 		if (seconds == 1) {
 			startGame();
 			Bukkit.broadcastMessage("코크스애드온 디버그 모드 시작");
+			Bukkit.broadcastMessage("리메이크 예정이 있는 능력도 존재합니다. 버그 또는 개선점이 필요하다면 디스코드 Cokes_86#9329로 연락바랍니다.");
 			setRestricted(false);
 		}
 	}

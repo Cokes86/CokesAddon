@@ -1,17 +1,21 @@
 package cokes86.addon.ability.list;
 
 import java.text.DecimalFormat;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.function.Predicate;
 
+import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.Listener;
+import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.PlayerDeathEvent;
-import org.bukkit.potion.PotionEffect;
-import org.bukkit.potion.PotionEffectType;
-
 import cokes86.addon.ability.CokesAbility;
+import daybreak.abilitywar.AbilityWar;
 import daybreak.abilitywar.ability.AbilityManifest;
 import daybreak.abilitywar.ability.AbilityManifest.Rank;
 import daybreak.abilitywar.ability.AbilityManifest.Species;
@@ -22,27 +26,22 @@ import daybreak.abilitywar.game.AbstractGame.Participant;
 import daybreak.abilitywar.game.AbstractGame.Participant.ActionbarNotification.ActionbarChannel;
 import daybreak.abilitywar.game.manager.object.DeathManager;
 import daybreak.abilitywar.game.team.interfaces.Teamable;
-import daybreak.abilitywar.utils.base.concurrent.TimeUnit;
+import daybreak.abilitywar.utils.base.TimeUtil;
 import daybreak.abilitywar.utils.base.math.LocationUtil;
 import daybreak.abilitywar.utils.library.SoundLib;
 
-@AbilityManifest(name = "세트", rank = Rank.S, species = Species.GOD, explain = { "게임 중 플레이어가 사망할때마다 전쟁스택이 1씩 쌓입니다.",
-		"전쟁스택이 남아있는 생존자 대비 일정 비율 이상일 시 힘버프가 주어집니다.", "철괴 우클릭시 자신 기준 $[range]블럭 이내 모든 플레이어를 자신의 위치로 이동시킨 후",
-		"나약함1 디버프를 $[debuff] 부여합니다. $[cool]", "※$[buff1]% 이상 : 힘1  $[buff2]% 이상 : 힘2  $[buff3]% 이상 : 힘3" })
+@AbilityManifest(name = "세트", rank = Rank.S, species = Species.GOD, explain = {
+		"패시브 - 전쟁의 여왕: 게임 중 플레이어가 사망할때마다 전쟁스택이 1씩 쌓입니다.",
+		"  남아있는 생존자 대비 얻은 전쟁스택에 비례하여",
+		"  자신이 상대방에게 주는 대미지가 증가합니다 (최대 $[max_damage] 증가)",
+		"철괴 우클릭 - 토벌: 자신 기준 $[range]블럭 이내 모든 플레이어를 자신의 위치로 이동시킨 후",
+		"  남아있는 생존자 대비 얻은 전쟁스택에 반비례하여 끌어당긴 플레이어의",
+		"  주는 대미지가 $[debuff]간 감소하게 됩니다. (최대 $[debuff_max] 증가) $[cool]"})
 public class Seth extends CokesAbility implements ActiveHandler {
 	int max = getGame().getParticipants().size();
 	int kill = 0;
 	DecimalFormat df = new DecimalFormat("0.00");
-	public static Config<Integer> buff1 = new Config<Integer>(Seth.class, "힘.1단계", 25) {
-		public boolean condition(Integer value) {
-			return value >= 0;
-		}
-	}, buff2 = new Config<Integer>(Seth.class, "힘.2단계", 75) {
-		@Override
-		public boolean condition(Integer value) {
-			return value >= 0;
-		}
-	}, buff3 = new Config<Integer>(Seth.class, "힘.3단계", 150) {
+	public static Config<Integer> max_damage = new Config<Integer>(Seth.class, "추가대미지", 9) {
 		public boolean condition(Integer value) {
 			return value >= 0;
 		}
@@ -61,44 +60,19 @@ public class Seth extends CokesAbility implements ActiveHandler {
 		public boolean condition(Integer value) {
 			return value>0;
 		}
-	};
-
-	static {
-		if (!((buff1.getValue() < buff2.getValue()) && (buff2.getValue() < buff3.getValue()))) {
-			buff1.setValue(buff1.getDefaultValue());
-			buff2.setValue(buff2.getDefaultValue());
-			buff3.setValue(buff3.getDefaultValue());
+	}, debuff_max = new Config<Integer>(Seth.class, "토벌_최대치", 4) {
+		@Override
+		public boolean condition(Integer value) {
+			return value>=0;
 		}
-	}
+	};
 
 	Cooldown c = new Cooldown(cool.getValue());
 
 	ActionbarChannel ac = newActionbarChannel();
 
-	AbilityTimer Passive = new AbilityTimer() {
-		@Override
-		protected void run(int arg0) {
-			ac.update(df.format((double) kill * 100 / max) + "% (" + kill + "/" + max + ")");
-
-			if (kill * 100 / max >= buff1.getValue() && kill * 100 / max < buff2.getValue()) {
-				getPlayer().addPotionEffect(new PotionEffect(PotionEffectType.INCREASE_DAMAGE, 40, 0));
-			} else if (kill * 100 / max >= buff2.getValue() && kill * 100 / max < buff3.getValue()) {
-				getPlayer().addPotionEffect(new PotionEffect(PotionEffectType.INCREASE_DAMAGE, 40, 1));
-			} else if (kill * 100 / max >= buff3.getValue()) {
-				getPlayer().addPotionEffect(new PotionEffect(PotionEffectType.INCREASE_DAMAGE, 40, 2));
-			}
-		}
-	}.setPeriod(TimeUnit.TICKS, 1);
-
 	public Seth(Participant arg0) {
 		super(arg0);
-		Passive.register();
-	}
-	
-	protected void onUpdate(Update update) {
-		if (update == Update.RESTRICTION_CLEAR) {
-			Passive.start();
-		}
 	}
 
 	private final Predicate<Entity> predicate = entity -> {
@@ -125,12 +99,7 @@ public class Seth extends CokesAbility implements ActiveHandler {
 				int range = Seth.range.getValue();
 				List<Player> ps = LocationUtil.getNearbyEntities(Player.class, getPlayer().getLocation(), range, range, predicate);
 				if (ps.size() > 0) {
-					for (Player p : ps) {
-						p.teleport(getPlayer().getLocation());
-						p.addPotionEffect(new PotionEffect(PotionEffectType.WEAKNESS, debuff.getValue() * 20, 0));
-						SoundLib.ENTITY_PLAYER_ATTACK_SWEEP.playSound(p);
-					}
-					SoundLib.ENTITY_PLAYER_ATTACK_SWEEP.playSound(getPlayer());
+					new GrapTimer(ps);
 					c.start();
 					return true;
 				} else {
@@ -141,7 +110,7 @@ public class Seth extends CokesAbility implements ActiveHandler {
 		return false;
 	}
 
-	@SubscribeEvent
+	@SubscribeEvent(priority = 99)
 	public void onPlayerDeath(PlayerDeathEvent e) {
 		if (!e.getEntity().equals(getPlayer())) {
 			kill += 1;
@@ -151,6 +120,61 @@ public class Seth extends CokesAbility implements ActiveHandler {
 				if (game.getDeathManager().isExcluded(e.getEntity().getUniqueId())) {
 					max -= 1;
 				}
+			}
+			
+			ac.update(df.format((double) kill * 100 / max) + "% (" + kill + "/" + max + ")");
+		}
+	}
+	
+	@SubscribeEvent
+	public void onEntityDamageByEntity(EntityDamageByEntityEvent e) {
+		if (e.getDamager().equals(getPlayer())) {
+			final double damage = Math.max(9, kill*3/max);
+			e.setDamage(e.getDamage() + damage);
+		}
+	}
+	
+	class GrapTimer extends AbilityTimer implements Listener {
+		private final List<Player> grapped;
+		private final Set<ActionbarChannel> channel = new HashSet<>();
+		private final double damage;
+		
+		public GrapTimer(List<Player> grapped) {
+			super(debuff.getValue());
+			this.grapped = grapped;
+			this.damage = debuff_max.getValue() - (kill/max*2);
+			start();
+		}
+		
+		public void onStart() {
+			for (Player p : grapped) {
+				p.teleport(getPlayer().getLocation());
+				SoundLib.ENTITY_PLAYER_ATTACK_SWEEP.playSound(p);
+				channel.add(getGame().getParticipant(p).actionbar().newChannel());
+			}
+			SoundLib.ENTITY_PLAYER_ATTACK_SWEEP.playSound(getPlayer());
+			Bukkit.getPluginManager().registerEvents(this, AbilityWar.getPlugin());
+		}
+
+		@Override
+		protected void run(int arg0) {
+			channel.forEach(channel -> channel.update("신의 프레셔 : "+TimeUtil.parseTimeAsString(getFixedCount())));
+		}
+		
+		@Override
+		protected void onSilentEnd() {
+			channel.forEach(channel -> channel.unregister());
+		}
+		
+		@Override
+		protected void onEnd() {
+			onSilentEnd();
+		}
+		
+		@EventHandler
+		public void onEntityDamageByEntity(EntityDamageByEntityEvent e) {
+			if (grapped.contains(e.getDamager())) {
+				e.setDamage(Math.max(0, e.getDamage() - damage));
 			}
 		}
 	}

@@ -30,10 +30,9 @@ import daybreak.abilitywar.utils.library.ParticleLib;
 import daybreak.abilitywar.utils.library.ParticleLib.RGB;
 
 @AbilityManifest(name = "자경단장", rank = AbilityManifest.Rank.B, species = AbilityManifest.Species.HUMAN, explain = {
-		"게임 중 최초로 철괴 우클릭 시 범위 $[r]블럭 이내 모든 범위를 자경단 아지트로 만듭니다.",
-		"또한 해당 범위 안에 있던 플레이어 전부 자경단원으로 소속됩니다.",
-		"이후 철괴 우클릭 시 힘1 버프를 참가자의 수만큼 부여합니다. $[cool]",
-		"자경단 아지트 내에서 참가자는 2명, 자경단원은 3명, 자경단장은 4명 취급하며",
+		"§7최초 철괴 우클릭 - §c자경단 집결§r: 범위 $[r]블럭 이내 모든 범위를 자경단 아지트로 만듭니다. 또한 해당 범위 안에 있던 플레이어 전부 자경단원으로 소속됩니다.",
+		"§7철괴 우클릭 - §c자경단 공격§r: 힘1 버프를 참가자의 수만큼 부여합니다. $[cool]",
+		"§7패시브 - §c단합§r: 자경단 아지트 내에서 참가자는 2명, 자경단원은 3명, 자경단장은 4명 취급하며",
 		"자경단 아지트 밖에서 자경단장은 2명 취급합니다.",
 		"자경단원은 자경단장을 공격할 때, 자경단장이 받는 대미지가 30% 감소합니다."})
 public class VigilanteLeader extends CokesAbility implements ActiveHandler {
@@ -88,7 +87,7 @@ public class VigilanteLeader extends CokesAbility implements ActiveHandler {
 				addNum = 1;
 				
 				for (Player p : inAjit) {
-					if (p.equals(getPlayer())) addNum += 2;
+					if (p.equals(getPlayer())) addNum += 3;
 					else if (vigilantes.contains(getGame().getParticipant(p))) addNum += 2;
 					else addNum += 1;
 				}

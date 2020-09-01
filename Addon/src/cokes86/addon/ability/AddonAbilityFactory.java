@@ -4,6 +4,7 @@ import java.util.*;
 
 import cokes86.addon.ability.list.*;
 import cokes86.addon.ability.list.phantomthief.PhantomThief;
+import cokes86.addon.ability.remake.Remaking;
 import cokes86.addon.ability.synergy.*;
 import daybreak.abilitywar.ability.*;
 import daybreak.abilitywar.ability.list.*;
@@ -15,6 +16,7 @@ public class AddonAbilityFactory {
 	private static final Logger logger = Logger.getLogger(AddonAbilityFactory.class);
 	protected static Map<String, Class<? extends CokesAbility>> abilities = new HashMap<>();
 	protected static Map<String, Class<? extends CokesSynergy>> synergies = new HashMap<>();
+	protected static Map<String, Class<? extends Remaking>> remake = new HashMap<>();
 	
 	static {
 		registerAbility(Seth.class);
@@ -68,6 +70,10 @@ public class AddonAbilityFactory {
 		registerSynergy(Aris.class, Assassin.class, AirDisintegration.class);
 		registerSynergy(Muse.class, Sealer.class, Purgatory.class);
 		registerSynergy(EnchantArrow.class, EnchantArrow.class, ReaperArrow.class);
+		
+		
+		registerRemakeAbility(cokes86.addon.ability.remake.list.GodsBless.class);
+		registerRemakeAbility(cokes86.addon.ability.remake.list.Xyz.class);
 	}
 	
 	public static void registerAbility(Class<? extends CokesAbility> clazz) {
@@ -77,6 +83,20 @@ public class AddonAbilityFactory {
 				AbilityList.registerAbility(clazz);
 				AbilityManifest am = clazz.getAnnotation(AbilityManifest.class);
 				abilities.put(am.name(), clazz);
+			} else {
+				System.out.println("등록에 실패하였습니다. : "+clazz.getName());
+			}
+		} else {
+			System.out.println("이미 애드온에 등록된 능력입니다 : "+clazz.getName());
+		}
+	}
+	
+	public static void registerRemakeAbility(Class<? extends Remaking> clazz) {
+		if (!abilities.containsValue(clazz)) {
+			AbilityFactory.registerAbility(clazz);
+			if (AbilityFactory.isRegistered(clazz)) {
+				AbilityManifest am = clazz.getAnnotation(AbilityManifest.class);
+				remake.put(am.name(), clazz);
 			} else {
 				System.out.println("등록에 실패하였습니다. : "+clazz.getName());
 			}
@@ -131,5 +151,9 @@ public class AddonAbilityFactory {
 	
 	public static Class<? extends CokesSynergy> getSynergyByString(String abilityName) {
 		return synergies.getOrDefault(abilityName, null);
+	}
+	
+	public static Class<? extends Remaking> getRemakingByString(String abilityName) {
+		return remake.getOrDefault(abilityName, null);
 	}
 }
