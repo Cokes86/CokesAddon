@@ -25,7 +25,7 @@ import daybreak.abilitywar.utils.base.minecraft.PlayerCollector;
 @GameManifest(name = "코크스애드온 디버그", description = { "§r어빌리티 테스트용." })
 @Category(value = Category.GameCategory.DEBUG)
 public class DebugWar extends AbstractGame implements Listener, WRECK.Handler {
-	private final WRECK wreck = newWRECK();
+	private final WRECK wreck = newWreck();
 
 	public DebugWar() {
 		super(PlayerCollector.EVERY_PLAYER_EXCLUDING_SPECTATORS());
@@ -125,14 +125,16 @@ public class DebugWar extends AbstractGame implements Listener, WRECK.Handler {
 			break;
 		}
 	}
-
+	
 	@Override
-	public WRECK getWRECK() {
+	public WRECK getWreck() {
+		// TODO Auto-generated method stub
 		return wreck;
 	}
 
 	@Override
-	public boolean isWRECKEnabled() {
+	public boolean isWreckEnabled() {
+		// TODO Auto-generated method stub
 		return wreck.isEnabled();
 	}
 }
