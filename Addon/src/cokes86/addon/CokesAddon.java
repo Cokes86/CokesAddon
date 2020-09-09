@@ -15,6 +15,7 @@ import org.bukkit.event.Listener;
 
 import cokes86.addon.ability.*;
 import cokes86.addon.ability.remake.Remaking;
+import cokes86.addon.configuration.addon.Config;
 import cokes86.addon.configuration.gamemode.GameConfiguration;
 import cokes86.addon.gamemodes.addon.debug.DebugWar;
 import cokes86.addon.gamemodes.addon.standard.AddonAbilityWar;
@@ -113,7 +114,9 @@ public class CokesAddon extends Addon implements Listener {
 			try {
 				AddonAbilityFactory.nameValues();
 				AddonAbilityFactory.nameSynergyValues();
+				AddonAbilityFactory.getAddonRemaking();
 				GameConfiguration.load();
+				Config.load();
 				
 				CokesAbility.config.update();
 				CokesSynergy.config.update();

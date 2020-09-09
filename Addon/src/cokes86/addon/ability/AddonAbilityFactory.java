@@ -6,6 +6,8 @@ import cokes86.addon.ability.list.*;
 import cokes86.addon.ability.list.phantomthief.PhantomThief;
 import cokes86.addon.ability.remake.Remaking;
 import cokes86.addon.ability.synergy.*;
+import cokes86.addon.configuration.addon.Config;
+import cokes86.addon.configuration.addon.Config.Nodes;
 import daybreak.abilitywar.ability.*;
 import daybreak.abilitywar.ability.list.*;
 import daybreak.abilitywar.game.list.mix.synergy.*;
@@ -97,6 +99,10 @@ public class AddonAbilityFactory {
 			if (AbilityFactory.isRegistered(clazz)) {
 				AbilityManifest am = clazz.getAnnotation(AbilityManifest.class);
 				remake.put(am.name(), clazz);
+				
+				if (Config.getBoolean(Nodes.ALLOW_REMAKE_ABILITY_IN_GAME)) {
+					AbilityList.registerAbility(clazz);
+				}
 			} else {
 				System.out.println("등록에 실패하였습니다. : "+clazz.getName());
 			}
@@ -135,6 +141,10 @@ public class AddonAbilityFactory {
 	
 	public static List<Class<? extends CokesSynergy>> getAddonSynergies() {
 		return new ArrayList<>(synergies.values());
+	}
+	
+	public static List<Class<? extends Remaking>> getAddonRemaking() {
+		return new ArrayList<>(remake.values());
 	}
 	
 	public static List<String> nameValues() {

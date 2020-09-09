@@ -97,6 +97,10 @@ public class PhantomThief extends CokesAbility implements ActiveHandler, TargetH
 	final Cooldown c = new Cooldown(cooldown.getValue());
 	final Duration phantom_1 = new Phantom1(), phantom_2 = new Phantom2();
 	AbstractGame.Participant target;
+	
+	public AbilityBase getStealedAbility() {
+		return newAbility;
+	}
 
 	public static boolean initPhantomThief() {
 		try {
@@ -343,19 +347,36 @@ public class PhantomThief extends CokesAbility implements ActiveHandler, TargetH
 								if (mix.getFirst() != null && mix.getFirst().getClass().equals(PhantomThief.class)) {
 									first = true;
 									continued = targetMix.getSecond().getClass();
-									newAbility = create(targetMix.getFirst().getClass(), getParticipant());
+									
+									Class<? extends AbilityBase> change = targetMix.getFirst().getClass();
+									if (change == PhantomThief.class) {
+										PhantomThief thief = (PhantomThief) targetMix.getFirst();
+										if (thief.getStealedAbility() != null) change = thief.getStealedAbility().getClass();
+									}
+									newAbility = create(change, getParticipant());
 								} else {
 									continued = targetMix.getFirst().getClass();
-									newAbility = create(targetMix.getSecond().getClass(), getParticipant());
+									Class<? extends AbilityBase> change = targetMix.getSecond().getClass();
+									if (change == PhantomThief.class) {
+										PhantomThief thief = (PhantomThief) targetMix.getSecond();
+										if (thief.getStealedAbility() != null) change = thief.getStealedAbility().getClass();
+									}
+									newAbility = create(change, getParticipant());
 								}
 							}
 							new PhantomThiefTimer(target, first, continued);
 						}
 					} else {
+						Class<? extends AbilityBase> change = target.getAbility().getClass();
+						if (change == PhantomThief.class) {
+							PhantomThief thief = (PhantomThief) target.getAbility();
+							if (thief.getStealedAbility() != null) change = thief.getStealedAbility().getClass();
+						}
 						newAbility = create(target.getAbility().getClass(), getParticipant());
 						new PhantomThiefTimer(target);
 					}
 					newAbility.setRestricted(false);
+					getPlayer().sendMessage("능력을 훔쳤습니다 | 팬텀 시프 => "+newAbility.getName());
 				}
 			} catch (Exception e) {
 				e.printStackTrace();

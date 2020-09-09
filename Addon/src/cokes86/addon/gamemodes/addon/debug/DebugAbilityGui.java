@@ -24,6 +24,7 @@ import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.plugin.Plugin;
 
 import cokes86.addon.ability.AddonAbilityFactory;
+import cokes86.addon.ability.CokesSynergy;
 import cokes86.addon.ability.remake.Remaking;
 import daybreak.abilitywar.ability.AbilityBase;
 import daybreak.abilitywar.ability.AbilityFactory;
@@ -38,18 +39,19 @@ import daybreak.abilitywar.game.list.mix.synergy.Synergy;
 import daybreak.abilitywar.game.list.mix.synergy.SynergyFactory;
 import daybreak.abilitywar.utils.base.Messager;
 import daybreak.abilitywar.utils.base.RegexReplacer;
+import daybreak.abilitywar.utils.base.minecraft.item.builder.ItemBuilder;
 import daybreak.abilitywar.utils.base.reflect.ReflectionUtil;
-import daybreak.abilitywar.utils.library.item.ItemBuilder;
+import daybreak.abilitywar.utils.library.MaterialX;
 import daybreak.google.common.base.Function;
 
 public class DebugAbilityGui implements Listener {
-	private static final ItemStack PREVIOUS_PAGE = (new ItemBuilder()).type(Material.ARROW)
+	private static final ItemStack PREVIOUS_PAGE = (new ItemBuilder(MaterialX.ARROW))
 			.displayName(ChatColor.AQUA + "이전 페이지").build();
 
-	private static final ItemStack NEXT_PAGE = (new ItemBuilder()).type(Material.ARROW)
+	private static final ItemStack NEXT_PAGE = (new ItemBuilder(MaterialX.ARROW))
 			.displayName(ChatColor.AQUA + "다음 페이지").build();
 
-	private static final ItemStack REMOVE_ABILITY = (new ItemBuilder()).type(Material.BARRIER)
+	private static final ItemStack REMOVE_ABILITY = (new ItemBuilder(MaterialX.BARRIER))
 			.displayName(ChatColor.RED + "능력 제거").build();
 
 	private static final RegexReplacer SQUARE_BRACKET = new RegexReplacer("\\$\\[([^\\[\\]]+)\\]");
@@ -73,6 +75,10 @@ public class DebugAbilityGui implements Listener {
 		for (Class<? extends AbilityBase> ab : AddonAbilityFactory.getAddonSynergies()) {
 			values.put(ab.getAnnotation(AbilityManifest.class).name(), AbilityFactory.getRegistration(ab));
 		}
+		
+		for (Class<? extends AbilityBase> ab : AddonAbilityFactory.getAddonRemaking()) {
+			values.put(ab.getAnnotation(AbilityManifest.class).name(), AbilityFactory.getRegistration(ab));
+		}
 	}
 
 	public DebugAbilityGui(Player p, Participant target, Plugin Plugin) {
@@ -84,6 +90,9 @@ public class DebugAbilityGui implements Listener {
 			values.put(ab.getAnnotation(AbilityManifest.class).name(), AbilityFactory.getRegistration(ab));
 		}
 		for (Class<? extends AbilityBase> ab : AddonAbilityFactory.getAddonSynergies()) {
+			values.put(ab.getAnnotation(AbilityManifest.class).name(), AbilityFactory.getRegistration(ab));
+		}
+		for (Class<? extends AbilityBase> ab : AddonAbilityFactory.getAddonRemaking()) {
 			values.put(ab.getAnnotation(AbilityManifest.class).name(), AbilityFactory.getRegistration(ab));
 		}
 	}
@@ -110,11 +119,11 @@ public class DebugAbilityGui implements Listener {
 					joiner.add(ChatColor.GOLD + "타겟팅");
 				if (registration.hasFlag(Flag.BETA))
 					joiner.add(ChatColor.DARK_AQUA + "베타");
-				if (registration.getAbilityClass().getSuperclass().equals(Synergy.class)) {
+				if (registration.getAbilityClass().getSuperclass().equals(CokesSynergy.class)) {
 					joiner.add(ChatColor.YELLOW + "시너지");
 					itemStack.setType(Material.DIAMOND_BLOCK);
 				}
-				if (registration.getAbilityClass().getSuperclass().equals(Synergy.class)) {
+				if (registration.getAbilityClass().getSuperclass().equals(Remaking.class)) {
 					joiner.add(ChatColor.GRAY + "리메이크");
 					itemStack.setType(Material.IRON_BLOCK);
 				}

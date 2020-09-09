@@ -1,16 +1,28 @@
 package cokes86.addon.ability.list;
 
 import java.awt.Color;
-import java.util.ArrayList;
-import java.util.Random;
+import java.util.Map;
+import java.util.TreeMap;
 import java.util.function.Predicate;
 
+import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.HandlerList;
+import org.bukkit.event.Listener;
+import org.bukkit.event.inventory.InventoryClickEvent;
+import org.bukkit.event.inventory.InventoryCloseEvent;
+import org.bukkit.event.player.PlayerQuitEvent;
+import org.bukkit.inventory.Inventory;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
 
 import cokes86.addon.ability.CokesAbility;
+import daybreak.abilitywar.AbilityWar;
 import daybreak.abilitywar.ability.AbilityManifest;
 import daybreak.abilitywar.ability.AbilityManifest.Rank;
 import daybreak.abilitywar.ability.AbilityManifest.Species;
@@ -19,27 +31,35 @@ import daybreak.abilitywar.game.AbstractGame;
 import daybreak.abilitywar.game.AbstractGame.Participant;
 import daybreak.abilitywar.game.manager.object.DeathManager;
 import daybreak.abilitywar.game.team.interfaces.Teamable;
+import daybreak.abilitywar.utils.base.Messager;
+import daybreak.abilitywar.utils.base.concurrent.TimeUnit;
 import daybreak.abilitywar.utils.base.math.LocationUtil;
 import daybreak.abilitywar.utils.base.math.geometry.Circle;
+import daybreak.abilitywar.utils.base.minecraft.item.Skulls;
+import daybreak.abilitywar.utils.base.minecraft.item.builder.ItemBuilder;
 import daybreak.abilitywar.utils.base.minecraft.nms.NMS;
+import daybreak.abilitywar.utils.library.MaterialX;
 import daybreak.abilitywar.utils.library.ParticleLib;
 
-@AbilityManifest(
-		name = "소환사",
-		rank = Rank.A,
-		species = Species.HUMAN,
-		explain = {"철괴 우클릭 시 자신을 제외한 참가자 1명을 $[duration] 뒤에 소환합니다.",
+@AbilityManifest(name = "소환사", rank = Rank.A, species = Species.HUMAN, explain = {
+		"철괴 우클릭 시 자신을 제외한 참가자 1명을 선택하여 $[duration] 뒤에 소환합니다. $[cooldown]",
 		"소환되는 위치는 능력을 발동한 시점의 위치입니다.",
-		"이 능력은 게임 중 1회 사용할 수 있습니다."}
+		"플레이어를 선택하지 않고 발동하지 않을 시 3초의 쿨타임이 적용됩니다."
+}
 )
 public class Summoner extends CokesAbility implements ActiveHandler {
 	public static Config<Integer> duration = new Config<Integer>(Summoner.class, "대기시간", 3, 2) {
 		public boolean condition(Integer value) {
 			return value >= 0;
 		}
+	}, cooldown = new Config<Integer>(Summoner.class, "쿨타임", 150, 1) {
+		public boolean condition(Integer value) {
+			return value >= 0;
+		}
 	};
-	private Participant target;
-	private boolean usable = true;
+	private SummonSelectTimer active = new SummonSelectTimer();
+	private SummonTimer summon = new SummonTimer();
+	private Cooldown cool = new Cooldown(cooldown.getValue());
 
 	public Summoner(Participant arg0) {
 		super(arg0);
@@ -65,41 +85,146 @@ public class Summoner extends CokesAbility implements ActiveHandler {
 
 	@Override
 	public boolean ActiveSkill(Material arg0, ClickType arg1) {
-		if (arg0.equals(Material.IRON_INGOT) && arg1.equals(ClickType.RIGHT_CLICK) && !Active.isRunning() && usable) {
-			AbstractGame g = getGame();
-			ArrayList<Participant> par = new ArrayList<>(g.getParticipants());
-			par.removeIf(p -> !predicate.test(p.getPlayer()));
-			Random r = new Random();
-
-			if (par.size() > 0) {
-				target = par.get(r.nextInt(par.size()));
-				getPlayer().sendMessage(target.getPlayer().getName()+"님을 소환합니다.");
-				Active.start();
-				return true;
-			} else {
-				getPlayer().sendMessage("자신을 제외한 플레이어가 존재하지 않습니다.");
-				return false;
-			}
+		if (arg0.equals(Material.IRON_INGOT) && arg1.equals(ClickType.RIGHT_CLICK) && !active.isRunning() && !cool.isCooldown() && !summon.isRunning()) {
+			active.start();
 		}
 		return false;
 	}
+	
+	class SummonSelectTimer extends AbilityTimer implements Listener {
+		private final ItemStack PREVIOUS_PAGE = (new ItemBuilder(MaterialX.ARROW))
+				.displayName(ChatColor.AQUA + "이전 페이지").build();
 
-	AbilityTimer Active = new AbilityTimer(duration.getValue()) {
-		Location location;
-		double y = 0;
-		boolean up = true;
-
-		@Override
-		protected void onEnd() {
-			NMS.clearTitle(target.getPlayer());
-			target.getPlayer().teleport(location);
-			onSilentEnd();
-			usable = false;
+		private final ItemStack NEXT_PAGE = (new ItemBuilder(MaterialX.ARROW))
+				.displayName(ChatColor.AQUA + "다음 페이지").build();
+		
+		private final Map<String, Participant> values;
+		private int currentPage = 1;
+		private Inventory gui;
+		private int maxPage;
+		
+		public SummonSelectTimer() {
+			super();
+			this.setPeriod(TimeUnit.TICKS, 1);
+			values = new TreeMap<>();
+			gui = Bukkit.createInventory(null, 54, "§r소환사");
+		}
+		
+		protected void onStart() {
+			Bukkit.getPluginManager().registerEvents(this, AbilityWar.getPlugin());
+			getPlayer().openInventory(gui);
 		}
 
 		@Override
 		protected void run(int arg0) {
-		    if (up && y >= 2) {
+			values.clear();
+			for (Participant p : getGame().getParticipants()) {
+				if (p.equals(getParticipant())) continue;
+				if (predicate.test(p.getPlayer())) values.put(p.getPlayer().getName(), p);
+			}
+			if (values.size() == 0) {
+				getPlayer().sendMessage("소환활 플레이어가 존재하지 않습니다.");
+				stop(true);
+			}
+			maxPage = (this.values.size() - 1) / 36 + 1;
+			placeItem(currentPage);
+		}
+		
+		private void placeItem(int page) {
+			gui.clear();
+			if (maxPage < page)
+				page = 1;
+			if (page < 1)
+				page = 1;
+			
+			this.currentPage = page;
+			int count = 0;
+			
+			for (Map.Entry<String, Participant> entry : this.values.entrySet()) {
+				if (count / 36 == page - 1) {
+					ItemStack stack = Skulls.createSkull(entry.getKey());
+					final ItemMeta meta = stack.getItemMeta();
+					meta.setDisplayName("§f"+entry.getKey());
+					meta.setLore(Messager.asList("§f>> 소환할려면 좌클릭하세요."));
+					stack.setItemMeta(meta);
+					gui.setItem(count % 36, stack);
+				}
+			}
+			
+			if (page > 1)
+				gui.setItem(48, PREVIOUS_PAGE);
+			if (page != maxPage)
+				gui.setItem(50, NEXT_PAGE);
+			
+			ItemStack stack = new ItemStack(Material.PAPER, 1);
+			ItemMeta meta = stack.getItemMeta();
+			meta.setDisplayName(ChatColor.translateAlternateColorCodes('&', "&6페이지 &e" + page + " &6/ &e" + maxPage));
+			stack.setItemMeta(meta);
+			gui.setItem(49, stack);
+		}
+		
+		protected void onEnd() {
+			onSilentEnd();
+		}
+		
+		protected void onSilentEnd() {
+			HandlerList.unregisterAll(this);
+		}
+		
+		@EventHandler
+		private void onInventoryClose(InventoryCloseEvent e) {
+			if (e.getInventory().equals(gui)) {
+				stop(false);
+				if (!summon.isRunning()) {
+					cool.start();
+					cool.setCooldown(3);
+				}
+			}
+		}
+
+		@EventHandler
+		private void onQuit(PlayerQuitEvent e) {
+			if (e.getPlayer().getUniqueId().equals(getPlayer().getUniqueId())) stop(false);
+		}
+		
+		@EventHandler
+		private void onInventoryClick(InventoryClickEvent e) {
+			if (e.getInventory().equals(gui)) {
+				e.setCancelled(true);
+				if (e.getCurrentItem() != null && e.getCurrentItem().hasItemMeta() && e.getCurrentItem().getItemMeta().hasDisplayName()) {
+					if (values.keySet().contains(ChatColor.stripColor(e.getCurrentItem().getItemMeta().getDisplayName()))) {
+						Participant target = values.get(ChatColor.stripColor(e.getCurrentItem().getItemMeta().getDisplayName()));
+						summon.setTarget(target).start();
+						getPlayer().closeInventory();
+					} else if (e.getCurrentItem().getItemMeta().getDisplayName().equals(ChatColor.AQUA + "다음 페이지")) {
+						placeItem(currentPage + 1);
+					} else if (e.getCurrentItem().getItemMeta().getDisplayName().equals(ChatColor.AQUA + "이전 페이지")) {
+						placeItem(currentPage - 1);
+					}
+				}
+			}
+		}
+	}
+	
+	class SummonTimer extends AbilityTimer {
+		private Participant target;
+		private Location location;
+		private double y = 0;
+		private boolean up = true;
+		
+		public SummonTimer() {
+			super(duration.getValue() * 20);
+			this.setPeriod(TimeUnit.TICKS, 1);
+		}
+		
+		protected void onStart() {
+			NMS.sendTitle(target.getPlayer(), "경   고", "소환사가 당신을 소환하고 있습니다", 5, duration.getValue() * 20 - 10, 5);
+			location = getPlayer().getLocation();
+		}
+
+		@Override
+		protected void run(int arg0) {
+			if (up && y >= 2) {
 		    	up = false;
 			} else if (!up && y <= 0) {
 		    	up = true;
@@ -116,11 +241,20 @@ public class Summoner extends CokesAbility implements ActiveHandler {
 				ParticleLib.REDSTONE.spawnParticle(particle, ParticleLib.RGB.fromRGB(Color.CYAN.getRGB()));
 			}
 		}
-
-		@Override
-		protected void onStart() {
-			NMS.sendTitle(target.getPlayer(), "경   고", "소환사가 당신을 소환하고 있습니다", 5, duration.getValue() * 20 - 10, 5);
-			location = getPlayer().getLocation();
+		
+		protected void onEnd() {
+			target.getPlayer().teleport(location);
+			onSilentEnd();
+			cool.start();
 		}
-	};
+		
+		protected void onSilentEnd() {
+			NMS.clearTitle(target.getPlayer());
+		}
+		
+		protected SummonTimer setTarget(Participant participant) {
+			this.target = participant;
+			return this;
+		}
+	}
 }

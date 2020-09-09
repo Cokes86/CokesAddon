@@ -23,14 +23,15 @@ import daybreak.abilitywar.game.AbstractGame.Participant;
 import daybreak.abilitywar.game.AbstractGame.Participant.ActionbarNotification.ActionbarChannel;
 import daybreak.abilitywar.utils.base.concurrent.TimeUnit;
 import daybreak.abilitywar.utils.base.minecraft.damage.Damages;
+import daybreak.abilitywar.utils.base.minecraft.item.builder.ItemBuilder;
+import daybreak.abilitywar.utils.library.MaterialX;
 import daybreak.abilitywar.utils.library.PotionEffects;
-import daybreak.abilitywar.utils.library.item.ItemBuilder;
 
 @AbilityManifest(name = "물고기", rank = Rank.B, species = Species.ANIMAL, explain = {
-		"능력 활성화 - 철푸덕: 물갈퀴II 인챈트 쿠폰을 획득, 신발 착용중 쿠폰 우클 시 해당 인챈트가 부여됨.",
-		"물 속 - 첨벙첨벙: 이동속도 1.5배. 수중호흡 효과를 얻으며 받는 대미지가 1 감소.",
-		"물 밖 - 파닥파닥: 구속효과가 걸리며 이후 3초마다 수분이 감소. 감소할 수분이 없을 경우 1의 고정피해.",
-		"철괴 좌클릭 - 촤아악: 자신의 위치에 물을 설치. $[cool]"
+		"§7능력 활성화 §8- §c철푸덕§r: 물갈퀴II 인챈트 쿠폰을 획득, 신발 착용중 쿠폰 우클 시 해당 인챈트가 부여됨.",
+		"§7물 속 §8- §c첨벙첨벙§r: 이동속도 1.5배. 수중호흡 효과를 얻으며 받는 대미지가 1 감소.",
+		"§7물 밖 §8- §c파닥파닥§r: 구속효과가 걸리며 이후 3초마다 수분이 감소. 감소할 수분이 없을 경우 1의 고정피해.",
+		"§7철괴 좌클릭 §8- §c촤아악§r: 자신의 위치에 물을 설치. $[cool]"
 })
 public class Fish extends CokesAbility implements ActiveHandler {
 	private static final Config<Integer> cool =  new Config<Integer>(Fish.class, "쿨타임", 30, 1) {
@@ -43,7 +44,7 @@ public class Fish extends CokesAbility implements ActiveHandler {
 	private final Cooldown c = new Cooldown(cool.getValue());
 	private int moisture = 10;
 	
-	private ItemStack coupon = (new ItemBuilder()).type(Material.PAPER).displayName("§a물갈퀴III 인챈트 쿠폰").build();
+	private static final ItemStack coupon = new ItemBuilder(MaterialX.PAPER).displayName("§a물갈퀴III 인챈트 쿠폰").build();
 	private boolean kit = true;
 
 	public Fish(Participant arg0) {
@@ -126,8 +127,8 @@ public class Fish extends CokesAbility implements ActiveHandler {
 	
 	@SubscribeEvent
 	public void onPlayerMove(PlayerMoveEvent e) {
-		if (e.getFrom().getBlock().getType().name().endsWith("WATER") && e.getTo().getBlock().getType().name().endsWith("WATER")) {
-			e.setTo(e.getTo().multiply(1.5));
+		if (e.getPlayer().equals(getPlayer()) && e.getFrom().getBlock().getType().name().endsWith("WATER") && e.getTo().getBlock().getType().name().endsWith("WATER")) {
+			getPlayer().setVelocity(getPlayer().getLocation().getDirection().multiply(1.5));
 		}
 	}
 	

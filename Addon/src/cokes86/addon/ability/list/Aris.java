@@ -38,7 +38,7 @@ import daybreak.abilitywar.utils.base.minecraft.entity.health.Healths;
 
 @AbilityManifest(name = "아리스", rank = Rank.B, species = Species.HUMAN, explain = {
 		"§7패시브 - §c체인§r: 5초마다 §d사슬 카운터§f를 1씩 상승하며 최대 $[max_count]만큼 상승합니다.",
-		"  액티브 지속시간, 쿨타임 동안은 §d사슬 카운터§f가 증가하지 않는다.",
+		"  엑티브 지속시간, 쿨타임 동안은 §d사슬 카운터§f가 증가하지 않는다.",
 		"§7철괴 우클릭 - §c사슬무덤§r: $[range]블럭 이내 모든 플레이어를 공중에 고정시킵니다. $[cool]",
 		"  공중에는 누적된 §d사슬 카운터§f만큼 초로 환산되어 고정시키며,",
 		"  (§d사슬 카운터§f/2 + 4)블럭만큼 위로 고정시킵니다.",

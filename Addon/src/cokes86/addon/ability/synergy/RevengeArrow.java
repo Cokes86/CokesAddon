@@ -39,7 +39,7 @@ import daybreak.abilitywar.utils.library.item.ItemLib;
 		"해당 추가화살은 인벤토리의 화살 1개를 소비하여 발사합니다.",
 		"추가 화살은 블럭에 닿거나 플레이어가 공격을 받을 시 사라집니다." })
 public class RevengeArrow extends CokesSynergy {
-	private static final Config<Double> multiply = new Config<Double>(RevengeArrow.class, "배율", 2.0) {
+	private static final Config<Double> multiply = new Config<Double>(RevengeArrow.class, "배율", 1.0) {
 		@Override
 		public boolean condition(Double arg0) {
 			return arg0 > 0;
@@ -68,7 +68,7 @@ public class RevengeArrow extends CokesSynergy {
 					ItemLib.removeItem(getPlayer().getInventory(), Material.ARROW, 1);
 					Vector vector = damager.getLocation().clone().subtract(getPlayer().getLocation().clone()).toVector()
 							.normalize();
-					new Bullet(getPlayer(), getPlayer().getLocation().clone().add(vector.multiply(.25)), vector,
+					new Bullet(getPlayer(), getPlayer().getLocation().clone().add(0, 1.5, 0).add(vector.multiply(.25)), vector,
 							RGB.of(100, 100, 100), e.getDamage() * multiply.getValue()).start();
 				}
 			}

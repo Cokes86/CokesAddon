@@ -31,10 +31,10 @@ import daybreak.abilitywar.utils.base.math.LocationUtil;
 import daybreak.abilitywar.utils.library.SoundLib;
 
 @AbilityManifest(name = "세트", rank = Rank.S, species = Species.GOD, explain = {
-		"패시브 - 전쟁의 여왕: 게임 중 플레이어가 사망할때마다 전쟁스택이 1씩 쌓입니다.",
+		"§7패시브 §8- §c전쟁의 여왕§r: 게임 중 플레이어가 사망할때마다 전쟁스택이 1씩 쌓입니다.",
 		"  남아있는 생존자 대비 얻은 전쟁스택에 비례하여",
 		"  자신이 상대방에게 주는 대미지가 증가합니다 (최대 $[max_damage] 증가)",
-		"철괴 우클릭 - 토벌: 자신 기준 $[range]블럭 이내 모든 플레이어를 자신의 위치로 이동시킨 후",
+		"§7철괴 우클릭 §8- §c토벌§r: 자신 기준 $[range]블럭 이내 모든 플레이어를 자신의 위치로 이동시킨 후",
 		"  남아있는 생존자 대비 얻은 전쟁스택에 반비례하여 끌어당긴 플레이어의",
 		"  주는 대미지가 $[debuff]간 감소하게 됩니다. (최대 $[debuff_max] 증가) $[cool]"})
 public class Seth extends CokesAbility implements ActiveHandler {
@@ -129,7 +129,7 @@ public class Seth extends CokesAbility implements ActiveHandler {
 	@SubscribeEvent
 	public void onEntityDamageByEntity(EntityDamageByEntityEvent e) {
 		if (e.getDamager().equals(getPlayer())) {
-			final double damage = Math.max(9, kill*3/max);
+			final double damage = Math.min(9, kill*3/max);
 			e.setDamage(e.getDamage() + damage);
 		}
 	}
