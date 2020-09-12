@@ -43,8 +43,7 @@ import daybreak.abilitywar.utils.library.ParticleLib;
 
 @AbilityManifest(name = "소환사", rank = Rank.A, species = Species.HUMAN, explain = {
 		"철괴 우클릭 시 자신을 제외한 참가자 1명을 선택하여 $[duration] 뒤에 소환합니다. $[cooldown]",
-		"소환되는 위치는 능력을 발동한 시점의 위치입니다.",
-		"플레이어를 선택하지 않고 발동하지 않을 시 3초의 쿨타임이 적용됩니다."
+		"소환되는 위치는 능력을 발동한 시점의 위치입니다."
 }
 )
 public class Summoner extends CokesAbility implements ActiveHandler {
@@ -149,6 +148,7 @@ public class Summoner extends CokesAbility implements ActiveHandler {
 					stack.setItemMeta(meta);
 					gui.setItem(count % 36, stack);
 				}
+				count++;
 			}
 			
 			if (page > 1)
@@ -175,10 +175,6 @@ public class Summoner extends CokesAbility implements ActiveHandler {
 		private void onInventoryClose(InventoryCloseEvent e) {
 			if (e.getInventory().equals(gui)) {
 				stop(false);
-				if (!summon.isRunning()) {
-					cool.start();
-					cool.setCooldown(3);
-				}
 			}
 		}
 
@@ -195,6 +191,7 @@ public class Summoner extends CokesAbility implements ActiveHandler {
 					if (values.keySet().contains(ChatColor.stripColor(e.getCurrentItem().getItemMeta().getDisplayName()))) {
 						Participant target = values.get(ChatColor.stripColor(e.getCurrentItem().getItemMeta().getDisplayName()));
 						summon.setTarget(target).start();
+						getPlayer().sendMessage(ChatColor.stripColor(e.getCurrentItem().getItemMeta().getDisplayName())+"님을 소환합니다.");
 						getPlayer().closeInventory();
 					} else if (e.getCurrentItem().getItemMeta().getDisplayName().equals(ChatColor.AQUA + "다음 페이지")) {
 						placeItem(currentPage + 1);

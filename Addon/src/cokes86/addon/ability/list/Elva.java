@@ -12,6 +12,7 @@ import org.bukkit.World;
 import org.bukkit.entity.*;
 import org.bukkit.event.entity.EntityShootBowEvent;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.projectiles.ProjectileSource;
 import org.bukkit.util.Vector;
 
 import cokes86.addon.ability.CokesAbility;
@@ -26,6 +27,7 @@ import daybreak.abilitywar.utils.base.ProgressBar;
 import daybreak.abilitywar.utils.base.concurrent.TimeUnit;
 import daybreak.abilitywar.utils.base.math.LocationUtil;
 import daybreak.abilitywar.utils.base.math.geometry.Line;
+import daybreak.abilitywar.utils.base.minecraft.entity.decorator.Deflectable;
 import daybreak.abilitywar.utils.library.ParticleLib;
 import daybreak.abilitywar.utils.library.ParticleLib.RGB;
 import daybreak.abilitywar.utils.library.SoundLib;
@@ -211,9 +213,26 @@ public class Elva extends CokesAbility {
 			entity.remove();
 		}
 
-		public class ArrowEntity extends CustomEntity {
+		public class ArrowEntity extends CustomEntity implements Deflectable{
 			public ArrowEntity(World world, double x, double y, double z) {
 				getGame().super(world, x, y, z);
+			}
+
+			@Override
+			public Vector getDirection() {
+				return Bullet.this.forward;
+			}
+
+			@Override
+			public ProjectileSource getShooter() {
+				return Bullet.this.shooter;
+			}
+
+			@Override
+			public void onDeflect(Participant arg0, Vector arg1) {
+				stop(false);
+				Player deflector = arg0.getPlayer();
+				new Bullet(deflector, lastLocation, arg1, color);
 			}
 		}
 	}

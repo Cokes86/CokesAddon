@@ -103,7 +103,7 @@ public class Disguise extends CokesAbility implements ActiveHandler {
 		if (e.getEntity().equals(getPlayer()) && target != null && damager instanceof Player && !damager.equals(getPlayer())) {
 			check += 1;
 			SoundLib.BELL.playInstrument(getPlayer(), Note.natural(2, Tone.C));
-			if (check == count.getValue()) {
+			if (check >= count.getValue()) {
 				target = null;
 				check = 0;
 				getPlayer().sendMessage("변장이 풀렸습니다.");
