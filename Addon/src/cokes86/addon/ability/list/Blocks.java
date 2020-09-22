@@ -1,16 +1,5 @@
 package cokes86.addon.ability.list;
 
-import org.bukkit.Bukkit;
-import org.bukkit.Material;
-import org.bukkit.enchantments.Enchantment;
-import org.bukkit.entity.Player;
-import org.bukkit.event.entity.EntityDamageByBlockEvent;
-import org.bukkit.event.entity.EntityDamageByEntityEvent;
-import org.bukkit.event.entity.EntityDamageEvent;
-import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
-import org.bukkit.inventory.ItemStack;
-import org.bukkit.util.Vector;
-
 import cokes86.addon.ability.CokesAbility;
 import daybreak.abilitywar.AbilityWar;
 import daybreak.abilitywar.ability.AbilityManifest;
@@ -22,17 +11,24 @@ import daybreak.abilitywar.game.AbstractGame.Participant;
 import daybreak.abilitywar.utils.base.concurrent.TimeUnit;
 import daybreak.abilitywar.utils.library.MaterialX;
 import daybreak.abilitywar.utils.library.PotionEffects;
+import org.bukkit.Bukkit;
+import org.bukkit.Material;
+import org.bukkit.enchantments.Enchantment;
+import org.bukkit.entity.Player;
+import org.bukkit.event.entity.EntityDamageByBlockEvent;
+import org.bukkit.event.entity.EntityDamageByEntityEvent;
+import org.bukkit.event.entity.EntityDamageEvent;
+import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.util.Vector;
 
 @AbilityManifest(name = "블럭", rank = Rank.A, species = Species.OTHERS, explain = {
 		"철괴 우클릭시 자신의 상태를 변화시킵니다. 자신의 상태에따라 추가효과를 얻습니다.", "§7돌 §f: 받는 대미지가 $[stone]% 감소합니다.",
 		"곡괭이로 자신이 공격받을 시 그 재료로 만든 검의 데미지를 받습니다.", "이때, 효율은 날카로움 취급을 받으며, 공속에 영향을 받지 않습니다.",
 		"§6모래 §f: 낙하 대미지를 입지 않습니다. 피해를 입을 시 $[inv]초간 무적상태가 되어 무적상태에선 넉백당하지 않습니다.",
 		"§f유리 §f: 받는 대미지가 $[glass]% 증폭합니다. 유리상태동안 자신은 블라인드 버프를 얻습니다. 또한 스킬의 대상이 되지 않습니다.",
-		"§5옵시디언 §f: 폭발피해를 입지 않습니다. 넉백당하지 않습니다." })
+		"§5옵시디언 §f: 폭발피해를 입지 않습니다. 넉백당하지 않습니다."})
 public class Blocks extends CokesAbility implements ActiveHandler {
-	protected Condition condition = Condition.STONE;
-	protected Participant.ActionbarNotification.ActionbarChannel ac = this.newActionbarChannel();
-
 	private static final Config<Integer> stone = new Config<Integer>(Blocks.class, "돌_받는대미지감소량(%)", 20) {
 		@Override
 		public boolean condition(Integer value) {
@@ -51,6 +47,21 @@ public class Blocks extends CokesAbility implements ActiveHandler {
 			return value > 0 && Math.ceil(value * 10) == value * 10;
 		}
 	};
+	protected Condition condition = Condition.STONE;
+	protected Participant.ActionbarNotification.ActionbarChannel ac = this.newActionbarChannel();
+	AbilityTimer passive = new AbilityTimer() {
+		@Override
+		protected void run(int count) {
+			ac.update("상태: " + condition.getName());
+		}
+	}.setPeriod(TimeUnit.TICKS, 1);
+	AbilityTimer invTimer = new AbilityTimer() {
+		@Override
+		protected void run(int count) {
+			if (count == inv.getValue() * 20)
+				this.stop(false);
+		}
+	}.setPeriod(TimeUnit.TICKS, 1);
 
 	public Blocks(Participant arg0) {
 		super(arg0);
@@ -59,31 +70,16 @@ public class Blocks extends CokesAbility implements ActiveHandler {
 
 	protected void onUpdate(Update update) {
 		switch (update) {
-		case RESTRICTION_CLEAR:
-			passive.start();
-			break;
-		case ABILITY_DESTROY:
-		case RESTRICTION_SET:
-			PotionEffects.INVISIBILITY.removePotionEffect(getPlayer());
-			break;
-		default:
+			case RESTRICTION_CLEAR:
+				passive.start();
+				break;
+			case ABILITY_DESTROY:
+			case RESTRICTION_SET:
+				PotionEffects.INVISIBILITY.removePotionEffect(getPlayer());
+				break;
+			default:
 		}
 	}
-
-	AbilityTimer passive = new AbilityTimer() {
-		@Override
-		protected void run(int count) {
-			ac.update("상태: " + condition.getName());
-		}
-	}.setPeriod(TimeUnit.TICKS, 1);
-
-	AbilityTimer invTimer = new AbilityTimer() {
-		@Override
-		protected void run(int count) {
-			if (count == inv.getValue() * 20)
-				this.stop(false);
-		}
-	}.setPeriod(TimeUnit.TICKS, 1);
 
 	@Override
 	public boolean ActiveSkill(Material arg0, ClickType arg1) {
@@ -196,11 +192,11 @@ public class Blocks extends CokesAbility implements ActiveHandler {
 
 		String name;
 
-		protected abstract Condition next();
-
 		Condition(String name) {
 			this.name = name;
 		}
+
+		protected abstract Condition next();
 
 		protected String getName() {
 			return name;
@@ -220,14 +216,6 @@ public class Blocks extends CokesAbility implements ActiveHandler {
 			this.m = m;
 		}
 
-		public Material getPickaxeMaterial() {
-			return m;
-		}
-
-		public double getDamage() {
-			return damage;
-		}
-
 		public static Pickaxe getPickaxe(Material m) {
 			for (Pickaxe p : Pickaxe.values()) {
 				if (p.getPickaxeMaterial().equals(m)) {
@@ -235,6 +223,14 @@ public class Blocks extends CokesAbility implements ActiveHandler {
 				}
 			}
 			return null;
+		}
+
+		public Material getPickaxeMaterial() {
+			return m;
+		}
+
+		public double getDamage() {
+			return damage;
 		}
 	}
 }

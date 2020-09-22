@@ -1,20 +1,5 @@
 package cokes86.addon.ability.synergy;
 
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.Map;
-import java.util.function.Predicate;
-
-import org.bukkit.ChatColor;
-import org.bukkit.Location;
-import org.bukkit.Material;
-import org.bukkit.entity.Entity;
-import org.bukkit.entity.LivingEntity;
-import org.bukkit.entity.Player;
-import org.bukkit.event.entity.EntityDamageByEntityEvent;
-import org.bukkit.event.entity.EntityDamageEvent;
-import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
-
 import cokes86.addon.ability.CokesSynergy;
 import daybreak.abilitywar.ability.AbilityManifest;
 import daybreak.abilitywar.ability.AbilityManifest.Rank;
@@ -30,6 +15,20 @@ import daybreak.abilitywar.game.team.interfaces.Teamable;
 import daybreak.abilitywar.utils.base.concurrent.TimeUnit;
 import daybreak.abilitywar.utils.base.math.LocationUtil;
 import daybreak.abilitywar.utils.library.SoundLib;
+import org.bukkit.ChatColor;
+import org.bukkit.Location;
+import org.bukkit.Material;
+import org.bukkit.entity.Entity;
+import org.bukkit.entity.LivingEntity;
+import org.bukkit.entity.Player;
+import org.bukkit.event.entity.EntityDamageByEntityEvent;
+import org.bukkit.event.entity.EntityDamageEvent;
+import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
+
+import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.Map;
+import java.util.function.Predicate;
 
 @AbilityManifest(name = "공중 분해", rank = Rank.A, species = Species.HUMAN, explain = {
 		"5초마다 §d사슬 카운터§f를 1씩 상승하며 최대 8만큼 상승합니다.",
@@ -49,9 +48,6 @@ public class AirDisintegration extends CokesSynergy implements ActiveHandler {
 			return arg0 > 0;
 		}
 	};
-
-	int chain = 0;
-	ActionbarChannel ac = newActionbarChannel();
 	private final Predicate<Entity> STRICT_PREDICATE = entity -> {
 		if (entity.equals(getPlayer())) return false;
 		if (entity instanceof Player) {
@@ -68,10 +64,10 @@ public class AirDisintegration extends CokesSynergy implements ActiveHandler {
 		}
 		return true;
 	};
-	private LinkedList<LivingEntity> entities = null;
+	int chain = 0;
+	ActionbarChannel ac = newActionbarChannel();
 	boolean falling = false;
 	Cooldown cooldown = new Cooldown(cool.getValue());
-
 	AbilityTimer passive = new AbilityTimer() {
 
 		@Override
@@ -89,14 +85,14 @@ public class AirDisintegration extends CokesSynergy implements ActiveHandler {
 		}
 
 	};
-	
+	private LinkedList<LivingEntity> entities = null;
 	private final AbilityTimer skill = new AbilityTimer() {
 		final Map<LivingEntity, Location> stun = new HashMap<>();
-		
+
 		public void onStart() {
 			passive.stop(false);
 			for (LivingEntity entity : entities) {
-				stun.put(entity, entity.getLocation().clone().add(0, chain/2.0 + 5, 0));
+				stun.put(entity, entity.getLocation().clone().add(0, chain / 2.0 + 5, 0));
 			}
 		}
 
@@ -110,7 +106,7 @@ public class AirDisintegration extends CokesSynergy implements ActiveHandler {
 					if (count % 3 == 0) {
 						LivingEntity e = entities.remove();
 						getPlayer().teleport(e);
-						e.damage(chain*2, getPlayer());
+						e.damage(chain * 2, getPlayer());
 						SoundLib.ENTITY_PLAYER_ATTACK_SWEEP.playSound(getPlayer());
 						SoundLib.ENTITY_EXPERIENCE_ORB_PICKUP.playSound(getPlayer());
 						stun.remove(e);
@@ -151,7 +147,7 @@ public class AirDisintegration extends CokesSynergy implements ActiveHandler {
 		}
 		return false;
 	}
-	
+
 	@SubscribeEvent
 	public void onEntityDamage(EntityDamageEvent e) {
 		if (e.getCause().equals(DamageCause.FALL) && falling && e.getEntity().equals(getPlayer())) {
@@ -165,7 +161,7 @@ public class AirDisintegration extends CokesSynergy implements ActiveHandler {
 			}
 		}
 	}
-	
+
 	@SubscribeEvent
 	public void onEntityDamageByEntity(EntityDamageByEntityEvent e) {
 		if (e.getEntity() instanceof LivingEntity) {

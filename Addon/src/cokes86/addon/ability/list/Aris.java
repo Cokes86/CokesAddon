@@ -1,21 +1,5 @@
 package cokes86.addon.ability.list;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.function.Predicate;
-
-import org.bukkit.Location;
-import org.bukkit.Material;
-import org.bukkit.entity.Entity;
-import org.bukkit.entity.Player;
-import org.bukkit.event.entity.EntityDamageByBlockEvent;
-import org.bukkit.event.entity.EntityDamageByEntityEvent;
-import org.bukkit.event.entity.EntityDamageEvent;
-import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
-import org.bukkit.event.player.PlayerMoveEvent;
-
 import cokes86.addon.ability.CokesAbility;
 import daybreak.abilitywar.ability.AbilityManifest;
 import daybreak.abilitywar.ability.AbilityManifest.Rank;
@@ -35,6 +19,21 @@ import daybreak.abilitywar.utils.base.concurrent.TimeUnit;
 import daybreak.abilitywar.utils.base.math.LocationUtil;
 import daybreak.abilitywar.utils.base.minecraft.damage.Damages;
 import daybreak.abilitywar.utils.base.minecraft.entity.health.Healths;
+import org.bukkit.Location;
+import org.bukkit.Material;
+import org.bukkit.entity.Entity;
+import org.bukkit.entity.Player;
+import org.bukkit.event.entity.EntityDamageByBlockEvent;
+import org.bukkit.event.entity.EntityDamageByEntityEvent;
+import org.bukkit.event.entity.EntityDamageEvent;
+import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
+import org.bukkit.event.player.PlayerMoveEvent;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.function.Predicate;
 
 @AbilityManifest(name = "아리스", rank = Rank.B, species = Species.HUMAN, explain = {
 		"§7패시브 - §c체인§r: 5초마다 §d사슬 카운터§f를 1씩 상승하며 최대 $[max_count]만큼 상승합니다.",
@@ -83,25 +82,32 @@ public class Aris extends CokesAbility implements ActiveHandler {
 
 	private final Map<Player, Pair<Location, ActionbarChannel>> holding = new HashMap<>();
 
-	int chain = 0;
-	ActionbarChannel ac = newActionbarChannel();
+	private int chain = 0;
+	private final ActionbarChannel actionbarChannel = newActionbarChannel();
+	private final ChainTimer chainTimer = new ChainTimer();
+	private final Cooldown cooldown = new Cooldown(cool.getValue(), CooldownDecrease._50);
+	private final AbilityTimer passive = new AbilityTimer() {
+		final int count = (int) (5 * (WRECK.isEnabled(getGame()) ? WRECK.calculateDecreasedAmount(50) : 1));
 
-	AbilityTimer passive = new AbilityTimer() {
-		int count = (int) (5 * (WRECK.isEnabled(getGame()) ? WRECK.calculateDecreasedAmount(50) : 1));
 		@Override
 		protected void run(int arg0) {
-			if (!c.isRunning()) {
+			if (!cooldown.isRunning()) {
 				if (arg0 % count == 0) {
 					chain++;
 					if (chain >= max_count.getValue())
 						chain = max_count.getValue();
 				}
-				ac.update("§d사슬 카운터: " + chain);
+				actionbarChannel.update("§d사슬 카운터: " + chain);
 			} else {
-				ac.update(null);
+				actionbarChannel.update(null);
 			}
 		}
 	};
+
+	public Aris(Participant participant) {
+		super(participant);
+		passive.register();
+	}
 
 	public void onUpdate(Update update) {
 		if (update == Update.RESTRICTION_CLEAR) {
@@ -109,28 +115,18 @@ public class Aris extends CokesAbility implements ActiveHandler {
 		}
 	}
 
-	ChainTimer d = new ChainTimer();
-	Cooldown c = new Cooldown(cool.getValue(), CooldownDecrease._50);
-
-	public Aris(Participant participant) {
-		super(participant);
-		passive.register();
-	}
-
 	@Override
-	public boolean ActiveSkill(Material mt, ClickType ct) {
-		if (mt.equals(Material.IRON_INGOT) && ct.equals(ClickType.RIGHT_CLICK)) {
-			if ((!d.isDuration() || d == null) && chain != 0) {
-				List<Player> players = LocationUtil.getNearbyEntities(Player.class, getPlayer().getLocation(), range.getValue(), range.getValue(), predicate);
-				if (players.isEmpty()) {
-					getPlayer().sendMessage("주변에 플레이어가 존재하지 않습니다.");
-					return false;
-				}
-				d.setPlayerList(players);
-				d.start();
-				d.setCount(chain * 20);
-				return true;
+	public boolean ActiveSkill(Material material, ClickType clickType) {
+		if (material.equals(Material.IRON_INGOT) && clickType.equals(ClickType.RIGHT_CLICK) && !chainTimer.isDuration() && chain != 0) {
+			final List<Player> players = LocationUtil.getNearbyEntities(Player.class, getPlayer().getLocation(), range.getValue(), range.getValue(), predicate);
+			if (players.isEmpty()) {
+				getPlayer().sendMessage("주변에 플레이어가 존재하지 않습니다.");
+				return false;
 			}
+			chainTimer.setPlayerList(players);
+			chainTimer.start();
+			chainTimer.setCount(chain * 20);
+			return true;
 		}
 		return false;
 	}
@@ -138,8 +134,7 @@ public class Aris extends CokesAbility implements ActiveHandler {
 	@SubscribeEvent
 	public void onEntityDamage(EntityDamageEvent e) {
 		if (e.getEntity() instanceof Player) {
-			Player t = (Player) e.getEntity();
-			if (holding.containsKey(t)) {
+			if (holding.containsKey(e.getEntity())) {
 				e.setCancelled(true);
 			}
 		}
@@ -147,7 +142,12 @@ public class Aris extends CokesAbility implements ActiveHandler {
 
 	@SubscribeEvent
 	public void onEntityDamageByEntity(EntityDamageByEntityEvent e) {
-		onEntityDamage(e);
+		if (e.getEntity() instanceof Player) {
+			if (holding.containsKey(e.getEntity())) {
+				if (getPlayer().equals(e.getDamager()) && e.getDamage() == 1.000000001) return;
+				e.setCancelled(true);
+			}
+		}
 	}
 
 	@SubscribeEvent
@@ -159,12 +159,12 @@ public class Aris extends CokesAbility implements ActiveHandler {
 	public void onPlayerMove(PlayerMoveEvent e) {
 		if (holding.containsKey(e.getPlayer())) e.setCancelled(true);
 	}
-	
+
 	class ChainTimer extends Duration {
 		private List<Player> players;
 
 		public ChainTimer() {
-			super(Aris.this.chain*20);
+			super(Aris.this.chain * 20);
 			this.setPeriod(TimeUnit.TICKS, 1);
 			this.players = new ArrayList<>();
 		}
@@ -172,21 +172,21 @@ public class Aris extends CokesAbility implements ActiveHandler {
 		@Override
 		protected void onDurationStart() {
 			passive.stop(false);
-			ac.update(null);
+			actionbarChannel.update(null);
 			for (Player p : players) {
-				ActionbarChannel channel = getGame().getParticipant(p).actionbar().newChannel();
-				holding.put(p, Pair.of(p.getLocation().clone().add(0, chain/2.0 + 4, 0), channel));
+				final ActionbarChannel channel = getGame().getParticipant(p).actionbar().newChannel();
+				holding.put(p, Pair.of(p.getLocation().clone().add(0, chain / 2.0 + 4, 0), channel));
 			}
 
 		}
 
 		@Override
-		protected void onDurationProcess(int seconds) {
+		protected void onDurationProcess(int count) {
 			for (Player player : holding.keySet()) {
 				holding.get(player).getRight().update("고정 지속시간: " + TimeUtil.parseTimeAsString(getFixedCount()));
 				player.teleport(holding.get(player).getLeft());
-				if (seconds % 40 == 0 && Damages.canDamage(player, getPlayer(), DamageCause.ENTITY_ATTACK, 1) && player.getHealth() > 1) {
-					Healths.setHealth(player, player.getHealth()-1);
+				if (count % 40 == 0 && Damages.canDamage(player, getPlayer(), DamageCause.ENTITY_ATTACK, 1.000000001) && player.getHealth() > 1) {
+					Healths.setHealth(player, player.getHealth() - 1);
 				}
 			}
 		}
@@ -195,7 +195,7 @@ public class Aris extends CokesAbility implements ActiveHandler {
 		protected void onDurationEnd() {
 			onDurationSilentEnd();
 		}
-		
+
 		@Override
 		protected void onDurationSilentEnd() {
 			for (Player p : holding.keySet()) {
@@ -203,7 +203,7 @@ public class Aris extends CokesAbility implements ActiveHandler {
 			}
 			holding.clear();
 			chain = 0;
-			c.start();
+			cooldown.start();
 			passive.start();
 		}
 

@@ -1,12 +1,5 @@
 package cokes86.addon.ability.list;
 
-import org.bukkit.ChatColor;
-import org.bukkit.Material;
-import org.bukkit.event.entity.EntityDamageByBlockEvent;
-import org.bukkit.event.entity.EntityDamageByEntityEvent;
-import org.bukkit.event.entity.EntityDamageEvent;
-import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
-
 import cokes86.addon.ability.CokesAbility;
 import daybreak.abilitywar.ability.AbilityManifest;
 import daybreak.abilitywar.ability.SubscribeEvent;
@@ -19,6 +12,12 @@ import daybreak.abilitywar.game.manager.object.WRECK;
 import daybreak.abilitywar.utils.base.concurrent.TimeUnit;
 import daybreak.abilitywar.utils.library.SoundLib;
 import daybreak.google.common.base.Strings;
+import org.bukkit.ChatColor;
+import org.bukkit.Material;
+import org.bukkit.event.entity.EntityDamageByBlockEvent;
+import org.bukkit.event.entity.EntityDamageByEntityEvent;
+import org.bukkit.event.entity.EntityDamageEvent;
+import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
 
 @AbilityManifest(name = "케일리", rank = AbilityManifest.Rank.S, species = AbilityManifest.Species.HUMAN, explain = {
 		"자신은 폭발공격을 받지 않습니다.", "$[dura]마다 스위치를 1개씩 얻으며 최대 $[max_switch]개까지 얻습니다.",
@@ -50,32 +49,11 @@ public class Keily extends CokesAbility implements ActiveHandler {
 			return value > 0.0;
 		}
 	};
-	
-	boolean falling = false;
 	final int count = WRECK.isEnabled(GameManager.getGame()) ? (int) ((100 - Configuration.Settings.getCooldownDecrease().getPercentage()) / 100.0 * dura.getValue()) : dura.getValue();
-
-	private final AbilityTimer stackAdder = new AbilityTimer() {
-		@Override
-		protected void run(int count) {
-			if (!c.isRunning() && !flying.isRunning()) {
-				if (switchCounter < 3) {
-					switchCounter++;
-				}
-				channel.update(ChatColor.DARK_GREEN.toString().concat(Strings.repeat("●", switchCounter).concat(Strings.repeat("○", max_switch.getValue() - switchCounter))));
-			}
-		}
-	}.setPeriod(TimeUnit.SECONDS, count);
+	boolean falling = false;
 	Cooldown c = new Cooldown(cool.getValue());
-
 	ActionbarChannel channel = newActionbarChannel();
 	int switchCounter = 0;
-
-	public void onUpdate(Update update) {
-		if (update == Update.RESTRICTION_CLEAR) {
-			stackAdder.start();
-		}
-	}
-	
 	Duration flying = new Duration(duration.getValue(), c) {
 
 		@Override
@@ -102,10 +80,27 @@ public class Keily extends CokesAbility implements ActiveHandler {
 		}
 
 	};
+	private final AbilityTimer stackAdder = new AbilityTimer() {
+		@Override
+		protected void run(int count) {
+			if (!c.isRunning() && !flying.isRunning()) {
+				if (switchCounter < 3) {
+					switchCounter++;
+				}
+				channel.update(ChatColor.DARK_GREEN.toString().concat(Strings.repeat("●", switchCounter).concat(Strings.repeat("○", max_switch.getValue() - switchCounter))));
+			}
+		}
+	}.setPeriod(TimeUnit.SECONDS, count);
 
 	public Keily(Participant arg0) {
 		super(arg0);
 		stackAdder.register();
+	}
+
+	public void onUpdate(Update update) {
+		if (update == Update.RESTRICTION_CLEAR) {
+			stackAdder.start();
+		}
 	}
 
 	@Override

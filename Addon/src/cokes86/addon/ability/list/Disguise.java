@@ -1,13 +1,5 @@
 package cokes86.addon.ability.list;
 
-import org.bukkit.Material;
-import org.bukkit.Note;
-import org.bukkit.Note.Tone;
-import org.bukkit.entity.Arrow;
-import org.bukkit.entity.Entity;
-import org.bukkit.entity.Player;
-import org.bukkit.event.entity.EntityDamageByEntityEvent;
-
 import cokes86.addon.ability.CokesAbility;
 import daybreak.abilitywar.ability.AbilityManifest;
 import daybreak.abilitywar.ability.AbilityManifest.Rank;
@@ -22,6 +14,13 @@ import daybreak.abilitywar.utils.annotations.Beta;
 import daybreak.abilitywar.utils.base.math.LocationUtil;
 import daybreak.abilitywar.utils.library.SoundLib;
 import daybreak.google.common.base.Predicate;
+import org.bukkit.Material;
+import org.bukkit.Note;
+import org.bukkit.Note.Tone;
+import org.bukkit.entity.Arrow;
+import org.bukkit.entity.Entity;
+import org.bukkit.entity.Player;
+import org.bukkit.event.entity.EntityDamageByEntityEvent;
 
 @AbilityManifest(name = "변장술", rank = Rank.A, species = Species.HUMAN, explain = {
 		"7칸 이내의 상대방을 바라본 체 철괴로 우클릭 시 그 대상으로 변장합니다.",
@@ -51,9 +50,6 @@ public class Disguise extends CokesAbility implements ActiveHandler {
 			return value > 0;
 		}
 	};
-	
-	private Participant target = null;
-	private int check = 0;
 	private final Cooldown cooldown = new Cooldown(cool.getValue());
 	private final Predicate<Entity> predicate = entity -> {
 		if (entity.equals(getPlayer())) return false;
@@ -72,6 +68,8 @@ public class Disguise extends CokesAbility implements ActiveHandler {
 		}
 		return true;
 	};
+	private Participant target = null;
+	private int check = 0;
 
 	public Disguise(Participant arg0) {
 		super(arg0);
@@ -83,13 +81,13 @@ public class Disguise extends CokesAbility implements ActiveHandler {
 			Player player = LocationUtil.getEntityLookingAt(Player.class, getPlayer(), range.getValue(), predicate);
 			if (player != null) {
 				target = getGame().getParticipant(player.getUniqueId());
-				getPlayer().sendMessage(player.getName()+"님으로 변장합니다.");
+				getPlayer().sendMessage(player.getName() + "님으로 변장합니다.");
 				return true;
 			}
 		}
 		return false;
 	}
-	
+
 	@SubscribeEvent
 	public void onEntityDamageByEntity(EntityDamageByEntityEvent e) {
 		Entity damager = e.getDamager();
@@ -99,7 +97,7 @@ public class Disguise extends CokesAbility implements ActiveHandler {
 				damager = (Entity) arrow.getShooter();
 			}
 		}
-		
+
 		if (e.getEntity().equals(getPlayer()) && target != null && damager instanceof Player && !damager.equals(getPlayer())) {
 			check += 1;
 			SoundLib.BELL.playInstrument(getPlayer(), Note.natural(2, Tone.C));
@@ -109,7 +107,7 @@ public class Disguise extends CokesAbility implements ActiveHandler {
 				getPlayer().sendMessage("변장이 풀렸습니다.");
 				cooldown.start();
 			}
-			
+
 			((Player) damager).damage(e.getDamage() * reflec.getValue() / 100, damager);
 			e.setDamage(0);
 		}

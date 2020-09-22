@@ -1,19 +1,5 @@
 package cokes86.addon.ability.synergy;
 
-import java.util.Iterator;
-import java.util.function.Predicate;
-
-import org.bukkit.Location;
-import org.bukkit.Material;
-import org.bukkit.World;
-import org.bukkit.entity.Damageable;
-import org.bukkit.entity.Entity;
-import org.bukkit.entity.Player;
-import org.bukkit.entity.Projectile;
-import org.bukkit.event.entity.EntityDamageByEntityEvent;
-import org.bukkit.projectiles.ProjectileSource;
-import org.bukkit.util.Vector;
-
 import cokes86.addon.ability.CokesSynergy;
 import daybreak.abilitywar.ability.AbilityManifest;
 import daybreak.abilitywar.ability.AbilityManifest.Rank;
@@ -32,18 +18,47 @@ import daybreak.abilitywar.utils.base.minecraft.entity.decorator.Deflectable;
 import daybreak.abilitywar.utils.library.ParticleLib;
 import daybreak.abilitywar.utils.library.ParticleLib.RGB;
 import daybreak.abilitywar.utils.library.item.ItemLib;
+import org.bukkit.Location;
+import org.bukkit.Material;
+import org.bukkit.World;
+import org.bukkit.entity.Damageable;
+import org.bukkit.entity.Entity;
+import org.bukkit.entity.Player;
+import org.bukkit.entity.Projectile;
+import org.bukkit.event.entity.EntityDamageByEntityEvent;
+import org.bukkit.projectiles.ProjectileSource;
+import org.bukkit.util.Vector;
+
+import java.util.Iterator;
+import java.util.function.Predicate;
 
 @AbilityManifest(name = "리벤지 애로우", rank = Rank.A, species = Species.OTHERS, explain = {
 		"공격을 받을 시 그의 $[multiply]배에 해당하는 대미지를 가진",
 		"추가 화살이 자동으로 사출되어 상대방의 위치로 직선으로 나가 공격합니다.",
 		"해당 추가화살은 인벤토리의 화살 1개를 소비하여 발사합니다.",
-		"추가 화살은 블럭에 닿거나 플레이어가 공격을 받을 시 사라집니다." })
+		"추가 화살은 블럭에 닿거나 플레이어가 공격을 받을 시 사라집니다."})
 public class RevengeArrow extends CokesSynergy {
 	private static final Config<Double> multiply = new Config<Double>(RevengeArrow.class, "배율", 1.0) {
 		@Override
 		public boolean condition(Double arg0) {
 			return arg0 > 0;
 		}
+	};
+	private final Predicate<Entity> predicate = entity -> {
+		if (entity.equals(getPlayer())) return false;
+		if (entity instanceof Player) {
+			if (!getGame().isParticipating(entity.getUniqueId())) return false;
+			AbstractGame.Participant target = getGame().getParticipant(entity.getUniqueId());
+			if (getGame() instanceof DeathManager.Handler) {
+				DeathManager.Handler game = (DeathManager.Handler) getGame();
+				if (game.getDeathManager().isExcluded(entity.getUniqueId())) return false;
+			}
+			if (getGame() instanceof Teamable) {
+				Teamable game = (Teamable) getGame();
+				return (!game.hasTeam(getParticipant()) || !game.hasTeam(target) || !game.getTeam(getParticipant()).equals(game.getTeam(target)));
+			}
+		}
+		return true;
 	};
 
 	public RevengeArrow(Participant participant) {
@@ -75,23 +90,6 @@ public class RevengeArrow extends CokesSynergy {
 		}
 	}
 
-	private final Predicate<Entity> predicate = entity -> {
-		if (entity.equals(getPlayer())) return false;
-		if (entity instanceof Player) {
-			if (!getGame().isParticipating(entity.getUniqueId())) return false;
-			AbstractGame.Participant target = getGame().getParticipant(entity.getUniqueId());
-			if (getGame() instanceof DeathManager.Handler) {
-				DeathManager.Handler game = (DeathManager.Handler) getGame();
-				if (game.getDeathManager().isExcluded(entity.getUniqueId())) return false;
-			}
-			if (getGame() instanceof Teamable) {
-				Teamable game = (Teamable) getGame();
-				return (!game.hasTeam(getParticipant()) || !game.hasTeam(target) || !game.getTeam(getParticipant()).equals(game.getTeam(target)));
-			}
-		}
-		return true;
-	};
-
 	public class Bullet extends AbilityTimer {
 
 		private final Player shooter;
@@ -100,6 +98,7 @@ public class RevengeArrow extends CokesSynergy {
 		private final double damage;
 
 		private final RGB color;
+		private Location lastLocation;
 
 		private Bullet(Player shooter, Location startLocation, Vector arrowVelocity, RGB color, double damage) {
 			super(100);
@@ -117,13 +116,11 @@ public class RevengeArrow extends CokesSynergy {
 			return damage;
 		}
 
-		private Location lastLocation;
-
 		@Override
 		protected void run(int i) {
 			Location newLocation = lastLocation.clone().add(forward);
 			for (Iterator<Location> iterator = Line.iteratorBetween(lastLocation, newLocation, 40); iterator
-					.hasNext();) {
+					.hasNext(); ) {
 				Location location = iterator.next();
 				entity.setLocation(location);
 				org.bukkit.block.Block block = location.getBlock();
@@ -132,7 +129,7 @@ public class RevengeArrow extends CokesSynergy {
 					stop(false);
 					return;
 				}
-				for (Damageable damageable : LocationUtil.getConflictingEntities(Damageable.class,entity.getBoundingBox(), predicate)) {
+				for (Damageable damageable : LocationUtil.getConflictingEntities(Damageable.class, entity.getBoundingBox(), predicate)) {
 					if (!shooter.equals(damageable) && !damageable.isDead()) {
 						Damages.damageArrow(damageable, getPlayer(), (float) damage);
 						stop(false);

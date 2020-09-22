@@ -1,10 +1,5 @@
 package cokes86.addon.ability.list;
 
-import org.bukkit.Material;
-import org.bukkit.event.entity.EntityDamageByBlockEvent;
-import org.bukkit.event.entity.EntityDamageByEntityEvent;
-import org.bukkit.event.entity.EntityDamageEvent;
-
 import cokes86.addon.ability.CokesAbility;
 import daybreak.abilitywar.ability.AbilityManifest;
 import daybreak.abilitywar.ability.AbilityManifest.Rank;
@@ -14,6 +9,10 @@ import daybreak.abilitywar.ability.decorator.ActiveHandler;
 import daybreak.abilitywar.game.AbstractGame.Participant;
 import daybreak.abilitywar.game.AbstractGame.Participant.ActionbarNotification.ActionbarChannel;
 import daybreak.abilitywar.utils.base.TimeUtil;
+import org.bukkit.Material;
+import org.bukkit.event.entity.EntityDamageByBlockEvent;
+import org.bukkit.event.entity.EntityDamageByEntityEvent;
+import org.bukkit.event.entity.EntityDamageEvent;
 
 @AbilityManifest(name = "겜블러", rank = Rank.B, species = Species.HUMAN, explain = {
 		"매 $[du]마다 받는 대미지와 주는 대미지의 비율이",
@@ -45,18 +44,45 @@ public class Gambler extends CokesAbility implements ActiveHandler {
 			max.setValue(max.getDefaultValue());
 		}
 	}
+
 	int go = 1;
 
 	int give = 0; // 주는 대미지
 	int receive = 0; // 받는 대미지
 
 	ActionbarChannel ac = newActionbarChannel();
+	AbilityTimer passive = new AbilityTimer(du.getValue()) {
+
+		@Override
+		protected void onStart() {
+			if (go == 0) {
+				go = -1;
+			} else {
+				give = min.getValue() + (int) ((max.getValue() - min.getValue()) * Math.random());
+				receive = min.getValue() + (int) ((max.getValue() - min.getValue()) * Math.random());
+			}
+		}
+
+		@Override
+		protected void run(int Count) {
+			String giver = (give > 100 ? "§a" : (give < 100 ? "§c" : ""));
+			String receiver = (receive > 100 ? "§c" : (receive < 100 ? "§a" : ""));
+			String cool = go == 0 ? "" : " §a|§f 남은 시간: " + TimeUtil.parseTimeAsString(getCount());
+
+			ac.update("주는 대미지: " + giver + give + "% §a|§f 받는 대미지: " + receiver + receive + "%§f" + cool);
+		}
+
+		@Override
+		protected void onEnd() {
+			passive.start();
+		}
+	};
 
 	public Gambler(Participant participant) {
 		super(participant);
 		passive.register();
 	}
-	
+
 	protected void onUpdate(Update update) {
 		if (update == Update.RESTRICTION_CLEAR) {
 			passive.start();
@@ -95,31 +121,4 @@ public class Gambler extends CokesAbility implements ActiveHandler {
 			e.setDamage(e.getDamage() * ((double) receive / 100));
 		}
 	}
-
-	AbilityTimer passive = new AbilityTimer(du.getValue()) {
-
-		@Override
-		protected void onStart() {
-			if (go == 0) {
-				go = -1;
-			} else {
-				give = min.getValue() + (int) ((max.getValue() - min.getValue()) * Math.random());
-				receive = min.getValue() + (int) ((max.getValue() - min.getValue()) * Math.random());
-			}
-		}
-
-		@Override
-		protected void run(int Count) {	
-			String giver = (give > 100 ? "§a" : (give < 100 ? "§c": ""));
-			String receiver = (receive > 100 ? "§c" : (receive < 100 ? "§a": ""));	
-			String cool = go == 0 ? "" : " §a|§f 남은 시간: " + TimeUtil.parseTimeAsString(getCount());
-
-			ac.update("주는 대미지: " + giver+give+ "% §a|§f 받는 대미지: " + receiver+receive + "%§f" + cool);
-		}
-
-		@Override
-		protected void onEnd() {
-			passive.start();
-		}
-	};
 }

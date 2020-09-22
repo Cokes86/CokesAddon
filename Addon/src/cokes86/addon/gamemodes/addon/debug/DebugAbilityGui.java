@@ -1,28 +1,5 @@
 package cokes86.addon.gamemodes.addon.debug;
 
-import java.lang.reflect.Field;
-import java.lang.reflect.Modifier;
-import java.util.List;
-import java.util.Map;
-import java.util.StringJoiner;
-import java.util.TreeMap;
-import java.util.regex.MatchResult;
-
-import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
-import org.bukkit.Material;
-import org.bukkit.entity.Player;
-import org.bukkit.event.EventHandler;
-import org.bukkit.event.HandlerList;
-import org.bukkit.event.Listener;
-import org.bukkit.event.inventory.InventoryClickEvent;
-import org.bukkit.event.inventory.InventoryCloseEvent;
-import org.bukkit.event.player.PlayerQuitEvent;
-import org.bukkit.inventory.Inventory;
-import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.meta.ItemMeta;
-import org.bukkit.plugin.Plugin;
-
 import cokes86.addon.ability.AddonAbilityFactory;
 import cokes86.addon.ability.CokesSynergy;
 import cokes86.addon.ability.remake.Remaking;
@@ -43,6 +20,28 @@ import daybreak.abilitywar.utils.base.minecraft.item.builder.ItemBuilder;
 import daybreak.abilitywar.utils.base.reflect.ReflectionUtil;
 import daybreak.abilitywar.utils.library.MaterialX;
 import daybreak.google.common.base.Function;
+import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
+import org.bukkit.Material;
+import org.bukkit.entity.Player;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.HandlerList;
+import org.bukkit.event.Listener;
+import org.bukkit.event.inventory.InventoryClickEvent;
+import org.bukkit.event.inventory.InventoryCloseEvent;
+import org.bukkit.event.player.PlayerQuitEvent;
+import org.bukkit.inventory.Inventory;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
+import org.bukkit.plugin.Plugin;
+
+import java.lang.reflect.Field;
+import java.lang.reflect.Modifier;
+import java.util.List;
+import java.util.Map;
+import java.util.StringJoiner;
+import java.util.TreeMap;
+import java.util.regex.MatchResult;
 
 public class DebugAbilityGui implements Listener {
 	private static final ItemStack PREVIOUS_PAGE = (new ItemBuilder(MaterialX.ARROW))
@@ -75,7 +74,7 @@ public class DebugAbilityGui implements Listener {
 		for (Class<? extends AbilityBase> ab : AddonAbilityFactory.getAddonSynergies()) {
 			values.put(ab.getAnnotation(AbilityManifest.class).name(), AbilityFactory.getRegistration(ab));
 		}
-		
+
 		for (Class<? extends AbilityBase> ab : AddonAbilityFactory.getAddonRemaking()) {
 			values.put(ab.getAnnotation(AbilityManifest.class).name(), AbilityFactory.getRegistration(ab));
 		}

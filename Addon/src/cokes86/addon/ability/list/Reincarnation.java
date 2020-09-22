@@ -1,17 +1,5 @@
 package cokes86.addon.ability.list;
 
-import java.util.List;
-
-import org.bukkit.Location;
-import org.bukkit.attribute.Attribute;
-import org.bukkit.entity.Entity;
-import org.bukkit.entity.Player;
-import org.bukkit.entity.Projectile;
-import org.bukkit.event.entity.EntityDamageByBlockEvent;
-import org.bukkit.event.entity.EntityDamageByEntityEvent;
-import org.bukkit.event.entity.EntityDamageEvent;
-import org.bukkit.event.entity.EntityRegainHealthEvent;
-
 import cokes86.addon.ability.CokesAbility;
 import daybreak.abilitywar.ability.AbilityManifest;
 import daybreak.abilitywar.ability.AbilityManifest.Rank;
@@ -28,6 +16,17 @@ import daybreak.abilitywar.utils.base.minecraft.entity.health.event.PlayerSetHea
 import daybreak.abilitywar.utils.library.ParticleLib;
 import daybreak.abilitywar.utils.library.ParticleLib.RGB;
 import daybreak.abilitywar.utils.library.SoundLib;
+import org.bukkit.Location;
+import org.bukkit.attribute.Attribute;
+import org.bukkit.entity.Entity;
+import org.bukkit.entity.Player;
+import org.bukkit.entity.Projectile;
+import org.bukkit.event.entity.EntityDamageByBlockEvent;
+import org.bukkit.event.entity.EntityDamageByEntityEvent;
+import org.bukkit.event.entity.EntityDamageEvent;
+import org.bukkit.event.entity.EntityRegainHealthEvent;
+
+import java.util.List;
 
 @AbilityManifest(name = "리인카네이션", rank = Rank.S, species = Species.OTHERS, explain = {
 		"자신이 죽을 위기에 처했을 때, 이를 무시하고 체력이 1로 고정됩니다. $[cooldown]",
@@ -35,10 +34,8 @@ import daybreak.abilitywar.utils.library.SoundLib;
 		"지속시간이 종료 시 상대방을 $[hit]번 공격에 성공했을 경우 자신의 체력이 $[respawn] 되어 부활하고,",
 		"이후 추가 타격마다 $[heal]%씩 누적되어 추가적으로 회복합니다.",
 		"하지만 타격 횟수를 채우지 못하였을 경우, 사망하게 됩니다.",
-		"※능력 아이디어: Sato207" })
+		"※능력 아이디어: Sato207"})
 public class Reincarnation extends CokesAbility {
-	ActionbarChannel ac = newActionbarChannel();
-
 	public static Config<Integer> duration = new Config<Integer>(Reincarnation.class, "지속시간", 25, 2) {
 
 		@Override
@@ -77,20 +74,58 @@ public class Reincarnation extends CokesAbility {
 		public boolean condition(Integer value) {
 			return value > 0;
 		}
-		
+
 		public String toString() {
 			return getValue().toString() + KoreanUtil.getJosa(getValue().toString(), KoreanUtil.Josa.이가);
 		}
 	};
-
-
+	ActionbarChannel ac = newActionbarChannel();
 	int hitted = 0;
+	Cooldown cool = new Cooldown(cooldown.getValue());
+	AbilityTimer reincarnation = new AbilityTimer(duration.getValue() * 20) {
+
+		protected void onStart() {
+			List<Player> nearby = LocationUtil.getNearbyEntities(Player.class, getPlayer().getLocation(), 5, 5, null);
+			SoundLib.ITEM_SHIELD_BLOCK.playSound(nearby);
+		}
+
+		@Override
+		protected void run(int arg0) {
+			getPlayer().setHealth(1);
+			ac.update("지속 시간: " + TimeUtil.parseTimeAsString(getFixedCount()) + " 히트횟수: "
+					+ (hitted >= hit.getValue() ? "§a" + hitted : hitted) + "/ " + hit.getValue());
+
+			if (arg0 % 5 == 0) {
+				for (Location l : Circle.iteratorOf(getPlayer().getLocation(), 3, 3 * 6).iterable()) {
+					l.setY(LocationUtil.getFloorYAt(l.getWorld(), l.getY(), l.getBlockX(), l.getBlockZ()) + 0.1);
+					ParticleLib.REDSTONE.spawnParticle(l, new RGB(140, 2, 120));
+
+					l.setY(LocationUtil.getFloorYAt(l.getWorld(), l.getY(), l.getBlockX(), l.getBlockZ()) + 0.8);
+					ParticleLib.REDSTONE.spawnParticle(l, new RGB(140, 2, 120));
+				}
+			}
+		}
+
+		@Override
+		protected void onEnd() {
+			if (hitted >= hit.getValue()) {
+				double max_Health = getPlayer().getAttribute(Attribute.GENERIC_MAX_HEALTH).getValue();
+				double return_heal = Math.min(max_Health, respawn.getValue() + max_Health * (hitted - hit.getValue()) * heal.getValue() / 100.0);
+				getPlayer().setHealth(return_heal);
+			} else {
+				getPlayer().setHealth(0);
+			}
+			hitted = 0;
+			cool.start();
+			ac.update(null);
+		}
+	};
 
 	public Reincarnation(Participant arg0) {
 		super(arg0);
 		reincarnation.register();
 	}
-	
+
 	@SubscribeEvent(priority = 6)
 	public void onPlayerSetHealth(PlayerSetHealthEvent e) {
 		if (e.getPlayer().equals(getPlayer())) {
@@ -150,44 +185,4 @@ public class Reincarnation extends CokesAbility {
 	public void onEntityDamageByBlock(EntityDamageByBlockEvent e) {
 		onEntityDamage(e);
 	}
-
-	AbilityTimer reincarnation = new AbilityTimer(duration.getValue() * 20) {
-
-		protected void onStart() {
-			List<Player> nearby = LocationUtil.getNearbyEntities(Player.class, getPlayer().getLocation(), 5, 5, null);
-			SoundLib.ITEM_SHIELD_BLOCK.playSound(nearby);
-		}
-
-		@Override
-		protected void run(int arg0) {
-			getPlayer().setHealth(1);
-			ac.update("지속 시간: " + TimeUtil.parseTimeAsString(getFixedCount()) + " 히트횟수: "
-					+ (hitted >= hit.getValue() ? "§a" + hitted : hitted) + "/ " + hit.getValue());
-
-			if (arg0 % 5 == 0) {
-				for (Location l : Circle.iteratorOf(getPlayer().getLocation(), 3, 3 * 6).iterable()) {
-					l.setY(LocationUtil.getFloorYAt(l.getWorld(), l.getY(), l.getBlockX(), l.getBlockZ()) + 0.1);
-					ParticleLib.REDSTONE.spawnParticle(l, new RGB(140, 2, 120));
-
-					l.setY(LocationUtil.getFloorYAt(l.getWorld(), l.getY(), l.getBlockX(), l.getBlockZ()) + 0.8);
-					ParticleLib.REDSTONE.spawnParticle(l, new RGB(140, 2, 120));
-				}
-			}
-		}
-
-		@Override
-		protected void onEnd() {
-			if (hitted >= hit.getValue()) {
-				double max_Health = getPlayer().getAttribute(Attribute.GENERIC_MAX_HEALTH).getValue();
-				double return_heal = Math.min(max_Health, respawn.getValue() + max_Health * (hitted - hit.getValue()) * heal.getValue() / 100.0);
-				getPlayer().setHealth(return_heal);
-			} else {
-				getPlayer().setHealth(0);
-			}
-			hitted = 0;
-			cool.start();
-			ac.update(null);
-		}
-	};
-	Cooldown cool = new Cooldown(cooldown.getValue());
 }

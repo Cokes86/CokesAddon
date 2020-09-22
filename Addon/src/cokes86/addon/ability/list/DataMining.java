@@ -1,14 +1,5 @@
 package cokes86.addon.ability.list;
 
-import java.text.DecimalFormat;
-import java.util.Random;
-
-import org.bukkit.Material;
-import org.bukkit.entity.Arrow;
-import org.bukkit.entity.Entity;
-import org.bukkit.entity.Player;
-import org.bukkit.event.entity.EntityDamageByEntityEvent;
-
 import cokes86.addon.ability.CokesAbility;
 import daybreak.abilitywar.ability.AbilityBase;
 import daybreak.abilitywar.ability.AbilityFactory.AbilityRegistration;
@@ -26,6 +17,14 @@ import daybreak.abilitywar.game.list.mix.synergy.SynergyFactory;
 import daybreak.abilitywar.game.list.mix.triplemix.AbstractTripleMix;
 import daybreak.abilitywar.game.manager.object.DeathManager;
 import daybreak.abilitywar.utils.base.collect.Pair;
+import org.bukkit.Material;
+import org.bukkit.entity.Arrow;
+import org.bukkit.entity.Entity;
+import org.bukkit.entity.Player;
+import org.bukkit.event.entity.EntityDamageByEntityEvent;
+
+import java.text.DecimalFormat;
+import java.util.Random;
 
 @AbilityManifest(name = "데이터마이닝", rank = AbilityManifest.Rank.S, species = AbilityManifest.Species.HUMAN, explain = {
 		"철괴 우클릭시 모든 플레이어의 능력을 알 수 있습니다.",
@@ -39,12 +38,6 @@ import daybreak.abilitywar.utils.base.collect.Pair;
 })
 @NotAvailable(AbstractTripleMix.class)
 public class DataMining extends CokesAbility implements ActiveHandler {
-	DecimalFormat df = new DecimalFormat("0.00");
-	int count = 0;
-	double damage = 0, defense = 0;
-	ActionbarChannel ac = newActionbarChannel();
-	boolean message = true;
-
 	private static final Config<Double> damageUp = new Config<Double>(DataMining.class, "대미지성장치", 0.25) {
 		@Override
 		public boolean condition(Double value) {
@@ -59,18 +52,23 @@ public class DataMining extends CokesAbility implements ActiveHandler {
 	private static final Config<Integer> max_count = new Config<Integer>(DataMining.class, "각_스택_최대치", 10) {
 		@Override
 		public boolean condition(Integer value) {
-			return value>0;
+			return value > 0;
 		}
 	};
+	DecimalFormat df = new DecimalFormat("0.00");
+	int count = 0;
+	double damage = 0, defense = 0;
+	ActionbarChannel ac = newActionbarChannel();
+	boolean message = true;
 
 	public DataMining(Participant arg0) {
 		super(arg0);
 	}
-	
+
 	public void Active() {
-		Random r = new Random();
-		double a = r.nextDouble()*2;
-		if (a > 1) {
+		final Random random = new Random();
+		final double randomDouble = random.nextDouble() * 2;
+		if (randomDouble > 1) {
 			if (damage == damageUp.getValue() * max_count.getValue()) {
 				defense += defenseUp.getValue();
 			} else {
@@ -84,7 +82,7 @@ public class DataMining extends CokesAbility implements ActiveHandler {
 			}
 		}
 	}
-	
+
 	public void onUpdate(Update update) {
 		if (update == Update.RESTRICTION_CLEAR) {
 			ac.update("§c마이닝 스택§f: " + count + " (추가대미지: " + df.format(damage) + "  피해감소: " + df.format(defense) + "%)");
@@ -92,19 +90,19 @@ public class DataMining extends CokesAbility implements ActiveHandler {
 	}
 
 	@SubscribeEvent
-	public void onAbilityActiveSkill(AbilityActiveSkillEvent e) {
+	private void onAbilityActiveSkill(AbilityActiveSkillEvent e) {
 		if (!e.getParticipant().equals(getParticipant())) {
 			if (message) getPlayer().sendMessage("§e" + e.getPlayer().getName() + "§f님이 능력을 사용하였습니다.");
-			if (count != max_count.getValue()*2) {
+			if (count != max_count.getValue() * 2) {
 				count++;
 				Active();
 			}
-			ac.update("§c마이닝 스택§f: "+count+ " (추가대미지: "+df.format(damage)+"  피해감소: "+df.format(defense)+"%)");
+			ac.update("§c마이닝 스택§f: " + count + " (추가대미지: " + df.format(damage) + "  피해감소: " + df.format(defense) + "%)");
 		}
 	}
 
 	@SubscribeEvent(priority = 4)
-	public void onEntityDamageByEntity(EntityDamageByEntityEvent e) {
+	private void onEntityDamageByEntity(EntityDamageByEntityEvent e) {
 		if (e.getEntity() instanceof Player) {
 			Player entity = (Player) e.getEntity();
 			Entity damager = e.getDamager();
@@ -114,17 +112,17 @@ public class DataMining extends CokesAbility implements ActiveHandler {
 					damager = (Entity) arrow.getShooter();
 				}
 			}
-			
+
 			if (damager instanceof Player) {
 				if (damager.equals(getPlayer())) {
-					e.setDamage(e.getDamage()+damage);
+					e.setDamage(e.getDamage() + damage);
 				} else if (entity.equals(getPlayer())) {
-					e.setDamage(e.getDamage()*((double)100-defense)/100);
+					e.setDamage(e.getDamage() * ((double) 100 - defense) / 100);
 				}
 
 				if (!e.isCancelled()) {
 					if (message) getPlayer().sendMessage(
-							"§e" + damager.getName() + "§f(§c♥" + df.format(((Player)damager).getHealth()) + "§f)님이 §e" + entity.getName()
+							"§e" + damager.getName() + "§f(§c♥" + df.format(((Player) damager).getHealth()) + "§f)님이 §e" + entity.getName()
 									+ "§f(§c♥" + df.format(entity.getHealth()) + "§f)님을 공격! (대미지: " + df.format(e.getFinalDamage()) + ")");
 				}
 			}
@@ -132,8 +130,8 @@ public class DataMining extends CokesAbility implements ActiveHandler {
 	}
 
 	@Override
-	public boolean ActiveSkill(Material arg0, ClickType arg1) {
-		if (arg0.equals(Material.IRON_INGOT) && arg1.equals(ClickType.RIGHT_CLICK)) {
+	public boolean ActiveSkill(Material material, ClickType clickType) {
+		if (material == Material.IRON_INGOT && clickType == ClickType.RIGHT_CLICK) {
 			AbstractGame game = getGame();
 			getPlayer().sendMessage("§2===== §a능력자 목록 §2=====");
 			int count = 0;
@@ -153,15 +151,15 @@ public class DataMining extends CokesAbility implements ActiveHandler {
 						Synergy synergy = mix.getSynergy();
 						Pair<AbilityRegistration, AbilityRegistration> base = SynergyFactory
 								.getSynergyBase(synergy.getRegistration());
-						name = "§e"+synergy.getName() + " §f(§e" + base.getLeft().getManifest().name() + " §f+ §e"
+						name = "§e" + synergy.getName() + " §f(§e" + base.getLeft().getManifest().name() + " §f+ §e"
 								+ base.getRight().getManifest().name() + "§f)";
 					} else {
 						if (mix.getFirst() != null && mix.getSecond() == null) {
-							name = "§e"+mix.getFirst().getName();
+							name = "§e" + mix.getFirst().getName();
 						} else if (mix.getFirst() == null && mix.getSecond() != null) {
-							name = "§e"+mix.getSecond().getName();
+							name = "§e" + mix.getSecond().getName();
 						} else {
-							name = "§e"+mix.getFirst().getName() + " §f+ §e" + mix.getSecond().getName();
+							name = "§e" + mix.getFirst().getName() + " §f+ §e" + mix.getSecond().getName();
 						}
 					}
 				} else {
@@ -171,8 +169,8 @@ public class DataMining extends CokesAbility implements ActiveHandler {
 				count++;
 				getPlayer().sendMessage("§e" + count + ". §f" + p.getPlayer().getName() + " §7: §e" + name);
 			}
-			getPlayer().sendMessage( "§2========================");
-		} else if (arg0.equals(Material.IRON_INGOT) && arg1.equals(ClickType.LEFT_CLICK)) {
+			getPlayer().sendMessage("§2========================");
+		} else if (material == Material.IRON_INGOT && clickType == ClickType.LEFT_CLICK) {
 			message = (!message);
 			if (message) getPlayer().sendMessage("사실 확인 메세지를 볼 수 있게 됩니다.");
 			else getPlayer().sendMessage("더이상 사실 확인 메세지를 볼 수 없습니다.");

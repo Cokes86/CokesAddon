@@ -1,17 +1,5 @@
 package cokes86.addon.ability.list;
 
-import java.util.Arrays;
-import java.util.Random;
-import java.util.function.Predicate;
-
-import org.bukkit.Material;
-import org.bukkit.entity.Arrow;
-import org.bukkit.entity.Entity;
-import org.bukkit.entity.Player;
-import org.bukkit.event.entity.EntityDamageByEntityEvent;
-import org.bukkit.potion.PotionEffect;
-import org.bukkit.potion.PotionEffectType;
-
 import cokes86.addon.ability.CokesAbility;
 import daybreak.abilitywar.ability.AbilityManifest;
 import daybreak.abilitywar.ability.SubscribeEvent;
@@ -23,6 +11,17 @@ import daybreak.abilitywar.game.manager.object.DeathManager;
 import daybreak.abilitywar.game.team.interfaces.Teamable;
 import daybreak.abilitywar.utils.base.minecraft.damage.Damages;
 import daybreak.abilitywar.utils.library.SoundLib;
+import org.bukkit.Material;
+import org.bukkit.entity.Arrow;
+import org.bukkit.entity.Entity;
+import org.bukkit.entity.Player;
+import org.bukkit.event.entity.EntityDamageByEntityEvent;
+import org.bukkit.potion.PotionEffect;
+import org.bukkit.potion.PotionEffectType;
+
+import java.util.Arrays;
+import java.util.Random;
+import java.util.function.Predicate;
 
 @AbilityManifest(name = "포커", rank = AbilityManifest.Rank.B, species = AbilityManifest.Species.HUMAN, explain = {
 		"철괴 우클릭 시 1~10 사이의 숫자를 3개 뽑습니다. 이 3개의 숫자의 조합에 따라 각종 효과를 얻습니다. $[cool]",
@@ -33,45 +32,30 @@ import daybreak.abilitywar.utils.library.SoundLib;
 		"자신과 팀을 제외한 모든 플레이어에게 (트리플의 수 * 1.5)의 관통대미지를 줍니다."
 })
 public class Poker extends CokesAbility implements ActiveHandler {
-	int[] num = new int[3];
 	private static final Config<Integer> cool = new Config<Integer>(Poker.class, "쿨타임", 30, 1) {
 		@Override
 		public boolean condition(Integer value) {
 			return value >= 0;
 		}
 	};
+	int[] num = new int[3];
 	int additional = 0;
 	ActionbarChannel ac = newActionbarChannel();
-
-	public Poker(Participant participant) {
-		super(participant);
-		p.register();
-	}
-	
 	Cooldown c = new Cooldown(cool.getValue());
-
 	AbilityTimer p = new AbilityTimer() {
 		@Override
 		protected void run(int var1) {
-			if (additional > 0) ac.update("다음 추가대미지: "+additional);
+			if (additional > 0) ac.update("다음 추가대미지: " + additional);
 			else ac.update(null);
 		}
 	};
-
-	@Override
-	public void onUpdate(Update update) {
-	 	if (update == Update.RESTRICTION_CLEAR) {
-	 		p.start();
-		}
-	}
-
 	Predicate<Entity> predicate = entity -> {
 		if (entity.equals(getPlayer())) return false;
 		if (entity instanceof Player) {
 			if (!getGame().isParticipating(entity.getUniqueId())) return false;
 			AbstractGame.Participant target = getGame().getParticipant(entity.getUniqueId());
 			if (getGame() instanceof DeathManager.Handler) {
-				DeathManager.Handler game = (DeathManager.Handler)getGame();
+				DeathManager.Handler game = (DeathManager.Handler) getGame();
 				if (game.getDeathManager().isExcluded(entity.getUniqueId())) return false;
 			}
 			if (getGame() instanceof Teamable) {
@@ -83,18 +67,30 @@ public class Poker extends CokesAbility implements ActiveHandler {
 		return true;
 	};
 
+	public Poker(Participant participant) {
+		super(participant);
+		p.register();
+	}
+
+	@Override
+	public void onUpdate(Update update) {
+		if (update == Update.RESTRICTION_CLEAR) {
+			p.start();
+		}
+	}
+
 	@Override
 	public boolean ActiveSkill(Material materialType, ClickType ct) {
 		if (materialType.equals(Material.IRON_INGOT) && ct.equals(ClickType.RIGHT_CLICK)) {
 			if (!c.isCooldown()) {
 				Random r = new Random();
-				num[0] = r.nextInt(10)+1;
-				num[1] = r.nextInt(10)+1;
-				num[2] = r.nextInt(10)+1;
+				num[0] = r.nextInt(10) + 1;
+				num[1] = r.nextInt(10) + 1;
+				num[2] = r.nextInt(10) + 1;
 				Arrays.sort(num);
 				String result = getPockerName(num);
 				int number = getPockerGet(num);
-				getPlayer().sendMessage("숫자를 뽑습니다 : "+num[0]+ " "+num[1]+ " "+num[2]);
+				getPlayer().sendMessage("숫자를 뽑습니다 : " + num[0] + " " + num[1] + " " + num[2]);
 				switch (result) {
 					case "Top":
 						String str = "";
@@ -129,7 +125,7 @@ public class Poker extends CokesAbility implements ActiveHandler {
 		}
 		return false;
 	}
-	
+
 	@SubscribeEvent
 	public void onEntityDamageByEntity(EntityDamageByEntityEvent e) {
 		Entity damager = e.getDamager();
@@ -141,25 +137,25 @@ public class Poker extends CokesAbility implements ActiveHandler {
 		}
 
 		if (damager.equals(getPlayer()) && additional > 0) {
-			e.setDamage(e.getDamage()+additional);
+			e.setDamage(e.getDamage() + additional);
 			additional = 0;
 		}
 	}
-	
+
 	public String getPockerName(int[] num) {
 		int min = num[0], mid = num[1], max = num[2];
 		if (min == mid && mid == max) return "Triple";
-		else if (mid == max-1 && min == mid-1) return "Straight";
+		else if (mid == max - 1 && min == mid - 1) return "Straight";
 		else if (min == 1 && mid == 9 && max == 10) return "Straight";
 		else if (min == 1 && mid == 2 && max == 10) return "Straight";
 		else if (min == mid || mid == max || max == min) return "Pair";
 		else return "Top";
 	}
-	
+
 	public int getPockerGet(int[] num) {
 		int min = num[0], mid = num[1], max = num[2];
 		if (min == mid && mid == max) return max;
-		else if (mid == max-1 && min == mid-1) return max;
+		else if (mid == max - 1 && min == mid - 1) return max;
 		else if (min == 1 && mid == 2 && max == 10) return 10;
 		else if (min == 1 && mid == 9 && max == 10) return 10;
 		else if (min == mid || mid == max) return mid;

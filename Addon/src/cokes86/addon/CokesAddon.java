@@ -1,19 +1,8 @@
 package cokes86.addon;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.net.URL;
-import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
-import java.util.List;
-
-import org.bukkit.Bukkit;
-import org.bukkit.configuration.InvalidConfigurationException;
-import org.bukkit.event.EventHandler;
-import org.bukkit.event.Listener;
-
-import cokes86.addon.ability.*;
+import cokes86.addon.ability.AddonAbilityFactory;
+import cokes86.addon.ability.CokesAbility;
+import cokes86.addon.ability.CokesSynergy;
 import cokes86.addon.ability.remake.Remaking;
 import cokes86.addon.configuration.addon.Config;
 import cokes86.addon.configuration.gamemode.GameConfiguration;
@@ -31,6 +20,18 @@ import daybreak.abilitywar.game.manager.GameFactory;
 import daybreak.google.gson.JsonElement;
 import daybreak.google.gson.JsonObject;
 import daybreak.google.gson.JsonParser;
+import org.bukkit.Bukkit;
+import org.bukkit.configuration.InvalidConfigurationException;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.Listener;
+
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.net.URL;
+import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
+import java.util.List;
 
 public class CokesAddon extends Addon implements Listener {
 	ConfigLoader loader = new ConfigLoader();
@@ -42,7 +43,7 @@ public class CokesAddon extends Addon implements Listener {
 		// AddonAbilityWar
 		GameFactory.registerMode(AddonAbilityWar.class);
 		if (Settings.DeveloperSettings.isEnabled()) GameFactory.registerMode(DebugWar.class);
-		
+
 		//Battle Ability
 		GameFactory.registerMode(BattleAbility.class);
 		GameFactory.registerMode(BattleMixAbility.class);
@@ -55,13 +56,13 @@ public class CokesAddon extends Addon implements Listener {
 
 		// Load Complete
 		Bukkit.getConsoleSender().sendMessage("[CokesAddon] 애드온이 활성화되었습니다.");
-		
+
 		//Bug Info
 		try {
 			if (!getBugLists().isEmpty()) {
 				Bukkit.getConsoleSender().sendMessage("[CokesAddon] 해당 버전에는 아래와 같은 버그가 있습니다. 게임 플레이시 유의해주세요.");
 				for (String str : getBugLists()) {
-					Bukkit.getConsoleSender().sendMessage("[CokesAddon] "+str);
+					Bukkit.getConsoleSender().sendMessage("[CokesAddon] " + str);
 				}
 			}
 		} catch (IllegalStateException | IOException e) {
@@ -70,7 +71,7 @@ public class CokesAddon extends Addon implements Listener {
 
 		// Load Configuration
 		Bukkit.getServer().getScheduler().scheduleSyncDelayedTask(getPlugin(), loader);
-		
+
 		Bukkit.getPluginManager().registerEvents(this, getPlugin());
 	}
 
@@ -78,16 +79,16 @@ public class CokesAddon extends Addon implements Listener {
 	public void onDisable() {
 		loader.run();
 	}
-	
+
 	@EventHandler()
 	public void onGameCredit(GameCreditEvent e) {
-		e.addCredit("§a코크스에드온 §f적용중. 총 "+AddonAbilityFactory.getAddonAbilities().size()+"개의 능력이 추가되었습니다.");
+		e.addCredit("§a코크스에드온 §f적용중. 총 " + AddonAbilityFactory.getAddonAbilities().size() + "개의 능력이 추가되었습니다.");
 		if (e.getGame() instanceof AbstractMix) {
-			e.addCredit("§a믹스! §f새로운 시너지 "+AddonAbilityFactory.nameSynergyValues().size()+"개가 추가되었습니다!");
+			e.addCredit("§a믹스! §f새로운 시너지 " + AddonAbilityFactory.nameSynergyValues().size() + "개가 추가되었습니다!");
 		}
 		e.addCredit("§a코크스에드온 §f제작자 : Cokes_86  [§7디스코드 §f: Cokes_86#9329]");
 	}
-	
+
 	public List<String> getBugLists() throws IllegalStateException, IOException {
 		final BufferedReader reader = new BufferedReader(new InputStreamReader(new URL("https://pastebin.com/raw/GSnXXu64").openStream(), StandardCharsets.UTF_8));
 		final StringBuilder result = new StringBuilder();
@@ -116,8 +117,8 @@ public class CokesAddon extends Addon implements Listener {
 				AddonAbilityFactory.nameSynergyValues();
 				AddonAbilityFactory.getAddonRemaking();
 				GameConfiguration.load();
-				Config.load();
-				
+				Config.INSTANCE.update();
+
 				CokesAbility.config.update();
 				CokesSynergy.config.update();
 				if (Settings.DeveloperSettings.isEnabled()) Remaking.config.update();

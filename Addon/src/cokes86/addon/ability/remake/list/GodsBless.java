@@ -1,11 +1,5 @@
 package cokes86.addon.ability.remake.list;
 
-import org.bukkit.Bukkit;
-import org.bukkit.Material;
-import org.bukkit.event.EventHandler;
-import org.bukkit.event.HandlerList;
-import org.bukkit.event.Listener;
-
 import cokes86.addon.ability.remake.Remaking;
 import daybreak.abilitywar.AbilityWar;
 import daybreak.abilitywar.ability.AbilityManifest;
@@ -18,6 +12,11 @@ import daybreak.abilitywar.game.event.participant.ParticipantDeathEvent;
 import daybreak.abilitywar.utils.annotations.Beta;
 import daybreak.abilitywar.utils.base.TimeUtil;
 import daybreak.abilitywar.utils.base.concurrent.TimeUnit;
+import org.bukkit.Bukkit;
+import org.bukkit.Material;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.HandlerList;
+import org.bukkit.event.Listener;
 
 @Beta
 @AbilityManifest(name = "신의 가호 [리메이크]", rank = Rank.A, species = Species.HUMAN, explain = {
@@ -65,38 +64,38 @@ public class GodsBless extends Remaking implements ActiveHandler {
 		}
 		return false;
 	}
-	
+
 	class BlessTimer extends AbilityTimer implements Listener {
 		int add_damage = base.getValue();
-		
+
 		public BlessTimer() {
-			super(duration.getValue()*20);
+			super(duration.getValue() * 20);
 			this.setPeriod(TimeUnit.SECONDS, 1);
 		}
-		
+
 		protected void onStart() {
 			Bukkit.getPluginManager().registerEvents(this, AbilityWar.getPlugin());
 		}
 
 		@Override
 		protected void run(int arg0) {
-			ac.update("추가 대미지: "+add_damage+" | 남은 시간: "+TimeUtil.parseTimeAsString(this.getFixedCount()));
+			ac.update("추가 대미지: " + add_damage + " | 남은 시간: " + TimeUtil.parseTimeAsString(this.getFixedCount()));
 		}
-		
+
 		protected void onCountSet() {
-			ac.update("추가 대미지: "+add_damage+" | 남은 시간: "+TimeUtil.parseTimeAsString(this.getFixedCount()));
+			ac.update("추가 대미지: " + add_damage + " | 남은 시간: " + TimeUtil.parseTimeAsString(this.getFixedCount()));
 		}
-		
+
 		protected void onSilentEnd() {
 			HandlerList.unregisterAll(this);
 			bless.start();
 		}
-		
+
 		protected void onEnd() {
 			onSilentEnd();
-			getPlayer().damage(add_damage*multiply.getValue(), getPlayer());
+			getPlayer().damage(add_damage * multiply.getValue(), getPlayer());
 		}
-		
+
 		@EventHandler
 		public void onParticipantDeath(ParticipantDeathEvent e) {
 			if (!e.getParticipant().equals(getParticipant())) {

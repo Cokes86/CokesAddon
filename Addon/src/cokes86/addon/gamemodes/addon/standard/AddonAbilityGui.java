@@ -1,14 +1,17 @@
 package cokes86.addon.gamemodes.addon.standard;
 
-import java.lang.reflect.Field;
-import java.lang.reflect.Modifier;
-import java.util.List;
-import java.util.Map;
-import java.util.StringJoiner;
-import java.util.TreeMap;
-import java.util.function.Function;
-import java.util.regex.MatchResult;
-
+import cokes86.addon.ability.AddonAbilityFactory;
+import daybreak.abilitywar.ability.AbilityBase;
+import daybreak.abilitywar.ability.AbilityFactory;
+import daybreak.abilitywar.ability.AbilityFactory.AbilityRegistration;
+import daybreak.abilitywar.ability.AbilityFactory.AbilityRegistration.Flag;
+import daybreak.abilitywar.ability.AbilityManifest;
+import daybreak.abilitywar.game.AbstractGame;
+import daybreak.abilitywar.game.GameManager;
+import daybreak.abilitywar.utils.base.Messager;
+import daybreak.abilitywar.utils.base.RegexReplacer;
+import daybreak.abilitywar.utils.base.reflect.ReflectionUtil;
+import daybreak.abilitywar.utils.library.MaterialX;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
@@ -22,28 +25,23 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.plugin.Plugin;
 
-import cokes86.addon.ability.AddonAbilityFactory;
-import daybreak.abilitywar.ability.AbilityBase;
-import daybreak.abilitywar.ability.AbilityFactory;
-import daybreak.abilitywar.ability.AbilityFactory.AbilityRegistration;
-import daybreak.abilitywar.ability.AbilityFactory.AbilityRegistration.Flag;
-import daybreak.abilitywar.ability.AbilityManifest;
-import daybreak.abilitywar.game.AbstractGame;
-import daybreak.abilitywar.game.GameManager;
-import daybreak.abilitywar.utils.base.Messager;
-import daybreak.abilitywar.utils.base.RegexReplacer;
-import daybreak.abilitywar.utils.base.reflect.ReflectionUtil;
-import daybreak.abilitywar.utils.library.MaterialX;
+import java.lang.reflect.Field;
+import java.lang.reflect.Modifier;
+import java.util.List;
+import java.util.Map;
+import java.util.StringJoiner;
+import java.util.TreeMap;
+import java.util.function.Function;
+import java.util.regex.MatchResult;
 
 public class AddonAbilityGui implements Listener {
-	private final Player p;
-	private final AbstractGame.Participant target;
-	private int PlayerPage;
-	private Inventory AbilityGUI;
-	private final Map<String, AbilityRegistration> values;
-	
 	private static final RegexReplacer SQUARE_BRACKET = new RegexReplacer("\\$\\[([^\\[\\]]+)\\]");
 	private static final RegexReplacer ROUND_BRACKET = new RegexReplacer("\\$\\(([^\\(\\)]+)\\)");
+	private final Player p;
+	private final AbstractGame.Participant target;
+	private final Map<String, AbilityRegistration> values;
+	private int PlayerPage;
+	private Inventory AbilityGUI;
 
 	public AddonAbilityGui(Player p, Plugin Plugin) {
 		this.PlayerPage = 1;
@@ -80,22 +78,22 @@ public class AddonAbilityGui implements Listener {
 
 		for (AbilityRegistration registration : values.values()) {
 			AbilityManifest manifest = registration.getManifest();
-			
+
 			ItemStack is = MaterialX.GREEN_WOOL.createItem();
 			ItemMeta im = is.getItemMeta();
 			im.setDisplayName(ChatColor.translateAlternateColorCodes('&', "&b" + manifest.name()));
-			
+
 			StringJoiner joiner = new StringJoiner(ChatColor.WHITE + ", ");
 			if (registration.hasFlag(Flag.ACTIVE_SKILL)) joiner.add(ChatColor.GREEN + "액티브");
 			if (registration.hasFlag(Flag.TARGET_SKILL)) joiner.add(ChatColor.GOLD + "타겟팅");
 			if (registration.hasFlag(Flag.BETA)) joiner.add(ChatColor.DARK_AQUA + "타겟팅");
-			
+
 			List<String> lore = Messager.asList(
 					ChatColor.translateAlternateColorCodes('&', "&f등급: " + manifest.rank().getRankName()),
 					ChatColor.translateAlternateColorCodes('&', "&f종류: " + manifest.species().getSpeciesName()),
 					joiner.toString(),
 					"");
-			
+
 			Function<MatchResult, String> valueProvider = matchResult -> {
 				try {
 					Field field = registration.getAbilityClass().getDeclaredField(matchResult.group(1));
@@ -108,11 +106,11 @@ public class AddonAbilityGui implements Listener {
 				}
 				return "?";
 			};
-			
+
 			for (String explain : manifest.explain()) {
 				lore.add(ChatColor.WHITE.toString().concat(ROUND_BRACKET.replaceAll(SQUARE_BRACKET.replaceAll(explain, valueProvider), valueProvider)));
 			}
-			
+
 			im.setLore(lore);
 			is.setItemMeta(im);
 

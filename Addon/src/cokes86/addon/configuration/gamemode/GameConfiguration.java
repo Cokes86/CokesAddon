@@ -1,5 +1,10 @@
 package cokes86.addon.configuration.gamemode;
 
+import cokes86.addon.configuration.ConfigFiles;
+import daybreak.abilitywar.config.Cache;
+import daybreak.abilitywar.config.CommentedConfiguration;
+import org.bukkit.configuration.InvalidConfigurationException;
+
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -9,14 +14,10 @@ import java.util.Map.Entry;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import org.bukkit.configuration.InvalidConfigurationException;
-
-import cokes86.addon.configuration.ConfigFile;
-import daybreak.abilitywar.config.CommentedConfiguration;
-
 public class GameConfiguration {
 
 	private static final Logger logger = Logger.getLogger(GameConfiguration.class.getName());
+	private static final EnumMap<GameNodes, Cache> cache = new EnumMap<>(GameNodes.class);
 	private static File file = null;
 	private static long lastModified;
 	private static CommentedConfiguration config = null;
@@ -27,7 +28,7 @@ public class GameConfiguration {
 
 	public static void load() throws IOException, InvalidConfigurationException {
 		if (!isLoaded()) {
-			file = ConfigFile.createFile("GameConfig.yml");
+			file = ConfigFiles.createFile("GameConfig.yml");
 			lastModified = file.lastModified();
 			config = new CommentedConfiguration(file);
 			update();
@@ -37,8 +38,8 @@ public class GameConfiguration {
 	public static void update() throws IOException, InvalidConfigurationException {
 		config.load();
 
-		for (Entry<GameNodes, CacheG> entry : cache.entrySet()) {
-			CacheG cache = entry.getValue();
+		for (Entry<GameNodes, Cache> entry : cache.entrySet()) {
+			Cache cache = entry.getValue();
 			if (cache.isModifiedValue()) {
 				config.set(entry.getKey().getPath(), cache.getValue());
 			}
@@ -48,17 +49,15 @@ public class GameConfiguration {
 		for (GameNodes node : GameNodes.values()) {
 			Object value = config.get(node.getPath());
 			if (value != null) {
-				cache.put(node, new CacheG(false, value));
+				cache.put(node, new Cache(false, value));
 			} else {
-				config.set(node.getPath(), node.getDefault());
-				cache.put(node, new CacheG(false, node.getDefault()));
+				config.set(node.getPath(), node.getDefaultValue());
+				cache.put(node, new Cache(false, node.getDefaultValue()));
 			}
 		}
 		config.save();
 		lastModified = file.lastModified();
 	}
-
-	private static final EnumMap<GameNodes, CacheG> cache = new EnumMap<>(GameNodes.class);
 
 	// Private only method
 	private static <T> T get(GameNodes configNode, Class<T> clazz) throws IllegalStateException {
@@ -89,11 +88,11 @@ public class GameConfiguration {
 	}
 
 	public static void modifyProperty(GameNodes node, Object value) {
-		cache.put(node, new CacheG(true, value));
+		cache.put(node, new Cache(true, value));
 	}
 
 	public static class Config {
-		
+
 		public static String getString(GameNodes node) {
 			return get(node, String.class);
 		}
@@ -110,24 +109,4 @@ public class GameConfiguration {
 			return getList(node, String.class);
 		}
 	}
-}
-
-class CacheG {
-
-	private final boolean isModifiedValue;
-	private final Object value;
-
-	CacheG(boolean isModifiedValue, Object value) {
-		this.isModifiedValue = isModifiedValue;
-		this.value = value;
-	}
-
-	boolean isModifiedValue() {
-		return isModifiedValue;
-	}
-
-	Object getValue() {
-		return value;
-	}
-
 }

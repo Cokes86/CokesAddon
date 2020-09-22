@@ -1,10 +1,5 @@
 package cokes86.addon.ability.list;
 
-import org.bukkit.entity.Arrow;
-import org.bukkit.entity.Player;
-import org.bukkit.event.entity.EntityDamageByEntityEvent;
-import org.bukkit.event.entity.ProjectileHitEvent;
-
 import cokes86.addon.ability.CokesAbility;
 import daybreak.abilitywar.ability.AbilityManifest;
 import daybreak.abilitywar.ability.AbilityManifest.Rank;
@@ -14,6 +9,10 @@ import daybreak.abilitywar.game.AbstractGame.Participant;
 import daybreak.abilitywar.game.AbstractGame.Participant.ActionbarNotification.ActionbarChannel;
 import daybreak.abilitywar.utils.library.SoundLib;
 import daybreak.google.common.base.Strings;
+import org.bukkit.entity.Arrow;
+import org.bukkit.entity.Player;
+import org.bukkit.event.entity.EntityDamageByEntityEvent;
+import org.bukkit.event.entity.ProjectileHitEvent;
 
 import java.util.Objects;
 
@@ -26,8 +25,6 @@ import java.util.Objects;
 		"※능력 아이디어: RainStar_"
 })
 public class EnchantArrow extends CokesAbility {
-	int enchantStack = 0;
-	ActionbarChannel ac = newActionbarChannel();
 	private static final Config<Integer> damage = new Config<Integer>(EnchantArrow.class, "추가대미지(%)", 15) {
 		@Override
 		public boolean condition(Integer value) {
@@ -41,40 +38,42 @@ public class EnchantArrow extends CokesAbility {
 	}, max_stack = new Config<Integer>(EnchantArrow.class, "최대스택", 9) {
 		@Override
 		public boolean condition(Integer value) {
-			return value>0;
+			return value > 0;
 		}
 	}, max_stack_up = new Config<Integer>(EnchantArrow.class, "최대스택상승치", 3) {
 		@Override
 		public boolean condition(Integer value) {
-			return value>0;
+			return value > 0;
 		}
 	}, max_stack_down = new Config<Integer>(EnchantArrow.class, "최대스택감소치", 3) {
 		@Override
 		public boolean condition(Integer value) {
-			return value>0;
+			return value > 0;
 		}
 	};
+	int enchantStack = 0;
+	ActionbarChannel ac = newActionbarChannel();
 
 	public EnchantArrow(Participant participant) {
 		super(participant);
 	}
-	
+
 	public void onUpdate(Update update) {
 		if (update == Update.RESTRICTION_CLEAR) {
 			ac.update("§b".concat(Strings.repeat(">", enchantStack)).concat("§f").concat(Strings.repeat(">", max_stack.getValue() - enchantStack)).toString());
 		}
 	}
-	
+
 	@SubscribeEvent(priority = 5)
 	private void onProjectileHit(ProjectileHitEvent e) {
 		if (Objects.equals(e.getEntity().getShooter(), getPlayer())) {
 			if (e.getHitEntity() == null) {
 				SoundLib.ENTITY_VILLAGER_NO.playSound(getPlayer());
 				if (enchantStack == 0) {
-					getPlayer().setHealth(Math.max(0.0, getPlayer().getHealth()-risk.getValue()));
+					getPlayer().setHealth(Math.max(0.0, getPlayer().getHealth() - risk.getValue()));
 				} else {
 					final double length = getPlayer().getLocation().clone().subtract(e.getEntity().getLocation().clone()).length();
-					enchantStack -= Math.min(max_stack_down.getValue(), Math.max(1, 3-length/5));
+					enchantStack -= Math.min(max_stack_down.getValue(), Math.max(1, 3 - length / 5));
 					if (enchantStack < 0) enchantStack = 0;
 				}
 			}
@@ -82,15 +81,15 @@ public class EnchantArrow extends CokesAbility {
 			ac.update("§b".concat(Strings.repeat(">", enchantStack)).concat("§f").concat(Strings.repeat(">", max_stack.getValue() - enchantStack)).toString());
 		}
 	}
-	
+
 	@SubscribeEvent
 	private void onEntityDamageByEntity(EntityDamageByEntityEvent e) {
 		if (e.getEntity() instanceof Player && e.getDamager() instanceof Arrow && !e.getEntity().equals(getPlayer())) {
 			Arrow arrow = (Arrow) e.getDamager();
 			if (Objects.equals(arrow.getShooter(), getPlayer())) {
-				e.setDamage(e.getDamage()*(1+enchantStack*damage.getValue()/100.0));
+				e.setDamage(e.getDamage() * (1 + enchantStack * damage.getValue() / 100.0));
 				final double length = getPlayer().getLocation().clone().subtract(e.getEntity().getLocation().clone()).length();
-				enchantStack += Math.min(max_stack_up.getValue(), length/5 + 1);
+				enchantStack += Math.min(max_stack_up.getValue(), length / 5 + 1);
 				if (enchantStack >= max_stack.getValue()) enchantStack = max_stack.getValue();
 				ac.update("§b".concat(Strings.repeat(">", enchantStack)).concat("§f").concat(Strings.repeat(">", max_stack.getValue() - enchantStack)).toString());
 				arrow.remove();

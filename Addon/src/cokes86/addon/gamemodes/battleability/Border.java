@@ -9,7 +9,7 @@ import daybreak.abilitywar.game.Game;
 import daybreak.abilitywar.game.event.InvincibilityStatusChangeEvent;
 import daybreak.abilitywar.game.manager.object.Invincibility;
 import daybreak.abilitywar.utils.base.TimeUtil;
-import daybreak.abilitywar.utils.base.minecraft.Bar;
+import daybreak.abilitywar.utils.base.minecraft.BroadBar;
 import daybreak.abilitywar.utils.library.SoundLib;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -28,14 +28,14 @@ public class Border extends Invincibility {
 	private final boolean isBossbarEnabled = Settings.InvincibilitySettings.isBossbarEnabled();
 	private final String bossbarMessage = Settings.InvincibilitySettings.getBossbarMessage(), bossbarInfiniteMessage = Settings.InvincibilitySettings.getBossbarInfiniteMessage();
 
-	private final int size = Config.getInt(GameNodes.BattleAbility_startSize);
-	private final int time = Config.getInt(GameNodes.BattleAbility_time);
+	private final int size = Config.getInt(GameNodes.BATTLE_ABILITY_START_SIZE);
+	private final int time = Config.getInt(GameNodes.BATTLE_ABILITY_TIME);
 	private final World world = Bukkit.getWorld(Settings.getSpawnLocation().world);
 	private final WorldBorder wb = world.getWorldBorder();
 
 	private final Game game;
 	private AbstractGame.GameTimer timer;
-	
+
 	public Border(Game game) {
 		super(game);
 		this.game = game;
@@ -94,15 +94,15 @@ public class Border extends Invincibility {
 
 	private class InvincibilityTimer extends AbstractGame.GameTimer {
 
-		private Bar bossBar = null;
 		private final String startMessage;
+		private BroadBar bossBar = null;
 
 		private InvincibilityTimer(int duration) {
 			game.super(TaskType.REVERSE, duration);
 			this.startMessage = ChatColor.GREEN + "무적이 " + ChatColor.WHITE + TimeUtil.parseTimeAsString(duration) + ChatColor.GREEN + "동안 적용됩니다.";
 			if (isBossbarEnabled) {
 				int[] time = TimeUtil.parseTime(duration);
-				bossBar = new Bar(String.format(bossbarMessage, time[0], time[1]), BarColor.GREEN, BarStyle.SEGMENTED_10);
+				bossBar = new BroadBar(String.format(bossbarMessage, time[0], time[1]), BarColor.GREEN, BarStyle.SEGMENTED_10);
 			}
 		}
 
@@ -110,7 +110,7 @@ public class Border extends Invincibility {
 			game.super(TaskType.INFINITE, -1);
 			this.startMessage = ChatColor.GREEN + "무적이 적용되었습니다. 지금부터 무적이 해제될 때까지 대미지를 입지 않습니다.";
 			if (isBossbarEnabled) {
-				bossBar = new Bar(bossbarInfiniteMessage, BarColor.GREEN, BarStyle.SEGMENTED_10);
+				bossBar = new BroadBar(bossbarInfiniteMessage, BarColor.GREEN, BarStyle.SEGMENTED_10);
 			}
 		}
 
@@ -128,7 +128,8 @@ public class Border extends Invincibility {
 			if (getTaskType() != TaskType.INFINITE) {
 				if (bossBar != null) {
 					int[] time = TimeUtil.parseTime(count);
-					bossBar.setTitle(String.format(bossbarMessage, time[0], time[1])).setProgress(Math.min(count / (double) getMaximumCount(), 1.0));
+					bossBar.setTitle(String.format(bossbarMessage, time[0], time[1]));
+					bossBar.setProgress(Math.min(count / (double) getMaximumCount(), 1.0));
 				}
 				if (count == (getMaximumCount()) / 2 || (count <= 5 && count >= 1)) {
 					Bukkit.broadcastMessage("§a무적이 §f" + TimeUtil.parseTimeAsString(count) + " §a후에 해제됩니다.");
@@ -139,9 +140,7 @@ public class Border extends Invincibility {
 
 		@Override
 		protected void onEnd() {
-			if (bossBar != null) {
-				bossBar.remove();
-			}
+			onSilentEnd();
 			game.setRestricted(false);
 			Bukkit.broadcastMessage(ChatColor.GREEN + "무적이 해제되었습니다. 지금부터 대미지를 입습니다.");
 			SoundLib.ENTITY_ENDER_DRAGON_GROWL.broadcastSound();
@@ -152,7 +151,7 @@ public class Border extends Invincibility {
 		@Override
 		protected void onSilentEnd() {
 			if (bossBar != null) {
-				bossBar.remove();
+				bossBar.unregister();
 			}
 		}
 

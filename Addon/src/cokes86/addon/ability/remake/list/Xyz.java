@@ -1,20 +1,5 @@
 package cokes86.addon.ability.remake.list;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
-
-import org.bukkit.Bukkit;
-import org.bukkit.Location;
-import org.bukkit.Material;
-import org.bukkit.entity.Entity;
-import org.bukkit.entity.Player;
-import org.bukkit.event.EventHandler;
-import org.bukkit.event.HandlerList;
-import org.bukkit.event.Listener;
-import org.bukkit.event.entity.PlayerDeathEvent;
-
 import cokes86.addon.ability.remake.Remaking;
 import daybreak.abilitywar.AbilityWar;
 import daybreak.abilitywar.ability.AbilityManifest;
@@ -33,6 +18,20 @@ import daybreak.abilitywar.utils.base.concurrent.TimeUnit;
 import daybreak.abilitywar.utils.base.math.LocationUtil;
 import daybreak.abilitywar.utils.library.PotionEffects;
 import daybreak.google.common.base.Predicate;
+import org.bukkit.Bukkit;
+import org.bukkit.Location;
+import org.bukkit.Material;
+import org.bukkit.entity.Entity;
+import org.bukkit.entity.Player;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.HandlerList;
+import org.bukkit.event.Listener;
+import org.bukkit.event.entity.PlayerDeathEvent;
+
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 
 @Beta
 @AbilityManifest(name = "엑시즈 [리메이크]", rank = Rank.S, species = Species.HUMAN, explain = {
@@ -45,7 +44,6 @@ import daybreak.google.common.base.Predicate;
 		"신속2, 힘1 버프가 상시로 주어집니다."
 })
 public class Xyz extends Remaking implements ActiveHandler {
-	private List<Player> targets = null;
 	private static final Config<Integer> range = new Config<Integer>(Xyz.class, "범위", 10) {
 		@Override
 		public boolean condition(Integer arg0) {
@@ -74,8 +72,8 @@ public class Xyz extends Remaking implements ActiveHandler {
 		}
 		return false;
 	};
-	
 	XyzTimer xyzTime = new XyzTimer();
+	private List<Player> targets = null;
 
 	public Xyz(Participant arg0) throws IllegalStateException {
 		super(arg0);
@@ -94,23 +92,22 @@ public class Xyz extends Remaking implements ActiveHandler {
 		}
 		return false;
 	}
-	
+
 	class XyzTimer extends Duration implements Listener {
+		Location location = Settings.getSpawnLocation().toBukkitLocation();
+		Map<Player, ActionbarChannel> map = new HashMap<>();
 		public XyzTimer() {
-			super(duration.getValue()*20);
+			super(duration.getValue() * 20);
 			Bukkit.getPluginManager().registerEvents(this, AbilityWar.getPlugin());
 			this.setPeriod(TimeUnit.TICKS, 1);
 		}
 
-		Location location = Settings.getSpawnLocation().toBukkitLocation();
-		Map<Player, ActionbarChannel> map = new HashMap<>();
-		
 		@Override
 		protected void onDurationStart() {
 			for (Player p : targets) {
 				p.teleport(location);
 				map.put(p, getGame().getParticipant(p).actionbar().newChannel());
-				p.sendMessage("엑시즈 "+getPlayer().getName()+"님이 당신을 소멸시킬려 합니다.");
+				p.sendMessage("엑시즈 " + getPlayer().getName() + "님이 당신을 소멸시킬려 합니다.");
 			}
 			getPlayer().teleport(location);
 		}
@@ -121,10 +118,10 @@ public class Xyz extends Remaking implements ActiveHandler {
 			for (Entry<Player, ActionbarChannel> entry : map.entrySet()) {
 				PotionEffects.SPEED.addPotionEffect(entry.getKey(), 30, 1, true);
 				PotionEffects.INCREASE_DAMAGE.addPotionEffect(entry.getKey(), 30, 0, true);
-				entry.getValue().update("남은 시간 : "+TimeUtil.parseTimeAsString(this.getFixedCount())+" | 위치 x: "+x+" y: "+y+" z: "+z);
+				entry.getValue().update("남은 시간 : " + TimeUtil.parseTimeAsString(this.getFixedCount()) + " | 위치 x: " + x + " y: " + y + " z: " + z);
 			}
 		}
-		
+
 		@Override
 		protected void onDurationEnd() {
 			onDurationSilentEnd();
@@ -132,12 +129,12 @@ public class Xyz extends Remaking implements ActiveHandler {
 				p.setHealth(0.0);
 			}
 		}
-		
+
 		@Override
 		protected void onDurationSilentEnd() {
 			HandlerList.unregisterAll(this);
 		}
-		
+
 		@EventHandler
 		public void onPlayerDeath(PlayerDeathEvent e) {
 			if (e.getEntity().equals(getPlayer())) {
@@ -149,7 +146,9 @@ public class Xyz extends Remaking implements ActiveHandler {
 				map.remove(e.getEntity());
 			}
 		}
-	
-	};
+
+	}
+
+	;
 
 }

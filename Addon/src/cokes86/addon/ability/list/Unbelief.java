@@ -1,13 +1,5 @@
 package cokes86.addon.ability.list;
 
-import java.util.function.Predicate;
-
-import org.bukkit.Material;
-import org.bukkit.entity.Arrow;
-import org.bukkit.entity.Entity;
-import org.bukkit.entity.Player;
-import org.bukkit.event.entity.EntityDamageByEntityEvent;
-
 import cokes86.addon.ability.CokesAbility;
 import daybreak.abilitywar.ability.AbilityManifest;
 import daybreak.abilitywar.ability.AbilityManifest.Rank;
@@ -22,6 +14,13 @@ import daybreak.abilitywar.game.manager.object.DeathManager;
 import daybreak.abilitywar.game.team.interfaces.Teamable;
 import daybreak.abilitywar.utils.base.math.LocationUtil;
 import daybreak.abilitywar.utils.library.SoundLib;
+import org.bukkit.Material;
+import org.bukkit.entity.Arrow;
+import org.bukkit.entity.Entity;
+import org.bukkit.entity.Player;
+import org.bukkit.event.entity.EntityDamageByEntityEvent;
+
+import java.util.function.Predicate;
 
 @AbilityManifest(name = "불신", rank = Rank.A, species = Species.HUMAN, explain = {
 		"게임 중 1회에 한해 $[range]칸 이내의 상대방을 바라본 체 철괴로 우클릭 시 불신 전용 2인 팀을 만듭니다.",
@@ -47,16 +46,13 @@ public class Unbelief extends CokesAbility implements ActiveHandler {
 			return value > 0;
 		}
 	};
-
-	boolean attackable = false;
-
 	private final Predicate<Entity> predicate = entity -> {
 		if (entity.equals(getPlayer())) return false;
 		if (entity instanceof Player) {
 			if (!getGame().isParticipating(entity.getUniqueId())) return false;
 			AbstractGame.Participant target = getGame().getParticipant(entity.getUniqueId());
 			if (getGame() instanceof DeathManager.Handler) {
-				DeathManager.Handler game = (DeathManager.Handler)getGame();
+				DeathManager.Handler game = (DeathManager.Handler) getGame();
 				if (game.getDeathManager().isExcluded(entity.getUniqueId())) return false;
 			}
 			if (getGame() instanceof Teamable) {
@@ -67,7 +63,7 @@ public class Unbelief extends CokesAbility implements ActiveHandler {
 		}
 		return true;
 	};
-
+	boolean attackable = false;
 	ActionbarChannel notice = newActionbarChannel();
 	private Participant teammate;
 	private ActionbarChannel teamNotice = null;
@@ -111,7 +107,7 @@ public class Unbelief extends CokesAbility implements ActiveHandler {
 						SoundLib.ENTITY_ENDER_DRAGON_GROWL.playSound(getPlayer());
 						SoundLib.ENTITY_ENDER_DRAGON_GROWL.playSound(teammate.getPlayer());
 
-						getPlayer().sendMessage("팀이 깨졌습니다. 이제 당신은 "+teammate.getPlayer().getName()+"님을 믿지 못합니다.");
+						getPlayer().sendMessage("팀이 깨졌습니다. 이제 당신은 " + teammate.getPlayer().getName() + "님을 믿지 못합니다.");
 						teammate.getPlayer().sendMessage("팀이 깨졌습니다. 이제 공격할 수 있습니다.");
 						notice.update(null);
 						teamNotice.unregister();
@@ -120,7 +116,7 @@ public class Unbelief extends CokesAbility implements ActiveHandler {
 				}
 			} else if (damager.equals(getPlayer()) && e.getEntity().equals(teammate.getPlayer())) {
 				if (attackable) {
-					e.setDamage(e.getDamage()+damage.getValue());
+					e.setDamage(e.getDamage() + damage.getValue());
 				} else {
 					e.setCancelled(true);
 					damager.sendMessage("팀을 공격할 수 없습니다.");
@@ -137,11 +133,11 @@ public class Unbelief extends CokesAbility implements ActiveHandler {
 				teammate = getGame().getParticipant(player.getUniqueId());
 				teamNotice = teammate.actionbar().newChannel();
 
-				getPlayer().sendMessage("§e"+player.getName()+"§f님과 팀을 맺습니다.");
-				player.sendMessage("§e"+getPlayer().getName()+"§f님과 팀을 맺습니다. 팀을 총 "+hit.getValue()+"번 공격할 시 팀이 깨집니다.");
+				getPlayer().sendMessage("§e" + player.getName() + "§f님과 팀을 맺습니다.");
+				player.sendMessage("§e" + getPlayer().getName() + "§f님과 팀을 맺습니다. 팀을 총 " + hit.getValue() + "번 공격할 시 팀이 깨집니다.");
 
-				notice.update("§e팀 §f: "+player.getName());
-				teamNotice.update("§e팀 §f: "+getPlayer().getName());
+				notice.update("§e팀 §f: " + player.getName());
+				teamNotice.update("§e팀 §f: " + getPlayer().getName());
 			}
 		}
 		return false;

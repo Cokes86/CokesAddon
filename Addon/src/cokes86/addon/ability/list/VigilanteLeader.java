@@ -1,20 +1,5 @@
 package cokes86.addon.ability.list;
 
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-import java.util.function.Predicate;
-
-import org.bukkit.Location;
-import org.bukkit.Material;
-import org.bukkit.entity.Arrow;
-import org.bukkit.entity.Entity;
-import org.bukkit.entity.Player;
-import org.bukkit.event.entity.EntityDamageByEntityEvent;
-import org.bukkit.event.entity.PlayerDeathEvent;
-import org.bukkit.potion.PotionEffect;
-import org.bukkit.potion.PotionEffectType;
-
 import cokes86.addon.ability.CokesAbility;
 import daybreak.abilitywar.ability.AbilityManifest;
 import daybreak.abilitywar.ability.SubscribeEvent;
@@ -28,6 +13,20 @@ import daybreak.abilitywar.utils.base.math.LocationUtil;
 import daybreak.abilitywar.utils.base.math.geometry.Circle;
 import daybreak.abilitywar.utils.library.ParticleLib;
 import daybreak.abilitywar.utils.library.ParticleLib.RGB;
+import org.bukkit.Location;
+import org.bukkit.Material;
+import org.bukkit.entity.Arrow;
+import org.bukkit.entity.Entity;
+import org.bukkit.entity.Player;
+import org.bukkit.event.entity.EntityDamageByEntityEvent;
+import org.bukkit.event.entity.PlayerDeathEvent;
+import org.bukkit.potion.PotionEffect;
+import org.bukkit.potion.PotionEffectType;
+
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+import java.util.function.Predicate;
 
 @AbilityManifest(name = "자경단장", rank = AbilityManifest.Rank.B, species = AbilityManifest.Species.HUMAN, explain = {
 		"§7최초 철괴 우클릭 - §c자경단 집결§r: 범위 $[r]블럭 이내 모든 범위를 자경단 아지트로 만듭니다. 또한 해당 범위 안에 있던 플레이어 전부 자경단원으로 소속됩니다.",
@@ -36,7 +35,6 @@ import daybreak.abilitywar.utils.library.ParticleLib.RGB;
 		"자경단 아지트 밖에서 자경단장은 2명 취급합니다.",
 		"자경단원은 자경단장을 공격할 때, 자경단장이 받는 대미지가 30% 감소합니다."})
 public class VigilanteLeader extends CokesAbility implements ActiveHandler {
-	private int num = getGame().getParticipants().size();
 	public static Config<Integer> r = new Config<Integer>(VigilanteLeader.class, "아지트범위", 10) {
 		@Override
 		public boolean condition(Integer value) {
@@ -48,32 +46,26 @@ public class VigilanteLeader extends CokesAbility implements ActiveHandler {
 			return value >= 0;
 		}
 	};
+	protected ActionbarChannel channel = this.newActionbarChannel();
 	RGB color = RGB.of(0, 162, 232);
 	Set<Participant> vigilantes = new HashSet<>();
 	Location ajit = null;
 	int addNum;
-	protected ActionbarChannel channel = this.newActionbarChannel();
-
 	Predicate<Entity> predicate = entity -> {
 		if (entity instanceof Player) {
 			if (!getGame().isParticipating(entity.getUniqueId())) return false;
 			AbstractGame.Participant target = getGame().getParticipant(entity.getUniqueId());
 			if (getGame() instanceof DeathManager.Handler) {
-				DeathManager.Handler game = (DeathManager.Handler)getGame();
+				DeathManager.Handler game = (DeathManager.Handler) getGame();
 				if (game.getDeathManager().isExcluded(entity.getUniqueId())) return false;
 			}
 			return target.attributes().TARGETABLE.getValue();
 		}
 		return true;
 	};
-
-	public VigilanteLeader(Participant participant) {
-		super(participant);
-		passive.start();
-	}
-
 	Cooldown c = new Cooldown(cool.getValue());
-    AbilityTimer passive = new AbilityTimer() {
+	private int num = getGame().getParticipants().size();
+	AbilityTimer passive = new AbilityTimer() {
 		@Override
 		protected void run(int count) {
 			if (ajit != null) {
@@ -85,7 +77,7 @@ public class VigilanteLeader extends CokesAbility implements ActiveHandler {
 
 				List<Player> inAjit = LocationUtil.getNearbyEntities(Player.class, ajit, r.getValue(), r.getValue(), predicate);
 				addNum = 1;
-				
+
 				for (Player p : inAjit) {
 					if (p.equals(getPlayer())) addNum += 3;
 					else if (vigilantes.contains(getGame().getParticipant(p))) addNum += 2;
@@ -96,6 +88,10 @@ public class VigilanteLeader extends CokesAbility implements ActiveHandler {
 			}
 		}
 	}.setPeriod(TimeUnit.TICKS, 2);
+	public VigilanteLeader(Participant participant) {
+		super(participant);
+		passive.start();
+	}
 
 	@Override
 	public boolean ActiveSkill(Material m, ClickType ct) {
@@ -133,7 +129,7 @@ public class VigilanteLeader extends CokesAbility implements ActiveHandler {
 				damager = (Entity) arrow.getShooter();
 			}
 		}
-		
+
 		if (e.getEntity().equals(getPlayer()) && damager instanceof Player) {
 			Player t = (Player) damager;
 			if (getGame().isParticipating(t) && vigilantes.contains(getGame().getParticipant(t))) {
@@ -147,7 +143,7 @@ public class VigilanteLeader extends CokesAbility implements ActiveHandler {
 			passive.start();
 		}
 	}
-	
+
 	@SubscribeEvent
 	public void onPlayerDeath(PlayerDeathEvent e) {
 		if (getGame() instanceof DeathManager.Handler) {

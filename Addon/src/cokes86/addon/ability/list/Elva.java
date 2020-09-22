@@ -1,36 +1,37 @@
 package cokes86.addon.ability.list;
 
-import java.util.Iterator;
-import java.util.function.Predicate;
-
-import daybreak.abilitywar.game.AbstractGame;
-import daybreak.abilitywar.game.team.interfaces.Teamable;
-import daybreak.abilitywar.game.manager.object.DeathManager;
-import org.bukkit.Location;
-import org.bukkit.Material;
-import org.bukkit.World;
-import org.bukkit.entity.*;
-import org.bukkit.event.entity.EntityShootBowEvent;
-import org.bukkit.inventory.ItemStack;
-import org.bukkit.projectiles.ProjectileSource;
-import org.bukkit.util.Vector;
-
 import cokes86.addon.ability.CokesAbility;
 import daybreak.abilitywar.ability.AbilityManifest;
 import daybreak.abilitywar.ability.AbilityManifest.Rank;
 import daybreak.abilitywar.ability.AbilityManifest.Species;
 import daybreak.abilitywar.ability.SubscribeEvent;
+import daybreak.abilitywar.game.AbstractGame;
 import daybreak.abilitywar.game.AbstractGame.CustomEntity;
 import daybreak.abilitywar.game.AbstractGame.Participant;
 import daybreak.abilitywar.game.AbstractGame.Participant.ActionbarNotification.ActionbarChannel;
+import daybreak.abilitywar.game.manager.object.DeathManager;
+import daybreak.abilitywar.game.team.interfaces.Teamable;
 import daybreak.abilitywar.utils.base.ProgressBar;
 import daybreak.abilitywar.utils.base.concurrent.TimeUnit;
 import daybreak.abilitywar.utils.base.math.LocationUtil;
 import daybreak.abilitywar.utils.base.math.geometry.Line;
-import daybreak.abilitywar.utils.base.minecraft.entity.decorator.Deflectable;
 import daybreak.abilitywar.utils.library.ParticleLib;
 import daybreak.abilitywar.utils.library.ParticleLib.RGB;
 import daybreak.abilitywar.utils.library.SoundLib;
+import org.bukkit.Location;
+import org.bukkit.Material;
+import org.bukkit.World;
+import org.bukkit.entity.Arrow;
+import org.bukkit.entity.Damageable;
+import org.bukkit.entity.Entity;
+import org.bukkit.entity.LivingEntity;
+import org.bukkit.entity.Player;
+import org.bukkit.event.entity.EntityShootBowEvent;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.util.Vector;
+
+import java.util.Iterator;
+import java.util.function.Predicate;
 
 @AbilityManifest(name = "엘바", rank = Rank.B, species = Species.OTHERS, explain = {
 		"활을 비주류 손에 들고 있을 경우",
@@ -42,11 +43,6 @@ import daybreak.abilitywar.utils.library.SoundLib;
 		"※능력 아이디어: Sato207"
 })
 public class Elva extends CokesAbility {
-	Vector velocity = null;
-	RGB color = RGB.of(1, 255, 102);
-	int arrow;
-	ActionbarChannel ac = newActionbarChannel();
-
 	private static final Config<Integer> maxarrow = new Config<Integer>(Elva.class, "마법화살수", 200) {
 
 		@Override
@@ -62,7 +58,6 @@ public class Elva extends CokesAbility {
 		}
 
 	};
-
 	private static final Config<Double> damage = new Config<Double>(Elva.class, "마법화살대미지", 2.5) {
 
 		@Override
@@ -71,14 +66,6 @@ public class Elva extends CokesAbility {
 		}
 
 	};
-
-	public Elva(Participant arg0) {
-		super(arg0);
-		bow.register();
-		reload.register();
-		arrow = maxarrow.getValue();
-	}
-
 	private final Predicate<Entity> predicate = entity -> {
 		if (entity.equals(getPlayer())) return false;
 		if (entity instanceof Player) {
@@ -96,7 +83,32 @@ public class Elva extends CokesAbility {
 		}
 		return true;
 	};
+	Vector velocity = null;
+	RGB color = RGB.of(1, 255, 102);
+	int arrow;
+	ActionbarChannel ac = newActionbarChannel();
+	AbilityTimer reload = new AbilityTimer(20) {
+		ProgressBar progress;
 
+		protected void onStart() {
+			progress = new ProgressBar(20, 20);
+		}
+
+		@Override
+		protected void run(int arg0) {
+			progress.step();
+			ac.update("재장전 중 : " + progress.toString());
+		}
+
+		protected void onEnd() {
+			onSilentEnd();
+		}
+
+		protected void onSilentEnd() {
+			arrow = maxarrow.getValue();
+		}
+
+	}.setPeriod(TimeUnit.TICKS, 4);
 	AbilityTimer bow = new AbilityTimer() {
 
 		@Override
@@ -121,28 +133,27 @@ public class Elva extends CokesAbility {
 
 	}.setPeriod(TimeUnit.TICKS, speed.getValue());
 
-	AbilityTimer reload = new AbilityTimer(20) {
-		ProgressBar progress;
+	public Elva(Participant arg0) {
+		super(arg0);
+		bow.register();
+		reload.register();
+		arrow = maxarrow.getValue();
+	}
 
-		protected void onStart() {
-			progress = new ProgressBar(20, 20);
-		}
+	public static Vector getForwardVector(Location location) {
+		float yaw = location.getYaw(), pitch = location.getPitch();
 
-		@Override
-		protected void run(int arg0) {
-			progress.step();
-			ac.update("재장전 중 : " + progress.toString());
-		}
+		double radYaw = Math.toRadians(yaw), radPitch = Math.toRadians(pitch);
 
-		protected void onEnd() {
-			onSilentEnd();
-		}
+		double cosPitch = Math.cos(radPitch);
 
-		protected void onSilentEnd() {
-			arrow = maxarrow.getValue();
-		}
+		double x = -Math.sin(radYaw) * cosPitch;
+		double y = -Math.sin(radPitch);
+		double z = Math.cos(radYaw) * cosPitch;
 
-	}.setPeriod(TimeUnit.TICKS, 4);
+		Vector velocity = new Vector(x, y, z);
+		return velocity.normalize();
+	}
 
 	@SuppressWarnings("deprecation")
 	@SubscribeEvent
@@ -152,7 +163,7 @@ public class Elva extends CokesAbility {
 			getPlayer().updateInventory();
 		}
 	}
-	
+
 	protected void onUpdate(Update update) {
 		if (update == Update.RESTRICTION_CLEAR) {
 			bow.setBehavior(RestrictionBehavior.PAUSE_RESUME).start();
@@ -166,6 +177,7 @@ public class Elva extends CokesAbility {
 		private final Vector forward;
 
 		private final RGB color;
+		private Location lastLocation;
 
 		private Bullet(LivingEntity shooter, Location startLocation, Vector arrowVelocity, RGB color) {
 			super(8);
@@ -178,12 +190,10 @@ public class Elva extends CokesAbility {
 			this.lastLocation = startLocation;
 		}
 
-		private Location lastLocation;
-
 		@Override
 		protected void run(int i) {
 			Location newLocation = lastLocation.clone().add(forward);
-			for (Iterator<Location> iterator = Line.iteratorBetween(lastLocation, newLocation, 10); iterator.hasNext();) {
+			for (Iterator<Location> iterator = Line.iteratorBetween(lastLocation, newLocation, 10); iterator.hasNext(); ) {
 				Location location = iterator.next();
 				entity.setLocation(location);
 				Material type = location.getBlock().getType();
@@ -191,7 +201,7 @@ public class Elva extends CokesAbility {
 					stop(false);
 					return;
 				}
-				for (Damageable damageable : LocationUtil.getConflictingEntities(Damageable.class,entity.getBoundingBox(), predicate)) {
+				for (Damageable damageable : LocationUtil.getConflictingEntities(Damageable.class, entity.getBoundingBox(), predicate)) {
 					if (!shooter.equals(damageable) && !damageable.isDead()) {
 						damageable.damage(damage.getValue(), shooter);
 						stop(false);
@@ -213,42 +223,10 @@ public class Elva extends CokesAbility {
 			entity.remove();
 		}
 
-		public class ArrowEntity extends CustomEntity implements Deflectable{
+		public class ArrowEntity extends CustomEntity {
 			public ArrowEntity(World world, double x, double y, double z) {
 				getGame().super(world, x, y, z);
 			}
-
-			@Override
-			public Vector getDirection() {
-				return Bullet.this.forward;
-			}
-
-			@Override
-			public ProjectileSource getShooter() {
-				return Bullet.this.shooter;
-			}
-
-			@Override
-			public void onDeflect(Participant arg0, Vector arg1) {
-				stop(false);
-				Player deflector = arg0.getPlayer();
-				new Bullet(deflector, lastLocation, arg1, color);
-			}
 		}
-	}
-
-	public static Vector getForwardVector(Location location) {
-		float yaw = location.getYaw(), pitch = location.getPitch();
-
-		double radYaw = Math.toRadians(yaw), radPitch = Math.toRadians(pitch);
-
-		double cosPitch = Math.cos(radPitch);
-
-		double x = -Math.sin(radYaw) * cosPitch;
-		double y = -Math.sin(radPitch);
-		double z = Math.cos(radYaw) * cosPitch;
-
-		Vector velocity = new Vector(x, y, z);
-		return velocity.normalize();
 	}
 }

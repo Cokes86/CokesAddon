@@ -1,16 +1,5 @@
 package cokes86.addon.ability.synergy;
 
-import java.util.function.Predicate;
-
-import org.bukkit.entity.Entity;
-import org.bukkit.entity.Player;
-import org.bukkit.entity.Projectile;
-import org.bukkit.event.entity.EntityDamageByBlockEvent;
-import org.bukkit.event.entity.EntityDamageByEntityEvent;
-import org.bukkit.event.entity.EntityDamageEvent;
-import org.bukkit.potion.PotionEffect;
-import org.bukkit.potion.PotionEffectType;
-
 import cokes86.addon.ability.CokesSynergy;
 import daybreak.abilitywar.ability.AbilityManifest;
 import daybreak.abilitywar.ability.AbilityManifest.Rank;
@@ -21,8 +10,18 @@ import daybreak.abilitywar.game.AbstractGame.Participant;
 import daybreak.abilitywar.game.manager.object.DeathManager;
 import daybreak.abilitywar.utils.base.concurrent.TimeUnit;
 import daybreak.abilitywar.utils.base.math.LocationUtil;
+import org.bukkit.entity.Entity;
+import org.bukkit.entity.Player;
+import org.bukkit.entity.Projectile;
+import org.bukkit.event.entity.EntityDamageByBlockEvent;
+import org.bukkit.event.entity.EntityDamageByEntityEvent;
+import org.bukkit.event.entity.EntityDamageEvent;
+import org.bukkit.potion.PotionEffect;
+import org.bukkit.potion.PotionEffectType;
 
-@AbilityManifest(name="장미의 유혹", rank = Rank.S, species= Species.OTHERS, explain= {
+import java.util.function.Predicate;
+
+@AbilityManifest(name = "장미의 유혹", rank = Rank.S, species = Species.OTHERS, explain = {
 		"상대방을 공격할 시 가시 카운터를 1씩 올리고,",
 		"카운터*0.1의 추가대미지를 줍니다. (최대 5대미지)",
 		"또한 모든 받는 대미지가 (카운터)%만큼 증가합니다. (최대 50%)",
@@ -32,51 +31,14 @@ import daybreak.abilitywar.utils.base.math.LocationUtil;
 		"0.5초마다 채력을 1씩 회복합니다. $[cool]"
 })
 public class LureOfRoses extends CokesSynergy {
-	int counter=0;
-	
 	private static final SettingObject<Integer> cool = new Config<Integer>(LureOfRoses.class, "쿨타임", 300, 1) {
 
 		@Override
 		public boolean condition(Integer arg0) {
-			return arg0>=0;
+			return arg0 >= 0;
 		}
-		
+
 	};
-
-	public LureOfRoses(Participant participant) {
-		super(participant);
-	}
-	
-	@SubscribeEvent(onlyRelevant=true)
-	public void onEntityDamage(EntityDamageEvent e) {
-		if (e.getEntity().equals(getPlayer())) {
-			e.setDamage(e.getDamage() * (1+ Math.min(counter, 50.0)/100));
-			if (duration.isRunning()) {e.setCancelled(true);}
-			else if (getPlayer().getHealth() - e.getFinalDamage() <= 0) {
-				e.setDamage(0);
-				duration.setPeriod(TimeUnit.TICKS, 10).start();
-				counter = 0;
-			}
-		}
-	}
-	
-	@SubscribeEvent(onlyRelevant=true)
-	public void onEntityDamageByEntity(EntityDamageByEntityEvent e) {
-		onEntityDamage(e);
-		
-		Entity attacker = e.getDamager();
-		if (attacker instanceof Projectile) attacker = (Entity) ((Projectile) attacker).getShooter();
-		if (attacker.equals(getPlayer()) && e.getEntity() instanceof Player && getGame().getParticipant((Player) e.getEntity()) != null) {
-			counter += 1;
-			e.setDamage(e.getDamage()+counter*0.1);
-		}
-	}
-	
-	@SubscribeEvent(onlyRelevant=true)
-	public void onEntityDamageByBlock(EntityDamageByBlockEvent e) {
-		onEntityDamage(e);
-	}
-
 	private final Predicate<Entity> predicate = entity -> {
 		if (entity.equals(getPlayer())) return false;
 		if (entity instanceof Player) {
@@ -88,7 +50,7 @@ public class LureOfRoses extends CokesSynergy {
 		}
 		return true;
 	};
-	
+	int counter = 0;
 	Cooldown cooldown = new Cooldown(cool.getValue());
 	Duration duration = new Duration(counter, cooldown) {
 
@@ -97,8 +59,43 @@ public class LureOfRoses extends CokesSynergy {
 			for (Player p : LocationUtil.getNearbyEntities(Player.class, getPlayer().getLocation(), 10, 10, predicate)) {
 				p.addPotionEffect(new PotionEffect(PotionEffectType.BLINDNESS, 20, 0));
 			}
-			getPlayer().setHealth(getPlayer().getHealth()+1);
+			getPlayer().setHealth(getPlayer().getHealth() + 1);
 		}
-		
+
 	};
+
+	public LureOfRoses(Participant participant) {
+		super(participant);
+	}
+
+	@SubscribeEvent(onlyRelevant = true)
+	public void onEntityDamage(EntityDamageEvent e) {
+		if (e.getEntity().equals(getPlayer())) {
+			e.setDamage(e.getDamage() * (1 + Math.min(counter, 50.0) / 100));
+			if (duration.isRunning()) {
+				e.setCancelled(true);
+			} else if (getPlayer().getHealth() - e.getFinalDamage() <= 0) {
+				e.setDamage(0);
+				duration.setPeriod(TimeUnit.TICKS, 10).start();
+				counter = 0;
+			}
+		}
+	}
+
+	@SubscribeEvent(onlyRelevant = true)
+	public void onEntityDamageByEntity(EntityDamageByEntityEvent e) {
+		onEntityDamage(e);
+
+		Entity attacker = e.getDamager();
+		if (attacker instanceof Projectile) attacker = (Entity) ((Projectile) attacker).getShooter();
+		if (attacker.equals(getPlayer()) && e.getEntity() instanceof Player && getGame().getParticipant((Player) e.getEntity()) != null) {
+			counter += 1;
+			e.setDamage(e.getDamage() + counter * 0.1);
+		}
+	}
+
+	@SubscribeEvent(onlyRelevant = true)
+	public void onEntityDamageByBlock(EntityDamageByBlockEvent e) {
+		onEntityDamage(e);
+	}
 }

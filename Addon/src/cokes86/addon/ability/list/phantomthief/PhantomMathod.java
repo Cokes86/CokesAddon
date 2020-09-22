@@ -6,23 +6,27 @@ import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 
 public abstract class PhantomMathod {
-    private final PhantomThief thief;
+	private final PhantomThief thief;
 
-    public PhantomMathod(PhantomThief thief) {
-        this.thief = thief;
-    }
+	public PhantomMathod(PhantomThief thief) {
+		this.thief = thief;
+	}
 
-    protected abstract void show();
-    protected abstract void hide();
-    protected abstract void injectPlayer(Player player);
-    protected abstract void onPlayerJoin(PlayerJoinEvent e);
-    protected abstract void onPlayerQuit(PlayerQuitEvent e);
+	protected abstract void show();
 
-    public AbstractGame.Participant getParticipant() {
-        return thief.getParticipant();
-    }
+	protected abstract void hide();
 
-    public Player getPlayer() {
-        return thief.getPlayer();
-    }
+	protected abstract void injectPlayer(Player player);
+
+	protected abstract void onPlayerJoin(PlayerJoinEvent e);
+
+	protected abstract void onPlayerQuit(PlayerQuitEvent e);
+
+	public AbstractGame.Participant getParticipant() {
+		return thief.getParticipant();
+	}
+
+	public Player getPlayer() {
+		return thief.getPlayer();
+	}
 }

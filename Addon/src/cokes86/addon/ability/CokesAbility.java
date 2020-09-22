@@ -1,6 +1,7 @@
 package cokes86.addon.ability;
 
-import cokes86.addon.configuration.ConfigFile;
+
+import cokes86.addon.configuration.ConfigFiles;
 import daybreak.abilitywar.ability.AbilityBase;
 import daybreak.abilitywar.config.ability.AbilitySettings;
 import daybreak.abilitywar.config.ability.AbilitySettings.SettingObject;
@@ -9,34 +10,34 @@ import daybreak.abilitywar.utils.base.Formatter;
 import daybreak.abilitywar.utils.base.TimeUtil;
 
 public class CokesAbility extends AbilityBase {
-	public final static AbilitySettings config = new AbilitySettings(ConfigFile.createFile("AddonAbilities.yml"));
+	public final static AbilitySettings config = new AbilitySettings(ConfigFiles.createFile("AddonAbilities.yml"));
 
 	protected CokesAbility(Participant arg0) {
 		super(arg0);
 	}
-	
+
 	public static abstract class Config<T> extends SettingObject<T> {
 		int option;
-		
+
 		public Config(Class<? extends AbilityBase> arg0, String arg1, T arg2, String[] arg3, int arg4) {
 			config.super(arg0, arg1, arg2, arg3);
-			if (getValue().getClass().equals(Integer.class) && arg4 >=0 && arg4 <= 2) {
+			if (getValue().getClass().equals(Integer.class) && arg4 >= 0 && arg4 <= 2) {
 				option = arg4;
 			} else {
 				option = 0;
 			}
 		}
-		
+
 		public Config(Class<? extends AbilityBase> arg0, String arg1, T arg2, String... arg3) {
 			this(arg0, arg1, arg2, arg3, 0);
 		}
-		
+
 		public Config(Class<? extends AbilityBase> arg0, String arg1, T arg2, int arg3) {
-			this(arg0, arg1, arg2, new String[] {}, arg3);
+			this(arg0, arg1, arg2, new String[]{}, arg3);
 		}
-		
+
 		public Config(Class<? extends AbilityBase> arg0, String arg1, T arg2) {
-			this(arg0, arg1, arg2, new String[] {}, 0);
+			this(arg0, arg1, arg2, new String[]{}, 0);
 		}
 
 		public String toString() {

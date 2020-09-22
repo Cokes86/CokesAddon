@@ -1,21 +1,5 @@
 package cokes86.addon.ability.list;
 
-import java.util.Random;
-import java.util.function.Predicate;
-
-import org.bukkit.Location;
-import org.bukkit.Material;
-import org.bukkit.entity.ArmorStand;
-import org.bukkit.entity.Arrow;
-import org.bukkit.entity.Entity;
-import org.bukkit.entity.Player;
-import org.bukkit.event.entity.EntityDamageByEntityEvent;
-import org.bukkit.event.entity.EntityDamageEvent;
-import org.bukkit.event.player.PlayerArmorStandManipulateEvent;
-import org.bukkit.inventory.EntityEquipment;
-import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.meta.LeatherArmorMeta;
-
 import cokes86.addon.ability.CokesAbility;
 import daybreak.abilitywar.ability.AbilityManifest;
 import daybreak.abilitywar.ability.AbilityManifest.Rank;
@@ -34,6 +18,21 @@ import daybreak.abilitywar.utils.base.minecraft.version.ServerVersion;
 import daybreak.abilitywar.utils.library.MaterialX;
 import daybreak.abilitywar.utils.library.ParticleLib;
 import daybreak.abilitywar.utils.library.PotionEffects;
+import org.bukkit.Location;
+import org.bukkit.Material;
+import org.bukkit.entity.ArmorStand;
+import org.bukkit.entity.Arrow;
+import org.bukkit.entity.Entity;
+import org.bukkit.entity.Player;
+import org.bukkit.event.entity.EntityDamageByEntityEvent;
+import org.bukkit.event.entity.EntityDamageEvent;
+import org.bukkit.event.player.PlayerArmorStandManipulateEvent;
+import org.bukkit.inventory.EntityEquipment;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.LeatherArmorMeta;
+
+import java.util.Random;
+import java.util.function.Predicate;
 
 @AbilityManifest(name = "미르", rank = Rank.B, species = Species.HUMAN, explain = {
 		"철괴 우클릭 시 해당 위치에서 일정 범위 내에 각종 효과를 부여하는 정령을 소환합니다. $[cool]",
@@ -47,37 +46,37 @@ import daybreak.abilitywar.utils.library.PotionEffects;
 })
 @Beta
 public class Mir extends CokesAbility implements ActiveHandler {
-	private static final Config<Integer> cool = new Config<Integer>(Mir.class,"쿨타임", 20 ,1) {
+	private static final Config<Integer> cool = new Config<Integer>(Mir.class, "쿨타임", 20, 1) {
 		@Override
 		public boolean condition(Integer value) {
 			return value >= 0;
 		}
-	}, duration = new Config<Integer>(Mir.class, "지속시간", 10 ,2) {
+	}, duration = new Config<Integer>(Mir.class, "지속시간", 10, 2) {
 		@Override
 		public boolean condition(Integer value) {
 			return value > 0;
 		}
 	}, range_ifrit = new Config<Integer>(Mir.class, "범위.이프리트", 8) {
-        @Override
-        public boolean condition(Integer value) {
-            return value > 0;
-        }
-    }, range_shade = new Config<Integer>(Mir.class, "범위.셰이드", 12) {
-        @Override
-        public boolean condition(Integer value) {
-            return value > 0;
-        }
-    }, range_thunder = new Config<Integer>(Mir.class, "범위.썬더버드", 12) {
-        @Override
-        public boolean condition(Integer value) {
-            return value > 0;
-        }
-    }, range_gnome = new Config<Integer>(Mir.class, "범위.노움", 15) {
-        @Override
-        public boolean condition(Integer value) {
-            return value > 0;
-        }
-    }, damage_decrease = new Config<Integer>(Mir.class, "노움_대미지감소율(%)", 25) {
+		@Override
+		public boolean condition(Integer value) {
+			return value > 0;
+		}
+	}, range_shade = new Config<Integer>(Mir.class, "범위.셰이드", 12) {
+		@Override
+		public boolean condition(Integer value) {
+			return value > 0;
+		}
+	}, range_thunder = new Config<Integer>(Mir.class, "범위.썬더버드", 12) {
+		@Override
+		public boolean condition(Integer value) {
+			return value > 0;
+		}
+	}, range_gnome = new Config<Integer>(Mir.class, "범위.노움", 15) {
+		@Override
+		public boolean condition(Integer value) {
+			return value > 0;
+		}
+	}, damage_decrease = new Config<Integer>(Mir.class, "노움_대미지감소율(%)", 25) {
 		@Override
 		public boolean condition(Integer value) {
 			return value > 0;
@@ -89,10 +88,6 @@ public class Mir extends CokesAbility implements ActiveHandler {
 			return value > 0;
 		}
 	};
-
-	Element element = null;
-	private ArmorStand armorStand = null;
-
 	private final Predicate<Entity> predicate = entity -> {
 		if (entity.equals(getPlayer())) return false;
 		if (entity instanceof Player) {
@@ -110,14 +105,15 @@ public class Mir extends CokesAbility implements ActiveHandler {
 		}
 		return true;
 	};
-
+	Element element = null;
 	Cooldown cooldownTimer = new Cooldown(cool.getValue());
-	Duration durationTimer = new Duration(duration.getValue()*10, cooldownTimer) {
+	private ArmorStand armorStand = null;
+	Duration durationTimer = new Duration(duration.getValue() * 10, cooldownTimer) {
 		@Override
 		protected void onDurationStart() {
 			element = getRandomElement();
 
-			armorStand = getPlayer().getWorld().spawn(getPlayer().getLocation().clone().add(0,3,0), ArmorStand.class);
+			armorStand = getPlayer().getWorld().spawn(getPlayer().getLocation().clone().add(0, 3, 0), ArmorStand.class);
 			armorStand.setCustomName(element.name());
 			armorStand.setCustomNameVisible(true);
 			armorStand.setBasePlate(false);
@@ -130,17 +126,17 @@ public class Mir extends CokesAbility implements ActiveHandler {
 			}
 
 			ItemStack chestplate = MaterialX.LEATHER_CHESTPLATE.createItem();
-            LeatherArmorMeta meta = (LeatherArmorMeta) chestplate.getItemMeta();
-            assert meta != null;
-            meta.setColor(element.rgb.getColor());
-            chestplate.setItemMeta(meta);
+			LeatherArmorMeta meta = (LeatherArmorMeta) chestplate.getItemMeta();
+			assert meta != null;
+			meta.setColor(element.rgb.getColor());
+			chestplate.setItemMeta(meta);
 
 			EntityEquipment equipment = armorStand.getEquipment();
 			assert equipment != null;
 			equipment.setHelmet(new ItemStack(element.helmet));
 			equipment.setChestplate(chestplate);
 
-			getPlayer().sendMessage(element.name()+ KoreanUtil.getJosa(element.name(), KoreanUtil.Josa.을를)+" 소환합니다.");
+			getPlayer().sendMessage(element.name() + KoreanUtil.getJosa(element.name(), KoreanUtil.Josa.을를) + " 소환합니다.");
 		}
 
 		@Override
@@ -150,11 +146,11 @@ public class Mir extends CokesAbility implements ActiveHandler {
 			armorStand.teleport(location);
 			int range = element.range;
 
-			for (Location particle : Circle.of(range, range*8).toLocations(armorStand.getLocation()).floor(armorStand.getLocation().getY())) {
+			for (Location particle : Circle.of(range, range * 8).toLocations(armorStand.getLocation()).floor(armorStand.getLocation().getY())) {
 				ParticleLib.REDSTONE.spawnParticle(particle, element.rgb);
 			}
 
-			for (Player player : LocationUtil.getNearbyEntities(Player.class, armorStand.getLocation(), range,range,predicate)) {
+			for (Player player : LocationUtil.getNearbyEntities(Player.class, armorStand.getLocation(), range, range, predicate)) {
 				if (element == Element.IFRIT) {
 					player.setFireTicks(21);
 				} else if (element == Element.SHADE) {
@@ -199,8 +195,8 @@ public class Mir extends CokesAbility implements ActiveHandler {
 
 	@SubscribeEvent
 	public void onEntityDamage(EntityDamageEvent e) {
-		if (element == Element.GNOME && armorStand != null && e.getEntity().equals(getPlayer()) && getPlayer().getLocation().subtract(armorStand.getLocation().clone().add(0,-5,0)).length() <= element.range) {
-			e.setDamage(e.getDamage() * (1- damage_decrease.getValue() / 100.0));
+		if (element == Element.GNOME && armorStand != null && e.getEntity().equals(getPlayer()) && getPlayer().getLocation().subtract(armorStand.getLocation().clone().add(0, -5, 0)).length() <= element.range) {
+			e.setDamage(e.getDamage() * (1 - damage_decrease.getValue() / 100.0));
 		}
 
 		if (durationTimer.isRunning() && e.getEntity().equals(armorStand)) {
@@ -219,7 +215,7 @@ public class Mir extends CokesAbility implements ActiveHandler {
 			}
 		}
 
-		if (element == Element.THUNDERBIRD && armorStand != null && damager.equals(getPlayer()) && getPlayer().getLocation().subtract(armorStand.getLocation().clone().add(0,-5,0)).length() <= element.range) {
+		if (element == Element.THUNDERBIRD && armorStand != null && damager.equals(getPlayer()) && getPlayer().getLocation().subtract(armorStand.getLocation().clone().add(0, -5, 0)).length() <= element.range) {
 			if (!e.getEntity().equals(armorStand)) {
 				e.setDamage(e.getDamage() * damage_increase.getValue());
 				e.getEntity().getWorld().strikeLightningEffect(e.getEntity().getLocation());
@@ -228,15 +224,15 @@ public class Mir extends CokesAbility implements ActiveHandler {
 	}
 
 	@SubscribeEvent
-    public void onPlayerArmorStandManipulate(PlayerArmorStandManipulateEvent e) {
-	    if (e.getRightClicked().equals(armorStand)) e.setCancelled(true);
-    }
+	public void onPlayerArmorStandManipulate(PlayerArmorStandManipulateEvent e) {
+		if (e.getRightClicked().equals(armorStand)) e.setCancelled(true);
+	}
 
 	enum Element {
-		IFRIT(MaterialX.REDSTONE_BLOCK.getMaterial(), ParticleLib.RGB.of(255,1,1), range_ifrit.getValue()),
-		SHADE(MaterialX.COAL_BLOCK.getMaterial(), ParticleLib.RGB.of(1,1,1), range_shade.getValue()),
-		THUNDERBIRD(MaterialX.LAPIS_BLOCK.getMaterial(), ParticleLib.RGB.of(1,1,255), range_thunder.getValue()),
-		GNOME(MaterialX.DIRT.getMaterial(), ParticleLib.RGB.of(179,109,65), range_gnome.getValue());
+		IFRIT(MaterialX.REDSTONE_BLOCK.getMaterial(), ParticleLib.RGB.of(255, 1, 1), range_ifrit.getValue()),
+		SHADE(MaterialX.COAL_BLOCK.getMaterial(), ParticleLib.RGB.of(1, 1, 1), range_shade.getValue()),
+		THUNDERBIRD(MaterialX.LAPIS_BLOCK.getMaterial(), ParticleLib.RGB.of(1, 1, 255), range_thunder.getValue()),
+		GNOME(MaterialX.DIRT.getMaterial(), ParticleLib.RGB.of(179, 109, 65), range_gnome.getValue());
 
 		private final Material helmet;
 		private final ParticleLib.RGB rgb;

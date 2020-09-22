@@ -1,14 +1,5 @@
 package cokes86.addon.ability.list;
 
-import org.bukkit.GameMode;
-import org.bukkit.attribute.Attribute;
-import org.bukkit.entity.Arrow;
-import org.bukkit.entity.Entity;
-import org.bukkit.entity.Player;
-import org.bukkit.event.entity.EntityDamageByBlockEvent;
-import org.bukkit.event.entity.EntityDamageByEntityEvent;
-import org.bukkit.event.entity.EntityDamageEvent;
-
 import cokes86.addon.ability.CokesAbility;
 import daybreak.abilitywar.ability.AbilityManifest;
 import daybreak.abilitywar.ability.AbilityManifest.Rank;
@@ -20,6 +11,14 @@ import daybreak.abilitywar.utils.base.language.korean.KoreanUtil;
 import daybreak.abilitywar.utils.base.minecraft.entity.health.event.PlayerSetHealthEvent;
 import daybreak.abilitywar.utils.base.minecraft.nms.NMS;
 import daybreak.abilitywar.utils.library.SoundLib;
+import org.bukkit.GameMode;
+import org.bukkit.attribute.Attribute;
+import org.bukkit.entity.Arrow;
+import org.bukkit.entity.Entity;
+import org.bukkit.entity.Player;
+import org.bukkit.event.entity.EntityDamageByBlockEvent;
+import org.bukkit.event.entity.EntityDamageByEntityEvent;
+import org.bukkit.event.entity.EntityDamageEvent;
 
 @AbilityManifest(name = "레이", rank = Rank.S, species = Species.HUMAN, explain = {
 		"쿨타임이 아닐 때 상대방을 공격할 시 최대 체력의 $[cost]%를 코스트로",
@@ -52,14 +51,14 @@ public class Rei extends CokesAbility {
 		}
 	};
 
+	private final Cooldown cooldown = new Cooldown(cool.getValue(), CooldownDecrease._90);
+
 	public Rei(Participant participant) {
 		super(participant);
 	}
 
-	Cooldown c = new Cooldown(cool.getValue(), CooldownDecrease._90);
-
-	@SubscribeEvent(priority = 5)
-	public void onEntityDamageByEntity(EntityDamageByEntityEvent e) {
+	@SubscribeEvent
+	private void onEntityDamageByEntity(EntityDamageByEntityEvent e) {
 		onEntityDamage(e);
 
 		Entity damager = e.getDamager();
@@ -70,17 +69,16 @@ public class Rei extends CokesAbility {
 			}
 		}
 
-		if (e.getEntity() instanceof Player && !e.getEntity().equals(getPlayer()) && damager.equals(getPlayer()) && !c.isRunning()) {
+		if (e.getEntity() instanceof Player && !e.getEntity().equals(getPlayer()) && damager.equals(getPlayer()) && !cooldown.isRunning()) {
 			e.setDamage(e.getDamage() + damage.getValue());
-			double max_Health = getPlayer().getAttribute(Attribute.GENERIC_MAX_HEALTH).getBaseValue();
-			double health = getPlayer().getHealth();
-			float Absorption = NMS.getAbsorptionHearts(getPlayer());
-			double damage = max_Health * cost.getValue() / 100.0f;
+			final double maxHealth = getPlayer().getAttribute(Attribute.GENERIC_MAX_HEALTH).getBaseValue(), health = getPlayer().getHealth();
+			final float absorption = NMS.getAbsorptionHearts(getPlayer());
+			final double damage = maxHealth * cost.getValue() / 100.0f;
 			if (getPlayer().getGameMode().equals(GameMode.SURVIVAL) || getPlayer().getGameMode().equals(GameMode.ADVENTURE)) {
-				if (Absorption >= damage) {
-					NMS.setAbsorptionHearts(getPlayer(), (float) (Absorption - damage));
+				if (absorption >= damage) {
+					NMS.setAbsorptionHearts(getPlayer(), (float) (absorption - damage));
 				} else {
-					double temp = damage - Absorption;
+					final double temp = damage - absorption;
 					if (health > temp) {
 						NMS.setAbsorptionHearts(getPlayer(), 0);
 						getPlayer().setHealth(Math.max(0.0, health - temp));
@@ -89,30 +87,30 @@ public class Rei extends CokesAbility {
 			}
 		}
 	}
-	
+
 	@SubscribeEvent(priority = 5)
-	public void onPlayerSetHealth(PlayerSetHealthEvent e) {
-		if (e.getPlayer().equals(getPlayer()) && !c.isRunning() && !e.isCancelled() && e.getHealth()<=0) {
+	private void onPlayerSetHealth(PlayerSetHealthEvent e) {
+		if (e.getPlayer().equals(getPlayer()) && !cooldown.isRunning() && !e.isCancelled() && e.getHealth() <= 0) {
 			e.setCancelled(true);
 			getPlayer().setHealth(respawn.getValue());
-			c.start();
+			cooldown.start();
 			SoundLib.ENTITY_FIREWORK_ROCKET_LAUNCH.playSound(getPlayer());
 		}
 	}
 
 	@SubscribeEvent(priority = 5)
-	public void onEntityDamageByBlock(EntityDamageByBlockEvent e) {
+	private void onEntityDamageByBlock(EntityDamageByBlockEvent e) {
 		onEntityDamage(e);
 	}
 
 	@SubscribeEvent(priority = 5)
-	public void onEntityDamage(EntityDamageEvent e) {
-		if (e.getEntity().equals(getPlayer()) && !c.isRunning() && !e.isCancelled()) {
+	private void onEntityDamage(EntityDamageEvent e) {
+		if (e.getEntity().equals(getPlayer()) && !cooldown.isRunning() && !e.isCancelled()) {
 			double damage = e.getFinalDamage();
 			if (getPlayer().getHealth() - damage <= 0) {
 				e.setDamage(0);
 				getPlayer().setHealth(respawn.getValue());
-				c.start();
+				cooldown.start();
 				SoundLib.ENTITY_FIREWORK_ROCKET_LAUNCH.playSound(getPlayer());
 			}
 		}

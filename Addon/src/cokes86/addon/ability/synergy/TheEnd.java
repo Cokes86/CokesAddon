@@ -1,21 +1,5 @@
 package cokes86.addon.ability.synergy;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.function.Predicate;
-
-import org.bukkit.Bukkit;
-import org.bukkit.Location;
-import org.bukkit.Material;
-import org.bukkit.boss.BarColor;
-import org.bukkit.boss.BarStyle;
-import org.bukkit.entity.Entity;
-import org.bukkit.entity.Player;
-import org.bukkit.event.entity.EntityDamageEvent;
-import org.bukkit.event.entity.PlayerDeathEvent;
-import org.bukkit.potion.PotionEffect;
-import org.bukkit.potion.PotionEffectType;
-
 import cokes86.addon.ability.CokesSynergy;
 import daybreak.abilitywar.ability.AbilityManifest;
 import daybreak.abilitywar.ability.AbilityManifest.Rank;
@@ -30,9 +14,24 @@ import daybreak.abilitywar.game.manager.object.DeathManager;
 import daybreak.abilitywar.game.team.interfaces.Teamable;
 import daybreak.abilitywar.utils.base.TimeUtil;
 import daybreak.abilitywar.utils.base.concurrent.TimeUnit;
-import daybreak.abilitywar.utils.base.minecraft.Bar;
+import daybreak.abilitywar.utils.base.minecraft.BroadBar;
+import org.bukkit.Bukkit;
+import org.bukkit.Location;
+import org.bukkit.Material;
+import org.bukkit.boss.BarColor;
+import org.bukkit.boss.BarStyle;
+import org.bukkit.entity.Entity;
+import org.bukkit.entity.Player;
+import org.bukkit.event.entity.EntityDamageEvent;
+import org.bukkit.event.entity.PlayerDeathEvent;
+import org.bukkit.potion.PotionEffect;
+import org.bukkit.potion.PotionEffectType;
 
-@AbilityManifest(name = "디 엔드", rank = Rank.S, species = Species.HUMAN, explain= {
+import java.util.HashMap;
+import java.util.Map;
+import java.util.function.Predicate;
+
+@AbilityManifest(name = "디 엔드", rank = Rank.S, species = Species.HUMAN, explain = {
 		"철괴 우클릭시 모든 플레이어가 스폰으로 이동한 뒤",
 		"자신의 좌표가 $[du]동안 공개됩니다.",
 		"지속시간동안 자신은 받는 대미지가 $[reduce]% 감소하며",
@@ -52,18 +51,14 @@ public class TheEnd extends CokesSynergy implements ActiveHandler {
 			return arg0 > 0;
 		}
 	};
-	
-	boolean xyz = true;
-	Map<Participant, ActionbarChannel> acs = new HashMap<>();
-	Bar bar;
-	ActionbarChannel ac = newActionbarChannel();
+	private final Map<Participant, ActionbarChannel> acs = new HashMap<>();
 	private final Predicate<Entity> predicate = entity -> {
 		if (entity.equals(getPlayer())) return false;
 		if (entity instanceof Player) {
 			if (!getGame().isParticipating(entity.getUniqueId())) return false;
 			AbstractGame.Participant target = getGame().getParticipant(entity.getUniqueId());
 			if (getGame() instanceof DeathManager.Handler) {
-				DeathManager.Handler game = (DeathManager.Handler)getGame();
+				DeathManager.Handler game = (DeathManager.Handler) getGame();
 				if (game.getDeathManager().isExcluded(entity.getUniqueId())) return false;
 			}
 			if (getGame() instanceof Teamable) {
@@ -73,6 +68,56 @@ public class TheEnd extends CokesSynergy implements ActiveHandler {
 		}
 		return true;
 	};
+	ActionbarChannel ac = newActionbarChannel();
+	private boolean xyz = true;
+	private BroadBar bar;
+	AbilityTimer timer = new AbilityTimer(du.getValue() * 20) {
+		protected void onStart() {
+			Location spawn = Settings.getSpawnLocation().toBukkitLocation();
+			for (Participant p : getGame().getParticipants()) {
+				if (predicate.test(p.getPlayer())) {
+					p.getPlayer().addPotionEffect(new PotionEffect(PotionEffectType.INCREASE_DAMAGE, du.getValue() * 20, 0));
+					p.getPlayer().addPotionEffect(new PotionEffect(PotionEffectType.SPEED, du.getValue() * 20, 1));
+					acs.put(p, p.actionbar().newChannel());
+				}
+				p.getPlayer().teleport(spawn);
+			}
+			String a = "x: " + (int) getPlayer().getLocation().getX() + " y: " + (int) getPlayer().getLocation().getY()
+					+ " z: " + (int) getPlayer().getLocation().getZ();
+			bar = new BroadBar("디 엔드 " + getPlayer().getName() + " 위치 " + a, BarColor.GREEN, BarStyle.SOLID);
+
+			getPlayer().teleport(spawn);
+		}
+
+		@Override
+		protected void run(int arg0) {
+			bar.setProgress(Math.min(1.0D, (double) getFixedCount() / du.getValue()));
+			String a = "x: " + (int) getPlayer().getLocation().getX() + " y: " + (int) getPlayer().getLocation().getY()
+					+ " z: " + (int) getPlayer().getLocation().getZ();
+			bar.setTitle("디 엔드 " + getPlayer().getName() + " 위치 " + a);
+			for (ActionbarChannel ac : acs.values()) {
+				ac.update("§a디 엔드 타임 : " + TimeUtil.parseTimeAsString(getFixedCount()));
+			}
+			ac.update("§a디 엔드 타임 : " + TimeUtil.parseTimeAsString(getFixedCount()));
+		}
+
+		protected void onEnd() {
+			for (Participant p : acs.keySet()) {
+				p.getPlayer().setHealth(0.0);
+			}
+			onSilentEnd();
+		}
+
+		protected void onSilentEnd() {
+			for (ActionbarChannel ac : acs.values()) {
+				ac.unregister();
+			}
+			acs.clear();
+			bar.unregister();
+			ac.update(null);
+			setRestricted(true);
+		}
+	}.setPeriod(TimeUnit.TICKS, 1);
 
 	public TheEnd(Participant participant) {
 		super(participant);
@@ -90,54 +135,6 @@ public class TheEnd extends CokesSynergy implements ActiveHandler {
 		return false;
 	}
 
-	AbilityTimer timer = new AbilityTimer(du.getValue() * 20) {
-		protected void onStart() {
-			Location spawn = Settings.getSpawnLocation().toBukkitLocation();
-			for (Participant p : getGame().getParticipants()) {
-				if (predicate.test(p.getPlayer())) {
-					p.getPlayer().addPotionEffect(new PotionEffect(PotionEffectType.INCREASE_DAMAGE, du.getValue()*20, 0));
-					p.getPlayer().addPotionEffect(new PotionEffect(PotionEffectType.SPEED, du.getValue()*20, 1));
-					acs.put(p, p.actionbar().newChannel());
-				}
-				p.getPlayer().teleport(spawn);
-			}
-			String a = "x: " + (int)getPlayer().getLocation().getX() + " y: " + (int)getPlayer().getLocation().getY()
-					+ " z: " + (int)getPlayer().getLocation().getZ();
-			bar= new Bar("디 엔드 "+getPlayer().getName()+" 위치 "+a, BarColor.GREEN, BarStyle.SOLID);
-
-			getPlayer().teleport(spawn);
-		}
-
-		@Override
-		protected void run(int arg0) {
-			bar.setProgress(Math.min(1.0D, (double)getFixedCount()/du.getValue()));
-			String a = "x: " + (int)getPlayer().getLocation().getX() + " y: " + (int)getPlayer().getLocation().getY()
-					+ " z: " + (int)getPlayer().getLocation().getZ();
-			bar.setTitle("디 엔드 "+getPlayer().getName()+" 위치 "+a);
-			for (ActionbarChannel ac : acs.values()) {
-				ac.update("§a디 엔드 타임 : "+TimeUtil.parseTimeAsString(getFixedCount()));
-			}
-			ac.update("§a디 엔드 타임 : "+TimeUtil.parseTimeAsString(getFixedCount()));
-		}
-		
-		protected void onEnd() {
-			for (Participant p : acs.keySet()) {
-				p.getPlayer().setHealth(0.0);
-			}
-			onSilentEnd();
-		}
-		
-		protected void onSilentEnd() {
-			for (ActionbarChannel ac : acs.values()) {
-				ac.unregister();
-			}
-			acs.clear();
-			bar.remove();
-			ac.update(null);
-			setRestricted(true);
-		}
-	}.setPeriod(TimeUnit.TICKS, 1);
-	
 	@SubscribeEvent
 	public void onPlayerDeath(PlayerDeathEvent e) {
 		if (e.getEntity().equals(getPlayer()) && timer.isRunning()) {
@@ -145,11 +142,11 @@ public class TheEnd extends CokesSynergy implements ActiveHandler {
 			timer.stop(true);
 		}
 	}
-	
+
 	@SubscribeEvent
 	public void onEntityDamage(EntityDamageEvent e) {
 		if (e.getEntity().equals(getPlayer()) && timer.isRunning()) {
-			e.setDamage(e.getDamage()* (100-reduce.getValue())/100);
+			e.setDamage(e.getDamage() * (100 - reduce.getValue()) / 100);
 		}
 	}
 }
