@@ -17,7 +17,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 
 @AbilityManifest(name = "가시", rank = Rank.A, species = Species.OTHERS, explain = {
-		"철괴 우클릭시 $[du]동안 상대방의 화살 공격의 대미지를 0으로 하고,", "무시한 대미지의 $[damage]%만큼을 상대방에게 되돌려줍니다. $[cool]"})
+		"철괴 우클릭시 $[DURARION]동안 상대방의 화살 공격의 대미지를 0으로 하고,", "무시한 대미지의 $[DAMAGE]%만큼을 상대방에게 되돌려줍니다. $[COOL]"})
 public class Thorn extends CokesAbility implements ActiveHandler {
 	private static final Config<Integer> COOL = new Config<Integer>(Thorn.class, "쿨타임", 20, 1) {
 		public boolean condition(Integer value) {

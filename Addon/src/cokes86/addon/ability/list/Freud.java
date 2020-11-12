@@ -10,9 +10,10 @@ import daybreak.abilitywar.game.AbstractGame;
 import daybreak.abilitywar.game.AbstractGame.CustomEntity;
 import daybreak.abilitywar.game.AbstractGame.Participant;
 import daybreak.abilitywar.game.AbstractGame.Participant.ActionbarNotification.ActionbarChannel;
-import daybreak.abilitywar.game.manager.object.DeathManager;
-import daybreak.abilitywar.game.manager.object.WRECK;
+import daybreak.abilitywar.game.module.DeathManager;
+import daybreak.abilitywar.game.module.Wreck;
 import daybreak.abilitywar.game.team.interfaces.Teamable;
+import daybreak.abilitywar.utils.base.Random;
 import daybreak.abilitywar.utils.base.concurrent.TimeUnit;
 import daybreak.abilitywar.utils.base.math.LocationUtil;
 import daybreak.abilitywar.utils.base.math.geometry.Line;
@@ -21,6 +22,7 @@ import daybreak.abilitywar.utils.base.minecraft.entity.decorator.Deflectable;
 import daybreak.abilitywar.utils.library.ParticleLib;
 import daybreak.abilitywar.utils.library.ParticleLib.RGB;
 import daybreak.abilitywar.utils.library.PotionEffects;
+import daybreak.google.common.base.Predicate;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.World;
@@ -35,10 +37,9 @@ import org.bukkit.util.Vector;
 
 import java.util.HashSet;
 import java.util.Iterator;
-import java.util.Random;
 import java.util.Set;
 import java.util.UUID;
-import java.util.function.Predicate;
+
 
 @AbilityManifest(name = "프리드", rank = Rank.A, species = Species.HUMAN, explain = {
 		"프리드는 마나 100을 가지고 시작하며 5틱마다 1씩 회복합니다. (최대 100)",
@@ -97,10 +98,12 @@ public class Freud extends CokesAbility implements ActiveHandler {
 			return value > 0;
 		}
 	};
+
 	private final ActionbarChannel ac = newActionbarChannel();
 	private final Set<UUID> explosion = new HashSet<>();
+
 	private final Predicate<Entity> predicate = entity -> {
-		if (entity.equals(getPlayer())) return false;
+		if (entity == null || entity.equals(getPlayer())) return false;
 		if (entity instanceof Player) {
 			if (!getGame().isParticipating(entity.getUniqueId())) return false;
 			AbstractGame.Participant target = getGame().getParticipant(entity.getUniqueId());
@@ -122,7 +125,7 @@ public class Freud extends CokesAbility implements ActiveHandler {
 
 		@Override
 		protected void run(int arg0) {
-			if (mana != 100 && this.getCount() % (WRECK.isEnabled(getGame()) ? 2 : 5) == 0) {
+			if (mana != 100 && this.getCount() % (Wreck.isEnabled(getGame()) ? 2 : 5) == 0) {
 				mana += 1;
 			}
 
@@ -172,7 +175,6 @@ public class Freud extends CokesAbility implements ActiveHandler {
 		FIRE("§c화상§f", mana_burn.getValue(), RGB.of(209, 1, 1)) {
 			protected void onDamaged(Damageable target, Player owner) {
 				Damages.damageFixed(target, owner, damage_burn.getValue());
-				target.damage(damage_burn.getValue());
 				target.setFireTicks(fireTick.getValue());
 			}
 		},
@@ -244,7 +246,7 @@ public class Freud extends CokesAbility implements ActiveHandler {
 
 			Vector first = target.getLocation().clone().subtract(getPlayer().getLocation().clone()).toVector();
 
-			this.entity = new ArrowEntity(startLocation.getWorld(), startLocation.getX() + first.getX() / 0.25, startLocation.getY() + first.getY() / 0.25, startLocation.getZ() + first.getZ() / 0.25).setBoundingBox(-.75, -.75, -.75, .75, .75, .75);
+			this.entity = new ArrowEntity(startLocation.getWorld(), startLocation.getX() + first.getX() / 0.25, startLocation.getY() + first.getY() / 0.25, startLocation.getZ() + first.getZ() / 0.25).resizeBoundingBox(-.75, -.75, -.75, .75, .75, .75);
 			this.velocity = target.getLocation().clone().subtract(getPlayer().getLocation().clone()).toVector().normalize().multiply(0.65);
 			this.magic = magic;
 			this.lastLocation = startLocation;
@@ -267,7 +269,7 @@ public class Freud extends CokesAbility implements ActiveHandler {
 					stop(false);
 					return;
 				}
-				for (Damageable damageable : LocationUtil.getConflictingEntities(Damageable.class, entity.getBoundingBox(), predicate)) {
+				for (Damageable damageable : LocationUtil.getConflictingEntities(Damageable.class, shooter.getWorld(), entity.getBoundingBox(), predicate)) {
 					if (!shooter.equals(damageable) && !damageable.isDead()) {
 						magic.onDamaged(damageable, getPlayer());
 						if (magic.equals(Magic.EXPLOSION)) {

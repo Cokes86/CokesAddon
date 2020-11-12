@@ -25,7 +25,8 @@ import java.util.Objects;
 		"※능력 아이디어: RainStar_"
 })
 public class EnchantArrow extends CokesAbility {
-	private static final Config<Integer> damage = new Config<Integer>(EnchantArrow.class, "추가대미지(%)", 15) {
+
+	private static final Config<Integer> damage = new Config<Integer>(EnchantArrow.class, "추가대미지(%)", 10) {
 		@Override
 		public boolean condition(Integer value) {
 			return value > 0;
@@ -60,7 +61,7 @@ public class EnchantArrow extends CokesAbility {
 
 	public void onUpdate(Update update) {
 		if (update == Update.RESTRICTION_CLEAR) {
-			ac.update("§b".concat(Strings.repeat(">", enchantStack)).concat("§f").concat(Strings.repeat(">", max_stack.getValue() - enchantStack)).toString());
+			ac.update("§b".concat(Strings.repeat(">", enchantStack)).concat("§f").concat(Strings.repeat(">", max_stack.getValue() - enchantStack)));
 		}
 	}
 
@@ -73,12 +74,12 @@ public class EnchantArrow extends CokesAbility {
 					getPlayer().setHealth(Math.max(0.0, getPlayer().getHealth() - risk.getValue()));
 				} else {
 					final double length = getPlayer().getLocation().clone().subtract(e.getEntity().getLocation().clone()).length();
-					enchantStack -= Math.min(max_stack_down.getValue(), Math.max(1, 3 - length / 5));
+					enchantStack -= Math.min(max_stack_down.getValue(), Math.max(1, 3 - length / 7));
 					if (enchantStack < 0) enchantStack = 0;
 				}
 			}
 			e.getEntity().remove();
-			ac.update("§b".concat(Strings.repeat(">", enchantStack)).concat("§f").concat(Strings.repeat(">", max_stack.getValue() - enchantStack)).toString());
+			ac.update("§b".concat(Strings.repeat(">", enchantStack)).concat("§f").concat(Strings.repeat(">", max_stack.getValue() - enchantStack)));
 		}
 	}
 
@@ -89,9 +90,9 @@ public class EnchantArrow extends CokesAbility {
 			if (Objects.equals(arrow.getShooter(), getPlayer())) {
 				e.setDamage(e.getDamage() * (1 + enchantStack * damage.getValue() / 100.0));
 				final double length = getPlayer().getLocation().clone().subtract(e.getEntity().getLocation().clone()).length();
-				enchantStack += Math.min(max_stack_up.getValue(), length / 5 + 1);
+				enchantStack += Math.min(max_stack_up.getValue(), length / 7 + 1);
 				if (enchantStack >= max_stack.getValue()) enchantStack = max_stack.getValue();
-				ac.update("§b".concat(Strings.repeat(">", enchantStack)).concat("§f").concat(Strings.repeat(">", max_stack.getValue() - enchantStack)).toString());
+				ac.update("§b".concat(Strings.repeat(">", enchantStack)).concat("§f").concat(Strings.repeat(">", max_stack.getValue() - enchantStack)));
 				arrow.remove();
 			}
 		}

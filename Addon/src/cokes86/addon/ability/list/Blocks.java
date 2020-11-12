@@ -9,18 +9,25 @@ import daybreak.abilitywar.ability.SubscribeEvent;
 import daybreak.abilitywar.ability.decorator.ActiveHandler;
 import daybreak.abilitywar.game.AbstractGame.Participant;
 import daybreak.abilitywar.utils.base.concurrent.TimeUnit;
+import daybreak.abilitywar.utils.base.minecraft.version.ServerVersion;
 import daybreak.abilitywar.utils.library.MaterialX;
 import daybreak.abilitywar.utils.library.PotionEffects;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
+import org.bukkit.attribute.Attribute;
 import org.bukkit.enchantments.Enchantment;
+import org.bukkit.entity.ArmorStand;
 import org.bukkit.entity.Player;
 import org.bukkit.event.entity.EntityDamageByBlockEvent;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
+import org.bukkit.event.player.PlayerArmorStandManipulateEvent;
+import org.bukkit.inventory.EntityEquipment;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.util.Vector;
+
+import java.util.Objects;
 
 @AbilityManifest(name = "블럭", rank = Rank.A, species = Species.OTHERS, explain = {
 		"철괴 우클릭시 자신의 상태를 변화시킵니다. 자신의 상태에따라 추가효과를 얻습니다.", "§7돌 §f: 받는 대미지가 $[stone]% 감소합니다.",
@@ -49,10 +56,37 @@ public class Blocks extends CokesAbility implements ActiveHandler {
 	};
 	protected Condition condition = Condition.STONE;
 	protected Participant.ActionbarNotification.ActionbarChannel ac = this.newActionbarChannel();
+	protected ArmorStand armorStand;
+	protected double knockback = Objects.requireNonNull(getPlayer().getAttribute(Attribute.GENERIC_KNOCKBACK_RESISTANCE)).getBaseValue();
+
 	AbilityTimer passive = new AbilityTimer() {
+		@Override
+		protected void onStart() {
+			armorStand = getPlayer().getWorld().spawn(getPlayer().getLocation().clone().add(0,1,0), ArmorStand.class);
+
+			armorStand.setBasePlate(false);
+			armorStand.setArms(false);
+			armorStand.setGravity(false);
+			armorStand.setVisible(false);
+			if (ServerVersion.getVersion() >= 10 && ServerVersion.getVersion() <= 16) {
+				armorStand.setInvulnerable(true);
+			}
+		}
+
 		@Override
 		protected void run(int count) {
 			ac.update("상태: " + condition.getName());
+			armorStand.teleport(getPlayer().getLocation().clone().add(0,1,0));
+
+			EntityEquipment equipment = armorStand.getEquipment();
+			if (equipment != null) {
+				if (condition != Condition.GLASS) {
+					MaterialX material = condition == Condition.STONE ? MaterialX.STONE : (condition == Condition.OBSIDIAN ? MaterialX.OBSIDIAN : MaterialX.SAND);
+					equipment.setHelmet(new ItemStack(material.getMaterial()));
+				} else {
+					equipment.setHelmet(null);
+				}
+			}
 		}
 	}.setPeriod(TimeUnit.TICKS, 1);
 	AbilityTimer invTimer = new AbilityTimer() {
@@ -66,6 +100,12 @@ public class Blocks extends CokesAbility implements ActiveHandler {
 	public Blocks(Participant arg0) {
 		super(arg0);
 		passive.register();
+	}
+
+
+	@SubscribeEvent
+	public void onPlayerArmorStandManipulate(PlayerArmorStandManipulateEvent e) {
+		if (e.getRightClicked().equals(armorStand)) e.setCancelled(true);
 	}
 
 	protected void onUpdate(Update update) {
@@ -85,6 +125,12 @@ public class Blocks extends CokesAbility implements ActiveHandler {
 	public boolean ActiveSkill(Material arg0, ClickType arg1) {
 		if (arg0.equals(Material.IRON_INGOT) && arg1.equals(ClickType.RIGHT_CLICK)) {
 			condition = condition.next();
+			if (condition.equals(Condition.OBSIDIAN)) {
+				Objects.requireNonNull(getPlayer().getAttribute(Attribute.GENERIC_KNOCKBACK_RESISTANCE)).setBaseValue(1);
+			} else {
+				Objects.requireNonNull(getPlayer().getAttribute(Attribute.GENERIC_KNOCKBACK_RESISTANCE)).setBaseValue(knockback);
+			}
+
 			if (condition.equals(Condition.GLASS)) {
 				getParticipant().attributes().TARGETABLE.setValue(false);
 				PotionEffects.INVISIBILITY.addPotionEffect(getPlayer(), Integer.MAX_VALUE, 0, true);
@@ -98,6 +144,10 @@ public class Blocks extends CokesAbility implements ActiveHandler {
 
 	@SubscribeEvent
 	public void onEntityDamage(EntityDamageEvent e) {
+		if (e.getEntity().equals(armorStand)) {
+			e.setCancelled(true);
+			return;
+		}
 		if (e.getEntity().equals(getPlayer())) {
 			if (invTimer.isRunning()) {
 				e.setCancelled(true);

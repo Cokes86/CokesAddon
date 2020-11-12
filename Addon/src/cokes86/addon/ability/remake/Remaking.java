@@ -1,7 +1,6 @@
 package cokes86.addon.ability.remake;
 
 
-import cokes86.addon.configuration.ConfigFiles;
 import daybreak.abilitywar.ability.AbilityBase;
 import daybreak.abilitywar.config.ability.AbilitySettings;
 import daybreak.abilitywar.config.ability.AbilitySettings.SettingObject;
@@ -9,8 +8,10 @@ import daybreak.abilitywar.game.AbstractGame.Participant;
 import daybreak.abilitywar.utils.base.Formatter;
 import daybreak.abilitywar.utils.base.TimeUtil;
 
+import java.io.File;
+
 public class Remaking extends AbilityBase {
-	public final static AbilitySettings config = new AbilitySettings(ConfigFiles.createFile("CokesRemakingAbilities.yml"));
+	public final static AbilitySettings config = new AbilitySettings(new File("plugins/AbilityWar/CokesAddon/RemakeConfig.yml"));
 
 	public Remaking(Participant arg0) throws IllegalStateException {
 		super(arg0);

@@ -7,23 +7,24 @@ import daybreak.abilitywar.ability.AbilityManifest.Species;
 import daybreak.abilitywar.ability.decorator.ActiveHandler;
 import daybreak.abilitywar.game.AbstractGame;
 import daybreak.abilitywar.game.AbstractGame.Participant;
-import daybreak.abilitywar.game.manager.object.DeathManager;
+import daybreak.abilitywar.game.module.DeathManager;
 import daybreak.abilitywar.game.team.interfaces.Teamable;
 import daybreak.abilitywar.utils.base.concurrent.TimeUnit;
 import daybreak.abilitywar.utils.base.math.LocationUtil;
 import daybreak.abilitywar.utils.base.math.geometry.Circle;
 import daybreak.abilitywar.utils.base.minecraft.damage.Damages;
-import daybreak.abilitywar.utils.base.minecraft.entity.health.Healths;
 import daybreak.abilitywar.utils.library.ParticleLib;
 import daybreak.abilitywar.utils.library.SoundLib;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.Note;
+import org.bukkit.attribute.Attribute;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.Random;
 import java.util.function.Predicate;
 
@@ -59,6 +60,8 @@ public class Rune extends CokesAbility implements ActiveHandler {
 				Teamable game = (Teamable) getGame();
 				return (!game.hasTeam(getParticipant()) || !game.hasTeam(target) || !game.getTeam(getParticipant()).equals(game.getTeam(target)));
 			}
+			if (entity.isDead()) return false;
+			if (!Damages.canDamage(entity, getPlayer(), DamageCause.ENTITY_ATTACK, 1)) return false;
 			return target.attributes().TARGETABLE.getValue();
 		}
 		return true;
@@ -66,6 +69,12 @@ public class Rune extends CokesAbility implements ActiveHandler {
 
 	Cooldown c = new Cooldown(cool.getValue());
 	Duration d = new Duration(damage.getValue(), c) {
+		public void damageFixedWithoutKnockback(Player target, float damage) {
+			double knockback = target.getAttribute(Attribute.GENERIC_KNOCKBACK_RESISTANCE).getValue();
+			target.getAttribute(Attribute.GENERIC_KNOCKBACK_RESISTANCE).setBaseValue(1);
+			Damages.damageFixed(target,getPlayer(), 1);
+			target.getAttribute(Attribute.GENERIC_KNOCKBACK_RESISTANCE).setBaseValue(knockback);
+		}
 
 		@Override
 		protected void onDurationProcess(int seconds) {
@@ -73,19 +82,13 @@ public class Rune extends CokesAbility implements ActiveHandler {
 			if (ps.size() > 0) {
 				int a = new Random().nextInt(ps.size());
 				Player target = ps.get(a);
-				if (!target.isDead() && Damages.canDamage(target, getPlayer(), DamageCause.ENTITY_ATTACK, 1)) {
-					if (target.getHealth() > 1) {
-						Healths.setHealth(target, target.getHealth() - 1.0);
-					} else {
-						target.damage(20, getPlayer());
-					}
-					SoundLib.XYLOPHONE.playInstrument(getPlayer(), new Note(1, Note.Tone.C, false));
-					SoundLib.XYLOPHONE.playInstrument(target, new Note(1, Note.Tone.C, false));
-				}
+				damageFixedWithoutKnockback(target, 1);
+				SoundLib.XYLOPHONE.playInstrument(getPlayer(), new Note(1, Note.Tone.C, false));
+				SoundLib.XYLOPHONE.playInstrument(target, new Note(1, Note.Tone.C, false));
 			}
 
 			for (Location l : Circle.iteratorOf(getPlayer().getLocation(), range.getValue(), range.getValue() * 9).iterable()) {
-				l.setY(LocationUtil.getFloorYAt(l.getWorld(), getPlayer().getLocation().getY(), l.getBlockX(), l.getBlockZ()) + 0.1);
+				l.setY(LocationUtil.getFloorYAt(Objects.requireNonNull(l.getWorld()), getPlayer().getLocation().getY(), l.getBlockX(), l.getBlockZ()) + 0.1);
 				ParticleLib.REDSTONE.spawnParticle(l, new ParticleLib.RGB(0, 179, 255));
 			}
 		}

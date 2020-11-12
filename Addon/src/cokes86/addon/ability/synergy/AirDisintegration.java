@@ -9,8 +9,8 @@ import daybreak.abilitywar.ability.decorator.ActiveHandler;
 import daybreak.abilitywar.game.AbstractGame;
 import daybreak.abilitywar.game.AbstractGame.Participant;
 import daybreak.abilitywar.game.AbstractGame.Participant.ActionbarNotification.ActionbarChannel;
-import daybreak.abilitywar.game.manager.object.DeathManager;
-import daybreak.abilitywar.game.manager.object.WRECK;
+import daybreak.abilitywar.game.module.DeathManager;
+import daybreak.abilitywar.game.module.Wreck;
 import daybreak.abilitywar.game.team.interfaces.Teamable;
 import daybreak.abilitywar.utils.base.concurrent.TimeUnit;
 import daybreak.abilitywar.utils.base.math.LocationUtil;
@@ -73,7 +73,7 @@ public class AirDisintegration extends CokesSynergy implements ActiveHandler {
 		@Override
 		protected void run(int arg0) {
 			if (!cooldown.isRunning()) {
-				if (arg0 % (WRECK.isEnabled(getGame()) ? 2 : 5) == 0) {
+				if (arg0 % (Wreck.isEnabled(getGame()) ? 2 : 5) == 0) {
 					chain++;
 					if (chain >= 10)
 						chain = 10;

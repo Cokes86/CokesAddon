@@ -5,6 +5,11 @@ import daybreak.abilitywar.ability.AbilityManifest;
 import daybreak.abilitywar.ability.AbilityManifest.Rank;
 import daybreak.abilitywar.ability.AbilityManifest.Species;
 import daybreak.abilitywar.ability.SubscribeEvent;
+import daybreak.abilitywar.ability.Tips;
+import daybreak.abilitywar.ability.Tips.Description;
+import daybreak.abilitywar.ability.Tips.Difficulty;
+import daybreak.abilitywar.ability.Tips.Level;
+import daybreak.abilitywar.ability.Tips.Stats;
 import daybreak.abilitywar.config.enums.CooldownDecrease;
 import daybreak.abilitywar.game.AbstractGame.Participant;
 import daybreak.abilitywar.utils.base.language.korean.KoreanUtil;
@@ -20,13 +25,23 @@ import org.bukkit.event.entity.EntityDamageByBlockEvent;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
 
-@AbilityManifest(name = "레이", rank = Rank.S, species = Species.HUMAN, explain = {
+@AbilityManifest(name = "레이", rank = Rank.L, species = Species.HUMAN, explain = {
 		"쿨타임이 아닐 때 상대방을 공격할 시 최대 체력의 $[cost]%를 코스트로",
 		"$[damage]만큼의 추가 대미지를 입힙니다.",
 		"자신의 체력이 0이 되었을 시 그 공격을 무효로 하고 체력이 $[respawn] 됩니다. $[cool]",
 		"코스트로 지불할 체력이 부족한 경우 코스트를 소비하지 않습니다.",
 		"※제작자 자캐 기반 능력자"
 })
+@Tips(tip = {
+		"추가적인 공격력이 더해져 강한 공격력을 가진 능력",
+		"자해라는 디메리트가 있지만 이를 상쇠하는 부활이 있어",
+		"감안해서라도 플레이가 가능함."
+}, strong= {
+		@Description(explain = { "공격력이 강해 상대방에게 더욱 큰 대미지를 줄 수 있다." }, subject = "강한 공격력")
+}, weak = {
+		@Description(explain = { "체력이 높을 수록 그만큼 디메리트역시 커진다." }, subject = "자신의 높은 체력")
+},
+stats = @Stats(offense = Level.NINE, survival = Level.FIVE, crowdControl = Level.ZERO, mobility = Level.ZERO, utility = Level.THREE), difficulty = Difficulty.NORMAL)
 public class Rei extends CokesAbility {
 	private static final Config<Double> damage = new Config<Double>(Rei.class, "추가대미지", 3.0) {
 		public boolean condition(Double value) {
@@ -80,7 +95,7 @@ public class Rei extends CokesAbility {
 				} else {
 					final double temp = damage - absorption;
 					if (health > temp) {
-						NMS.setAbsorptionHearts(getPlayer(), 0);
+						if (absorption != 0) NMS.setAbsorptionHearts(getPlayer(), 0);
 						getPlayer().setHealth(Math.max(0.0, health - temp));
 					}
 				}

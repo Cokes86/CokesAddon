@@ -9,7 +9,7 @@ import daybreak.abilitywar.game.AbstractGame;
 import daybreak.abilitywar.game.AbstractGame.CustomEntity;
 import daybreak.abilitywar.game.AbstractGame.Participant;
 import daybreak.abilitywar.game.AbstractGame.Participant.ActionbarNotification.ActionbarChannel;
-import daybreak.abilitywar.game.manager.object.DeathManager;
+import daybreak.abilitywar.game.module.DeathManager;
 import daybreak.abilitywar.game.team.interfaces.Teamable;
 import daybreak.abilitywar.utils.base.ProgressBar;
 import daybreak.abilitywar.utils.base.concurrent.TimeUnit;
@@ -21,11 +21,7 @@ import daybreak.abilitywar.utils.library.SoundLib;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.World;
-import org.bukkit.entity.Arrow;
-import org.bukkit.entity.Damageable;
-import org.bukkit.entity.Entity;
-import org.bukkit.entity.LivingEntity;
-import org.bukkit.entity.Player;
+import org.bukkit.entity.*;
 import org.bukkit.event.entity.EntityShootBowEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.util.Vector;
@@ -184,7 +180,7 @@ public class Elva extends CokesAbility {
 			setPeriod(TimeUnit.TICKS, 1);
 			this.shooter = shooter;
 			this.entity = new ArrowEntity(startLocation.getWorld(), startLocation.getX(), startLocation.getY(),
-					startLocation.getZ()).setBoundingBox(-.75, -.75, -.75, .75, .75, .75);
+					startLocation.getZ()).resizeBoundingBox(-.75, -.75, -.75, .75, .75, .75);
 			this.forward = arrowVelocity.multiply(2);
 			this.color = color;
 			this.lastLocation = startLocation;
@@ -201,7 +197,7 @@ public class Elva extends CokesAbility {
 					stop(false);
 					return;
 				}
-				for (Damageable damageable : LocationUtil.getConflictingEntities(Damageable.class, entity.getBoundingBox(), predicate)) {
+				for (Damageable damageable : LocationUtil.getConflictingEntities(Damageable.class, shooter.getWorld(), entity.getBoundingBox(), predicate)) {
 					if (!shooter.equals(damageable) && !damageable.isDead()) {
 						damageable.damage(damage.getValue(), shooter);
 						stop(false);

@@ -1,52 +1,13 @@
 package cokes86.addon.ability;
 
-import cokes86.addon.ability.list.Aris;
-import cokes86.addon.ability.list.Blocks;
-import cokes86.addon.ability.list.Cutter;
-import cokes86.addon.ability.list.DataMining;
-import cokes86.addon.ability.list.Disguise;
-import cokes86.addon.ability.list.Elva;
-import cokes86.addon.ability.list.EnchantArrow;
-import cokes86.addon.ability.list.Fish;
-import cokes86.addon.ability.list.Freud;
-import cokes86.addon.ability.list.Gambler;
-import cokes86.addon.ability.list.GodsBless;
-import cokes86.addon.ability.list.Harmony;
-import cokes86.addon.ability.list.Keily;
-import cokes86.addon.ability.list.Mir;
-import cokes86.addon.ability.list.Ovisni;
-import cokes86.addon.ability.list.Perseverance;
-import cokes86.addon.ability.list.Poker;
-import cokes86.addon.ability.list.Queen;
-import cokes86.addon.ability.list.Rabbit;
-import cokes86.addon.ability.list.Rei;
-import cokes86.addon.ability.list.Reincarnation;
-import cokes86.addon.ability.list.Resurrection;
-import cokes86.addon.ability.list.Revenge;
-import cokes86.addon.ability.list.Rune;
-import cokes86.addon.ability.list.Sealer;
-import cokes86.addon.ability.list.Seth;
-import cokes86.addon.ability.list.Summoner;
-import cokes86.addon.ability.list.Thorn;
-import cokes86.addon.ability.list.Unbelief;
-import cokes86.addon.ability.list.VigilanteLeader;
-import cokes86.addon.ability.list.Xyz;
-import cokes86.addon.ability.list.phantomthief.PhantomThief;
+import cokes86.addon.ability.list.*;
 import cokes86.addon.ability.remake.Remaking;
-import cokes86.addon.ability.synergy.AirDisintegration;
-import cokes86.addon.ability.synergy.LureOfRoses;
-import cokes86.addon.ability.synergy.Purgatory;
-import cokes86.addon.ability.synergy.ReaperArrow;
-import cokes86.addon.ability.synergy.RevengeArrow;
-import cokes86.addon.ability.synergy.RoyalStraightFlush;
-import cokes86.addon.ability.synergy.TheEnd;
-import cokes86.addon.configuration.addon.Config;
+import cokes86.addon.ability.synergy.*;
+import cokes86.addon.configuration.Config;
 import daybreak.abilitywar.ability.AbilityBase;
 import daybreak.abilitywar.ability.AbilityFactory;
 import daybreak.abilitywar.ability.AbilityManifest;
-import daybreak.abilitywar.ability.list.Assassin;
-import daybreak.abilitywar.ability.list.Muse;
-import daybreak.abilitywar.ability.list.Stalker;
+import daybreak.abilitywar.ability.list.*;
 import daybreak.abilitywar.game.list.mix.synergy.SynergyFactory;
 import daybreak.abilitywar.game.manager.AbilityList;
 import daybreak.abilitywar.utils.base.logging.Logger;
@@ -105,18 +66,13 @@ public class AddonAbilityFactory {
 		}
 
 		registerSynergy(Poker.class, Poker.class, RoyalStraightFlush.class);
-		registerSynergy(GodsBless.class, Xyz.class, TheEnd.class);
-		registerSynergy(GodsBless.class, GodsBless.class, TheEnd.class);
 		registerSynergy(Xyz.class, Xyz.class, TheEnd.class);
 		registerSynergy(Stalker.class, Reincarnation.class, LureOfRoses.class);
 		registerSynergy(Revenge.class, Elva.class, RevengeArrow.class);
 		registerSynergy(Aris.class, Assassin.class, AirDisintegration.class);
 		registerSynergy(Muse.class, Sealer.class, Purgatory.class);
 		registerSynergy(EnchantArrow.class, EnchantArrow.class, ReaperArrow.class);
-
-
-		registerRemakeAbility(cokes86.addon.ability.remake.list.GodsBless.class);
-		registerRemakeAbility(cokes86.addon.ability.remake.list.Xyz.class);
+		registerSynergy(Rune.class, Zeus.class, SlicingMaelstrom.class);
 	}
 
 	public static void registerAbility(Class<? extends CokesAbility> clazz) {

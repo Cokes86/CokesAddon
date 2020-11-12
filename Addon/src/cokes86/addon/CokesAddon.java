@@ -4,19 +4,11 @@ import cokes86.addon.ability.AddonAbilityFactory;
 import cokes86.addon.ability.CokesAbility;
 import cokes86.addon.ability.CokesSynergy;
 import cokes86.addon.ability.remake.Remaking;
-import cokes86.addon.configuration.addon.Config;
-import cokes86.addon.configuration.gamemode.GameConfiguration;
-import cokes86.addon.gamemodes.addon.debug.DebugWar;
-import cokes86.addon.gamemodes.addon.standard.AddonAbilityWar;
-import cokes86.addon.gamemodes.battleability.BattleAbility;
-import cokes86.addon.gamemodes.battleability.BattleMixAbility;
-import cokes86.addon.gamemodes.tailcatching.TailCatching;
-import cokes86.addon.gamemodes.targethunting.TargetHunting;
+import cokes86.addon.configuration.Config;
 import daybreak.abilitywar.addon.Addon;
 import daybreak.abilitywar.config.Configuration.Settings;
 import daybreak.abilitywar.game.event.GameCreditEvent;
 import daybreak.abilitywar.game.list.mix.AbstractMix;
-import daybreak.abilitywar.game.manager.GameFactory;
 import daybreak.google.gson.JsonElement;
 import daybreak.google.gson.JsonObject;
 import daybreak.google.gson.JsonParser;
@@ -39,20 +31,6 @@ public class CokesAddon extends Addon implements Listener {
 	@Override
 	public void onEnable() {
 		loader.run();
-
-		// AddonAbilityWar
-		GameFactory.registerMode(AddonAbilityWar.class);
-		if (Settings.DeveloperSettings.isEnabled()) GameFactory.registerMode(DebugWar.class);
-
-		//Battle Ability
-		GameFactory.registerMode(BattleAbility.class);
-		GameFactory.registerMode(BattleMixAbility.class);
-
-		//TailCatching
-		GameFactory.registerMode(TailCatching.class);
-
-		//Target Hunting (BETA)
-		if (Settings.DeveloperSettings.isEnabled()) GameFactory.registerMode(TargetHunting.class);
 
 		// Load Complete
 		Bukkit.getConsoleSender().sendMessage("[CokesAddon] 애드온이 활성화되었습니다.");
@@ -116,7 +94,6 @@ public class CokesAddon extends Addon implements Listener {
 				AddonAbilityFactory.nameValues();
 				AddonAbilityFactory.nameSynergyValues();
 				AddonAbilityFactory.getAddonRemaking();
-				GameConfiguration.load();
 				Config.INSTANCE.update();
 
 				CokesAbility.config.update();

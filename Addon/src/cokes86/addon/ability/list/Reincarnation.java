@@ -28,11 +28,11 @@ import org.bukkit.event.entity.EntityRegainHealthEvent;
 
 import java.util.List;
 
-@AbilityManifest(name = "리인카네이션", rank = Rank.S, species = Species.OTHERS, explain = {
+@AbilityManifest(name = "리인카네이션", rank = Rank.L, species = Species.OTHERS, explain = {
 		"자신이 죽을 위기에 처했을 때, 이를 무시하고 체력이 1로 고정됩니다. $[cooldown]",
 		"지속시간 $[duration]동안 상대방에게 주는 대미지가 $[damage]% 감소합니다.",
 		"지속시간이 종료 시 상대방을 $[hit]번 공격에 성공했을 경우 자신의 체력이 $[respawn] 되어 부활하고,",
-		"이후 추가 타격마다 $[heal]%씩 누적되어 추가적으로 회복합니다.",
+		"이후 추가 타격마다 전체 체력의 $[heal]%씩 누적되어 추가적으로 회복합니다.",
 		"하지만 타격 횟수를 채우지 못하였을 경우, 사망하게 됩니다.",
 		"※능력 아이디어: Sato207"})
 public class Reincarnation extends CokesAbility {

@@ -7,6 +7,7 @@ import daybreak.abilitywar.ability.AbilityManifest.Species;
 import daybreak.abilitywar.ability.SubscribeEvent;
 import daybreak.abilitywar.game.AbstractGame.Participant;
 import daybreak.abilitywar.game.AbstractGame.Participant.ActionbarNotification.ActionbarChannel;
+import daybreak.abilitywar.utils.base.concurrent.TimeUnit;
 import daybreak.abilitywar.utils.base.minecraft.damage.Damages;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Arrow;
@@ -56,12 +57,14 @@ public class Revenge extends CokesAbility {
 			}
 
 			if (damager.equals(getPlayer()) && e.getEntity() instanceof Player && !e.getEntity().equals(getPlayer())) {
+				Player damager_player = (Player) damager;
 				float plus = (float) (finalDamage * per.getValue() / 100.0f);
-				damage = !damage;
-				e.setCancelled(damage);
-				if (damage) {
-					Damages.damageFixed(e.getEntity(), getPlayer(), (float) (e.getFinalDamage() + plus));
-				}
+				new AbilityTimer(1) {
+					public void run(int arg0) {
+						((Player) e.getEntity()).setNoDamageTicks(0);
+						Damages.damageFixed(e.getEntity(), damager_player, plus);
+					}
+				}.setInitialDelay(TimeUnit.TICKS, 1).setPeriod(TimeUnit.TICKS, 1).start();
 			}
 		}
 	}

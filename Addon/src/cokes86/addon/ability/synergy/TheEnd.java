@@ -10,7 +10,7 @@ import daybreak.abilitywar.config.Configuration.Settings;
 import daybreak.abilitywar.game.AbstractGame;
 import daybreak.abilitywar.game.AbstractGame.Participant;
 import daybreak.abilitywar.game.AbstractGame.Participant.ActionbarNotification.ActionbarChannel;
-import daybreak.abilitywar.game.manager.object.DeathManager;
+import daybreak.abilitywar.game.module.DeathManager;
 import daybreak.abilitywar.game.team.interfaces.Teamable;
 import daybreak.abilitywar.utils.base.TimeUtil;
 import daybreak.abilitywar.utils.base.concurrent.TimeUnit;
@@ -69,7 +69,6 @@ public class TheEnd extends CokesSynergy implements ActiveHandler {
 		return true;
 	};
 	ActionbarChannel ac = newActionbarChannel();
-	private boolean xyz = true;
 	private BroadBar bar;
 	AbilityTimer timer = new AbilityTimer(du.getValue() * 20) {
 		protected void onStart() {
@@ -138,7 +137,7 @@ public class TheEnd extends CokesSynergy implements ActiveHandler {
 	@SubscribeEvent
 	public void onPlayerDeath(PlayerDeathEvent e) {
 		if (e.getEntity().equals(getPlayer()) && timer.isRunning()) {
-			xyz = false;
+			setRestricted(true);
 			timer.stop(true);
 		}
 	}

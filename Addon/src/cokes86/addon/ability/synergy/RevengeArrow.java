@@ -8,7 +8,7 @@ import daybreak.abilitywar.ability.SubscribeEvent;
 import daybreak.abilitywar.game.AbstractGame;
 import daybreak.abilitywar.game.AbstractGame.CustomEntity;
 import daybreak.abilitywar.game.AbstractGame.Participant;
-import daybreak.abilitywar.game.manager.object.DeathManager;
+import daybreak.abilitywar.game.module.DeathManager;
 import daybreak.abilitywar.game.team.interfaces.Teamable;
 import daybreak.abilitywar.utils.base.concurrent.TimeUnit;
 import daybreak.abilitywar.utils.base.math.LocationUtil;
@@ -105,7 +105,7 @@ public class RevengeArrow extends CokesSynergy {
 			setPeriod(TimeUnit.TICKS, 1);
 			this.shooter = shooter;
 			this.entity = new ArrowEntity(startLocation.getWorld(), startLocation.getX(), startLocation.getY(),
-					startLocation.getZ()).setBoundingBox(-.75, -.75, -.75, .75, .75, .75);
+					startLocation.getZ()).resizeBoundingBox(-.75, -.75, -.75, .75, .75, .75);
 			this.forward = arrowVelocity.normalize().multiply(2);
 			this.color = color;
 			this.lastLocation = startLocation;
@@ -129,7 +129,7 @@ public class RevengeArrow extends CokesSynergy {
 					stop(false);
 					return;
 				}
-				for (Damageable damageable : LocationUtil.getConflictingEntities(Damageable.class, entity.getBoundingBox(), predicate)) {
+				for (Damageable damageable : LocationUtil.getConflictingEntities(Damageable.class, shooter.getWorld(), entity.getBoundingBox(), predicate)) {
 					if (!shooter.equals(damageable) && !damageable.isDead()) {
 						Damages.damageArrow(damageable, getPlayer(), (float) damage);
 						stop(false);

@@ -8,7 +8,7 @@ import daybreak.abilitywar.config.Configuration;
 import daybreak.abilitywar.game.AbstractGame.Participant;
 import daybreak.abilitywar.game.AbstractGame.Participant.ActionbarNotification.ActionbarChannel;
 import daybreak.abilitywar.game.GameManager;
-import daybreak.abilitywar.game.manager.object.WRECK;
+import daybreak.abilitywar.game.module.Wreck;
 import daybreak.abilitywar.utils.base.concurrent.TimeUnit;
 import daybreak.abilitywar.utils.library.SoundLib;
 import daybreak.google.common.base.Strings;
@@ -49,7 +49,7 @@ public class Keily extends CokesAbility implements ActiveHandler {
 			return value > 0.0;
 		}
 	};
-	final int count = WRECK.isEnabled(GameManager.getGame()) ? (int) ((100 - Configuration.Settings.getCooldownDecrease().getPercentage()) / 100.0 * dura.getValue()) : dura.getValue();
+	final int count = Wreck.isEnabled(GameManager.getGame()) ? (int) ((100 - Configuration.Settings.getCooldownDecrease().getPercentage()) / 100.0 * dura.getValue()) : dura.getValue();
 	boolean falling = false;
 	Cooldown c = new Cooldown(cool.getValue());
 	ActionbarChannel channel = newActionbarChannel();

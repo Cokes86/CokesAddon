@@ -5,29 +5,31 @@ import daybreak.abilitywar.ability.AbilityManifest;
 import daybreak.abilitywar.ability.AbilityManifest.Rank;
 import daybreak.abilitywar.ability.AbilityManifest.Species;
 import daybreak.abilitywar.ability.SubscribeEvent;
+import daybreak.abilitywar.ability.Tips;
+import daybreak.abilitywar.ability.Tips.Difficulty;
+import daybreak.abilitywar.ability.Tips.Level;
+import daybreak.abilitywar.ability.Tips.Stats;
 import daybreak.abilitywar.ability.decorator.ActiveHandler;
+import daybreak.abilitywar.ability.event.AbilityPreActiveSkillEvent;
 import daybreak.abilitywar.config.enums.CooldownDecrease;
 import daybreak.abilitywar.game.AbstractGame;
 import daybreak.abilitywar.game.AbstractGame.Participant;
 import daybreak.abilitywar.game.AbstractGame.Participant.ActionbarNotification.ActionbarChannel;
-import daybreak.abilitywar.game.manager.object.DeathManager;
-import daybreak.abilitywar.game.manager.object.WRECK;
+import daybreak.abilitywar.game.module.DeathManager;
+import daybreak.abilitywar.game.module.Wreck;
 import daybreak.abilitywar.game.team.interfaces.Teamable;
-import daybreak.abilitywar.utils.base.TimeUtil;
-import daybreak.abilitywar.utils.base.collect.Pair;
 import daybreak.abilitywar.utils.base.concurrent.TimeUnit;
 import daybreak.abilitywar.utils.base.math.LocationUtil;
+import daybreak.abilitywar.utils.base.math.geometry.Line;
+import daybreak.abilitywar.utils.base.math.geometry.location.LocationIterator;
 import daybreak.abilitywar.utils.base.minecraft.damage.Damages;
-import daybreak.abilitywar.utils.base.minecraft.entity.health.Healths;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
-import org.bukkit.event.entity.EntityDamageByBlockEvent;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
-import org.bukkit.event.entity.EntityDamageEvent;
-import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
 import org.bukkit.event.player.PlayerMoveEvent;
+import org.bukkit.util.Vector;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -41,9 +43,14 @@ import java.util.function.Predicate;
 		"§7철괴 우클릭 - §c사슬무덤§r: $[range]블럭 이내 모든 플레이어를 공중에 고정시킵니다. $[cool]",
 		"  공중에는 누적된 §d사슬 카운터§f만큼 초로 환산되어 고정시키며,",
 		"  (§d사슬 카운터§f/2 + 4)블럭만큼 위로 고정시킵니다.",
-		"  공중에 고정되어있는 플레이어는 그동안 움직일 수 없으며,",
+		"  공중에 고정되어있는 플레이어는 능력사용불능, 행동불능상태에 들어가며,",
 		"  매 2초마다 1의 고정대미지를 입습니다. 그 이외의 대미지는 받지 않으며,",
 		"  고정대미지는 체력이 1 이하인 상태에서는 받지 않습니다."})
+@Tips(tip = {
+		"참가자들을 공중에 띄우는 동안 1씩 고정대미지를 입히고",
+		"낙하대미지까지 덤으로 익힐 수 있을 뿐 더러",
+		"그 동안은 공격할 수도, 받을 수도 없기 때문에 도망치기 딱 좋은 능력"
+}, stats = @Stats(offense = Level.SIX, survival = Level.EIGHT, crowdControl = Level.TWO, mobility = Level.ZERO, utility = Level.ZERO), difficulty = Difficulty.EASY)
 public class Aris extends CokesAbility implements ActiveHandler {
 	private static final Config<Integer> range = new Config<Integer>(Aris.class, "범위", 7) {
 		@Override
@@ -80,18 +87,16 @@ public class Aris extends CokesAbility implements ActiveHandler {
 		return true;
 	};
 
-	private final Map<Player, Pair<Location, ActionbarChannel>> holding = new HashMap<>();
-
 	private int chain = 0;
 	private final ActionbarChannel actionbarChannel = newActionbarChannel();
-	private final ChainTimer chainTimer = new ChainTimer();
+	private final ActiveTimer activeTimer = new ActiveTimer();
 	private final Cooldown cooldown = new Cooldown(cool.getValue(), CooldownDecrease._50);
 	private final AbilityTimer passive = new AbilityTimer() {
-		final int count = (int) (5 * (WRECK.isEnabled(getGame()) ? WRECK.calculateDecreasedAmount(50) : 1));
+		final int count = (int) (Wreck.isEnabled(getGame()) ? 5 * Wreck.calculateDecreasedAmount(50) : 5);
 
 		@Override
 		protected void run(int arg0) {
-			if (!cooldown.isRunning()) {
+			if (!cooldown.isRunning() && !activeTimer.isDuration(false)) {
 				if (arg0 % count == 0) {
 					chain++;
 					if (chain >= max_count.getValue())
@@ -117,33 +122,22 @@ public class Aris extends CokesAbility implements ActiveHandler {
 
 	@Override
 	public boolean ActiveSkill(Material material, ClickType clickType) {
-		if (material.equals(Material.IRON_INGOT) && clickType.equals(ClickType.RIGHT_CLICK) && !chainTimer.isDuration() && chain != 0) {
+		if (material.equals(Material.IRON_INGOT) && clickType.equals(ClickType.RIGHT_CLICK) && !activeTimer.isDuration(true) && chain != 0) {
 			final List<Player> players = LocationUtil.getNearbyEntities(Player.class, getPlayer().getLocation(), range.getValue(), range.getValue(), predicate);
 			if (players.isEmpty()) {
 				getPlayer().sendMessage("주변에 플레이어가 존재하지 않습니다.");
 				return false;
 			}
-			chainTimer.setPlayerList(players);
-			chainTimer.start();
-			chainTimer.setCount(chain * 20);
+			activeTimer.start(players);
 			return true;
 		}
 		return false;
 	}
 
 	@SubscribeEvent
-	public void onEntityDamage(EntityDamageEvent e) {
+	public void onEntityDamage(EntityDamageByEntityEvent e) {
 		if (e.getEntity() instanceof Player) {
-			if (holding.containsKey(e.getEntity())) {
-				e.setCancelled(true);
-			}
-		}
-	}
-
-	@SubscribeEvent
-	public void onEntityDamageByEntity(EntityDamageByEntityEvent e) {
-		if (e.getEntity() instanceof Player) {
-			if (holding.containsKey(e.getEntity())) {
+			if (activeTimer.isDuration(false) && activeTimer.getGrabbedPlayer().contains(e.getEntity())) {
 				if (getPlayer().equals(e.getDamager()) && e.getDamage() == 1.000000001) return;
 				e.setCancelled(true);
 			}
@@ -151,64 +145,124 @@ public class Aris extends CokesAbility implements ActiveHandler {
 	}
 
 	@SubscribeEvent
-	public void onEntityDamageByBlock(EntityDamageByBlockEvent e) {
-		onEntityDamage(e);
+	public void onPlayerMove(PlayerMoveEvent e) {
+		if (activeTimer.isDuration(false) && activeTimer.getGrabbedPlayer().contains(e.getPlayer())) {
+			e.getPlayer().setVelocity(new Vector(0,0,0));
+		}
 	}
 
 	@SubscribeEvent
-	public void onPlayerMove(PlayerMoveEvent e) {
-		if (holding.containsKey(e.getPlayer())) e.setCancelled(true);
+	public void onActiveSkill(AbilityPreActiveSkillEvent e) {
+		if (activeTimer.isDuration(false) && activeTimer.getGrabbedPlayer().contains(e.getPlayer())) {
+			e.setCancelled(true);
+		}
 	}
+	
+	class ActiveTimer {
+		private int duration;
+		private UpTimer up;
+		private ArisGrabTimer grab;
+		private List<Player> list;
+		private List<ActionbarChannel> channels;
 
-	class ChainTimer extends Duration {
-		private List<Player> players;
-
-		public ChainTimer() {
-			super(Aris.this.chain * 20);
-			this.setPeriod(TimeUnit.TICKS, 1);
-			this.players = new ArrayList<>();
+		public boolean start(List<Player> list) {
+			list.forEach(player -> player.setGravity(false));
+			this.duration = chain;
+			this.up = new UpTimer();
+			this.grab = new ArisGrabTimer();
+			this.list = list;
+			this.channels = new ArrayList<>();
+			list.forEach(player -> {
+				Participant p = getGame().getParticipant(player);
+				channels.add(p.actionbar().newChannel());
+			});
+			channels.forEach(channel -> channel.update("붙잡힘!!"));
+			return up.start();
+		}
+		
+		public boolean stop(boolean silent) {
+			return up.stop(silent) || grab.stop(silent);
 		}
 
-		@Override
-		protected void onDurationStart() {
-			passive.stop(false);
-			actionbarChannel.update(null);
-			for (Player p : players) {
-				final ActionbarChannel channel = getGame().getParticipant(p).actionbar().newChannel();
-				holding.put(p, Pair.of(p.getLocation().clone().add(0, chain / 2.0 + 4, 0), channel));
+		public List<Player> getGrabbedPlayer() {
+			return list;
+		}
+		
+		public boolean isDuration(boolean message) {
+			if (up != null && grab != null) {
+				return up.isRunning() || (message ? grab.isDuration() : grab.isRunning());
 			}
-
+			return false;
 		}
 
-		@Override
-		protected void onDurationProcess(int count) {
-			for (Player player : holding.keySet()) {
-				holding.get(player).getRight().update("고정 지속시간: " + TimeUtil.parseTimeAsString(getFixedCount()));
-				player.teleport(holding.get(player).getLeft());
-				if (count % 40 == 0 && Damages.canDamage(player, getPlayer(), DamageCause.ENTITY_ATTACK, 1.000000001) && player.getHealth() > 1) {
-					Healths.setHealth(player, player.getHealth() - 1);
-				}
-			}
-		}
-
-		@Override
-		protected void onDurationEnd() {
-			onDurationSilentEnd();
-		}
-
-		@Override
-		protected void onDurationSilentEnd() {
-			for (Player p : holding.keySet()) {
-				holding.get(p).getRight().unregister();
-			}
-			holding.clear();
+		public void onStop() {
+			list.forEach(player -> player.setGravity(true));
+			list.clear();
+			channels.forEach(ActionbarChannel::unregister);
+			channels.clear();
 			chain = 0;
-			cooldown.start();
-			passive.start();
 		}
+		
+		class UpTimer extends AbilityTimer {
+			public UpTimer() {
+				super(duration/2 + 4);
+				this.setPeriod(TimeUnit.TICKS, 1);
+			}
+			
+			@Override
+			protected void run(int count) {
+				for (Player player : list) {
+					Location location = player.getLocation().clone();
+					LocationIterator line = Line.iteratorBetween(location, location.add(0, 1, 0), 200);
+					for (Location line_location : line.iterable()) {
+						if(line_location.clone().add(0, 1.4, 0).getBlock().getType() == Material.AIR) {
+							player.teleport(line_location);
+						}
+					}
+				}
 
-		public void setPlayerList(List<Player> list) {
-			this.players = list;
+			}
+			
+			protected void onSilentEnd() {
+				onStop();
+			}
+			
+			protected void onEnd() {
+				grab.start();
+			}
+		}
+		
+		class ArisGrabTimer extends Duration {
+
+			public ArisGrabTimer() {
+				super(chain*20, cooldown);
+				setPeriod(TimeUnit.TICKS, 1);
+			}
+			
+			Map<Player, Location> locations = new HashMap<>();
+			
+			protected void onStart() {
+				list.forEach(player -> locations.put(player, player.getLocation().clone()));
+			}
+
+			@Override
+			protected void onDurationProcess(int arg0) {
+				list.forEach(player -> {
+					Location l = player.getLocation().clone();
+					player.teleport(l);
+					if (arg0 % 40 == 0) {
+						Damages.damageFixed(player, getPlayer(), 1);
+					}
+				});
+			}
+			
+			protected void onDurationSilentEnd() {
+				onStop();
+			}
+			
+			protected void onDurationEnd() {
+				onStop();
+			}
 		}
 	}
 }

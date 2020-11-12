@@ -1,144 +1,106 @@
 package cokes86.addon.ability.list;
 
 import cokes86.addon.ability.CokesAbility;
+import daybreak.abilitywar.AbilityWar;
 import daybreak.abilitywar.ability.AbilityManifest;
 import daybreak.abilitywar.ability.AbilityManifest.Rank;
 import daybreak.abilitywar.ability.AbilityManifest.Species;
-import daybreak.abilitywar.ability.SubscribeEvent;
 import daybreak.abilitywar.ability.decorator.ActiveHandler;
-import daybreak.abilitywar.game.AbstractGame;
 import daybreak.abilitywar.game.AbstractGame.Participant;
 import daybreak.abilitywar.game.AbstractGame.Participant.ActionbarNotification.ActionbarChannel;
-import daybreak.abilitywar.game.manager.object.DeathManager;
-import daybreak.abilitywar.game.team.interfaces.Teamable;
+import daybreak.abilitywar.game.event.participant.ParticipantDeathEvent;
 import daybreak.abilitywar.utils.base.TimeUtil;
-import daybreak.abilitywar.utils.base.minecraft.BroadBar;
-import daybreak.abilitywar.utils.library.PotionEffects;
+import daybreak.abilitywar.utils.base.concurrent.TimeUnit;
 import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
 import org.bukkit.Material;
-import org.bukkit.boss.BarColor;
-import org.bukkit.boss.BarStyle;
-import org.bukkit.entity.Entity;
-import org.bukkit.entity.Player;
-import org.bukkit.event.entity.PlayerDeathEvent;
-import org.bukkit.event.player.PlayerMoveEvent;
-import org.bukkit.potion.PotionEffect;
-import org.bukkit.potion.PotionEffectType;
-
-import java.util.function.Predicate;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.HandlerList;
+import org.bukkit.event.Listener;
 
 @AbilityManifest(name = "신의 가호", rank = Rank.A, species = Species.HUMAN, explain = {
-		"철괴 우클릭 시 자신의 정체를 공개하고 $[dura]동안 대기시간을 가집니다.",
-		"대기시간동안 자신은 움직일 수 없습니다.",
-		"해당 대기시간이 끝날 시 자신과 팀을 제외한 모든 플레이어는 부활 효과를 무시하고 사망합니다.",
-		"대기시간이 지속시간의 1/2만큼 남았을 때, 자신에게 발광효과를 부여합니다.",
-		"대기시간이 지속시간의 1/4만큼 남았을 때, 모두에게 자신의 좌표를 실시간으로 공개합니다.",
-		"자신이 사망하거나 대기시간이 끝날 경우 해당 능력은 비활성화됩니다."
+		"§7철괴 우클릭 §8- §c파괴의 신§r: 지속시간 $[duration] 동안 상대방을 공격할 시 $[base]의 대미지가 추가됩니다.",
+		"  지속시간동안 플레이어 1명을 죽일 시 추가대미지가 $[add]씩 증가하며",
+		"  지속시간이 $[duration]로 변경됩니다.",
+		"  지속시간 종료 시 (지금까지 얻은 추가대미지 * $[multiply])의 대미지를 받습니다. $[cool]"
 })
 public class GodsBless extends CokesAbility implements ActiveHandler {
-	private static final Config<Integer> dura = new Config<Integer>(GodsBless.class, "대기시간(분)", 4) {
-		@Override
-		public boolean condition(Integer value) {
-			return value >= 0;
+	private static final Config<Integer> duration = new Config<Integer>(GodsBless.class, "지속시간", 15, 2) {
+		public boolean condition(Integer arg0) {
+			return arg0 > 0;
 		}
-
-		@Override
-		public String toString() {
-			return TimeUtil.parseTimeAsString(getValue() * 60);
+	}, cool = new Config<Integer>(GodsBless.class, "쿨타임", 60, 1) {
+		public boolean condition(Integer arg0) {
+			return arg0 >= 0;
 		}
-	};
-	private final ActionbarChannel ac = newActionbarChannel();
-	private final Predicate<Entity> predicate = entity -> {
-		if (entity.equals(getPlayer())) return false;
-		if (entity instanceof Player) {
-			if (!getGame().isParticipating(entity.getUniqueId())) return false;
-			AbstractGame.Participant target = getGame().getParticipant(entity.getUniqueId());
-			if (getGame() instanceof DeathManager.Handler) {
-				DeathManager.Handler game = (DeathManager.Handler) getGame();
-				if (game.getDeathManager().isExcluded(entity.getUniqueId())) return false;
-			}
-			if (getGame() instanceof Teamable) {
-				Teamable game = (Teamable) getGame();
-				return (!game.hasTeam(getParticipant()) || !game.hasTeam(target) || !game.getTeam(getParticipant()).equals(game.getTeam(target)));
-			}
+	}, base = new Config<Integer>(GodsBless.class, "추가대미지.기본", 3) {
+		public boolean condition(Integer arg0) {
+			return arg0 > 0;
 		}
-		return true;
-	};
-	private final AbilityTimer god = new AbilityTimer(dura.getValue() * 60) {
-		private BroadBar bar = null;
-
-		@Override
-		protected void run(int Count) {
-			int c = getFixedCount();
-			String a = "x: " + (int) getPlayer().getLocation().getX() + " y: " + (int) getPlayer().getLocation().getY()
-					+ " z: " + (int) getPlayer().getLocation().getZ();
-			if (c <= dura.getValue() * 30) {
-				getPlayer().addPotionEffect(new PotionEffect(PotionEffectType.GLOWING, dura.getValue() * 30, 0));
-			}
-			if (c == dura.getValue() * 15) {
-				Bukkit.broadcastMessage("신이 당신을 부르고 있습니다.");
-				bar = new BroadBar("신의가호 " + getPlayer().getName() + "의 위치 / " + a, BarColor.YELLOW, BarStyle.SEGMENTED_10);
-			}
-			if (c < dura.getValue() * 15) {
-				bar.setTitle("신의가호 " + getPlayer().getName() + "의 위치 " + a);
-				bar.setProgress(Math.min((double) getFixedCount() / dura.getValue() * 15.00, 1.0D));
-			}
-			ac.update(ChatColor.translateAlternateColorCodes('&', "&6대기 시간 &f: &e" + TimeUtil.parseTimeAsString(c)));
-
-			if (c == dura.getValue() * 15 / 2 || (c <= 5 && c >= 1)) {
-				Bukkit.broadcastMessage("신의가호가 신을 부르기 §c" + TimeUtil.parseTimeAsString(c) + " §f전");
-			}
-		}
-
-		@Override
-		protected void onEnd() {
-			for (Participant p : getGame().getParticipants()) {
-				if (predicate.test(p.getPlayer())) {
-					p.getPlayer().setHealth(0.0);
-				}
-			}
-			onSilentEnd();
-		}
-
-		@Override
-		protected void onSilentEnd() {
-			if (bar != null) bar.unregister();
-			GodsBless.this.setRestricted(true);
-			PotionEffects.GLOWING.removePotionEffect(getPlayer());
+	}, add = new Config<Integer>(GodsBless.class, "추가대미지.상승량", 1) {
+		public boolean condition(Integer arg0) {
+			return arg0 > 0;
 		}
 	};
+	private static final Config<Double> multiply = new Config<Double>(GodsBless.class, "배율", 5.0) {
+		public boolean condition(Double arg0) {
+			return arg0 > 1;
+		}
+	};
+	ActionbarChannel ac = newActionbarChannel();
+	Cooldown c = new Cooldown(cool.getValue());
+	BlessTimer bless = new BlessTimer();
 
-	public GodsBless(Participant participant) {
-		super(participant);
-		god.register();
+	public GodsBless(Participant arg0) {
+		super(arg0);
 	}
 
 	@Override
-	public boolean ActiveSkill(Material mt, ClickType ct) {
-		if (mt.equals(Material.IRON_INGOT) && ct.equals(ClickType.RIGHT_CLICK) && !god.isRunning()) {
-			god.start();
-			Bukkit.broadcastMessage("신의가호가 신을 부르기 시작했습니다.");
-			Bukkit.broadcastMessage(dura.getValue() + "분 뒤 모든 플레이어가 사망합니다.");
+	public boolean ActiveSkill(Material arg0, ClickType arg1) {
+		if (arg0 == Material.IRON_INGOT && arg1 == ClickType.RIGHT_CLICK && !c.isCooldown() && !bless.isRunning()) {
+			bless.start();
 			return true;
 		}
 		return false;
 	}
 
-	@SubscribeEvent
-	public void onPlayerMove(PlayerMoveEvent e) {
-		if (e.getPlayer().equals(getPlayer())) {
-			if (god.isRunning())
-				e.setCancelled(true);
-		}
-	}
+	class BlessTimer extends AbilityTimer implements Listener {
+		int add_damage = base.getValue();
 
-	@SubscribeEvent
-	public void onPlayerDeath(PlayerDeathEvent e) {
-		if (e.getEntity().equals(getPlayer())) {
-			if (god.isRunning()) {
-				Bukkit.broadcastMessage("신의가호가 신을 부르지 못하였습니다.");
-				god.stop(true);
+		public BlessTimer() {
+			super(duration.getValue() * 20);
+			this.setPeriod(TimeUnit.SECONDS, 1);
+		}
+
+		protected void onStart() {
+			Bukkit.getPluginManager().registerEvents(this, AbilityWar.getPlugin());
+		}
+
+		@Override
+		protected void run(int arg0) {
+			ac.update("추가 대미지: " + add_damage + " | 남은 시간: " + TimeUtil.parseTimeAsString(this.getFixedCount()));
+		}
+
+		protected void onCountSet() {
+			ac.update("추가 대미지: " + add_damage + " | 남은 시간: " + TimeUtil.parseTimeAsString(this.getFixedCount()));
+		}
+
+		protected void onSilentEnd() {
+			HandlerList.unregisterAll(this);
+		}
+
+		protected void onEnd() {
+			onSilentEnd();
+			getPlayer().damage(add_damage * multiply.getValue(), getPlayer());
+			ac.update(null);
+		}
+
+		@EventHandler
+		public void onParticipantDeath(ParticipantDeathEvent e) {
+			if (!e.getParticipant().equals(getParticipant())) {
+				if (e.getPlayer().getKiller() != null && e.getPlayer().getKiller().equals(getPlayer())) {
+					add_damage += add.getValue();
+					this.setCount(duration.getValue() *20);
+				}
 			}
 		}
 	}

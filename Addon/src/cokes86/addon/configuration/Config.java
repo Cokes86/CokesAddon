@@ -1,6 +1,6 @@
-package cokes86.addon.configuration.addon;
+package cokes86.addon.configuration;
 
-import cokes86.addon.configuration.addon.Config.Nodes;
+import cokes86.addon.configuration.Config.Nodes;
 import daybreak.abilitywar.config.CachedConfig;
 import daybreak.abilitywar.config.interfaces.Cacher;
 import daybreak.abilitywar.config.interfaces.Node;

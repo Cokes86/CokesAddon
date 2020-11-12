@@ -10,7 +10,7 @@ import daybreak.abilitywar.ability.decorator.ActiveHandler;
 import daybreak.abilitywar.game.AbstractGame;
 import daybreak.abilitywar.game.AbstractGame.Participant;
 import daybreak.abilitywar.game.AbstractGame.Participant.ActionbarNotification.ActionbarChannel;
-import daybreak.abilitywar.game.manager.object.DeathManager;
+import daybreak.abilitywar.game.module.DeathManager;
 import daybreak.abilitywar.game.team.interfaces.Teamable;
 import daybreak.abilitywar.utils.base.TimeUtil;
 import daybreak.abilitywar.utils.base.math.LocationUtil;
@@ -26,6 +26,7 @@ import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.PlayerDeathEvent;
 
 import java.text.DecimalFormat;
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -35,10 +36,15 @@ import java.util.function.Predicate;
 		"§7패시브 §8- §c전쟁의 여왕§r: 게임 중 플레이어가 사망할때마다 전쟁스택이 1씩 쌓입니다.",
 		"  남아있는 생존자 대비 얻은 전쟁스택에 비례하여",
 		"  자신이 상대방에게 주는 대미지가 증가합니다 (최대 $[MAX_DAMAGE] 증가)",
-		"§7철괴 우클릭 §8- §c토벌§r: 자신 기준 $[RANGE]블럭 이내 모든 플레이어를 자신의 위치로 이동시킨 후",
+		"§7철괴 우클릭 §8- §c프레셔§r: 자신 기준 $[RANGE]블럭 이내 모든 플레이어를 자신의 위치로 이동시킨 후",
 		"  남아있는 생존자 대비 얻은 전쟁스택에 반비례하여 끌어당긴 플레이어의",
-		"  주는 대미지가 $[DEBUFF]간 감소하게 됩니다. (최대 $[DEBUFF_MAX] 증가) $[COOL]"})
+		"  주는 대미지가 $[DEBUFF]간 감소하게 됩니다. (최대 $[DEBUFF_MAX] 감소)",
+	    "  이 감소수치는 0 아래로 감소하지 않습니다. $[COOL]",
+		"  대미지가 감소하고 있는 동안 프레셔를 통해 다시 끌려오지 않습니다."})
 public class Seth extends CokesAbility implements ActiveHandler {
+	int max = getGame().getParticipants().size();
+	int kill = 0;
+	DecimalFormat df = new DecimalFormat("0.00");
 	public static final Config<Integer> MAX_DAMAGE = new Config<Integer>(Seth.class, "추가대미지", 9) {
 		public boolean condition(Integer value) {
 			return value >= 0;
@@ -80,14 +86,24 @@ public class Seth extends CokesAbility implements ActiveHandler {
 		}
 		return true;
 	};
-	private int max = getGame().getParticipants().size();
-	private int kills = 0;
-	private final DecimalFormat decimalFormat = new DecimalFormat("0.00");
+
 	private final Cooldown cooldown = new Cooldown(COOL.getValue());
 	private final ActionbarChannel actionbarChannel = newActionbarChannel();
 
 	public Seth(Participant arg0) {
 		super(arg0);
+	}
+
+	public boolean isPressure(Player player) {
+		for (AbstractGame.GameTimer timer : getGame().getRunningTimers()) {
+			if (timer instanceof SethGrabTimer) {
+				SethGrabTimer sethGrabTimer = (SethGrabTimer) timer;
+				if (sethGrabTimer.getGrabbed().contains(player)) {
+					return true;
+				}
+			}
+		}
+		return false;
 	}
 
 	@Override
@@ -96,7 +112,7 @@ public class Seth extends CokesAbility implements ActiveHandler {
 			final int range = Seth.RANGE.getValue();
 			final List<Player> list = LocationUtil.getNearbyEntities(Player.class, getPlayer().getLocation(), range, range, predicate);
 			if (list.size() > 0) {
-				new GrabTimer(list);
+				new SethGrabTimer(list);
 				cooldown.start();
 				return true;
 			} else {
@@ -109,7 +125,7 @@ public class Seth extends CokesAbility implements ActiveHandler {
 	@SubscribeEvent(priority = 99)
 	private void onPlayerDeath(PlayerDeathEvent e) {
 		if (!e.getEntity().equals(getPlayer())) {
-			kills += 1;
+			kill += 1;
 
 			if (getGame() instanceof DeathManager.Handler) {
 				final DeathManager.Handler game = (DeathManager.Handler) getGame();
@@ -118,28 +134,36 @@ public class Seth extends CokesAbility implements ActiveHandler {
 				}
 			}
 
-			actionbarChannel.update(decimalFormat.format((double) kills * 100 / max) + "% (" + kills + "/" + max + ")");
+			actionbarChannel.update(df.format((double) kill * 100 / max) + "% (" + kill + "/" + max + ")");
 		}
 	}
 
 	@SubscribeEvent
 	private void onEntityDamageByEntity(EntityDamageByEntityEvent e) {
 		if (e.getDamager().equals(getPlayer())) {
-			final double damage = Math.min(9, kills * 3 / max);
+			final double damage = Math.min(MAX_DAMAGE.getValue(), kill * 3 / max);
 			e.setDamage(e.getDamage() + damage);
 		}
 	}
 
-	private class GrabTimer extends AbilityTimer implements Listener {
-		private final List<Player> grabbed;
+	private class SethGrabTimer extends AbilityTimer implements Listener {
+		private final ArrayList<Player> grabbed = new ArrayList<>();
 		private final Set<ActionbarChannel> channel = new HashSet<>();
 		private final double damage;
 
-		public GrabTimer(List<Player> grabbed) {
+		public SethGrabTimer(List<Player> grabbed) {
 			super(DEBUFF.getValue());
-			this.grabbed = grabbed;
-			this.damage = DEBUFF_MAX.getValue() - (kills / ((double) max) * 2);
+			grabbed.forEach(player -> {
+				if (!isPressure(player)) {
+					this.grabbed.add(player);
+				}
+			});
+			this.damage = DEBUFF_MAX.getValue() - (kill / ((double) max) * 2);
 			start();
+		}
+
+		public List<Player> getGrabbed() {
+			return grabbed;
 		}
 
 		public void onStart() {
@@ -154,9 +178,9 @@ public class Seth extends CokesAbility implements ActiveHandler {
 
 		@Override
 		protected void run(int arg0) {
-			channel.forEach(channel -> channel.update("신의 프레셔 : " + TimeUtil.parseTimeAsString(getFixedCount())));
+			channel.forEach(channel -> channel.update("§c신의 프레셔 §f: " + TimeUtil.parseTimeAsString(getFixedCount())));
 		}
-
+		
 		@Override
 		protected void onEnd() {
 			onSilentEnd();
@@ -170,7 +194,7 @@ public class Seth extends CokesAbility implements ActiveHandler {
 
 		@EventHandler
 		private void onEntityDamageByEntity(final EntityDamageByEntityEvent e) {
-			if (grabbed.contains(e.getDamager())) {
+			if (grabbed.contains(e.getEntity())) {
 				e.setDamage(Math.max(0, e.getDamage() - damage));
 			}
 		}

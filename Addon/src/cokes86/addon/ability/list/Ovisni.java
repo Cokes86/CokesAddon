@@ -18,17 +18,18 @@ import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 
-import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 
 @AbilityManifest(name = "오비스니", rank = Rank.A, species = Species.HUMAN, explain = {
-		"상대방을 공격할 시 상대방에게 §2맹독 카운터§f를 1씩 상승시키며",
-		"상대방은 매 $[DELAY]마다 §2맹독 카운터§f만큼의 대미지를 수시로 입습니다.",
-		"철괴 우클릭시 모든 플레이어의 §2맹독 카운터§f를 없애고",
+		"상대방을 공격할 시 상대방에게 §2맹독§f을 1씩 상승시키며",
+		"상대방은 매 $[DELAY]마다 §2맹독§f만큼의 대미지를 수시로 입습니다. (최대 $[MAX_DAMAGE_HIT])",
+		"철괴 우클릭시 모든 플레이어의 §2맹독§f을 모두 없애고",
 		"그 수의 2배만큼의 대미지를 입힙니다. $[COOLDOWN_CONFIG]",
-		"각각 플레이어마다 §2맹독 카운터§f는 최대 $[MAX_COUNTER_CONFIG]씩 쌓입니다.",
-		"철괴 좌클릭시 모든 플레이어의 §2맹독 카운터§f를 알 수 있습니다.",
+		"각각 플레이어마다 §2맹독§f은 최대 $[MAX_COUNTER_CONFIG]씩 쌓입니다.",
+		"철괴 좌클릭시 모든 플레이어의 §2맹독§f을 알 수 있습니다.",
 		"0개는 따로 표시하지 않습니다."
 })
 public class Ovisni extends CokesAbility implements ActiveHandler {
@@ -48,9 +49,14 @@ public class Ovisni extends CokesAbility implements ActiveHandler {
 		public boolean condition(Integer value) {
 			return value > 0;
 		}
+	}, MAX_DAMAGE_HIT = new Config<Integer>(Ovisni.class, "최대_맴독_타격_횟수", 12) {
+		@Override
+		public boolean condition(Integer arg0) {
+			return arg0 > 0;
+		}
 	};
 
-	private final Map<Participant, OvisniStack> stackMap = new HashMap<>();
+	private final Map<Participant, OvisniStack> stackMap = new ConcurrentHashMap<>();
 
 	private final Cooldown cooldownTimer = new Cooldown(COOLDOWN_CONFIG.getValue());
 
@@ -63,9 +69,12 @@ public class Ovisni extends CokesAbility implements ActiveHandler {
 		if (material == Material.IRON_INGOT) {
 			if (clickType == ClickType.RIGHT_CLICK && !cooldownTimer.isCooldown()) {
 				if (!stackMap.isEmpty()) {
-					for (Entry<Participant, OvisniStack> entry : stackMap.entrySet()) {
-						entry.getKey().getPlayer().damage(entry.getValue().stack * 2, getPlayer());
-						entry.getValue().stop(false);
+					Set<Entry<Participant, OvisniStack>> entries = stackMap.entrySet();
+					for (Entry<Participant, OvisniStack> entry : entries) {
+						if (entry != null) {
+							entry.getKey().getPlayer().damage(entry.getValue().stack * 2, getPlayer());
+							entry.getValue().stop(false);
+						}
 					}
 					stackMap.clear();
 					cooldownTimer.start();
@@ -74,7 +83,7 @@ public class Ovisni extends CokesAbility implements ActiveHandler {
 					getPlayer().sendMessage("§2맹독 카운터§f를 가진 플레이어가 존재하지 않습니다.");
 				}
 			} else if (clickType == ClickType.LEFT_CLICK) {
-				getPlayer().sendMessage("§e===== §2맹독 카운터§f 수치 §e=====");
+				getPlayer().sendMessage("§e===== §2맹독§f 수치 §e=====");
 				stackMap.forEach((key, value) -> getPlayer().sendMessage("§f" + key.getPlayer().getName() + " §7: §2" + value.stack));
 				getPlayer().sendMessage("§e========================");
 			}
@@ -132,6 +141,7 @@ public class Ovisni extends CokesAbility implements ActiveHandler {
 		private final IHologram hologram;
 		private final int maxCounter = MAX_COUNTER_CONFIG.getValue();
 		private int stack;
+		private int damageCount = 0;
 
 		private OvisniStack(Participant target) {
 			super();
@@ -150,8 +160,9 @@ public class Ovisni extends CokesAbility implements ActiveHandler {
 			this.hologram.setText(Strings.repeat("§2◆", stack).concat(Strings.repeat("§2◇", maxCounter - stack)));
 			final Player targetPlayer = target.getPlayer();
 			hologram.teleport(targetPlayer.getWorld(), targetPlayer.getLocation().getX(), targetPlayer.getLocation().getY() + targetPlayer.getEyeHeight() + 0.6, targetPlayer.getLocation().getZ(), targetPlayer.getLocation().getYaw(), 0);
-			if (arg0 % (20 * DELAY.getValue()) == 0) {
+			if (arg0 % (20 * DELAY.getValue()) == 0 && damageCount <= MAX_DAMAGE_HIT.getValue()) {
 				targetPlayer.damage(stack, getPlayer());
+				damageCount++;
 			}
 		}
 

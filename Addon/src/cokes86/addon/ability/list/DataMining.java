@@ -1,11 +1,12 @@
 package cokes86.addon.ability.list;
 
 import cokes86.addon.ability.CokesAbility;
-import daybreak.abilitywar.ability.AbilityBase;
+import daybreak.abilitywar.ability.*;
 import daybreak.abilitywar.ability.AbilityFactory.AbilityRegistration;
-import daybreak.abilitywar.ability.AbilityManifest;
-import daybreak.abilitywar.ability.NotAvailable;
-import daybreak.abilitywar.ability.SubscribeEvent;
+import daybreak.abilitywar.ability.Tips.Description;
+import daybreak.abilitywar.ability.Tips.Difficulty;
+import daybreak.abilitywar.ability.Tips.Level;
+import daybreak.abilitywar.ability.Tips.Stats;
 import daybreak.abilitywar.ability.decorator.ActiveHandler;
 import daybreak.abilitywar.ability.event.AbilityActiveSkillEvent;
 import daybreak.abilitywar.game.AbstractGame;
@@ -15,7 +16,7 @@ import daybreak.abilitywar.game.list.mix.Mix;
 import daybreak.abilitywar.game.list.mix.synergy.Synergy;
 import daybreak.abilitywar.game.list.mix.synergy.SynergyFactory;
 import daybreak.abilitywar.game.list.mix.triplemix.AbstractTripleMix;
-import daybreak.abilitywar.game.manager.object.DeathManager;
+import daybreak.abilitywar.game.module.DeathManager;
 import daybreak.abilitywar.utils.base.collect.Pair;
 import org.bukkit.Material;
 import org.bukkit.entity.Arrow;
@@ -36,6 +37,16 @@ import java.util.Random;
 		"철괴 좌클릭시 사실 여부 메세지를 끄고 킬 수 있습니다.",
 		"※능력 아이디어: RainStar_"
 })
+@Tips(tip = {
+		"모든 플레이어의 능력을 가장 먼저 알 수 있을 뿐 더러",
+		"전투 현황, 능력 사용 여부, 이에 따른 추가적인 버프로",
+		"전투가 지속될 수록 점차 강해지는 능력"
+}, strong= {
+		@Description(explain = { "참가자가 많을 수록 버프를 얻기 쉽다." }, subject = "많은 인원")
+}, weak = {
+		@Description(explain = { "참가자가 적을 수록 버프를 얻기 어렵다." }, subject = "적은 인원")
+},
+stats = @Stats(offense = Level.FIVE, survival = Level.FIVE, crowdControl = Level.ZERO, mobility = Level.ZERO, utility = Level.EIGHT), difficulty = Difficulty.NORMAL)
 @NotAvailable(AbstractTripleMix.class)
 public class DataMining extends CokesAbility implements ActiveHandler {
 	private static final Config<Double> damageUp = new Config<Double>(DataMining.class, "대미지성장치", 0.25) {
@@ -151,19 +162,19 @@ public class DataMining extends CokesAbility implements ActiveHandler {
 						Synergy synergy = mix.getSynergy();
 						Pair<AbilityRegistration, AbilityRegistration> base = SynergyFactory
 								.getSynergyBase(synergy.getRegistration());
-						name = "§e" + synergy.getName() + " §f(§e" + base.getLeft().getManifest().name() + " §f+ §e"
+						name = "§e" + synergy.getDisplayName() + " §f(§e" + base.getLeft().getManifest().name() + " §f+ §e"
 								+ base.getRight().getManifest().name() + "§f)";
 					} else {
 						if (mix.getFirst() != null && mix.getSecond() == null) {
-							name = "§e" + mix.getFirst().getName();
+							name = "§e" + mix.getFirst().getDisplayName();
 						} else if (mix.getFirst() == null && mix.getSecond() != null) {
-							name = "§e" + mix.getSecond().getName();
+							name = "§e" + mix.getSecond().getDisplayName();
 						} else {
-							name = "§e" + mix.getFirst().getName() + " §f+ §e" + mix.getSecond().getName();
+							name = "§e" + mix.getFirst().getDisplayName() + " §f+ §e" + mix.getSecond().getDisplayName();
 						}
 					}
 				} else {
-					name = ability.getName();
+					name = ability.getDisplayName();
 				}
 
 				count++;

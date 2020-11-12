@@ -19,7 +19,7 @@ import java.text.DecimalFormat;
 
 @AbilityManifest(name = "여왕", rank = AbilityManifest.Rank.A, species = AbilityManifest.Species.HUMAN, explain = {
 		"상대방을 철괴로 우클릭시 상대방의 남은 체력의 절반만큼",
-		"최대체력이 증가하고 그 수치만큼 체력을 회복합니다. $[cool]",
+		"최대체력이 증가하고 그 수치의 $[multiply]배만큼의 체력을 회복합니다. $[cool]",
 		"능력을 사용할 때 마다, 최대체력이 게임 설정 초깃값으로 수정된 후 증가합니다.",
 		"철괴 좌클릭시, 자신의 최대체력을 수치로 확인할 수 있습니다."
 })
@@ -30,6 +30,12 @@ public class Queen extends CokesAbility implements ActiveHandler, TargetHandler 
 			return value >= 0;
 		}
 
+	};
+	private static final Config<Double> multiply = new Config<Double>(Queen.class, "회복배율", 1.0) {
+		@Override
+		public boolean condition(Double aDouble) {
+			return aDouble >= 0;
+		}
 	};
 	DecimalFormat df = new DecimalFormat(".00");
 	double defaultHealth = Settings.getDefaultMaxHealth();
@@ -48,7 +54,7 @@ public class Queen extends CokesAbility implements ActiveHandler, TargetHandler 
 				double plus = target.getHealth() / 2;
 
 				getPlayer().getAttribute(Attribute.GENERIC_MAX_HEALTH).setBaseValue(defaultHealth + plus);
-				Healths.setHealth(getPlayer(), getPlayer().getHealth() + plus);
+				Healths.setHealth(getPlayer(), getPlayer().getHealth() + (plus*multiply.getValue()));
 				cooldown.start();
 			}
 		}

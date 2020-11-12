@@ -8,12 +8,13 @@ import daybreak.abilitywar.ability.SubscribeEvent;
 import daybreak.abilitywar.ability.decorator.ActiveHandler;
 import daybreak.abilitywar.game.AbstractGame;
 import daybreak.abilitywar.game.AbstractGame.Participant;
-import daybreak.abilitywar.game.manager.object.DeathManager;
+import daybreak.abilitywar.game.module.DeathManager;
 import daybreak.abilitywar.game.team.interfaces.Teamable;
 import daybreak.abilitywar.utils.annotations.Beta;
 import daybreak.abilitywar.utils.base.math.LocationUtil;
 import daybreak.abilitywar.utils.library.SoundLib;
 import daybreak.google.common.base.Predicate;
+import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.Note;
 import org.bukkit.Note.Tone;
@@ -52,7 +53,7 @@ public class Disguise extends CokesAbility implements ActiveHandler {
 	};
 	private final Cooldown cooldown = new Cooldown(cool.getValue());
 	private final Predicate<Entity> predicate = entity -> {
-		if (entity.equals(getPlayer())) return false;
+		if (entity == null || entity.equals(getPlayer())) return false;
 		if (entity instanceof Player) {
 			if (!getGame().isParticipating(entity.getUniqueId())) return false;
 			AbstractGame.Participant target = getGame().getParticipant(entity.getUniqueId());
@@ -81,7 +82,8 @@ public class Disguise extends CokesAbility implements ActiveHandler {
 			Player player = LocationUtil.getEntityLookingAt(Player.class, getPlayer(), range.getValue(), predicate);
 			if (player != null) {
 				target = getGame().getParticipant(player.getUniqueId());
-				getPlayer().sendMessage(player.getName() + "님으로 변장합니다.");
+				getPlayer().setPlayerListName(player.getName());
+				getPlayer().sendMessage(player.getName()+"님으로 변장합니다.");
 				return true;
 			}
 		}
@@ -100,16 +102,19 @@ public class Disguise extends CokesAbility implements ActiveHandler {
 
 		if (e.getEntity().equals(getPlayer()) && target != null && damager instanceof Player && !damager.equals(getPlayer())) {
 			check += 1;
-			SoundLib.BELL.playInstrument(getPlayer(), Note.natural(2, Tone.C));
+			Bukkit.broadcastMessage("check: " + check + ", count: " + count.getValue());
+			SoundLib.BELL.playInstrument(getPlayer(), Note.natural(1, Tone.C));
 			if (check >= count.getValue()) {
 				target = null;
 				check = 0;
 				getPlayer().sendMessage("변장이 풀렸습니다.");
+				getPlayer().setPlayerListName(getPlayer().getName());
 				cooldown.start();
 			}
-
-			((Player) damager).damage(e.getDamage() * reflec.getValue() / 100, damager);
+			((Player) damager).damage(e.getDamage() * reflec.getValue() / 100.0, damager);
 			e.setDamage(0);
 		}
 	}
+
+
 }

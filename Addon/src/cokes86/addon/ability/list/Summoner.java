@@ -8,7 +8,7 @@ import daybreak.abilitywar.ability.AbilityManifest.Species;
 import daybreak.abilitywar.ability.decorator.ActiveHandler;
 import daybreak.abilitywar.game.AbstractGame;
 import daybreak.abilitywar.game.AbstractGame.Participant;
-import daybreak.abilitywar.game.manager.object.DeathManager;
+import daybreak.abilitywar.game.module.DeathManager;
 import daybreak.abilitywar.game.team.interfaces.Teamable;
 import daybreak.abilitywar.utils.base.Messager;
 import daybreak.abilitywar.utils.base.concurrent.TimeUnit;
@@ -35,7 +35,7 @@ import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
-import java.awt.Color;
+import java.awt.*;
 import java.util.Map;
 import java.util.TreeMap;
 import java.util.function.Predicate;
@@ -147,6 +147,7 @@ public class Summoner extends CokesAbility implements ActiveHandler {
 					meta.setLore(Messager.asList("§f>> 소환할려면 좌클릭하세요."));
 					stack.setItemMeta(meta);
 					gui.setItem(count % 36, stack);
+					count++;
 				}
 			}
 
