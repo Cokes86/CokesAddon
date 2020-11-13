@@ -83,7 +83,7 @@ public class Unbelief extends CokesAbility implements ActiveHandler {
 	public void onParticipantDeath(ParticipantDeathEvent e) {
 		if (e.getParticipant().equals(getParticipant()) || (teammate != null && e.getParticipant().equals(teammate))) {
 			notice.update(null);
-			teamNotice.unregister();
+			if (teamNotice != null) teamNotice.unregister();
 		}
 	}
 

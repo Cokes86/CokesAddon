@@ -80,7 +80,7 @@ public class Sealer extends CokesAbility implements TargetHandler {
 
 	@SubscribeEvent
 	public void onPlayerDeath(PlayerDeathEvent e) {
-		if (t.isRunning() && (e.getEntity().equals(getPlayer())) || e.getEntity().equals(target.getPlayer())) {
+		if (t.isRunning() && target != null && (e.getEntity().equals(getPlayer())) || e.getEntity().equals(target.getPlayer())) {
 			t.stop(true);
 		}
 	}

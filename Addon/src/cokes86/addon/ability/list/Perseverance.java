@@ -28,19 +28,17 @@ public class Perseverance extends CokesAbility {
 		public boolean condition(Integer value) {
 			return value >= 0;
 		}
-	},
-			max = new Config<Integer>(Perseverance.class, "최대치(%)", 200) {
-				@Override
-				public boolean condition(Integer value) {
-					return value > 0;
-				}
-			},
-			upg = new Config<Integer>(Perseverance.class, "성장치(%p)", 20) {
-				@Override
-				public boolean condition(Integer value) {
-					return value > 0;
-				}
-			};
+	}, max = new Config<Integer>(Perseverance.class, "최대치(%)", 200) {
+		@Override
+		public boolean condition(Integer value) {
+			return value > 0;
+		}
+	}, upg = new Config<Integer>(Perseverance.class, "성장치(%p)", 20) {
+		@Override
+		public boolean condition(Integer value) {
+			return value > 0;
+		}
+	};
 	private static final Config<Double> period = new Config<Double>(Perseverance.class, "주기", 3.5) {
 		@Override
 		public boolean condition(Double value) {

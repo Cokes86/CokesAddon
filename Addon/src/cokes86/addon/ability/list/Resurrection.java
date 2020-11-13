@@ -1,6 +1,7 @@
 package cokes86.addon.ability.list;
 
 import cokes86.addon.ability.CokesAbility;
+import com.sun.org.apache.xpath.internal.operations.Bool;
 import daybreak.abilitywar.ability.AbilityManifest;
 import daybreak.abilitywar.ability.AbilityManifest.Rank;
 import daybreak.abilitywar.ability.AbilityManifest.Species;
@@ -15,14 +16,26 @@ import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.potion.PotionEffect;
 
 @AbilityManifest(name = "부활", rank = Rank.S, species = Species.DEMIGOD, explain = {
-		"자신의 체력이 0이 되었을 시 모든 체력을 회복하고 모든 버프가 사라집니다.",
-		"이후 게임 스폰으로 이동합니다. (게임 스폰으로 이동할 수 없을 경우, $[cool]간 무적이 됩니다.)"
+		"치명적인 공격을 받았을 시 모든 체력을 회복하고 모든 버프가 사라집니다.",
+		"$[explain]"
 })
 public class Resurrection extends CokesAbility {
 	private static final Config<Integer> cool = new Config<Integer>(Resurrection.class, "무적시간", 1, 2) {
 		@Override
 		public boolean condition(Integer value) {
 			return value >= 0;
+		}
+	};
+	private static final Config<Boolean> respawn = new Config<Boolean>(Resurrection.class, "리스폰_이동", true){};
+	Object explain = new Object() {
+		public String toString() {
+			String result;
+			if (spawn) {
+				result = "이후 게임 스폰으로 이동합니다. (게임 스폰으로 이동할 수 없을 경우, $[cool]간 무적이 됩니다.)";
+			} else {
+				result = "이후 $[cool]간 무적상태가 됩니다.";
+			}
+			return result.replaceAll("$[cool]", cool.toString());
 		}
 	};
 	public static boolean spawn = Settings.getSpawnEnable();
@@ -66,7 +79,7 @@ public class Resurrection extends CokesAbility {
 						SoundLib.ENTITY_FIREWORK_ROCKET_TWINKLE.playSound(getPlayer());
 						clearPotionEffect();
 						getPlayer().setHealth(getPlayer().getAttribute(Attribute.GENERIC_MAX_HEALTH).getValue());
-						if (spawn) {
+						if (respawn.getValue() && spawn) {
 							getPlayer().teleport(Settings.getSpawnLocation().toBukkitLocation());
 							usable = false;
 						} else {
