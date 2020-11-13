@@ -56,7 +56,7 @@ public class Blocks extends CokesAbility implements ActiveHandler {
 	};
 	protected Condition condition = Condition.STONE;
 	protected Participant.ActionbarNotification.ActionbarChannel ac = this.newActionbarChannel();
-	protected ArmorStand armorStand;
+	public ArmorStand armorStand;
 	protected double knockback = Objects.requireNonNull(getPlayer().getAttribute(Attribute.GENERIC_KNOCKBACK_RESISTANCE)).getBaseValue();
 
 	AbilityTimer passive = new AbilityTimer() {
@@ -71,22 +71,23 @@ public class Blocks extends CokesAbility implements ActiveHandler {
 			if (ServerVersion.getVersion() >= 10 && ServerVersion.getVersion() <= 16) {
 				armorStand.setInvulnerable(true);
 			}
+
 		}
 
 		@Override
 		protected void run(int count) {
 			ac.update("상태: " + condition.getName());
 			armorStand.teleport(getPlayer().getLocation().clone().add(0,1,0));
+		}
 
-			EntityEquipment equipment = armorStand.getEquipment();
-			if (equipment != null) {
-				if (condition != Condition.GLASS) {
-					MaterialX material = condition == Condition.STONE ? MaterialX.STONE : (condition == Condition.OBSIDIAN ? MaterialX.OBSIDIAN : MaterialX.SAND);
-					equipment.setHelmet(new ItemStack(material.getMaterial()));
-				} else {
-					equipment.setHelmet(null);
-				}
-			}
+		@Override
+		protected void onEnd() {
+			armorStand.remove();
+		}
+
+		@Override
+		protected void onSilentEnd() {
+			armorStand.remove();
 		}
 	}.setPeriod(TimeUnit.TICKS, 1);
 	AbilityTimer invTimer = new AbilityTimer() {
@@ -125,6 +126,10 @@ public class Blocks extends CokesAbility implements ActiveHandler {
 	public boolean ActiveSkill(Material arg0, ClickType arg1) {
 		if (arg0.equals(Material.IRON_INGOT) && arg1.equals(ClickType.RIGHT_CLICK)) {
 			condition = condition.next();
+
+			EntityEquipment equipment = armorStand.getEquipment();
+			if (equipment != null) equipment.setHelmet(new ItemStack(condition.getMaterialX().getMaterial()));
+
 			if (condition.equals(Condition.OBSIDIAN)) {
 				Objects.requireNonNull(getPlayer().getAttribute(Attribute.GENERIC_KNOCKBACK_RESISTANCE)).setBaseValue(1);
 			} else {
@@ -214,26 +219,26 @@ public class Blocks extends CokesAbility implements ActiveHandler {
 		onEntityDamage(e);
 	}
 
-	enum Condition {
-		STONE("§7돌§f") {
+	public enum Condition {
+		STONE("§7돌§f", MaterialX.STONE) {
 			@Override
 			protected Condition next() {
 				return Condition.SAND;
 			}
 		},
-		SAND("§6모래§f") {
+		SAND("§6모래§f", MaterialX.SAND) {
 			@Override
 			protected Condition next() {
 				return Condition.GLASS;
 			}
 		},
-		GLASS("§f유리§f") {
+		GLASS("§f유리§f", null) {
 			@Override
 			protected Condition next() {
 				return Condition.OBSIDIAN;
 			}
 		},
-		OBSIDIAN("§5옵시디언§f") {
+		OBSIDIAN("§5옵시디언§f", MaterialX.OBSIDIAN) {
 			@Override
 			protected Condition next() {
 				return Condition.STONE;
@@ -241,15 +246,21 @@ public class Blocks extends CokesAbility implements ActiveHandler {
 		};
 
 		String name;
+		MaterialX materialX;
 
-		Condition(String name) {
+		Condition(String name, MaterialX materialX) {
 			this.name = name;
+			this.materialX = materialX;
 		}
 
 		protected abstract Condition next();
 
 		protected String getName() {
 			return name;
+		}
+
+		public MaterialX getMaterialX() {
+			return materialX;
 		}
 	}
 
