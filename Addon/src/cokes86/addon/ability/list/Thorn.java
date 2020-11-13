@@ -38,7 +38,7 @@ public class Thorn extends CokesAbility implements ActiveHandler {
 		protected void onDurationProcess(int arg0) {}
 	};
 
-	public Thorn(Participant participant) throws IllegalStateException {
+	public Thorn(Participant participant) {
 		super(participant);
 	}
 
