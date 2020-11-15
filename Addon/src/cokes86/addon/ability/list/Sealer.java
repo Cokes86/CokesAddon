@@ -25,7 +25,7 @@ import org.bukkit.potion.PotionEffectType;
 		"철괴로 상대방을 우클릭할 시 상대방의 능력을 $[dura]간 비활성화시킵니다. $[cool]",
 		"이미 비활성화되어있는 능력에겐 이 능력이 발동하지 않습니다.",
 		"봉인한 능력의 등급에 따라 자신에게 각종 효과를 $[dura]간 부여합니다.",
-		"§eC 등급§f: 나약함1 | §bB 등급§f: 재생1 | §aA 등급§f: 힘1 | §dS 등급§f: 힘2"
+		"§eC 등급§f: 나약함1 | §bB 등급§f: 재생1 | §aA 등급§f: 힘1 | §dS 등급§f: 힘2 | §6L 등급§f: 힘2, 저항1"
 })
 @NotAvailable({AbstractMix.class, AbstractTripleMix.class})
 public class Sealer extends CokesAbility implements TargetHandler {
@@ -43,36 +43,7 @@ public class Sealer extends CokesAbility implements TargetHandler {
 	Participant target = null;
 
 	Cooldown c = new Cooldown(cool.getValue());
-	Duration t = new Duration(dura.getValue(), c) {
-		ActionbarChannel ac;
-
-		@Override
-		protected void onDurationStart() {
-			target.getAbility().setRestricted(true);
-			target.getPlayer().sendMessage("봉인자가 당신의 능력을 봉인했습니다.");
-			SoundLib.ENTITY_ENDER_DRAGON_GROWL.playSound(target.getPlayer());
-			ac = target.actionbar().newChannel();
-		}
-
-		@Override
-		protected void onDurationProcess(int seconds) {
-			ac.update("능력 활성화까지 " + TimeUtil.parseTimeAsString(getFixedCount()) + " 남음");
-			target.getPlayer().sendMessage("§a능력 활성화까지 " + TimeUtil.parseTimeAsString(getFixedCount()) + " 남음");
-			SoundLib.BLOCK_ANVIL_PLACE.playSound(target.getPlayer());
-		}
-
-		@Override
-		protected void onDurationEnd() {
-			onDurationSilentEnd();
-		}
-
-		@Override
-		protected void onDurationSilentEnd() {
-			ac.update("§a능력 봉인이 풀렸습니다");
-			target.getAbility().setRestricted(false);
-			ac.unregister();
-		}
-	};
+	SealTimer t = new SealTimer(getParticipant());
 
 	public Sealer(Participant participant) {
 		super(participant);
@@ -87,32 +58,77 @@ public class Sealer extends CokesAbility implements TargetHandler {
 
 	@Override
 	public void TargetSkill(Material mt, LivingEntity entity) {
-		if (mt.equals(Material.IRON_INGOT) && !t.isDuration() && !c.isCooldown()) {
+		if (mt.equals(Material.IRON_INGOT) && !t.isRunning() && !c.isCooldown()) {
 			if (entity instanceof Player) {
 				Player p = (Player) entity;
 				target = getGame().isParticipating(p) ? getGame().getParticipant(p) : null;
-				if (target != null && target.hasAbility() && !target.getAbility().isRestricted()) {
-					t.start();
-					getPlayer().sendMessage(p.getName() + "님의 능력을 봉인하였습니다.");
-					target.getPlayer().sendMessage("당신의 능력이 봉인되었습니다.");
-					AbilityBase ab = target.getAbility();
-					if (ab.getRank().equals(Rank.C)) {
-						getPlayer().sendMessage("§eC 등급 §f봉인! 나약함1 버프를 부여합니다!");
-						getPlayer().addPotionEffect(new PotionEffect(PotionEffectType.WEAKNESS, dura.getValue() * 20, 0));
-					} else if (ab.getRank().equals(Rank.B)) {
-						getPlayer().sendMessage("§bB 등급 §f봉인! 재생1 버프를 부여합니다!");
-						getPlayer().addPotionEffect(new PotionEffect(PotionEffectType.REGENERATION, dura.getValue() * 20, 0));
-					} else if (ab.getRank().equals(Rank.A)) {
-						getPlayer().sendMessage("§aA 등급 §f봉인! 힘1 버프를 부여합니다!");
-						getPlayer().addPotionEffect(new PotionEffect(PotionEffectType.INCREASE_DAMAGE, dura.getValue() * 20, 0));
-					} else if (ab.getRank().equals(Rank.S)) {
-						getPlayer().sendMessage("§dS 등급 §f봉인! 힘2 버프를 부여합니다!");
-						getPlayer().addPotionEffect(new PotionEffect(PotionEffectType.INCREASE_DAMAGE, dura.getValue() * 20, 1));
-					}
+				if (target != null && target.getAbility() != null && !target.getAbility().isRestricted()) {
+					t = new SealTimer(target);
 				} else {
 					getPlayer().sendMessage("상대방의 능력이 없거나 이미 비활성화되어있는 상태입니다.");
 				}
 			}
+		}
+	}
+
+	class SealTimer extends AbilityTimer {
+		Participant target;
+		ActionbarChannel ac;
+
+		public SealTimer(Participant target) {
+			super(dura.getValue());
+			this.target = target;
+			this.ac = target.actionbar().newChannel();
+			if (target != getParticipant()) this.start();
+		}
+
+		@Override
+		public void onStart() {
+			AbilityBase ab = target.getAbility();
+			if (ab != null) {
+				getPlayer().sendMessage(target.getPlayer().getName() + "님의 능력을 봉인하였습니다.");
+				target.getPlayer().sendMessage("당신의 능력이 봉인되었습니다.");
+				ab.setRestricted(true);
+				SoundLib.ENTITY_ENDER_DRAGON_GROWL.playSound(target.getPlayer());
+				if (ab.getRank().equals(Rank.C)) {
+					getPlayer().sendMessage("§eC 등급 §f봉인! 나약함1 버프를 부여합니다!");
+					getPlayer().addPotionEffect(new PotionEffect(PotionEffectType.WEAKNESS, dura.getValue() * 20, 0));
+				} else if (ab.getRank().equals(Rank.B)) {
+					getPlayer().sendMessage("§bB 등급 §f봉인! 재생1 버프를 부여합니다!");
+					getPlayer().addPotionEffect(new PotionEffect(PotionEffectType.REGENERATION, dura.getValue() * 20, 0));
+				} else if (ab.getRank().equals(Rank.A)) {
+					getPlayer().sendMessage("§aA 등급 §f봉인! 힘1 버프를 부여합니다!");
+					getPlayer().addPotionEffect(new PotionEffect(PotionEffectType.INCREASE_DAMAGE, dura.getValue() * 20, 0));
+				} else if (ab.getRank().equals(Rank.S)) {
+					getPlayer().sendMessage("§dS 등급 §f봉인! 힘2 버프를 부여합니다!");
+					getPlayer().addPotionEffect(new PotionEffect(PotionEffectType.INCREASE_DAMAGE, dura.getValue() * 20, 1));
+				} else if (ab.getRank().equals(Rank.L)) {
+					getPlayer().sendMessage("§6L 등급 §f봉인! 힘2, 저항1 버프를 부여합니다!");
+					getPlayer().addPotionEffect(new PotionEffect(PotionEffectType.INCREASE_DAMAGE, dura.getValue() * 20, 1));
+					getPlayer().addPotionEffect(new PotionEffect(PotionEffectType.DAMAGE_RESISTANCE, dura.getValue() * 20, 0));
+				}
+			} else {
+				stop(true);
+			}
+		}
+
+		@Override
+		protected void run(int count) {
+			ac.update("능력 활성화까지 " + TimeUtil.parseTimeAsString(getFixedCount()) + " 남음");
+			target.getPlayer().sendMessage("§a능력 활성화까지 " + TimeUtil.parseTimeAsString(getFixedCount()) + " 남음");
+			SoundLib.BLOCK_ANVIL_PLACE.playSound(target.getPlayer());
+		}
+
+		@Override
+		protected void onSilentEnd() {
+			if (target.getAbility() != null) target.getAbility().setRestricted(false);
+			ac.unregister();
+		}
+
+		@Override
+		protected void onEnd() {
+			onSilentEnd();
+			c.start();
 		}
 	}
 }

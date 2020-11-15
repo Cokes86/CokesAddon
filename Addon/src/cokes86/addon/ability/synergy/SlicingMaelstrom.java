@@ -67,7 +67,7 @@ public class SlicingMaelstrom extends CokesSynergy implements ActiveHandler {
         }
     };
 
-    public final Cooldown cool = new Cooldown(60);
+    public final Cooldown cool = new Cooldown(cooldown.getValue());
     public final Maelstrom maelstrom = new Maelstrom();
 
     public SlicingMaelstrom(AbstractGame.Participant participant) {

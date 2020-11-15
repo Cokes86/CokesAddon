@@ -72,6 +72,14 @@ public class Blocks extends CokesAbility implements ActiveHandler {
 				armorStand.setInvulnerable(true);
 			}
 
+			EntityEquipment equipment = armorStand.getEquipment();
+			if (equipment != null) {
+				if (condition.getMaterialX() != null) {
+					equipment.setHelmet(new ItemStack(condition.getMaterialX().getMaterial()));
+				} else {
+					equipment.setHelmet(null);
+				}
+			}
 		}
 
 		@Override
@@ -128,7 +136,13 @@ public class Blocks extends CokesAbility implements ActiveHandler {
 			condition = condition.next();
 
 			EntityEquipment equipment = armorStand.getEquipment();
-			if (equipment != null) equipment.setHelmet(new ItemStack(condition.getMaterialX().getMaterial()));
+			if (equipment != null) {
+				if (condition.getMaterialX() != null) {
+					equipment.setHelmet(new ItemStack(condition.getMaterialX().getMaterial()));
+				} else {
+					equipment.setHelmet(null);
+				}
+			}
 
 			if (condition.equals(Condition.OBSIDIAN)) {
 				Objects.requireNonNull(getPlayer().getAttribute(Attribute.GENERIC_KNOCKBACK_RESISTANCE)).setBaseValue(1);
@@ -279,7 +293,7 @@ public class Blocks extends CokesAbility implements ActiveHandler {
 
 		public static Pickaxe getPickaxe(Material m) {
 			for (Pickaxe p : Pickaxe.values()) {
-				if (p.getPickaxeMaterial().equals(m)) {
+				if (p.getPickaxeMaterial() != null && p.getPickaxeMaterial().equals(m)) {
 					return p;
 				}
 			}

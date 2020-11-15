@@ -31,11 +31,11 @@ public class Resurrection extends CokesAbility {
 		public String toString() {
 			String result;
 			if (spawn) {
-				result = "이후 게임 스폰으로 이동합니다. (게임 스폰으로 이동할 수 없을 경우, $[cool]간 무적이 됩니다.)";
+				result = "이후 게임 스폰으로 이동합니다. (게임 스폰으로 이동할 수 없을 경우, "+cool.toString()+"간 무적이 됩니다.)";
 			} else {
-				result = "이후 $[cool]간 무적상태가 됩니다.";
+				result = "이후 "+cool.toString()+"간 무적상태가 됩니다.";
 			}
-			return result.replaceAll("$[cool]", cool.toString());
+			return result;
 		}
 	};
 	public static boolean spawn = Settings.getSpawnEnable();

@@ -73,6 +73,11 @@
             <artifactId>v1_16_R2</artifactId>
             <version>${revision}</version>
         </dependency>
+        <dependency>
+            <groupId>Cokes_86.plugins</groupId>
+            <artifactId>v1_16_R3</artifactId>
+            <version>${revision}</version>
+        </dependency>
     </dependencies>
 
     <build>

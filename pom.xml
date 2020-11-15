@@ -21,18 +21,19 @@
 		<module>compatibility/v1_15_R1</module>
 		<module>compatibility/v1_16_R1</module>
 		<module>compatibility/v1_16_R2</module>
+		<module>compatibility/v1_16_R3</module>
 		<module>Jar</module>
 	</modules>
 
 	<name>CokesAddon</name>
 
 	<properties>
-		<revision>1.1.1</revision>
+		<revision>1.1.2</revision>
 		<encoding>UTF-8</encoding>
 		<maven.compiler.target>1.8</maven.compiler.target>
 		<maven.compiler.source>1.8</maven.compiler.source>
 		<bukkit-api-version>1.16.2-R0.1-SNAPSHOT</bukkit-api-version>
-		<abilitywar-version>2.3.0</abilitywar-version>
+		<abilitywar-version>2.3.1</abilitywar-version>
 	</properties>
 
 	<build>
