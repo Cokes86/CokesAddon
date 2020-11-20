@@ -106,7 +106,6 @@ public class Disguise extends CokesAbility implements ActiveHandler {
 
 		if (e.getEntity().equals(getPlayer()) && target != null && damager instanceof Player && !damager.equals(getPlayer())) {
 			check += 1;
-			Bukkit.broadcastMessage("check: " + check + ", count: " + count.getValue());
 			SoundLib.BELL.playInstrument(getPlayer(), Note.natural(1, Tone.C));
 			if (check >= count.getValue()) {
 				target = null;
