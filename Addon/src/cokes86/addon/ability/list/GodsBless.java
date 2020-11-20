@@ -67,7 +67,7 @@ public class GodsBless extends CokesAbility implements ActiveHandler {
 		int add_damage = base.getValue();
 
 		public BlessTimer() {
-			super(duration.getValue() * 20);
+			super(duration.getValue());
 			this.setPeriod(TimeUnit.SECONDS, 1);
 		}
 
@@ -99,7 +99,7 @@ public class GodsBless extends CokesAbility implements ActiveHandler {
 			if (!e.getParticipant().equals(getParticipant())) {
 				if (e.getPlayer().getKiller() != null && e.getPlayer().getKiller().equals(getPlayer())) {
 					add_damage += add.getValue();
-					this.setCount(duration.getValue() *20);
+					this.setCount(duration.getValue());
 				}
 			}
 		}

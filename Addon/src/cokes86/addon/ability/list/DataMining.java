@@ -18,6 +18,7 @@ import daybreak.abilitywar.game.list.mix.synergy.SynergyFactory;
 import daybreak.abilitywar.game.list.mix.triplemix.AbstractTripleMix;
 import daybreak.abilitywar.game.module.DeathManager;
 import daybreak.abilitywar.utils.base.collect.Pair;
+import daybreak.abilitywar.utils.base.concurrent.TimeUnit;
 import org.bukkit.Material;
 import org.bukkit.entity.Arrow;
 import org.bukkit.entity.Entity;
@@ -28,13 +29,15 @@ import java.text.DecimalFormat;
 import java.util.Random;
 
 @AbilityManifest(name = "데이터마이닝", rank = AbilityManifest.Rank.S, species = AbilityManifest.Species.HUMAN, explain = {
-		"철괴 우클릭시 모든 플레이어의 능력을 알 수 있습니다.",
-		"플레이어가 능력을 사용할 때 마다 그 사실을 알 수 있으며, §c마이닝 스택§f이 1만큼 상승합니다.",
-		"플레이어끼리 전투가 발생할 시 그 사실을 알 수 있으며, 각 플레이어의 체력과 피해량을 알 수 있습니다.",
-		"§c마이닝 스택§f이 1만큼 상승할 때 마다",
-		"$[defenseUp]%씩 데미지가 감소하거나, $[damageUp]만큼의 추가데미지를 주는",
-		"버프를 랜덤하게 받으며, §c마이닝 스택§f은 버프마다 각각 $[max_count]회씩 쌓입니다.",
-		"철괴 좌클릭시 사실 여부 메세지를 끄고 킬 수 있습니다.",
+		"§7패시브 §8- §c딥러닝§r: 플레이어의 능력사용여부, 전투여부를 알 수 있습니다.",
+		"  게임에 참가중인 플레이어가 능력을 사용할 때마다 §e마이닝 스택§f이 1 상승하며,",
+		"  대미지감소, 추가대미지 중 하나가 인원에 반비례하여 상승합니다.",
+		"  각각 최대 $[defenseUp]% 대미지가 감소, $[damageUp]의 추가대미지까지 상승합니다.",
+		"  자신 또는 다른 데이터마이닝의 스킬로는 §e마이닝 스택§f이 증가하지 않습니다.",
+		"§7패시브 §8- §c강화학습§r: 액티브 스킬이 존재하지 않는 플레이어 수에 따라",
+		"  매 $[duration]마다 §e마이닝 스택§f을 자동으로 얻습니다.",
+		"§7철괴 우클릭 §8- §c스캐닝§r: 자신을 제외한 모든 플레이어의 능력을 확인합니다.",
+		"§7철괴 좌클릭 §8- §c뮤트§r: §c딥러닝§r으로 인한 여부 알림을 키거나 끌 수 있습니다.",
 		"※능력 아이디어: RainStar_"
 })
 @Tips(tip = {
@@ -46,21 +49,26 @@ import java.util.Random;
 }, weak = {
 		@Description(explain = { "참가자가 적을 수록 버프를 얻기 어렵다." }, subject = "적은 인원")
 },
-stats = @Stats(offense = Level.FIVE, survival = Level.FIVE, crowdControl = Level.ZERO, mobility = Level.ZERO, utility = Level.EIGHT), difficulty = Difficulty.NORMAL)
+		stats = @Stats(offense = Level.FIVE, survival = Level.FIVE, crowdControl = Level.ZERO, mobility = Level.ZERO, utility = Level.EIGHT), difficulty = Difficulty.NORMAL)
 @NotAvailable(AbstractTripleMix.class)
 public class DataMining extends CokesAbility implements ActiveHandler {
-	private static final Config<Double> damageUp = new Config<Double>(DataMining.class, "대미지성장치", 0.25) {
+	private static final Config<Double> damageUp = new Config<Double>(DataMining.class, "최대대미지성장치", 2.5) {
 		@Override
 		public boolean condition(Double value) {
 			return value > 0;
 		}
-	}, defenseUp = new Config<Double>(DataMining.class, "감소성장치", 2.5) {
+	}, defenseUp = new Config<Double>(DataMining.class, "최대대미지감소성장치", 25.00) {
 		@Override
 		public boolean condition(Double value) {
 			return value > 0;
 		}
 	};
-	private static final Config<Integer> max_count = new Config<Integer>(DataMining.class, "각_스택_최대치", 10) {
+	private static final Config<Integer> player_value = new Config<Integer>(DataMining.class, "인원별_스택치", 4) {
+		@Override
+		public boolean condition(Integer value) {
+			return value > 0;
+		}
+	}, duration = new Config<Integer>(DataMining.class, "자동스택추가주기", 60, 2) {
 		@Override
 		public boolean condition(Integer value) {
 			return value > 0;
@@ -68,9 +76,29 @@ public class DataMining extends CokesAbility implements ActiveHandler {
 	};
 	DecimalFormat df = new DecimalFormat("0.00");
 	int count = 0;
-	double damage = 0, defense = 0;
+	Pair<Integer, Double> damage = Pair.of(0,0.0);
+	Pair<Integer, Double> defense = Pair.of(0,0.0);
 	ActionbarChannel ac = newActionbarChannel();
 	boolean message = true;
+	int max_count = getGame().getParticipants().size() - 1;
+
+	AbilityTimer passive = new AbilityTimer() {
+		@Override
+		protected void run(int count) {
+			if (getNoActiveHandler() != 0) {
+				boolean up = false;
+				for (int a = 0 ; a < getNoActiveHandler(); a++) {
+					if (count < player_value.getValue() * max_count) {
+						count++;
+						Active();
+						up = true;
+					}
+				}
+				if (message && up) getPlayer().sendMessage("자동으로 §e마이닝 스택§f을 획득하였습니다.");
+				ac.update("§e마이닝 스택§f: " + count + " (추가대미지: " + df.format(damage.getRight()) + "  피해감소: " + df.format(defense.getRight()) + "%)");
+			}
+		}
+	}.setInitialDelay(TimeUnit.SECONDS, duration.getValue()).setPeriod(TimeUnit.SECONDS, duration.getValue()).register();
 
 	public DataMining(Participant arg0) {
 		super(arg0);
@@ -80,23 +108,24 @@ public class DataMining extends CokesAbility implements ActiveHandler {
 		final Random random = new Random();
 		final double randomDouble = random.nextDouble() * 2;
 		if (randomDouble > 1) {
-			if (damage == damageUp.getValue() * max_count.getValue()) {
-				defense += defenseUp.getValue();
+			if (damage.getLeft() >= (getGame().getParticipants().size() * 2)) {
+				defense = Pair.of(defense.getLeft() +1 ,defense.getRight() + defenseUp.getValue() / (max_count * 2) );
 			} else {
-				damage += damageUp.getValue();
+				damage = Pair.of(damage.getLeft() +1 ,damage.getRight() + damageUp.getValue() / (max_count * 2) );
 			}
 		} else {
-			if (defense == defenseUp.getValue() * max_count.getValue()) {
-				damage += damageUp.getValue();
+			if (defense.getLeft() >= (getGame().getParticipants().size() * 2)) {
+				damage = Pair.of(damage.getLeft() +1 ,damage.getRight() + damageUp.getValue() / (max_count * 2) );
 			} else {
-				defense += defenseUp.getValue();
+				defense = Pair.of(defense.getLeft() +1 ,defense.getRight() + defenseUp.getValue() / (max_count * 2) );
 			}
 		}
 	}
 
 	public void onUpdate(Update update) {
 		if (update == Update.RESTRICTION_CLEAR) {
-			ac.update("§c마이닝 스택§f: " + count + " (추가대미지: " + df.format(damage) + "  피해감소: " + df.format(defense) + "%)");
+			ac.update("§e마이닝 스택§f: " + count + " (추가대미지: " + df.format(damage.getRight()) + "  피해감소: " + df.format(defense.getRight()) + "%)");
+			passive.start();
 		}
 	}
 
@@ -104,11 +133,11 @@ public class DataMining extends CokesAbility implements ActiveHandler {
 	private void onAbilityActiveSkill(AbilityActiveSkillEvent e) {
 		if (!e.getParticipant().equals(getParticipant())) {
 			if (message) getPlayer().sendMessage("§e" + e.getPlayer().getName() + "§f님이 능력을 사용하였습니다.");
-			if (count != max_count.getValue() * 2) {
+			if (count < player_value.getValue() * max_count) {
 				count++;
 				Active();
 			}
-			ac.update("§c마이닝 스택§f: " + count + " (추가대미지: " + df.format(damage) + "  피해감소: " + df.format(defense) + "%)");
+			ac.update("§e마이닝 스택§f: " + count + " (추가대미지: " + df.format(damage.getRight()) + "  피해감소: " + df.format(defense.getRight()) + "%)");
 		}
 	}
 
@@ -126,9 +155,9 @@ public class DataMining extends CokesAbility implements ActiveHandler {
 
 			if (damager instanceof Player) {
 				if (damager.equals(getPlayer())) {
-					e.setDamage(e.getDamage() + damage);
+					e.setDamage(e.getDamage() + damage.getRight());
 				} else if (entity.equals(getPlayer())) {
-					e.setDamage(e.getDamage() * ((double) 100 - defense) / 100);
+					e.setDamage(e.getDamage() * (100.0 - defense.getRight()) / 100.0);
 				}
 
 				if (!e.isCancelled()) {
@@ -147,13 +176,13 @@ public class DataMining extends CokesAbility implements ActiveHandler {
 			getPlayer().sendMessage("§2===== §a능력자 목록 §2=====");
 			int count = 0;
 			for (Participant p : game.getParticipants()) {
+				AbilityBase ability = p.getAbility();
 				if (p.equals(getParticipant()))
 					continue;
-				if (!p.hasAbility())
+				if (ability == null)
 					continue;
 				if (getGame() instanceof DeathManager.Handler && ((DeathManager.Handler) getGame()).getDeathManager().isExcluded(p.getPlayer()))
 					continue;
-				AbilityBase ability = p.getAbility();
 				String name;
 				if (ability instanceof Mix) {
 					Mix mix = (Mix) ability;
@@ -188,4 +217,23 @@ public class DataMining extends CokesAbility implements ActiveHandler {
 		}
 		return false;
 	}
+
+	public int getNoActiveHandler() {
+		int result = 0;
+		for (Participant participant : getGame().getParticipants()) {
+			if (participant.getAbility()!=null) {
+				AbilityBase ability = participant.getAbility();
+				if (ability instanceof Mix) {
+					Mix mix = (Mix) ability;
+					if (!(mix.getFirst() instanceof ActiveHandler && mix.getSecond() instanceof ActiveHandler)) {
+						result++;
+					}
+				} else if (!(ability instanceof ActiveHandler)) {
+					result++;
+				}
+			}
+		}
+		return result;
+	}
+
 }

@@ -9,26 +9,16 @@ import daybreak.abilitywar.game.AbstractGame.Participant;
 import daybreak.abilitywar.game.AbstractGame.Participant.ActionbarNotification.ActionbarChannel;
 import daybreak.abilitywar.utils.base.concurrent.TimeUnit;
 import org.bukkit.entity.Arrow;
+import org.bukkit.entity.Entity;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 
-import java.util.Objects;
-
-@AbilityManifest(
-		name = "인내심",
-		rank = Rank.B,
-		species = Species.HUMAN,
-		explain = {"매 $[period]초마다 상대방에게 주는 피해가 $[upg]%p씩 상승하며 최대 $[max]%까지 상승합니다.",
-				"상대방을 공격할 시 이는 초기화되며, 최대치 상태에서 공격할 경우",
-				"$[dura]초동안 상대방을 공격할 수 없게 됩니다.",
-				"※능력 아이디어: RainStar_"}
+@AbilityManifest(name = "인내심", rank = Rank.B, species = Species.HUMAN, explain = {
+		"매 $[period]초마다 상대방에게 주는 피해가 $[upg]%p씩 상승하며 최대 $[max]%까지 상승합니다.",
+		"상대방을 공격할 시 이는 초기화되어 100%로 돌아갑니다",
+		"※능력 아이디어: RainStar_"}
 )
 public class Perseverance extends CokesAbility {
-	private static final Config<Integer> dura = new Config<Integer>(Perseverance.class, "그로기시간", 3, 2) {
-		@Override
-		public boolean condition(Integer value) {
-			return value >= 0;
-		}
-	}, max = new Config<Integer>(Perseverance.class, "최대치(%)", 200) {
+	private static final Config<Integer> max = new Config<Integer>(Perseverance.class, "최대치(%)", 200) {
 		@Override
 		public boolean condition(Integer value) {
 			return value > 0;
@@ -47,8 +37,7 @@ public class Perseverance extends CokesAbility {
 	};
 	public double give = 100;
 	ActionbarChannel ac = newActionbarChannel();
-	AbilityTimer passive_1 = new AbilityTimer() {
-
+	AbilityTimer passive = new AbilityTimer() {
 		@Override
 		protected void run(int seconds) {
 			if (seconds % (period.getValue() * 20) == 0)
@@ -57,60 +46,32 @@ public class Perseverance extends CokesAbility {
 			ac.update("상대방에게 주는 대미지: " + (give) + "%");
 		}
 	}.setPeriod(TimeUnit.TICKS, 1);
-	AbilityTimer passive_2 = new AbilityTimer(dura.getValue()) {
-
-		@Override
-		protected void run(int seconds) {
-			ac.update("그로기상태");
-		}
-
-		protected void onEnd() {
-			ac.update(null);
-			passive_1.start();
-		}
-	};
 
 	public Perseverance(Participant participant) {
 		super(participant);
-		passive_1.register();
-		passive_2.register();
+		passive.register();
 	}
 
 	public void onUpdate(Update update) {
 		if (update == Update.RESTRICTION_CLEAR) {
-			passive_1.start();
+			passive.start();
 		}
 	}
 
 	@SubscribeEvent
 	public void onEntityDamageByEntity(EntityDamageByEntityEvent e) {
-		if (e.getDamager().equals(getPlayer())) {
-			if (passive_2.isRunning()) e.setCancelled(true);
-			else {
-				e.setDamage(e.getDamage() * give / 100.00);
-				if (give == max.getValue()) {
-					passive_1.stop(false);
-					passive_2.start();
-				}
-				give = 100;
-				ac.update("상대방에게 주는 대미지: " + (give) + "%");
+		Entity damager = e.getDamager();
+		if (damager instanceof Arrow) {
+			Arrow arrow = (Arrow) damager;
+			if (arrow.getShooter() instanceof Entity) {
+				damager = (Entity) arrow.getShooter();
 			}
 		}
 
-		if (e.getDamager() instanceof Arrow) {
-			Arrow arrow = (Arrow) e.getDamager();
-			if (Objects.equals(arrow.getShooter(), getPlayer())) {
-				if (passive_2.isRunning()) e.setCancelled(true);
-				else {
-					e.setDamage(e.getDamage() * give / 100.00);
-					if (give == max.getValue()) {
-						passive_1.stop(false);
-						passive_2.start();
-					}
-					give = 100;
-					ac.update("상대방에게 주는 대미지: " + (give) + "%");
-				}
-			}
+		if (damager.equals(getPlayer())) {
+			e.setDamage(e.getDamage() * give / 100.00);
+			give = 100;
+			ac.update("상대방에게 주는 대미지: " + (give) + "%");
 		}
 	}
 }

@@ -58,6 +58,9 @@ public class AddonAbilityFactory {
 		registerAbility(Fish.class);
 		registerAbility(Disguise.class);
 
+		//1.1.3
+		registerAbility(Boxer.class);
+
 		if (PhantomThief.initPhantomThief()) {
 			registerAbility(PhantomThief.class);
 			AbilityFactory.registerAbility(PhantomThief.NullAbility.class);

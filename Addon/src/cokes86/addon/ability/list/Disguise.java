@@ -25,10 +25,9 @@ import org.bukkit.event.entity.EntityDamageByEntityEvent;
 
 @AbilityManifest(name = "변장술", rank = Rank.A, species = Species.HUMAN, explain = {
 		"7칸 이내의 상대방을 바라본 체 철괴로 우클릭 시 그 대상으로 변장합니다.",
-		"변장하고 있는 동안 다른 참가자에게 받는 대미지의 $[reflec]%는 대상에게 돌아갑니다.",
+		"변장하고 있는 동안 다른 참가자에게 받는 대미지의 $[reflect]%는 대상에게 돌아갑니다.",
 		"대미지를 3회 받으면 변장이 풀립니다. $[cool]"
 })
-@Beta
 public class Disguise extends CokesAbility implements ActiveHandler {
 	private static final Config<Integer> range = new Config<Integer>(Disguise.class, "범위", 7) {
 		@Override
@@ -45,7 +44,7 @@ public class Disguise extends CokesAbility implements ActiveHandler {
 		public boolean condition(Integer value) {
 			return value >= 0;
 		}
-	}, reflec = new Config<Integer>(Disguise.class, "반사(%)", 50) {
+	}, reflect = new Config<Integer>(Disguise.class, "반사(%)", 50) {
 		@Override
 		public boolean condition(Integer value) {
 			return value > 0;
@@ -74,6 +73,11 @@ public class Disguise extends CokesAbility implements ActiveHandler {
 
 	public Disguise(Participant arg0) {
 		super(arg0);
+	}
+
+	@Override
+	protected void onUpdate(Update update) {
+		getPlayer().setPlayerListName(getPlayer().getName());
 	}
 
 	@Override
@@ -111,7 +115,7 @@ public class Disguise extends CokesAbility implements ActiveHandler {
 				getPlayer().setPlayerListName(getPlayer().getName());
 				cooldown.start();
 			}
-			((Player) damager).damage(e.getDamage() * reflec.getValue() / 100.0, damager);
+			((Player) damager).damage(e.getDamage() * reflect.getValue() / 100.0, damager);
 			e.setDamage(0);
 		}
 	}

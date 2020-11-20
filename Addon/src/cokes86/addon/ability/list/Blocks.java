@@ -9,6 +9,7 @@ import daybreak.abilitywar.ability.SubscribeEvent;
 import daybreak.abilitywar.ability.decorator.ActiveHandler;
 import daybreak.abilitywar.game.AbstractGame.Participant;
 import daybreak.abilitywar.utils.base.concurrent.TimeUnit;
+import daybreak.abilitywar.utils.base.minecraft.nms.NMS;
 import daybreak.abilitywar.utils.base.minecraft.version.ServerVersion;
 import daybreak.abilitywar.utils.library.MaterialX;
 import daybreak.abilitywar.utils.library.PotionEffects;
@@ -71,6 +72,7 @@ public class Blocks extends CokesAbility implements ActiveHandler {
 			if (ServerVersion.getVersion() >= 10 && ServerVersion.getVersion() <= 16) {
 				armorStand.setInvulnerable(true);
 			}
+			NMS.removeBoundingBox(armorStand);
 
 			EntityEquipment equipment = armorStand.getEquipment();
 			if (equipment != null) {

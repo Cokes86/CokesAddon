@@ -10,7 +10,7 @@ import daybreak.abilitywar.ability.SubscribeEvent;
 import daybreak.abilitywar.ability.decorator.TargetHandler;
 import daybreak.abilitywar.game.AbstractGame.Participant;
 import daybreak.abilitywar.game.AbstractGame.Participant.ActionbarNotification.ActionbarChannel;
-import daybreak.abilitywar.game.list.mix.AbstractMix;
+import daybreak.abilitywar.game.list.mix.Mix;
 import daybreak.abilitywar.game.list.mix.triplemix.AbstractTripleMix;
 import daybreak.abilitywar.utils.base.TimeUtil;
 import daybreak.abilitywar.utils.library.SoundLib;
@@ -21,13 +21,16 @@ import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 
+import java.util.EnumSet;
+import java.util.Iterator;
+
 @AbilityManifest(name = "봉인자", rank = Rank.S, species = Species.HUMAN, explain = {
 		"철괴로 상대방을 우클릭할 시 상대방의 능력을 $[dura]간 비활성화시킵니다. $[cool]",
 		"이미 비활성화되어있는 능력에겐 이 능력이 발동하지 않습니다.",
 		"봉인한 능력의 등급에 따라 자신에게 각종 효과를 $[dura]간 부여합니다.",
 		"§eC 등급§f: 나약함1 | §bB 등급§f: 재생1 | §aA 등급§f: 힘1 | §dS 등급§f: 힘2 | §6L 등급§f: 힘2, 저항1"
 })
-@NotAvailable({AbstractMix.class, AbstractTripleMix.class})
+@NotAvailable({AbstractTripleMix.class})
 public class Sealer extends CokesAbility implements TargetHandler {
 	private static final Config<Integer> cool = new Config<Integer>(Sealer.class, "쿨타임", 60, 1) {
 		public boolean condition(Integer value) {
@@ -90,22 +93,54 @@ public class Sealer extends CokesAbility implements TargetHandler {
 				target.getPlayer().sendMessage("당신의 능력이 봉인되었습니다.");
 				ab.setRestricted(true);
 				SoundLib.ENTITY_ENDER_DRAGON_GROWL.playSound(target.getPlayer());
-				if (ab.getRank().equals(Rank.C)) {
-					getPlayer().sendMessage("§eC 등급 §f봉인! 나약함1 버프를 부여합니다!");
-					getPlayer().addPotionEffect(new PotionEffect(PotionEffectType.WEAKNESS, dura.getValue() * 20, 0));
-				} else if (ab.getRank().equals(Rank.B)) {
-					getPlayer().sendMessage("§bB 등급 §f봉인! 재생1 버프를 부여합니다!");
-					getPlayer().addPotionEffect(new PotionEffect(PotionEffectType.REGENERATION, dura.getValue() * 20, 0));
-				} else if (ab.getRank().equals(Rank.A)) {
-					getPlayer().sendMessage("§aA 등급 §f봉인! 힘1 버프를 부여합니다!");
-					getPlayer().addPotionEffect(new PotionEffect(PotionEffectType.INCREASE_DAMAGE, dura.getValue() * 20, 0));
-				} else if (ab.getRank().equals(Rank.S)) {
-					getPlayer().sendMessage("§dS 등급 §f봉인! 힘2 버프를 부여합니다!");
-					getPlayer().addPotionEffect(new PotionEffect(PotionEffectType.INCREASE_DAMAGE, dura.getValue() * 20, 1));
-				} else if (ab.getRank().equals(Rank.L)) {
-					getPlayer().sendMessage("§6L 등급 §f봉인! 힘2, 저항1 버프를 부여합니다!");
-					getPlayer().addPotionEffect(new PotionEffect(PotionEffectType.INCREASE_DAMAGE, dura.getValue() * 20, 1));
-					getPlayer().addPotionEffect(new PotionEffect(PotionEffectType.DAMAGE_RESISTANCE, dura.getValue() * 20, 0));
+				if (ab instanceof Mix) {
+					Mix mix = (Mix) ab;
+					int level = (mix.getFirst().getRank().ordinal() + mix.getSecond().getRank().ordinal())/2;
+					switch (level) {
+						case 0:
+							getPlayer().sendMessage("§eC 등급 §f봉인! 나약함1 버프를 부여합니다!");
+							getPlayer().addPotionEffect(new PotionEffect(PotionEffectType.WEAKNESS, dura.getValue() * 20, 0));
+							break;
+						case 1:
+							getPlayer().sendMessage("§bB 등급 §f봉인! 재생1 버프를 부여합니다!");
+							getPlayer().addPotionEffect(new PotionEffect(PotionEffectType.REGENERATION, dura.getValue() * 20, 1));
+							break;
+						case 2:
+							getPlayer().sendMessage("§aA 등급 §f봉인! 힘1 버프를 부여합니다!");
+							getPlayer().addPotionEffect(new PotionEffect(PotionEffectType.INCREASE_DAMAGE, dura.getValue() * 20, 0));
+							break;
+						case 3:
+							getPlayer().sendMessage("§dS 등급 §f봉인! 힘2 버프를 부여합니다!");
+							getPlayer().addPotionEffect(new PotionEffect(PotionEffectType.INCREASE_DAMAGE, dura.getValue() * 20, 1));
+							break;
+						case 4:
+							getPlayer().sendMessage("§6L 등급 §f봉인! 힘2, 저항1 버프를 부여합니다!");
+							getPlayer().addPotionEffect(new PotionEffect(PotionEffectType.INCREASE_DAMAGE, dura.getValue() * 20, 1));
+							getPlayer().addPotionEffect(new PotionEffect(PotionEffectType.DAMAGE_RESISTANCE, dura.getValue() * 20, 0));
+							break;
+						default:
+							getPlayer().sendMessage("이게 무슨 등급의 능력이야?!");
+					}
+				} else {
+					if (ab.getRank().equals(Rank.C)) {
+						getPlayer().sendMessage("§eC 등급 §f봉인! 나약함1 버프를 부여합니다!");
+						getPlayer().addPotionEffect(new PotionEffect(PotionEffectType.WEAKNESS, dura.getValue() * 20, 0));
+					} else if (ab.getRank().equals(Rank.B)) {
+						getPlayer().sendMessage("§bB 등급 §f봉인! 재생1 버프를 부여합니다!");
+						getPlayer().addPotionEffect(new PotionEffect(PotionEffectType.REGENERATION, dura.getValue() * 20, 0));
+					} else if (ab.getRank().equals(Rank.A)) {
+						getPlayer().sendMessage("§aA 등급 §f봉인! 힘1 버프를 부여합니다!");
+						getPlayer().addPotionEffect(new PotionEffect(PotionEffectType.INCREASE_DAMAGE, dura.getValue() * 20, 0));
+					} else if (ab.getRank().equals(Rank.S)) {
+						getPlayer().sendMessage("§dS 등급 §f봉인! 힘2 버프를 부여합니다!");
+						getPlayer().addPotionEffect(new PotionEffect(PotionEffectType.INCREASE_DAMAGE, dura.getValue() * 20, 1));
+					} else if (ab.getRank().equals(Rank.L)) {
+						getPlayer().sendMessage("§6L 등급 §f봉인! 힘2, 저항1 버프를 부여합니다!");
+						getPlayer().addPotionEffect(new PotionEffect(PotionEffectType.INCREASE_DAMAGE, dura.getValue() * 20, 1));
+						getPlayer().addPotionEffect(new PotionEffect(PotionEffectType.DAMAGE_RESISTANCE, dura.getValue() * 20, 0));
+					} else {
+						getPlayer().sendMessage("이게 무슨 등급의 능력이야?!");
+					}
 				}
 			} else {
 				stop(true);
