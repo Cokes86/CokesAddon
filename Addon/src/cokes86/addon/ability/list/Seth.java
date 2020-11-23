@@ -42,8 +42,8 @@ import java.util.function.Predicate;
 	    "  이 감소수치는 0 아래로 감소하지 않습니다. $[COOL]",
 		"  대미지가 감소하고 있는 동안 프레셔를 통해 다시 끌려오지 않습니다."})
 public class Seth extends CokesAbility implements ActiveHandler {
-	int max = getGame().getParticipants().size();
-	int kill = 0;
+	private int max = getGame().getParticipants().size();
+	private int kill = 0;
 	DecimalFormat df = new DecimalFormat("0.00");
 	public static final Config<Integer> MAX_DAMAGE = new Config<Integer>(Seth.class, "추가대미지", 9) {
 		public boolean condition(Integer value) {

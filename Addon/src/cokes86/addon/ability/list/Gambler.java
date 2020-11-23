@@ -45,13 +45,13 @@ public class Gambler extends CokesAbility implements ActiveHandler {
 		}
 	}
 
-	int go = 1;
+	private int go = 1;
 
-	int give = 0; // 주는 대미지
-	int receive = 0; // 받는 대미지
+	private int give = 0; // 주는 대미지
+	private int receive = 0; // 받는 대미지
 
-	ActionbarChannel ac = newActionbarChannel();
-	AbilityTimer passive = new AbilityTimer(du.getValue()) {
+	private final ActionbarChannel ac = newActionbarChannel();
+	private final AbilityTimer passive = new AbilityTimer(du.getValue()) {
 
 		@Override
 		protected void onStart() {

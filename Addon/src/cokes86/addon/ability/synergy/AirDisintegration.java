@@ -64,11 +64,11 @@ public class AirDisintegration extends CokesSynergy implements ActiveHandler {
 		}
 		return true;
 	};
-	int chain = 0;
-	ActionbarChannel ac = newActionbarChannel();
-	boolean falling = false;
-	Cooldown cooldown = new Cooldown(cool.getValue());
-	AbilityTimer passive = new AbilityTimer() {
+	private int chain = 0;
+	private final ActionbarChannel ac = newActionbarChannel();
+	private boolean falling = false;
+	private final Cooldown cooldown = new Cooldown(cool.getValue());
+	private final AbilityTimer passive = new AbilityTimer() {
 
 		@Override
 		protected void run(int arg0) {
@@ -84,7 +84,7 @@ public class AirDisintegration extends CokesSynergy implements ActiveHandler {
 			}
 		}
 
-	};
+	}.register();
 	private LinkedList<LivingEntity> entities = null;
 	private final AbilityTimer skill = new AbilityTimer() {
 		final Map<LivingEntity, Location> stun = new HashMap<>();
@@ -120,7 +120,7 @@ public class AirDisintegration extends CokesSynergy implements ActiveHandler {
 				}
 			}
 		}
-	}.setPeriod(TimeUnit.TICKS, 1);
+	}.setPeriod(TimeUnit.TICKS, 1).register();
 
 	public AirDisintegration(Participant participant) {
 		super(participant);

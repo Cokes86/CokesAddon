@@ -53,7 +53,7 @@ public class RoyalStraightFlush extends CokesSynergy implements ActiveHandler {
 		}
 		return true;
 	};
-	Cooldown cooldown = new Cooldown(cool.getValue());
+	private final Cooldown cooldown = new Cooldown(cool.getValue());
 
 	public RoyalStraightFlush(Participant participant) {
 		super(participant);

@@ -40,7 +40,7 @@ public class Rabbit extends CokesAbility {
 		}
 		return true;
 	};
-	AbilityTimer Passive = new AbilityTimer() {
+	private final AbilityTimer Passive = new AbilityTimer() {
 		@Override
 		protected void run(int arg0) {
 			PotionEffects.JUMP.addPotionEffect(getPlayer(), Integer.MAX_VALUE, 1, true);

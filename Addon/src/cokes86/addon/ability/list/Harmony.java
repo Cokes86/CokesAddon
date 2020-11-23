@@ -46,7 +46,7 @@ public class Harmony extends CokesAbility {
 		}
 		return true;
 	};
-	AbilityTimer passive1 = new AbilityTimer() {
+	private final AbilityTimer passive1 = new AbilityTimer() {
 		@Override
 		protected void run(int arg0) {
 			int a = 0;

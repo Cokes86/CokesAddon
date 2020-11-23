@@ -43,10 +43,10 @@ public class Sealer extends CokesAbility implements TargetHandler {
 		}
 	};
 
-	Participant target = null;
+	private Participant target = null;
 
-	Cooldown c = new Cooldown(cool.getValue());
-	SealTimer t = new SealTimer(getParticipant());
+	private final Cooldown c = new Cooldown(cool.getValue());
+	private SealTimer t = new SealTimer(getParticipant());
 
 	public Sealer(Participant participant) {
 		super(participant);

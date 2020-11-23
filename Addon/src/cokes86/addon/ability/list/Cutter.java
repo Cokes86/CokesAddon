@@ -26,8 +26,8 @@ public class Cutter extends CokesAbility implements ActiveHandler {
 		}
 	};
 
-	Cooldown cooldownTimer = new Cooldown(cool.getValue());
-	Duration durationTimer = new Duration(duration.getValue(), cooldownTimer) {
+	private final Cooldown cooldownTimer = new Cooldown(cool.getValue());
+	private final Duration durationTimer = new Duration(duration.getValue(), cooldownTimer) {
 		@Override
 		protected void onDurationProcess(int i) {
 			Healths.setHealth(getPlayer(), getPlayer().getHealth() + 1);

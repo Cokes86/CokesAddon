@@ -70,7 +70,7 @@ public class Xyz extends CokesAbility implements ActiveHandler {
 		}
 		return false;
 	};
-	XyzTimer xyzTime = new XyzTimer();
+	private final XyzTimer xyzTime = new XyzTimer();
 	private List<Player> targets = null;
 
 	public Xyz(Participant arg0) throws IllegalStateException {
@@ -140,13 +140,8 @@ public class Xyz extends CokesAbility implements ActiveHandler {
 					p.sendMessage("엑시즈가 사망하였습니다.");
 				}
 				stop(true);
-			} else if (map.containsKey(e.getEntity())) {
-				map.remove(e.getEntity());
-			}
+			} else map.remove(e.getEntity());
 		}
 
 	}
-
-	;
-
 }

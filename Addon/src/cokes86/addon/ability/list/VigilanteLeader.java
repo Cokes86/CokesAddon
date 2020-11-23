@@ -46,12 +46,12 @@ public class VigilanteLeader extends CokesAbility implements ActiveHandler {
 			return value >= 0;
 		}
 	};
-	protected ActionbarChannel channel = this.newActionbarChannel();
-	RGB color = RGB.of(0, 162, 232);
-	Set<Participant> vigilantes = new HashSet<>();
-	Location ajit = null;
-	int addNum;
-	Predicate<Entity> predicate = entity -> {
+	private final ActionbarChannel channel = this.newActionbarChannel();
+	private final RGB color = RGB.of(0, 162, 232);
+	private final Set<Participant> vigilantes = new HashSet<>();
+	private Location ajit = null;
+	private int addNum;
+	private final Predicate<Entity> predicate = entity -> {
 		if (entity instanceof Player) {
 			if (!getGame().isParticipating(entity.getUniqueId())) return false;
 			AbstractGame.Participant target = getGame().getParticipant(entity.getUniqueId());
@@ -63,9 +63,9 @@ public class VigilanteLeader extends CokesAbility implements ActiveHandler {
 		}
 		return true;
 	};
-	Cooldown c = new Cooldown(cool.getValue());
+	private final Cooldown c = new Cooldown(cool.getValue());
 	private int num = getGame().getParticipants().size();
-	AbilityTimer passive = new AbilityTimer() {
+	private final AbilityTimer passive = new AbilityTimer() {
 		@Override
 		protected void run(int count) {
 			if (ajit != null) {
@@ -87,7 +87,7 @@ public class VigilanteLeader extends CokesAbility implements ActiveHandler {
 				channel.update("인원 수: " + num + "+" + addNum + "");
 			}
 		}
-	}.setPeriod(TimeUnit.TICKS, 2);
+	}.setPeriod(TimeUnit.TICKS, 2).register();
 	public VigilanteLeader(Participant participant) {
 		super(participant);
 		passive.start();

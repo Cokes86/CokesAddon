@@ -66,7 +66,7 @@ public class Rei extends CokesAbility {
 		}
 	};
 
-	private final Cooldown cooldown = new Cooldown(cool.getValue(), CooldownDecrease._90);
+	private final Cooldown cooldown = new Cooldown(cool.getValue(), CooldownDecrease._75);
 
 	public Rei(Participant participant) {
 		super(participant);

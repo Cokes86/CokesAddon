@@ -67,8 +67,8 @@ public class Rune extends CokesAbility implements ActiveHandler {
 		return true;
 	};
 
-	Cooldown c = new Cooldown(cool.getValue());
-	Duration d = new Duration(damage.getValue(), c) {
+	private final Cooldown c = new Cooldown(cool.getValue());
+	private final Duration d = new Duration(damage.getValue(), c) {
 		public void damageFixedWithoutKnockback(Player target, float damage) {
 			double knockback = target.getAttribute(Attribute.GENERIC_KNOCKBACK_RESISTANCE).getValue();
 			target.getAttribute(Attribute.GENERIC_KNOCKBACK_RESISTANCE).setBaseValue(1);

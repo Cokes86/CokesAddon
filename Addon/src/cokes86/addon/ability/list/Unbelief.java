@@ -63,8 +63,8 @@ public class Unbelief extends CokesAbility implements ActiveHandler {
 		}
 		return true;
 	};
-	boolean attackable = false;
-	ActionbarChannel notice = newActionbarChannel();
+	private boolean attackable = false;
+	private final ActionbarChannel notice = newActionbarChannel();
 	private Participant teammate;
 	private ActionbarChannel teamNotice = null;
 	private int hitted = 0;

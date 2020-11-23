@@ -55,10 +55,10 @@ public class Blocks extends CokesAbility implements ActiveHandler {
 			return value > 0 && Math.ceil(value * 10) == value * 10;
 		}
 	};
-	protected Condition condition = Condition.STONE;
-	protected Participant.ActionbarNotification.ActionbarChannel ac = this.newActionbarChannel();
-	public ArmorStand armorStand;
-	protected double knockback = Objects.requireNonNull(getPlayer().getAttribute(Attribute.GENERIC_KNOCKBACK_RESISTANCE)).getBaseValue();
+	private Condition condition = Condition.STONE;
+	private Participant.ActionbarNotification.ActionbarChannel ac = this.newActionbarChannel();
+	private ArmorStand armorStand;
+	private final double knockback = Objects.requireNonNull(getPlayer().getAttribute(Attribute.GENERIC_KNOCKBACK_RESISTANCE)).getBaseValue();
 
 	AbilityTimer passive = new AbilityTimer() {
 		@Override

@@ -27,7 +27,7 @@ public class Resurrection extends CokesAbility {
 		}
 	};
 	private static final Config<Boolean> respawn = new Config<Boolean>(Resurrection.class, "리스폰_이동", true){};
-	Object explain = new Object() {
+	private static final Object explain = new Object() {
 		public String toString() {
 			String result;
 			if (spawn) {
@@ -40,7 +40,7 @@ public class Resurrection extends CokesAbility {
 	};
 	public static boolean spawn = Settings.getSpawnEnable();
 	private boolean usable = true;
-	AbilityTimer t = new AbilityTimer(cool.getValue()) {
+	private final AbilityTimer t = new AbilityTimer(cool.getValue()) {
 		@Override
 		protected void run(int Count) {
 		}

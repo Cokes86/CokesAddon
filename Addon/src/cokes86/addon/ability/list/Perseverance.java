@@ -35,9 +35,9 @@ public class Perseverance extends CokesAbility {
 			return value > 0;
 		}
 	};
-	public double give = 100;
-	ActionbarChannel ac = newActionbarChannel();
-	AbilityTimer passive = new AbilityTimer() {
+	private double give = 100;
+	private final ActionbarChannel ac = newActionbarChannel();
+	private final AbilityTimer passive = new AbilityTimer() {
 		@Override
 		protected void run(int seconds) {
 			if (seconds % (period.getValue() * 20) == 0)

@@ -33,7 +33,8 @@ import org.bukkit.inventory.ItemStack;
 		"  받는 대미지가 1 감소합니다.",
 		"§7물 밖 §8- §c파닥파닥§r: 구속효과가 걸리며 이후 3초마다 수분이 감소합니다.",
 		"  감소할 수분이 없을 경우 1의 고정피해를 입습니다.",
-		"§7철괴 좌클릭 §8- §c촤아악§r: 자신의 위치에 물을 설치합니다. $[cool]"
+		"§7철괴 좌클릭 §8- §c촤아악§r: 자신의 위치에 물을 설치합니다. $[cool]",
+		"  이미 물이 있는 자리에서는 물이 생성되지 않습니다."
 })
 public class Fish extends CokesAbility implements ActiveHandler {
 	private static final Config<Integer> cool = new Config<Integer>(Fish.class, "쿨타임", 30, 1) {
@@ -97,9 +98,11 @@ public class Fish extends CokesAbility implements ActiveHandler {
 	@Override
 	public boolean ActiveSkill(Material material, ClickType clickType) {
 		if (material == Material.IRON_INGOT && clickType == ClickType.LEFT_CLICK && !cooldown.isCooldown()) {
-			getPlayer().getLocation().getBlock().setType(Material.WATER);
-			cooldown.start();
-			return true;
+			if (!getPlayer().getLocation().getBlock().isLiquid()) {
+				getPlayer().getLocation().getBlock().setType(Material.WATER);
+				cooldown.start();
+				return true;
+			}
 		}
 		return false;
 	}

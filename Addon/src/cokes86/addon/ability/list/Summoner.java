@@ -74,9 +74,9 @@ public class Summoner extends CokesAbility implements ActiveHandler {
 		}
 		return true;
 	};
-	private SummonSelectTimer active = new SummonSelectTimer();
-	private SummonTimer summon = new SummonTimer();
-	private Cooldown cool = new Cooldown(cooldown.getValue());
+	private final SummonSelectTimer active = new SummonSelectTimer();
+	private final SummonTimer summon = new SummonTimer();
+	private final Cooldown cool = new Cooldown(cooldown.getValue());
 
 	public Summoner(Participant arg0) {
 		super(arg0);
@@ -99,7 +99,7 @@ public class Summoner extends CokesAbility implements ActiveHandler {
 
 		private final Map<String, Participant> values;
 		private int currentPage = 1;
-		private Inventory gui;
+		private final Inventory gui;
 		private int maxPage;
 
 		public SummonSelectTimer() {
@@ -192,7 +192,7 @@ public class Summoner extends CokesAbility implements ActiveHandler {
 			if (e.getInventory().equals(gui)) {
 				e.setCancelled(true);
 				if (e.getCurrentItem() != null && e.getCurrentItem().hasItemMeta() && e.getCurrentItem().getItemMeta().hasDisplayName()) {
-					if (values.keySet().contains(ChatColor.stripColor(e.getCurrentItem().getItemMeta().getDisplayName()))) {
+					if (values.containsKey(ChatColor.stripColor(e.getCurrentItem().getItemMeta().getDisplayName()))) {
 						Participant target = values.get(ChatColor.stripColor(e.getCurrentItem().getItemMeta().getDisplayName()));
 						summon.setTarget(target).start();
 						getPlayer().closeInventory();

@@ -105,10 +105,10 @@ public class Mir extends CokesAbility implements ActiveHandler {
 		}
 		return true;
 	};
-	Element element = null;
-	Cooldown cooldownTimer = new Cooldown(cool.getValue());
+	private Element element = null;
+	private final Cooldown cooldownTimer = new Cooldown(cool.getValue());
 	private ArmorStand armorStand = null;
-	Duration durationTimer = new Duration(duration.getValue() * 10, cooldownTimer) {
+	private final Duration durationTimer = new Duration(duration.getValue() * 10, cooldownTimer) {
 		@Override
 		protected void onDurationStart() {
 			element = getRandomElement();
@@ -180,7 +180,7 @@ public class Mir extends CokesAbility implements ActiveHandler {
 	public Element getRandomElement() {
 		Random random = new Random();
 		Element after = Element.values()[random.nextInt(Element.values().length)];
-		if (element == null || !after.equals(element)) return after;
+		if (!after.equals(element)) return after;
 		else return getRandomElement();
 	}
 

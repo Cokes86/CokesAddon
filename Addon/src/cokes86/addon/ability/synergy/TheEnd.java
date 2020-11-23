@@ -68,9 +68,9 @@ public class TheEnd extends CokesSynergy implements ActiveHandler {
 		}
 		return true;
 	};
-	ActionbarChannel ac = newActionbarChannel();
+	private final ActionbarChannel ac = newActionbarChannel();
 	private BroadBar bar;
-	AbilityTimer timer = new AbilityTimer(du.getValue() * 20) {
+	private final AbilityTimer timer = new AbilityTimer(du.getValue() * 20) {
 		protected void onStart() {
 			Location spawn = Settings.getSpawnLocation().toBukkitLocation();
 			for (Participant p : getGame().getParticipants()) {
@@ -116,7 +116,7 @@ public class TheEnd extends CokesSynergy implements ActiveHandler {
 			ac.update(null);
 			setRestricted(true);
 		}
-	}.setPeriod(TimeUnit.TICKS, 1);
+	}.setPeriod(TimeUnit.TICKS, 1).register();
 
 	public TheEnd(Participant participant) {
 		super(participant);

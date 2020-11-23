@@ -11,7 +11,6 @@ import daybreak.abilitywar.game.module.DeathManager;
 import daybreak.abilitywar.utils.base.concurrent.TimeUnit;
 import daybreak.abilitywar.utils.base.math.LocationUtil;
 import daybreak.abilitywar.utils.library.PotionEffects;
-import org.bukkit.Bukkit;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Projectile;
@@ -50,9 +49,9 @@ public class LureOfRoses extends CokesSynergy {
 		}
 		return true;
 	};
-	int counter = 0;
-	Cooldown cooldown = new Cooldown(cool.getValue());
-	InvTimer duration = new InvTimer();
+	private int counter = 0;
+	private final Cooldown cooldown = new Cooldown(cool.getValue());
+	private final InvTimer duration = new InvTimer();
 
 	public LureOfRoses(Participant participant) {
 		super(participant);

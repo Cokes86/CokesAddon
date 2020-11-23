@@ -6,7 +6,7 @@ import daybreak.abilitywar.ability.SubscribeEvent;
 import daybreak.abilitywar.ability.decorator.ActiveHandler;
 import daybreak.abilitywar.ability.decorator.TargetHandler;
 import daybreak.abilitywar.game.AbstractGame;
-import daybreak.abilitywar.utils.base.Random;
+import daybreak.abilitywar.utils.base.random.Random;
 import daybreak.abilitywar.utils.base.concurrent.TimeUnit;
 import daybreak.abilitywar.utils.base.minecraft.entity.health.Healths;
 import daybreak.abilitywar.utils.library.ParticleLib;
@@ -34,8 +34,8 @@ public class Boxer extends CokesAbility implements ActiveHandler, TargetHandler 
     }, duration = new Config<Integer>(Boxer.class, "휴식.회복주기", 2, 2) {
     };
 
-    Cooldown right_cooldown = new Cooldown(right_cool.getValue(), "스트레이트");
-    Cooldown left_cooldown = new Cooldown(left_cool.getValue(), "나도 좀 쉬자고");
+    private final Cooldown right_cooldown = new Cooldown(right_cool.getValue(), "스트레이트");
+    private final Cooldown left_cooldown = new Cooldown(left_cool.getValue(), "나도 좀 쉬자고");
     AbilityTimer rest = new AbilityTimer(1) {
         @Override
         protected void run(int count) {

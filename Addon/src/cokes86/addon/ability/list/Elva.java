@@ -79,11 +79,10 @@ public class Elva extends CokesAbility {
 		}
 		return true;
 	};
-	Vector velocity = null;
-	RGB color = RGB.of(1, 255, 102);
-	int arrow;
-	ActionbarChannel ac = newActionbarChannel();
-	AbilityTimer reload = new AbilityTimer(20) {
+	private final RGB color = RGB.of(1, 255, 102);
+	private int arrow;
+	private final ActionbarChannel ac = newActionbarChannel();
+	private final AbilityTimer reload = new AbilityTimer(20) {
 		ProgressBar progress;
 
 		protected void onStart() {
@@ -109,7 +108,7 @@ public class Elva extends CokesAbility {
 
 		@Override
 		protected void run(int arg0) {
-			velocity = getForwardVector(getPlayer().getLocation().clone());
+			Vector velocity = getForwardVector(getPlayer().getLocation().clone());
 			Location startArrow = getPlayer().getLocation().clone().add(velocity.multiply(.25)).add(0, getPlayer().getEyeHeight(), 0);
 
 			ItemStack off = getPlayer().getInventory().getItemInOffHand();

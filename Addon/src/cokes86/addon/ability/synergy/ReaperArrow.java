@@ -76,18 +76,18 @@ public class ReaperArrow extends CokesSynergy implements ActiveHandler {
 		stackDamage = new int[]{damage1.getValue(), damage2.getValue(), damage3.getValue(), damage4.getValue(), damage5.getValue()};
 	}
 
-	AbstractGame.Participant.ActionbarNotification.ActionbarChannel ac = newActionbarChannel();
-	ParticleLib.RGB rgb = ParticleLib.RGB.of(1, 1, 1);
-	Cooldown cooldown = new Cooldown(cool.getValue());
+	private final AbstractGame.Participant.ActionbarNotification.ActionbarChannel ac = newActionbarChannel();
+	private final ParticleLib.RGB rgb = ParticleLib.RGB.of(1, 1, 1);
+	private final Cooldown cooldown = new Cooldown(cool.getValue());
 	private boolean ready = false;
 	private Arrow reaperArrow = null;
-	AbilityTimer effect = new AbilityTimer() {
+	private final AbilityTimer effect = new AbilityTimer() {
 		protected void run(int arg) {
 			ParticleLib.REDSTONE.spawnParticle(reaperArrow.getLocation(), rgb);
 		}
 	}.setPeriod(TimeUnit.TICKS, 1);
 	private int stack = 0;
-	AbilityTimer chargeTimer = new AbilityTimer() {
+	private final AbilityTimer chargeTimer = new AbilityTimer() {
 		protected void run(int arg) {
 
 			if (arg % duration.getValue() == 0) {
@@ -95,7 +95,7 @@ public class ReaperArrow extends CokesSynergy implements ActiveHandler {
 			}
 			ac.update("사신의 낫: " + stack);
 		}
-	};
+	}.register();
 
 	public ReaperArrow(AbstractGame.Participant participant) {
 		super(participant);

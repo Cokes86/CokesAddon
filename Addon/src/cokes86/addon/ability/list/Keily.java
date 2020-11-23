@@ -49,12 +49,12 @@ public class Keily extends CokesAbility implements ActiveHandler {
 			return value > 0.0;
 		}
 	};
-	final int count = Wreck.isEnabled(GameManager.getGame()) ? (int) ((100 - Configuration.Settings.getCooldownDecrease().getPercentage()) / 100.0 * dura.getValue()) : dura.getValue();
-	boolean falling = false;
-	Cooldown c = new Cooldown(cool.getValue());
-	ActionbarChannel channel = newActionbarChannel();
-	int switchCounter = 0;
-	Duration flying = new Duration(duration.getValue(), c) {
+	private final int count = Wreck.isEnabled(GameManager.getGame()) ? (int) ((100 - Configuration.Settings.getCooldownDecrease().getPercentage()) / 100.0 * dura.getValue()) : dura.getValue();
+	private boolean falling = false;
+	private final Cooldown c = new Cooldown(cool.getValue());
+	private final ActionbarChannel channel = newActionbarChannel();
+	private int switchCounter = 0;
+	private final Duration flying = new Duration(duration.getValue(), c) {
 
 		@Override
 		protected void onDurationStart() {

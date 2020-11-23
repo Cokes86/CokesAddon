@@ -38,8 +38,8 @@ public class Queen extends CokesAbility implements ActiveHandler, TargetHandler 
 		}
 	};
 	DecimalFormat df = new DecimalFormat(".00");
-	double defaultHealth = Settings.getDefaultMaxHealth();
-	Cooldown cooldown = new Cooldown(cool.getValue());
+	private final double defaultHealth = Settings.getDefaultMaxHealth();
+	private final Cooldown cooldown = new Cooldown(cool.getValue());
 
 	public Queen(Participant arg0) {
 		super(arg0);

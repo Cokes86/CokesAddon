@@ -46,9 +46,9 @@ public class GodsBless extends CokesAbility implements ActiveHandler {
 			return arg0 > 1;
 		}
 	};
-	ActionbarChannel ac = newActionbarChannel();
-	Cooldown c = new Cooldown(cool.getValue());
-	BlessTimer bless = new BlessTimer();
+	private final ActionbarChannel ac = newActionbarChannel();
+	private final Cooldown c = new Cooldown(cool.getValue());
+	private final BlessTimer bless = new BlessTimer();
 
 	public GodsBless(Participant arg0) {
 		super(arg0);

@@ -38,18 +38,18 @@ public class Poker extends CokesAbility implements ActiveHandler {
 			return value >= 0;
 		}
 	};
-	int[] num = new int[3];
-	int additional = 0;
-	ActionbarChannel ac = newActionbarChannel();
-	Cooldown c = new Cooldown(cool.getValue());
-	AbilityTimer p = new AbilityTimer() {
+	private final int[] num = new int[3];
+	private int additional = 0;
+	private final ActionbarChannel ac = newActionbarChannel();
+	private final Cooldown c = new Cooldown(cool.getValue());
+	private final AbilityTimer p = new AbilityTimer() {
 		@Override
 		protected void run(int var1) {
 			if (additional > 0) ac.update("다음 추가대미지: " + additional);
 			else ac.update(null);
 		}
 	};
-	Predicate<Entity> predicate = entity -> {
+	private final Predicate<Entity> predicate = entity -> {
 		if (entity.equals(getPlayer())) return false;
 		if (entity instanceof Player) {
 			if (!getGame().isParticipating(entity.getUniqueId())) return false;

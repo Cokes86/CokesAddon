@@ -78,10 +78,10 @@ public class PhantomThief extends CokesAbility implements ActiveHandler, TargetH
 		}
 	};
 
-	final Cooldown c = new Cooldown(cooldown.getValue());
-	final PhantomThiefTimer timer = new PhantomThiefTimer();
-	AbstractGame.Participant target;
-	float movespeed;
+	private final Cooldown c = new Cooldown(cooldown.getValue());
+	private final PhantomThiefTimer timer = new PhantomThiefTimer();
+	private AbstractGame.Participant target;
+	private float movespeed;
 
 	@Override
 	protected void onUpdate(Update update) {
@@ -252,7 +252,7 @@ public class PhantomThief extends CokesAbility implements ActiveHandler, TargetH
 				Teamable game = (Teamable) getGame();
 				return (!game.hasTeam(getParticipant()) || !game.hasTeam(target) || !game.getTeam(getParticipant()).equals(game.getTeam(target)));
 			}
-			if (!target.hasAbility()) return false;
+			if (target.getAbility() == null) return false;
 			if (target.getAbility() instanceof Mix) {
 				Mix mix = (Mix) target.getAbility();
 				if (!mix.hasAbility())

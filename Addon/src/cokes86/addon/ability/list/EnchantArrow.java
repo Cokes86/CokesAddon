@@ -52,8 +52,8 @@ public class EnchantArrow extends CokesAbility {
 			return value > 0;
 		}
 	};
-	int enchantStack = 0;
-	ActionbarChannel ac = newActionbarChannel();
+	private int enchantStack = 0;
+	private final ActionbarChannel ac = newActionbarChannel();
 
 	public EnchantArrow(Participant participant) {
 		super(participant);

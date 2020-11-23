@@ -79,10 +79,10 @@ public class Reincarnation extends CokesAbility {
 			return getValue().toString() + KoreanUtil.getJosa(getValue().toString(), KoreanUtil.Josa.이가);
 		}
 	};
-	ActionbarChannel ac = newActionbarChannel();
-	int hitted = 0;
-	Cooldown cool = new Cooldown(cooldown.getValue());
-	AbilityTimer reincarnation = new AbilityTimer(duration.getValue() * 20) {
+	private final ActionbarChannel ac = newActionbarChannel();
+	private int hitted = 0;
+	private final Cooldown cool = new Cooldown(cooldown.getValue());
+	private final AbilityTimer reincarnation = new AbilityTimer(duration.getValue() * 20) {
 
 		protected void onStart() {
 			List<Player> nearby = LocationUtil.getNearbyEntities(Player.class, getPlayer().getLocation(), 5, 5, null);

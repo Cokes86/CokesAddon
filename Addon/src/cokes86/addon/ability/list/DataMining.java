@@ -76,13 +76,13 @@ public class DataMining extends CokesAbility implements ActiveHandler {
 	};
 	DecimalFormat df = new DecimalFormat("0.00");
 	int count = 0;
-	Pair<Integer, Double> damage = Pair.of(0,0.0);
-	Pair<Integer, Double> defense = Pair.of(0,0.0);
-	ActionbarChannel ac = newActionbarChannel();
-	boolean message = true;
-	int max_count = getGame().getParticipants().size() - 1;
+	private Pair<Integer, Double> damage = Pair.of(0,0.0);
+	private Pair<Integer, Double> defense = Pair.of(0,0.0);
+	private final ActionbarChannel ac = newActionbarChannel();
+	private boolean message = true;
+	private final int max_count = getGame().getParticipants().size() - 1;
 
-	AbilityTimer passive = new AbilityTimer() {
+	private final AbilityTimer passive = new AbilityTimer() {
 		@Override
 		protected void run(int count) {
 			if (getNoActiveHandler() != 0) {

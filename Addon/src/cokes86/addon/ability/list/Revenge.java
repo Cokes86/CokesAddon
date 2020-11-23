@@ -28,8 +28,8 @@ public class Revenge extends CokesAbility {
 		}
 	};
 	DecimalFormat df = new DecimalFormat("0.00");
-	double finalDamage = 0;
-	ActionbarChannel ac = newActionbarChannel();
+	private double finalDamage = 0;
+	private final ActionbarChannel ac = newActionbarChannel();
 
 	public Revenge(Participant participant) {
 		super(participant);
