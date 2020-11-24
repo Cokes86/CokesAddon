@@ -75,27 +75,27 @@ public class DataMining extends CokesAbility implements ActiveHandler {
 		}
 	};
 	DecimalFormat df = new DecimalFormat("0.00");
-	int count = 0;
-	private Pair<Integer, Double> damage = Pair.of(0,0.0);
-	private Pair<Integer, Double> defense = Pair.of(0,0.0);
+	private int damage_count = 0;
+	private int defense_count = 0;
 	private final ActionbarChannel ac = newActionbarChannel();
 	private boolean message = true;
-	private final int max_count = getGame().getParticipants().size() - 1;
+	private final int max_count = (getGame().getParticipants().size() - 1) * player_value.getValue();
 
 	private final AbilityTimer passive = new AbilityTimer() {
 		@Override
-		protected void run(int count) {
+		protected void run(int abc) {
 			if (getNoActiveHandler() != 0) {
 				boolean up = false;
 				for (int a = 0 ; a < getNoActiveHandler(); a++) {
-					if (count < player_value.getValue() * max_count) {
-						count++;
+					if ((damage_count + defense_count) < max_count) {
 						Active();
 						up = true;
 					}
 				}
 				if (message && up) getPlayer().sendMessage("자동으로 §e마이닝 스택§f을 획득하였습니다.");
-				ac.update("§e마이닝 스택§f: " + count + " (추가대미지: " + df.format(damage.getRight()) + "  피해감소: " + df.format(defense.getRight()) + "%)");
+				final double damage_value = damageUp.getValue()*2 / max_count * damage_count;
+				final double defense_value = defenseUp.getValue()*2 / max_count * defense_count;
+				ac.update("§e마이닝 스택§f: " + (damage_count + defense_count) + " (추가대미지: " + df.format(damage_value) + "  피해감소: " + df.format(defense_value) + "%)");
 			}
 		}
 	}.setInitialDelay(TimeUnit.SECONDS, duration.getValue()).setPeriod(TimeUnit.SECONDS, duration.getValue()).register();
@@ -108,23 +108,25 @@ public class DataMining extends CokesAbility implements ActiveHandler {
 		final Random random = new Random();
 		final double randomDouble = random.nextDouble() * 2;
 		if (randomDouble > 1) {
-			if (damage.getLeft() >= (getGame().getParticipants().size() * 2)) {
-				defense = Pair.of(defense.getLeft() +1 ,defense.getRight() + defenseUp.getValue() / (max_count * 2) );
+			if (damage_count == max_count / 2) {
+				defense_count++;
 			} else {
-				damage = Pair.of(damage.getLeft() +1 ,damage.getRight() + damageUp.getValue() / (max_count * 2) );
+				damage_count++;
 			}
 		} else {
-			if (defense.getLeft() >= (getGame().getParticipants().size() * 2)) {
-				damage = Pair.of(damage.getLeft() +1 ,damage.getRight() + damageUp.getValue() / (max_count * 2) );
+			if (defense_count == max_count / 2) {
+				damage_count++;
 			} else {
-				defense = Pair.of(defense.getLeft() +1 ,defense.getRight() + defenseUp.getValue() / (max_count * 2) );
+				defense_count++;
 			}
 		}
 	}
 
 	public void onUpdate(Update update) {
 		if (update == Update.RESTRICTION_CLEAR) {
-			ac.update("§e마이닝 스택§f: " + count + " (추가대미지: " + df.format(damage.getRight()) + "  피해감소: " + df.format(defense.getRight()) + "%)");
+			final double damage_value = damageUp.getValue()*2 / max_count * damage_count;
+			final double defense_value = defenseUp.getValue()*2 / max_count * defense_count;
+			ac.update("§e마이닝 스택§f: " + (damage_count + defense_count) + " (추가대미지: " + df.format(damage_value) + "  피해감소: " + df.format(defense_value) + "%)");
 			passive.start();
 		}
 	}
@@ -133,16 +135,19 @@ public class DataMining extends CokesAbility implements ActiveHandler {
 	private void onAbilityActiveSkill(AbilityActiveSkillEvent e) {
 		if (!e.getParticipant().equals(getParticipant())) {
 			if (message) getPlayer().sendMessage("§e" + e.getPlayer().getName() + "§f님이 능력을 사용하였습니다.");
-			if (count < player_value.getValue() * max_count) {
-				count++;
+			if ((damage_count + defense_count) < max_count) {
 				Active();
 			}
-			ac.update("§e마이닝 스택§f: " + count + " (추가대미지: " + df.format(damage.getRight()) + "  피해감소: " + df.format(defense.getRight()) + "%)");
+			final double damage_value = damageUp.getValue()*2 / max_count * damage_count;
+			final double defense_value = defenseUp.getValue()*2 / max_count * defense_count;
+			ac.update("§e마이닝 스택§f: " + (damage_count + defense_count) + " (추가대미지: " + df.format(damage_value) + "  피해감소: " + df.format(defense_value) + "%)");
 		}
 	}
 
 	@SubscribeEvent(priority = 4)
 	private void onEntityDamageByEntity(EntityDamageByEntityEvent e) {
+		final double damage_value = damageUp.getValue()*2 / max_count * damage_count;
+		final double defense_value = defenseUp.getValue()*2 / max_count * defense_count;
 		if (e.getEntity() instanceof Player) {
 			Player entity = (Player) e.getEntity();
 			Entity damager = e.getDamager();
@@ -155,9 +160,9 @@ public class DataMining extends CokesAbility implements ActiveHandler {
 
 			if (damager instanceof Player) {
 				if (damager.equals(getPlayer())) {
-					e.setDamage(e.getDamage() + damage.getRight());
+					e.setDamage(e.getDamage() + damage_value);
 				} else if (entity.equals(getPlayer())) {
-					e.setDamage(e.getDamage() * (100.0 - defense.getRight()) / 100.0);
+					e.setDamage(e.getDamage() * (100.0 - defense_value) / 100.0);
 				}
 
 				if (!e.isCancelled()) {

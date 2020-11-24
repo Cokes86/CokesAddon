@@ -1,6 +1,7 @@
 package cokes86.addon.ability.list;
 
 import cokes86.addon.ability.CokesAbility;
+import daybreak.abilitywar.AbilityWar;
 import daybreak.abilitywar.ability.AbilityManifest;
 import daybreak.abilitywar.ability.AbilityManifest.Rank;
 import daybreak.abilitywar.ability.AbilityManifest.Species;
@@ -23,6 +24,7 @@ import daybreak.abilitywar.utils.library.ParticleLib;
 import daybreak.abilitywar.utils.library.ParticleLib.RGB;
 import daybreak.abilitywar.utils.library.PotionEffects;
 import daybreak.google.common.base.Predicate;
+import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.World;
@@ -30,8 +32,12 @@ import org.bukkit.entity.Damageable;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.HandlerList;
+import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
+import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.projectiles.ProjectileSource;
 import org.bukkit.util.Vector;
 
@@ -39,7 +45,6 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
 import java.util.UUID;
-
 
 @AbilityManifest(name = "프리드", rank = Rank.A, species = Species.HUMAN, explain = {
 		"프리드는 마나 100을 가지고 시작하며 5틱마다 1씩 회복합니다. (최대 100)",
@@ -230,7 +235,7 @@ public class Freud extends CokesAbility implements ActiveHandler {
 		}
 	}
 
-	public class Bullet extends AbilityTimer {
+	public class Bullet extends AbilityTimer implements Listener {
 
 		private final LivingEntity shooter;
 		private final CustomEntity entity;
@@ -255,6 +260,11 @@ public class Freud extends CokesAbility implements ActiveHandler {
 			if (magic == Magic.EXPLOSION) {
 				explosion.add(target.getUniqueId());
 			}
+		}
+
+		@Override
+		protected void onStart() {
+			Bukkit.getPluginManager().registerEvents(this, AbilityWar.getPlugin());
 		}
 
 		@Override
@@ -287,11 +297,20 @@ public class Freud extends CokesAbility implements ActiveHandler {
 		@Override
 		protected void onEnd() {
 			entity.remove();
+			HandlerList.unregisterAll(this);
 		}
 
 		@Override
 		protected void onSilentEnd() {
 			entity.remove();
+			HandlerList.unregisterAll(this);
+		}
+
+		@EventHandler
+		public void onPlayerDeath(PlayerDeathEvent e) {
+			if (this.isRunning() && e.getEntity().equals(target)) {
+				stop(true);
+			}
 		}
 
 		public class ArrowEntity extends CustomEntity implements Deflectable {
