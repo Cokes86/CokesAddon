@@ -136,7 +136,6 @@ public class Ovisni extends CokesAbility implements ActiveHandler {
 	}
 
 	private class OvisniStack extends AbilityTimer {
-
 		private final Participant target;
 		private final IHologram hologram;
 		private final int maxCounter = MAX_COUNTER_CONFIG.getValue();

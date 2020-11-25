@@ -50,30 +50,21 @@ public class Sealer extends CokesAbility implements TargetHandler {
 		}
 	};
 
-	private Participant target = null;
-
 	private final Cooldown c = new Cooldown(cool.getValue());
-	private SealTimer t = new SealTimer(getParticipant());
+	private SealTimer t = new SealTimer();
 
 	public Sealer(Participant participant) {
 		super(participant);
-	}
-
-	@SubscribeEvent
-	public void onPlayerDeath(PlayerDeathEvent e) {
-		if (t.isRunning() && target != null && (e.getEntity().equals(getPlayer())) || e.getEntity().equals(target.getPlayer())) {
-			t.stop(true);
-		}
 	}
 
 	@Override
 	public void TargetSkill(Material mt, LivingEntity entity) {
 		if (mt.equals(Material.IRON_INGOT) && !t.isRunning() && !c.isCooldown()) {
 			if (entity instanceof Player) {
-				Player p = (Player) entity;
-				target = getGame().isParticipating(p) ? getGame().getParticipant(p) : null;
+				final Player p = (Player) entity;
+				final Participant target = getGame().isParticipating(p) ? getGame().getParticipant(p) : null;
 				if (target != null && target.getAbility() != null && !target.getAbility().isRestricted()) {
-					t = new SealTimer(target);
+					t.start(target);
 				} else {
 					getPlayer().sendMessage("상대방의 능력이 없거나 이미 비활성화되어있는 상태입니다.");
 				}
@@ -82,15 +73,18 @@ public class Sealer extends CokesAbility implements TargetHandler {
 	}
 
 	class SealTimer extends Duration implements Listener {
-		private final Participant target;
+		private Participant target;
 		private final ActionbarChannel ac;
 		private boolean synergy = false;
 
-		public SealTimer(Participant target) {
+		public SealTimer() {
 			super(duration.getValue(), c);
-			this.target = target;
 			this.ac = target.actionbar().newChannel();
-			if (target != getParticipant()) this.start();
+		}
+
+		public boolean start(Participant target) {
+			this.target = target;
+			return this.start();
 		}
 
 		@Override
@@ -178,6 +172,13 @@ public class Sealer extends CokesAbility implements TargetHandler {
 		@Override
 		protected void onDurationEnd() {
 			onDurationSilentEnd();
+		}
+
+		@EventHandler
+		public void onPlayerDeath(PlayerDeathEvent e) {
+			if (e.getEntity().equals(target.getPlayer()) || e.getEntity().equals(getPlayer())) {
+				t.stop(true);
+			}
 		}
 
 		@EventHandler

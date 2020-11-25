@@ -38,6 +38,7 @@ import java.util.Random;
 		"  매 $[duration]마다 §e마이닝 스택§f을 자동으로 얻습니다.",
 		"§7철괴 우클릭 §8- §c스캐닝§r: 자신을 제외한 모든 플레이어의 능력을 확인합니다.",
 		"§7철괴 좌클릭 §8- §c뮤트§r: §c딥러닝§r으로 인한 여부 알림을 키거나 끌 수 있습니다.",
+		"§7금괴 우클릭 §8- §c리절트§r: 최대 스택, 스택당 상승치를 확인합니다.",
 		"※능력 아이디어: RainStar_"
 })
 @Tips(tip = {
@@ -219,6 +220,10 @@ public class DataMining extends CokesAbility implements ActiveHandler {
 			message = (!message);
 			if (message) getPlayer().sendMessage("사실 확인 메세지를 볼 수 있게 됩니다.");
 			else getPlayer().sendMessage("더이상 사실 확인 메세지를 볼 수 없습니다.");
+		} else if (material == Material.GOLD_INGOT && clickType == ClickType.RIGHT_CLICK) {
+			getPlayer().sendMessage("최대 §e마이닝 스택§f: "+max_count);
+			getPlayer().sendMessage("§e마이닝 스택§f상승 시 대미지 상승량: "+damageUp.getValue()*2 / max_count);
+			getPlayer().sendMessage("§e마이닝 스택§f상승 시 방어력 상승량: "+defenseUp.getValue()*2 / max_count);
 		}
 		return false;
 	}
