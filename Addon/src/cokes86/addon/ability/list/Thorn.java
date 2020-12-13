@@ -19,11 +19,11 @@ import org.bukkit.event.entity.EntityDamageByEntityEvent;
 @AbilityManifest(name = "가시", rank = Rank.A, species = Species.OTHERS, explain = {
 		"철괴 우클릭시 $[DURATION]동안 상대방의 화살 공격의 대미지를 0으로 하고,", "무시한 대미지의 $[DAMAGE]%만큼을 상대방에게 되돌려줍니다. $[COOL]"})
 public class Thorn extends CokesAbility implements ActiveHandler {
-	private static final Config<Integer> COOL = new Config<Integer>(Thorn.class, "쿨타임", 20, 1) {
+	private static final Config<Integer> COOL = new Config<Integer>(Thorn.class, "쿨타임", 20, Config.Condition.COOLDOWN) {
 		public boolean condition(Integer value) {
 			return value >= 0;
 		}
-	}, DURATION = new Config<Integer>(Thorn.class, "지속시간", 5, 2) {
+	}, DURATION = new Config<Integer>(Thorn.class, "지속시간", 5, Config.Condition.TIME) {
 		public boolean condition(Integer value) {
 			return value >= 0;
 		}

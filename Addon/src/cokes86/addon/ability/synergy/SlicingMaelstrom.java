@@ -105,7 +105,7 @@ public class SlicingMaelstrom extends CokesSynergy implements ActiveHandler {
             List<Player> ps = LocationUtil.getNearbyEntities(Player.class, getPlayer().getLocation(), range.getValue(), range.getValue(), predicate);
             for (Player player : ps) {
                 int hitted = hit.getOrDefault(player, 0);
-                Damages.damageFixed(player, getPlayer(), hitted/2 + 1);
+                Damages.damageFixed(player, getPlayer(), (hitted/2) + 1);
                 hit.put(player, hitted+1);
                 hitted+=1;
                 player.getWorld().strikeLightningEffect(player.getLocation());

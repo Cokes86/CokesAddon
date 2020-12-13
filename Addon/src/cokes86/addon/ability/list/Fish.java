@@ -37,7 +37,7 @@ import org.bukkit.inventory.ItemStack;
 		"  이미 물이 있는 자리에서는 물이 생성되지 않습니다."
 })
 public class Fish extends CokesAbility implements ActiveHandler {
-	private static final Config<Integer> cool = new Config<Integer>(Fish.class, "쿨타임", 30, 1) {
+	private static final Config<Integer> cool = new Config<Integer>(Fish.class, "쿨타임", 30, Config.Condition.COOLDOWN) {
 		@Override
 		public boolean condition(Integer value) {
 			return value >= 0;

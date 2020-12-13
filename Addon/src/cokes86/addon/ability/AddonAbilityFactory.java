@@ -61,6 +61,10 @@ public class AddonAbilityFactory {
 		//1.1.3
 		registerAbility(Boxer.class);
 
+		//1.1.4
+		registerAbility(Justin.class);
+		registerAbility(Casino.class);
+
 		if (PhantomThief.initPhantomThief()) {
 			registerAbility(PhantomThief.class);
 			AbilityFactory.registerAbility(PhantomThief.NullAbility.class);
@@ -73,7 +77,7 @@ public class AddonAbilityFactory {
 		registerSynergy(Stalker.class, Reincarnation.class, LureOfRoses.class);
 		registerSynergy(Revenge.class, Elva.class, RevengeArrow.class);
 		registerSynergy(Aris.class, Assassin.class, AirDisintegration.class);
-		registerSynergy(Muse.class, Sealer.class, Purgatory.class);
+		//registerSynergy(Muse.class, Sealer.class, Purgatory.class);
 		registerSynergy(EnchantArrow.class, EnchantArrow.class, ReaperArrow.class);
 		registerSynergy(Rune.class, Zeus.class, SlicingMaelstrom.class);
 	}

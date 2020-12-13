@@ -14,6 +14,7 @@ import daybreak.abilitywar.game.module.Wreck;
 import daybreak.abilitywar.game.team.interfaces.Teamable;
 import daybreak.abilitywar.utils.base.concurrent.TimeUnit;
 import daybreak.abilitywar.utils.base.math.LocationUtil;
+import daybreak.abilitywar.utils.base.minecraft.damage.Damages;
 import daybreak.abilitywar.utils.library.SoundLib;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
@@ -106,7 +107,7 @@ public class AirDisintegration extends CokesSynergy implements ActiveHandler {
 					if (count % 3 == 0) {
 						LivingEntity e = entities.remove();
 						getPlayer().teleport(e);
-						e.damage(chain * 2, getPlayer());
+						Damages.damageFixed(e, getPlayer(), chain * 2);
 						SoundLib.ENTITY_PLAYER_ATTACK_SWEEP.playSound(getPlayer());
 						SoundLib.ENTITY_EXPERIENCE_ORB_PICKUP.playSound(getPlayer());
 						stun.remove(e);

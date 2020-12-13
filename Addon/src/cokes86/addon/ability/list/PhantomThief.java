@@ -14,13 +14,11 @@ import daybreak.abilitywar.game.list.mix.triplemix.AbstractTripleMix;
 import daybreak.abilitywar.game.manager.effect.Stun;
 import daybreak.abilitywar.game.module.DeathManager;
 import daybreak.abilitywar.game.team.interfaces.Teamable;
-import daybreak.abilitywar.utils.annotations.Support;
 import daybreak.abilitywar.utils.base.TimeUtil;
 import daybreak.abilitywar.utils.base.collect.Pair;
 import daybreak.abilitywar.utils.base.concurrent.TimeUnit;
 import daybreak.abilitywar.utils.base.math.LocationUtil;
 import daybreak.abilitywar.utils.base.minecraft.nms.NMS;
-import daybreak.abilitywar.utils.base.minecraft.version.NMSVersion;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -44,7 +42,6 @@ import java.util.function.Predicate;
 @AbilityManifest(name = "팬텀 시프", rank = AbilityManifest.Rank.S, species = AbilityManifest.Species.HUMAN, explain = {
 		"$(Explain)" })
 @NotAvailable(AbstractTripleMix.class)
-@Support.Version(min = NMSVersion.v1_12_R1, max = NMSVersion.v1_12_R1)
 public class PhantomThief extends CokesAbility implements ActiveHandler, TargetHandler {
 	private AbilityBase newAbility = null;
 	private final Object Explain = new Object() {
@@ -57,21 +54,21 @@ public class PhantomThief extends CokesAbility implements ActiveHandler, TargetH
 
 	public static PhantomMathod instance = new PhantomMathod();
 
-	private static final Config<Integer> cooldown = new Config<Integer>(PhantomThief.class, "쿨타임", 120, 1) {
+	private static final Config<Integer> cooldown = new Config<Integer>(PhantomThief.class, "쿨타임", 120, Config.Condition.COOLDOWN) {
 		public boolean condition(Integer value) {
 			return value >= 0;
 		}
-	}, duration = new Config<Integer>(PhantomThief.class, "팬텀모드_지속시간", 15, 2) {
+	}, duration = new Config<Integer>(PhantomThief.class, "팬텀모드_지속시간", 15, Config.Condition.TIME) {
 		@Override
 		public boolean condition(Integer value) {
 			return value > 0;
 		}
-	}, glowing = new Config<Integer>(PhantomThief.class, "발광모드_지속시간", 10, 2) {
+	}, glowing = new Config<Integer>(PhantomThief.class, "발광모드_지속시간", 10, Config.Condition.TIME) {
 		@Override
 		public boolean condition(Integer value) {
 			return value > 0;
 		}
-	}, change = new Config<Integer>(PhantomThief.class, "능력변환_대기시간", 30, 2) {
+	}, change = new Config<Integer>(PhantomThief.class, "능력변환_대기시간", 30, Config.Condition.TIME) {
 		@Override
 		public boolean condition(Integer value) {
 			return value > 0;

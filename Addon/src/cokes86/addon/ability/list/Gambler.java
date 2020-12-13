@@ -21,7 +21,7 @@ import org.bukkit.event.entity.EntityDamageEvent;
 		"※능력 아이디어: RainStar_"
 })
 public class Gambler extends CokesAbility implements ActiveHandler {
-	private static final Config<Integer> du = new Config<Integer>(Gambler.class, "주기", 15, 2) {
+	private static final Config<Integer> du = new Config<Integer>(Gambler.class, "주기", 15, Config.Condition.TIME) {
 		@Override
 		public boolean condition(Integer value) {
 			return value > 0;

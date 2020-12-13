@@ -36,14 +36,14 @@ import java.util.List;
 		"하지만 타격 횟수를 채우지 못하였을 경우, 사망하게 됩니다.",
 		"※능력 아이디어: Sato207"})
 public class Reincarnation extends CokesAbility {
-	public static Config<Integer> duration = new Config<Integer>(Reincarnation.class, "지속시간", 25, 2) {
+	public static Config<Integer> duration = new Config<Integer>(Reincarnation.class, "지속시간", 25, Config.Condition.TIME) {
 
 		@Override
 		public boolean condition(Integer value) {
 			return value > 0;
 		}
 
-	}, cooldown = new Config<Integer>(Reincarnation.class, "쿨타임", 900, 1) {
+	}, cooldown = new Config<Integer>(Reincarnation.class, "쿨타임", 900, Config.Condition.COOLDOWN) {
 
 		@Override
 		public boolean condition(Integer value) {

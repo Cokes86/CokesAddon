@@ -52,6 +52,7 @@ import java.util.Random;
 },
 		stats = @Stats(offense = Level.FIVE, survival = Level.FIVE, crowdControl = Level.ZERO, mobility = Level.ZERO, utility = Level.EIGHT), difficulty = Difficulty.NORMAL)
 @NotAvailable(AbstractTripleMix.class)
+@Materials(materials = {Material.IRON_INGOT, Material.GOLD_INGOT})
 public class DataMining extends CokesAbility implements ActiveHandler {
 	private static final Config<Double> damageUp = new Config<Double>(DataMining.class, "최대대미지성장치", 2.5) {
 		@Override
@@ -69,7 +70,7 @@ public class DataMining extends CokesAbility implements ActiveHandler {
 		public boolean condition(Integer value) {
 			return value > 0;
 		}
-	}, duration = new Config<Integer>(DataMining.class, "자동스택추가주기", 60, 2) {
+	}, duration = new Config<Integer>(DataMining.class, "자동스택추가주기", 60, Config.Condition.TIME) {
 		@Override
 		public boolean condition(Integer value) {
 			return value > 0;

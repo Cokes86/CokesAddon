@@ -12,6 +12,7 @@ import daybreak.google.common.base.Strings;
 import org.bukkit.entity.Arrow;
 import org.bukkit.entity.Player;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
+import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.entity.ProjectileHitEvent;
 
 import java.util.Objects;
@@ -22,6 +23,7 @@ import java.util.Objects;
 		"적중에 실패할 시 인챈트 스택이 거리에 비례하여 1에서 $[max_stack_down]만큼 감소합니다.",
 		"인챈트 스택이 0인 상태로 적중에 실패할 시 고정 $[risk]의 대미지를 입습니다.",
 		"자신이 쏜 화살은 명중 시 바로 사라집니다.",
+		"플레이어를 사살할 시 자신이 보유한 인챈트 스택의 반을 소실합니다.",
 		"※능력 아이디어: RainStar_"
 })
 public class EnchantArrow extends CokesAbility {
@@ -61,6 +63,14 @@ public class EnchantArrow extends CokesAbility {
 
 	public void onUpdate(Update update) {
 		if (update == Update.RESTRICTION_CLEAR) {
+			ac.update("§b".concat(Strings.repeat(">", enchantStack)).concat("§f").concat(Strings.repeat(">", max_stack.getValue() - enchantStack)));
+		}
+	}
+	
+	@SubscribeEvent
+	private void onPlayerDeath(PlayerDeathEvent e) {
+		if (Objects.equals(e.getEntity().getKiller(), getPlayer())) {
+			enchantStack = enchantStack / 2;
 			ac.update("§b".concat(Strings.repeat(">", enchantStack)).concat("§f").concat(Strings.repeat(">", max_stack.getValue() - enchantStack)));
 		}
 	}

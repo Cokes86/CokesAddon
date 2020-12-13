@@ -24,11 +24,11 @@ import org.bukkit.event.Listener;
 		"  지속시간 종료 시 (지금까지 얻은 추가대미지 * $[multiply])의 대미지를 받습니다. $[cool]"
 })
 public class GodsBless extends CokesAbility implements ActiveHandler {
-	private static final Config<Integer> duration = new Config<Integer>(GodsBless.class, "지속시간", 15, 2) {
+	private static final Config<Integer> duration = new Config<Integer>(GodsBless.class, "지속시간", 15, Config.Condition.TIME) {
 		public boolean condition(Integer arg0) {
 			return arg0 > 0;
 		}
-	}, cool = new Config<Integer>(GodsBless.class, "쿨타임", 60, 1) {
+	}, cool = new Config<Integer>(GodsBless.class, "쿨타임", 60, Config.Condition.COOLDOWN) {
 		public boolean condition(Integer arg0) {
 			return arg0 >= 0;
 		}

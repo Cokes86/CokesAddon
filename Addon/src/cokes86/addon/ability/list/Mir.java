@@ -46,12 +46,12 @@ import java.util.function.Predicate;
 })
 @Beta
 public class Mir extends CokesAbility implements ActiveHandler {
-	private static final Config<Integer> cool = new Config<Integer>(Mir.class, "쿨타임", 20, 1) {
+	private static final Config<Integer> cool = new Config<Integer>(Mir.class, "쿨타임", 20, Config.Condition.COOLDOWN) {
 		@Override
 		public boolean condition(Integer value) {
 			return value >= 0;
 		}
-	}, duration = new Config<Integer>(Mir.class, "지속시간", 10, 2) {
+	}, duration = new Config<Integer>(Mir.class, "지속시간", 10, Config.Condition.TIME) {
 		@Override
 		public boolean condition(Integer value) {
 			return value > 0;

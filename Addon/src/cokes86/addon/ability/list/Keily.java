@@ -24,15 +24,15 @@ import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
 		"철괴 우클릭 시 스위치를 전부 소모해 자신의 위치에서 (소모한 스위치 * $[fuse])의 위력으로 폭발하고",
 		"$[duration]간 공중에 날 수 있습니다. $[cool]", "또한 능력 사용 직후 1회에 한해 낙하데미지를 받지 않습니다."})
 public class Keily extends CokesAbility implements ActiveHandler {
-	private static final Config<Integer> dura = new Config<Integer>(Keily.class, "카운터생성주기", 45, 2) {
+	private static final Config<Integer> dura = new Config<Integer>(Keily.class, "카운터생성주기", 45, Config.Condition.TIME) {
 		public boolean condition(Integer value) {
 			return value > 0;
 		}
-	}, cool = new Config<Integer>(Keily.class, "쿨타임", 45, 1) {
+	}, cool = new Config<Integer>(Keily.class, "쿨타임", 45, Config.Condition.COOLDOWN) {
 		public boolean condition(Integer value) {
 			return value > 0;
 		}
-	}, duration = new Config<Integer>(Keily.class, "비행지속시간", 2, 2) {
+	}, duration = new Config<Integer>(Keily.class, "비행지속시간", 2, Config.Condition.TIME) {
 		@Override
 		public boolean condition(Integer value) {
 			return value >= 0;

@@ -19,7 +19,7 @@ import org.bukkit.potion.PotionEffect;
 		"$[explain]"
 })
 public class Resurrection extends CokesAbility {
-	private static final Config<Integer> cool = new Config<Integer>(Resurrection.class, "무적시간", 1, 2) {
+	private static final Config<Integer> cool = new Config<Integer>(Resurrection.class, "무적시간", 1, Config.Condition.TIME) {
 		@Override
 		public boolean condition(Integer value) {
 			return value >= 0;

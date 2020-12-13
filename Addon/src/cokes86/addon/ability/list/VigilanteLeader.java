@@ -40,7 +40,7 @@ public class VigilanteLeader extends CokesAbility implements ActiveHandler {
 		public boolean condition(Integer value) {
 			return value > 0;
 		}
-	}, cool = new Config<Integer>(VigilanteLeader.class, "쿨타임", 90, 1) {
+	}, cool = new Config<Integer>(VigilanteLeader.class, "쿨타임", 90, Config.Condition.COOLDOWN) {
 		@Override
 		public boolean condition(Integer value) {
 			return value >= 0;

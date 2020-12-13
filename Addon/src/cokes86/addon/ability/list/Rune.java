@@ -37,7 +37,7 @@ public class Rune extends CokesAbility implements ActiveHandler {
 		public boolean condition(Integer value) {
 			return value > 0;
 		}
-	}, cool = new Config<Integer>(Rune.class, "쿨타임", 60, 1) {
+	}, cool = new Config<Integer>(Rune.class, "쿨타임", 60, Config.Condition.COOLDOWN) {
 		public boolean condition(Integer value) {
 			return value >= 0;
 		}

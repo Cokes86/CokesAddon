@@ -49,12 +49,12 @@ public class Seth extends CokesAbility implements ActiveHandler {
 		public boolean condition(Integer value) {
 			return value >= 0;
 		}
-	}, COOL = new Config<Integer>(Seth.class, "쿨타임", 60, 1) {
+	}, COOL = new Config<Integer>(Seth.class, "쿨타임", 60, Config.Condition.COOLDOWN) {
 		@Override
 		public boolean condition(Integer value) {
 			return value > 0;
 		}
-	}, DEBUFF = new Config<Integer>(Seth.class, "디버프시간", 5, 2) {
+	}, DEBUFF = new Config<Integer>(Seth.class, "디버프시간", 5, Config.Condition.TIME) {
 		@Override
 		public boolean condition(Integer value) {
 			return value >= 1;

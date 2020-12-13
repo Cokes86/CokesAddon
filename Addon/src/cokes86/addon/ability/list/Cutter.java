@@ -12,7 +12,7 @@ import org.bukkit.Material;
 		"이후 자연회복을 제외하고 1초당 1씩, 총 $[duration]만큼의 체력을 회복합니다."
 })
 public class Cutter extends CokesAbility implements ActiveHandler {
-	private static final Config<Integer> cool = new Config<Integer>(Cutter.class, "쿨타임", 10, 1) {
+	private static final Config<Integer> cool = new Config<Integer>(Cutter.class, "쿨타임", 10, Config.Condition.COOLDOWN) {
 		public boolean condition(Integer value) {
 			return value >= 0;
 		}

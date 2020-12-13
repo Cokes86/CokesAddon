@@ -48,11 +48,11 @@ import java.util.function.Predicate;
 }
 )
 public class Summoner extends CokesAbility implements ActiveHandler {
-	public static Config<Integer> duration = new Config<Integer>(Summoner.class, "대기시간", 3, 2) {
+	public static Config<Integer> duration = new Config<Integer>(Summoner.class, "대기시간", 3, Config.Condition.TIME) {
 		public boolean condition(Integer value) {
 			return value >= 0;
 		}
-	}, cooldown = new Config<Integer>(Summoner.class, "쿨타임", 150, 1) {
+	}, cooldown = new Config<Integer>(Summoner.class, "쿨타임", 150, Config.Condition.COOLDOWN) {
 		public boolean condition(Integer value) {
 			return value >= 0;
 		}

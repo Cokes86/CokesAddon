@@ -23,6 +23,7 @@ import daybreak.abilitywar.utils.base.math.LocationUtil;
 import daybreak.abilitywar.utils.base.math.geometry.Line;
 import daybreak.abilitywar.utils.base.math.geometry.location.LocationIterator;
 import daybreak.abilitywar.utils.base.minecraft.damage.Damages;
+import daybreak.abilitywar.utils.base.minecraft.entity.health.Healths;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.entity.Entity;
@@ -57,7 +58,7 @@ public class Aris extends CokesAbility implements ActiveHandler {
 		public boolean condition(Integer value) {
 			return value > 0;
 		}
-	}, cool = new Config<Integer>(Aris.class, "쿨타임", 40, 1) {
+	}, cool = new Config<Integer>(Aris.class, "쿨타임", 40, Config.Condition.COOLDOWN) {
 		@Override
 		public boolean condition(Integer value) {
 			return value > 0;
@@ -251,7 +252,7 @@ public class Aris extends CokesAbility implements ActiveHandler {
 					Location l = player.getLocation().clone();
 					player.teleport(l);
 					if (arg0 % 40 == 0) {
-						Damages.damageFixed(player, getPlayer(), 1);
+						Healths.setHealth(player, player.getHealth() - 1);
 					}
 				});
 			}

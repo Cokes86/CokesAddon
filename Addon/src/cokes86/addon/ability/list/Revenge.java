@@ -60,7 +60,7 @@ public class Revenge extends CokesAbility {
 				new AbilityTimer(1) {
 					public void run(int arg0) {
 						Player target = (Player) e.getEntity();
-						Healths.setHealth(target, target.getHealth() - plus);
+						if (!target.isDead()) Healths.setHealth(target, target.getHealth() - plus);
 					}
 				}.setInitialDelay(TimeUnit.TICKS, 1).setPeriod(TimeUnit.TICKS, 1).start();
 			}

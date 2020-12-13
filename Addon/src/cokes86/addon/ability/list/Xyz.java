@@ -47,7 +47,7 @@ public class Xyz extends CokesAbility implements ActiveHandler {
 		public boolean condition(Integer arg0) {
 			return arg0 > 0;
 		}
-	}, duration = new Config<Integer>(Xyz.class, "지속시간", 40, 2) {
+	}, duration = new Config<Integer>(Xyz.class, "지속시간", 40, Config.Condition.TIME) {
 		@Override
 		public boolean condition(Integer arg0) {
 			return arg0 > 0;

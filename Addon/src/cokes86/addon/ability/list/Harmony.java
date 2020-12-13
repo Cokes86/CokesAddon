@@ -22,7 +22,7 @@ import java.util.function.Predicate;
 		"그 주변 플레이어 역시 0.5의 체력을 증가시켜줍니다."
 })
 public class Harmony extends CokesAbility {
-	private static final Config<Integer> duration = new Config<Integer>(Harmony.class, "주기", 5, 2) {
+	private static final Config<Integer> duration = new Config<Integer>(Harmony.class, "주기", 5, Config.Condition.TIME) {
 		@Override
 		public boolean condition(Integer value) {
 			return value > 0;

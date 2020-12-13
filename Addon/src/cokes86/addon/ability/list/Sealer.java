@@ -13,6 +13,7 @@ import daybreak.abilitywar.game.AbstractGame.Participant;
 import daybreak.abilitywar.game.AbstractGame.Participant.ActionbarNotification.ActionbarChannel;
 import daybreak.abilitywar.game.list.mix.Mix;
 import daybreak.abilitywar.game.list.mix.triplemix.AbstractTripleMix;
+import daybreak.abilitywar.utils.annotations.Beta;
 import daybreak.abilitywar.utils.base.TimeUtil;
 import daybreak.abilitywar.utils.base.minecraft.entity.health.Healths;
 import daybreak.abilitywar.utils.library.SoundLib;
@@ -37,13 +38,14 @@ import org.bukkit.potion.PotionEffectType;
 		"§eC 등급§f: 나약함1 | §bB 등급§f: 재생1 | §aA 등급§f: 힘1 | §dS 등급§f: 힘2 | §6L 등급§f: 힘2, 저항1",
 		"§7특정 능력을 봉인하면 어떤 일이?!"
 })
+@Beta
 @NotAvailable({AbstractTripleMix.class})
 public class Sealer extends CokesAbility implements TargetHandler {
-	private static final Config<Integer> cool = new Config<Integer>(Sealer.class, "쿨타임", 60, 1) {
+	private static final Config<Integer> cool = new Config<Integer>(Sealer.class, "쿨타임", 60, Config.Condition.COOLDOWN) {
 		public boolean condition(Integer value) {
 			return value >= 0;
 		}
-	}, duration = new Config<Integer>(Sealer.class, "지속시간", 7, 2) {
+	}, duration = new Config<Integer>(Sealer.class, "지속시간", 7, Config.Condition.TIME) {
 		@Override
 		public boolean condition(Integer value) {
 			return value >= 0;
@@ -51,7 +53,7 @@ public class Sealer extends CokesAbility implements TargetHandler {
 	};
 
 	private final Cooldown c = new Cooldown(cool.getValue());
-	private SealTimer t = new SealTimer();
+	private final SealTimer t = new SealTimer();
 
 	public Sealer(Participant participant) {
 		super(participant);

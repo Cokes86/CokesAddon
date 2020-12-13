@@ -34,7 +34,7 @@ import java.util.concurrent.ConcurrentHashMap;
 })
 public class Ovisni extends CokesAbility implements ActiveHandler {
 
-	public static final Config<Integer> COOLDOWN_CONFIG = new Config<Integer>(Ovisni.class, "쿨타임", 30, 1) {
+	public static final Config<Integer> COOLDOWN_CONFIG = new Config<Integer>(Ovisni.class, "쿨타임", 30, Config.Condition.COOLDOWN) {
 		@Override
 		public boolean condition(Integer value) {
 			return value > 0;
@@ -44,7 +44,7 @@ public class Ovisni extends CokesAbility implements ActiveHandler {
 		public boolean condition(Integer value) {
 			return value > 0;
 		}
-	}, DELAY = new Config<Integer>(Ovisni.class, "지속딜레이", 10, 2) {
+	}, DELAY = new Config<Integer>(Ovisni.class, "지속딜레이", 10, Config.Condition.TIME) {
 		@Override
 		public boolean condition(Integer value) {
 			return value > 0;

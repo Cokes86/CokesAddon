@@ -56,11 +56,11 @@ public class Blocks extends CokesAbility implements ActiveHandler {
 		}
 	};
 	private Condition condition = Condition.STONE;
-	private Participant.ActionbarNotification.ActionbarChannel ac = this.newActionbarChannel();
+	private final Participant.ActionbarNotification.ActionbarChannel ac = this.newActionbarChannel();
 	private ArmorStand armorStand;
 	private final double knockback = Objects.requireNonNull(getPlayer().getAttribute(Attribute.GENERIC_KNOCKBACK_RESISTANCE)).getBaseValue();
 
-	AbilityTimer passive = new AbilityTimer() {
+	private final AbilityTimer passive = new AbilityTimer() {
 		@Override
 		protected void onStart() {
 			armorStand = getPlayer().getWorld().spawn(getPlayer().getLocation().clone().add(0,1,0), ArmorStand.class);
@@ -100,7 +100,7 @@ public class Blocks extends CokesAbility implements ActiveHandler {
 			armorStand.remove();
 		}
 	}.setPeriod(TimeUnit.TICKS, 1);
-	AbilityTimer invTimer = new AbilityTimer() {
+	private final AbilityTimer invTimer = new AbilityTimer() {
 		@Override
 		protected void run(int count) {
 			if (count == inv.getValue() * 20)
@@ -127,6 +127,7 @@ public class Blocks extends CokesAbility implements ActiveHandler {
 			case ABILITY_DESTROY:
 			case RESTRICTION_SET:
 				PotionEffects.INVISIBILITY.removePotionEffect(getPlayer());
+				Objects.requireNonNull(getPlayer().getAttribute(Attribute.GENERIC_KNOCKBACK_RESISTANCE)).setBaseValue(knockback);
 				break;
 			default:
 		}

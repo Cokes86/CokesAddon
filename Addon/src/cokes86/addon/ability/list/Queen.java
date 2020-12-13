@@ -24,7 +24,7 @@ import java.text.DecimalFormat;
 		"철괴 좌클릭시, 자신의 최대체력을 수치로 확인할 수 있습니다."
 })
 public class Queen extends CokesAbility implements ActiveHandler, TargetHandler {
-	private static final Config<Integer> cool = new Config<Integer>(Queen.class, "쿨타임", 120, 1) {
+	private static final Config<Integer> cool = new Config<Integer>(Queen.class, "쿨타임", 120, Config.Condition.COOLDOWN) {
 		@Override
 		public boolean condition(Integer value) {
 			return value >= 0;

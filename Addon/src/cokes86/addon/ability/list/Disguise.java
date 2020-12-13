@@ -37,7 +37,7 @@ public class Disguise extends CokesAbility implements ActiveHandler {
 		public boolean condition(Integer value) {
 			return value > 0;
 		}
-	}, cool = new Config<Integer>(Disguise.class, "쿨타임", 180, 1) {
+	}, cool = new Config<Integer>(Disguise.class, "쿨타임", 180, Config.Condition.COOLDOWN) {
 		@Override
 		public boolean condition(Integer value) {
 			return value >= 0;

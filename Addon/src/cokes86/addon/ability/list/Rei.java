@@ -52,7 +52,7 @@ public class Rei extends CokesAbility {
 			return value > 0.0;
 		}
 	};
-	private static final Config<Integer> cool = new Config<Integer>(Rei.class, "쿨타임", 100, 1) {
+	private static final Config<Integer> cool = new Config<Integer>(Rei.class, "쿨타임", 100, Config.Condition.COOLDOWN) {
 		public boolean condition(Integer value) {
 			return value >= 0;
 		}
@@ -84,7 +84,7 @@ public class Rei extends CokesAbility {
 			}
 		}
 
-		if (e.getEntity() instanceof Player && !e.getEntity().equals(getPlayer()) && damager.equals(getPlayer()) && !cooldown.isRunning()) {
+		if (e.getEntity() instanceof Player && !e.getEntity().equals(getPlayer()) && damager.equals(getPlayer()) && !cooldown.isRunning() && !e.isCancelled()) {
 			e.setDamage(e.getDamage() + damage.getValue());
 			final double maxHealth = getPlayer().getAttribute(Attribute.GENERIC_MAX_HEALTH).getBaseValue(), health = getPlayer().getHealth();
 			final float absorption = NMS.getAbsorptionHearts(getPlayer());
