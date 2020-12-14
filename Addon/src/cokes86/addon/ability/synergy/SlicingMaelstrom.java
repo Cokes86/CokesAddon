@@ -34,7 +34,7 @@ import java.util.function.Predicate;
 })
 @Beta
 public class SlicingMaelstrom extends CokesSynergy implements ActiveHandler {
-    public static final Config<Integer> cooldown = new Config<Integer>(SlicingMaelstrom.class, "쿨타임", 60, 1) {
+    public static final Config<Integer> cooldown = new Config<Integer>(SlicingMaelstrom.class, "쿨타임", 60, Config.Condition.COOLDOWN) {
         @Override
         public boolean condition(Integer value) {
             return value > 0;

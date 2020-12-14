@@ -36,11 +36,11 @@ import java.util.function.Predicate;
 		"자신의 좌표가 $[du]동안 공개됩니다.",
 		"지속시간동안 자신은 받는 대미지가 $[reduce]% 감소하며",
 		"지속시간 종료시 자신이 사망하지 않았다면 자신과 팀을 제외한",
-		"모든 플레이어의 채력을 0으로 변경합니다.",
+		"모든 플레이어의 체력을 0으로 변경합니다.",
 		"해당 능력은 사망하거나 지속시간 종료시 비활성화됩니다."
 })
 public class TheEnd extends CokesSynergy implements ActiveHandler {
-	public static Config<Integer> du = new Config<Integer>(TheEnd.class, "지속시간", 40, 2) {
+	public static Config<Integer> du = new Config<Integer>(TheEnd.class, "지속시간", 40, Config.Condition.TIME) {
 		@Override
 		public boolean condition(Integer arg0) {
 			return arg0 > 0;

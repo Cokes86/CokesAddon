@@ -1,5 +1,6 @@
 package cokes86.addon.ability.synergy;
 
+import cokes86.addon.ability.CokesAbility;
 import cokes86.addon.ability.CokesSynergy;
 import daybreak.abilitywar.ability.AbilityManifest;
 import daybreak.abilitywar.ability.AbilityManifest.Rank;
@@ -43,7 +44,7 @@ public class AirDisintegration extends CokesSynergy implements ActiveHandler {
 		public boolean condition(Integer arg0) {
 			return arg0 > 0;
 		}
-	}, cool = new Config<Integer>(AirDisintegration.class, "쿨타임", 15, 1) {
+	}, cool = new Config<Integer>(AirDisintegration.class, "쿨타임", 15, Config.Condition.COOLDOWN) {
 		@Override
 		public boolean condition(Integer arg0) {
 			return arg0 > 0;

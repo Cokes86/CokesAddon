@@ -48,7 +48,6 @@ import java.util.*;
 		"  플레이어를 죽일 때마다 체력을 한 칸 회복합니다.",
 		"  §8§l광기§f 상태인 져스틴끼리는 25%의 대미지만 주고 받을 수 있습니다."
 })
-@Beta
 public class Justin extends CokesAbility implements ActiveHandler {
 	private static final Config<Integer> COOL = new Config<Integer>(Justin.class, "쿨타임", 120, Config.Condition.COOLDOWN) {
 	}, TELEPORT_RANGE = new Config<Integer>(Justin.class, "이동_반경", 5) {

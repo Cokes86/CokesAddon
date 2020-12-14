@@ -30,7 +30,7 @@ import java.util.function.Predicate;
 		"  0.5초마다 채력을 1씩 회복합니다. $[cool]"
 })
 public class LureOfRoses extends CokesSynergy {
-	private static final SettingObject<Integer> cool = new Config<Integer>(LureOfRoses.class, "쿨타임", 300, 1) {
+	private static final SettingObject<Integer> cool = new Config<Integer>(LureOfRoses.class, "쿨타임", 300, Config.Condition.COOLDOWN) {
 
 		@Override
 		public boolean condition(Integer arg0) {

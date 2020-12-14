@@ -27,12 +27,12 @@ import org.bukkit.event.entity.ProjectileHitEvent;
 })
 @Beta
 public class ReaperArrow extends CokesSynergy implements ActiveHandler {
-	private static final Config<Integer> duration = new Config<Integer>(ReaperArrow.class, "충전시간", 60, 2) {
+	private static final Config<Integer> duration = new Config<Integer>(ReaperArrow.class, "충전시간", 60, Config.Condition.TIME) {
 		@Override
 		public boolean condition(Integer value) {
 			return value > 0;
 		}
-	}, cool = new Config<Integer>(ReaperArrow.class, "쿨타임", 60, 1) {
+	}, cool = new Config<Integer>(ReaperArrow.class, "쿨타임", 60, Config.Condition.COOLDOWN) {
 		@Override
 		public boolean condition(Integer value) {
 			return value >= 0;

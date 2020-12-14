@@ -30,7 +30,7 @@ public class RoyalStraightFlush extends CokesSynergy implements ActiveHandler {
 			return value > 0;
 		}
 	},
-			cool = new Config<Integer>(RoyalStraightFlush.class, "쿨타임", 90, 1) {
+			cool = new Config<Integer>(RoyalStraightFlush.class, "쿨타임", 90, Config.Condition.COOLDOWN) {
 				@Override
 				public boolean condition(Integer arg0) {
 					return arg0 >= 0;
