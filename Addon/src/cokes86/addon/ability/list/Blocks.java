@@ -6,6 +6,7 @@ import daybreak.abilitywar.ability.AbilityManifest;
 import daybreak.abilitywar.ability.AbilityManifest.Rank;
 import daybreak.abilitywar.ability.AbilityManifest.Species;
 import daybreak.abilitywar.ability.SubscribeEvent;
+import daybreak.abilitywar.ability.Tips;
 import daybreak.abilitywar.ability.decorator.ActiveHandler;
 import daybreak.abilitywar.game.AbstractGame.Participant;
 import daybreak.abilitywar.utils.base.concurrent.TimeUnit;
@@ -23,6 +24,7 @@ import org.bukkit.event.entity.EntityDamageByBlockEvent;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
+import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.player.PlayerArmorStandManipulateEvent;
 import org.bukkit.inventory.EntityEquipment;
 import org.bukkit.inventory.ItemStack;
@@ -36,6 +38,10 @@ import java.util.Objects;
 		"§6모래 §f: 낙하 대미지를 입지 않습니다. 피해를 입을 시 $[inv]초간 무적상태가 되어 무적상태에선 넉백당하지 않습니다.",
 		"§f유리 §f: 받는 대미지가 $[glass]% 증폭합니다. 유리상태동안 자신은 블라인드 버프를 얻습니다. 또한 스킬의 대상이 되지 않습니다.",
 		"§5옵시디언 §f: 폭발피해를 입지 않습니다. 넉백당하지 않습니다."})
+@Tips(tip = {
+		"4가지 상태를 다양한 상황에 맞추어 사용 가능",
+		"돌상태는 상대방이 곡괭이가 있지 않는 이상 늘 20% 대미지 감소"
+}, stats = @Tips.Stats(offense = Tips.Level.ZERO, survival = Tips.Level.EIGHT, crowdControl = Tips.Level.ZERO, mobility = Tips.Level.ZERO, utility = Tips.Level.EIGHT), difficulty = Tips.Difficulty.EASY)
 public class Blocks extends CokesAbility implements ActiveHandler {
 	private static final Config<Integer> stone = new Config<Integer>(Blocks.class, "돌_받는대미지감소량(%)", 20) {
 		@Override
@@ -130,6 +136,14 @@ public class Blocks extends CokesAbility implements ActiveHandler {
 				Objects.requireNonNull(getPlayer().getAttribute(Attribute.GENERIC_KNOCKBACK_RESISTANCE)).setBaseValue(knockback);
 				break;
 			default:
+		}
+	}
+
+	@SubscribeEvent
+	public void onPlayerDeath(PlayerDeathEvent e) {
+		if (e.getEntity().equals(getPlayer())) {
+			PotionEffects.INVISIBILITY.removePotionEffect(getPlayer());
+			Objects.requireNonNull(getPlayer().getAttribute(Attribute.GENERIC_KNOCKBACK_RESISTANCE)).setBaseValue(knockback);
 		}
 	}
 

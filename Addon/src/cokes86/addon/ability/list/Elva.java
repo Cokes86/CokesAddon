@@ -104,7 +104,7 @@ public class Elva extends CokesAbility {
 		}
 
 	}.setPeriod(TimeUnit.TICKS, 4);
-	AbilityTimer bow = new AbilityTimer() {
+	private final AbilityTimer bow = new AbilityTimer() {
 
 		@Override
 		protected void run(int arg0) {

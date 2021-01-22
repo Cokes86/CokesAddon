@@ -54,7 +54,7 @@ public class Xyz extends CokesAbility implements ActiveHandler {
 		}
 	};
 	private final Predicate<Entity> predicate = entity -> {
-		if (entity.equals(getPlayer())) return false;
+		if (entity == null || entity.equals(getPlayer())) return false;
 		if (entity instanceof Player) {
 			if (!getGame().isParticipating(entity.getUniqueId())) return false;
 			AbstractGame.Participant target = getGame().getParticipant(entity.getUniqueId());
@@ -79,7 +79,7 @@ public class Xyz extends CokesAbility implements ActiveHandler {
 
 	@Override
 	public boolean ActiveSkill(Material arg0, ClickType arg1) {
-		if (arg0 == Material.IRON_INGOT && arg1 == ClickType.RIGHT_CLICK && targets == null && xyzTime.isRunning()) {
+		if (arg0 == Material.IRON_INGOT && arg1 == ClickType.RIGHT_CLICK && targets == null && !xyzTime.isRunning()) {
 			targets = LocationUtil.getNearbyEntities(Player.class, getPlayer().getLocation(), range.getValue(), range.getValue(), predicate);
 			if (targets.size() != 0) {
 				xyzTime.start();

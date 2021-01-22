@@ -72,7 +72,7 @@ public class Boxer extends CokesAbility implements ActiveHandler, TargetHandler 
             this.start();
         }
     }.setInitialDelay(TimeUnit.SECONDS, duration.getValue()).register();
-    private boolean attacking = false;
+    private final AttackTimer attack = new AttackTimer();
 
     public Boxer(AbstractGame.Participant arg0) {
         super(arg0);
@@ -106,28 +106,16 @@ public class Boxer extends CokesAbility implements ActiveHandler, TargetHandler 
 
     @SubscribeEvent
     public void onEntityDamageByEntity(EntityDamageByEntityEvent e) {
-        if (e.getDamager().equals(getPlayer()) && e.getEntity() instanceof LivingEntity && !attacking) {
-            final double damage = e.getDamage()/2;
+        if (e.getDamager().equals(getPlayer()) && e.getEntity() instanceof LivingEntity && !attack.isRunning()) {
+            double damage = e.getDamage()/2;
             e.setDamage(damage);
-            attacking = true;
-            new AbilityTimer(1) {
-                @Override
-                protected void run(int count) {
-                    if (e.getEntity().isDead()) {
-                        stop(true);
-                        return;
-                    }
-                    ((LivingEntity) e.getEntity()).setNoDamageTicks(0);
-                    ((LivingEntity) e.getEntity()).damage(damage, getPlayer());
-                    attacking = false;
-                }
-            }.setInitialDelay(TimeUnit.TICKS, 3).start();
+            attack.start((LivingEntity) e.getEntity(), damage);
         }
 
         else if (e.getEntity().equals(getPlayer())) {
-            Random r = new Random();
+            final Random r = new Random();
             if (r.nextDouble() < percentage.getValue() / 100.00) {
-                SoundLib.ENTITY_PLAYER_ATTACK_SWEEP.playSound(getPlayer().getLocation());
+                SoundLib.ENTITY_PLAYER_ATTACK_SWEEP.playSound(getPlayer().getLocation(), 1.0F, 1.2F);
                 e.setCancelled(true);
             } else {
                 if (rest.isRunning()) {
@@ -142,6 +130,32 @@ public class Boxer extends CokesAbility implements ActiveHandler, TargetHandler 
     public void onPlayerMove(PlayerMoveEvent e) {
         if (e.getPlayer().equals(getPlayer()) && rest.isRunning()) {
             e.setTo(e.getFrom());
+        }
+    }
+
+    class AttackTimer extends AbilityTimer {
+        private LivingEntity entity;
+        private double damage;
+
+        public AttackTimer() {
+            super(1);
+            setInitialDelay(TimeUnit.TICKS, 3);
+        }
+
+        public boolean start(LivingEntity entity, double damage) {
+            this.entity = entity;
+            this.damage = damage;
+            return start();
+        }
+
+        @Override
+        protected void run(int count) {
+            if (entity.isDead()) {
+                stop(true);
+                return;
+            }
+            (entity).setNoDamageTicks(0);
+            (entity).damage(damage, getPlayer());
         }
     }
 }

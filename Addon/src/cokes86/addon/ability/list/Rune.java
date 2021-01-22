@@ -1,6 +1,7 @@
 package cokes86.addon.ability.list;
 
 import cokes86.addon.ability.CokesAbility;
+import cokes86.addon.util.AttributeUtil;
 import daybreak.abilitywar.ability.AbilityManifest;
 import daybreak.abilitywar.ability.AbilityManifest.Rank;
 import daybreak.abilitywar.ability.AbilityManifest.Species;
@@ -18,7 +19,6 @@ import daybreak.abilitywar.utils.library.SoundLib;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.Note;
-import org.bukkit.attribute.Attribute;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
@@ -29,7 +29,8 @@ import java.util.Random;
 import java.util.function.Predicate;
 
 @AbilityManifest(name = "룬", rank = Rank.A, species = Species.HUMAN, explain = {
-		"철괴 우클릭시 자신 주위 $[range]블럭 이내 랜덤한 1명에게 1의 고정데미지를 줍니다.", "이 행위는 0.25초 간격으로 $[damage]번 반복합니다. $[cool]",
+		"철괴 우클릭시 자신 주위 $[range]블럭 이내 랜덤한 1명에게 1의 고정데미지를 줍니다.",
+		"이 행위는 0.25초 간격으로 $[damage]번 반복합니다. $[cool]",
 		"※제작자 자캐 기반 능력자"})
 public class Rune extends CokesAbility implements ActiveHandler {
 	public static Config<Integer> damage = new Config<Integer>(Rune.class, "반복횟수", 7) {
@@ -70,10 +71,10 @@ public class Rune extends CokesAbility implements ActiveHandler {
 	private final Cooldown c = new Cooldown(cool.getValue());
 	private final Duration d = new Duration(damage.getValue(), c) {
 		public void damageFixedWithoutKnockback(Player target, float damage) {
-			double knockback = target.getAttribute(Attribute.GENERIC_KNOCKBACK_RESISTANCE).getValue();
-			target.getAttribute(Attribute.GENERIC_KNOCKBACK_RESISTANCE).setBaseValue(1);
-			Damages.damageFixed(target,getPlayer(), 1);
-			target.getAttribute(Attribute.GENERIC_KNOCKBACK_RESISTANCE).setBaseValue(knockback);
+			double knockback = AttributeUtil.getKnockbackResistance(target);
+			AttributeUtil.setKnockbackResistance(target, 1);
+			Damages.damageFixed(target,getPlayer(), damage);
+			AttributeUtil.setKnockbackResistance(target, knockback);
 		}
 
 		@Override

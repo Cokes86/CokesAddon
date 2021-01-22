@@ -15,7 +15,7 @@
 
     <dependencies>
         <dependency>
-            <groupId>DayBreak.AbilityWar</groupId>
+            <groupId>daybreak.abilitywar</groupId>
             <artifactId>AbilityWar</artifactId>
             <version>${abilitywar-version}</version>
             <scope>provided</scope>

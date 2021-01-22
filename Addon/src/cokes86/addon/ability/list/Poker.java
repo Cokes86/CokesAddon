@@ -10,14 +10,14 @@ import daybreak.abilitywar.game.AbstractGame.Participant.ActionbarNotification.A
 import daybreak.abilitywar.game.module.DeathManager;
 import daybreak.abilitywar.game.team.interfaces.Teamable;
 import daybreak.abilitywar.utils.base.minecraft.damage.Damages;
+import daybreak.abilitywar.utils.library.PotionEffects;
 import daybreak.abilitywar.utils.library.SoundLib;
+import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.entity.Arrow;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
-import org.bukkit.potion.PotionEffect;
-import org.bukkit.potion.PotionEffectType;
 
 import java.util.Arrays;
 import java.util.Random;
@@ -96,13 +96,13 @@ public class Poker extends CokesAbility implements ActiveHandler {
 						String str = "";
 						if (num[2] == 9 || num[2] == 10) {
 							str = str + "신속 버프를 " + number + "초만큼 부여합니다.";
-							getPlayer().addPotionEffect(new PotionEffect(PotionEffectType.SPEED, number * 20, 0));
+							PotionEffects.SPEED.addPotionEffect(getPlayer(), number * 20, 0, true);
 						}
 						getPlayer().sendMessage("이런! 탑입니다! " + str);
 						break;
 					case "Pair":
 						getPlayer().sendMessage("좋습니다! §a페어§f입니다! 재생2 버프를 " + (number * 2) + "초간 받습니다.");
-						getPlayer().addPotionEffect(new PotionEffect(PotionEffectType.REGENERATION, number * 2 * 20, 1));
+						PotionEffects.REGENERATION.addPotionEffect(getPlayer(), number * 20, 0, true);
 						break;
 					case "Straight":
 						getPlayer().sendMessage("와우! §b스트레이트§f입니다! 다음 공격은 추가적으로 " + (number) + "의 대미지를 줍니다.");
@@ -116,6 +116,7 @@ public class Poker extends CokesAbility implements ActiveHandler {
 								Damages.damageFixed(p.getPlayer(), getPlayer(), number * 1.5f);
 							}
 						}
+						Bukkit.broadcastMessage("[§c!§f] 포커가 같은 수 3개를 뽑아 모두에게 대미지를 줍니다!");
 						SoundLib.UI_TOAST_CHALLENGE_COMPLETE.broadcastSound();
 						break;
 				}

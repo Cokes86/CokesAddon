@@ -21,13 +21,8 @@ import java.text.DecimalFormat;
 		"상대방을 공격할 시 최근에 플레이어에게 받았던 대미지의 $[per]% 만큼의 고정대미지를 상대방에게 추가적으로 입힙니다."
 })
 public class Revenge extends CokesAbility {
-	public static Config<Integer> per = new Config<Integer>(Revenge.class, "반사대미지(%)", 40) {
-		@Override
-		public boolean condition(Integer value) {
-			return value >= 0;
-		}
-	};
-	DecimalFormat df = new DecimalFormat("0.00");
+	public static Config<Integer> per = new Config<>(Revenge.class, "반사대미지(%)", 40, integer -> integer > 0);
+	private final DecimalFormat df = new DecimalFormat("0.00");
 	private double finalDamage = 0;
 	private final ActionbarChannel ac = newActionbarChannel();
 

@@ -18,23 +18,9 @@ import org.bukkit.event.entity.EntityDamageByEntityEvent;
 		"※능력 아이디어: RainStar_"}
 )
 public class Perseverance extends CokesAbility {
-	private static final Config<Integer> max = new Config<Integer>(Perseverance.class, "최대치(%)", 200) {
-		@Override
-		public boolean condition(Integer value) {
-			return value > 0;
-		}
-	}, upg = new Config<Integer>(Perseverance.class, "성장치(%p)", 20) {
-		@Override
-		public boolean condition(Integer value) {
-			return value > 0;
-		}
-	};
-	private static final Config<Double> period = new Config<Double>(Perseverance.class, "주기", 3.5) {
-		@Override
-		public boolean condition(Double value) {
-			return value > 0;
-		}
-	};
+	private static final Config<Integer> max = new Config<>(Perseverance.class, "최대치(%)", 200),
+			upg = new Config<>(Perseverance.class, "성장치(%p)", 20);
+	private static final Config<Double> period = new Config<>(Perseverance.class, "주기", 3.5);
 	private double give = 100;
 	private final ActionbarChannel ac = newActionbarChannel();
 	private final AbilityTimer passive = new AbilityTimer() {
@@ -74,8 +60,7 @@ public class Perseverance extends CokesAbility {
 			e.setDamage(e.getDamage() * give / 100.00);
 			give = 100;
 			ac.update("상대방에게 주는 대미지: " + (give) + "%");
-			passive.stop(false);
-			passive.start();
+			passive.setCount(0);
 		}
 	}
 }

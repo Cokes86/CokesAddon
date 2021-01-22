@@ -92,6 +92,7 @@ public class GodsBless extends CokesAbility implements ActiveHandler {
 			onSilentEnd();
 			getPlayer().damage(add_damage * multiply.getValue(), getPlayer());
 			ac.update(null);
+			c.start();
 		}
 
 		@EventHandler

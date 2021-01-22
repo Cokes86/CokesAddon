@@ -1,6 +1,7 @@
 package cokes86.addon.ability.list;
 
 import cokes86.addon.ability.CokesAbility;
+import cokes86.addon.util.AttributeUtil;
 import daybreak.abilitywar.ability.AbilityBase;
 import daybreak.abilitywar.ability.AbilityManifest;
 import daybreak.abilitywar.ability.SubscribeEvent;
@@ -11,7 +12,6 @@ import daybreak.abilitywar.game.AbstractGame.Participant;
 import daybreak.abilitywar.game.event.GameEndEvent;
 import daybreak.abilitywar.utils.base.minecraft.entity.health.Healths;
 import org.bukkit.Material;
-import org.bukkit.attribute.Attribute;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 
@@ -37,13 +37,13 @@ public class Queen extends CokesAbility implements ActiveHandler, TargetHandler 
 			return aDouble >= 0;
 		}
 	};
-	DecimalFormat df = new DecimalFormat(".00");
+	private final DecimalFormat df = new DecimalFormat(".00");
 	private final double defaultHealth = Settings.getDefaultMaxHealth();
 	private final Cooldown cooldown = new Cooldown(cool.getValue());
 
 	public Queen(Participant arg0) {
 		super(arg0);
-		getPlayer().getAttribute(Attribute.GENERIC_MAX_HEALTH).setBaseValue(defaultHealth);
+		AttributeUtil.setMaxHealth(getPlayer(), defaultHealth);
 	}
 
 	@Override
@@ -53,7 +53,7 @@ public class Queen extends CokesAbility implements ActiveHandler, TargetHandler 
 			if (getGame().isParticipating(target) && !cooldown.isCooldown()) {
 				double plus = target.getHealth() / 2;
 
-				getPlayer().getAttribute(Attribute.GENERIC_MAX_HEALTH).setBaseValue(defaultHealth + plus);
+				AttributeUtil.setMaxHealth(getPlayer(), defaultHealth+plus);
 				Healths.setHealth(getPlayer(), getPlayer().getHealth() + (plus*multiply.getValue()));
 				cooldown.start();
 			}
@@ -63,19 +63,19 @@ public class Queen extends CokesAbility implements ActiveHandler, TargetHandler 
 	@Override
 	protected void onUpdate(AbilityBase.Update update) {
 		if (update == Update.RESTRICTION_SET || update == Update.ABILITY_DESTROY) {
-			getPlayer().getAttribute(Attribute.GENERIC_MAX_HEALTH).setBaseValue(defaultHealth);
+			AttributeUtil.setMaxHealth(getPlayer(), defaultHealth);
 		}
 	}
 
 	@SubscribeEvent(onlyRelevant = true)
 	public void onGameEnd(GameEndEvent e) {
-		getPlayer().getAttribute(Attribute.GENERIC_MAX_HEALTH).setBaseValue(defaultHealth);
+		AttributeUtil.setMaxHealth(getPlayer(), defaultHealth);
 	}
 
 	@Override
 	public boolean ActiveSkill(Material arg0, ClickType arg1) {
 		if (arg0.equals(Material.IRON_INGOT) && arg1.equals(ClickType.LEFT_CLICK)) {
-			getPlayer().sendMessage("현재 최대체력: " + df.format(getPlayer().getAttribute(Attribute.GENERIC_MAX_HEALTH).getValue()));
+			getPlayer().sendMessage("현재 최대체력: " + df.format(AttributeUtil.getMaxHealth(getPlayer())));
 		}
 		return false;
 	}

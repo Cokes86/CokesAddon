@@ -11,7 +11,6 @@ import daybreak.abilitywar.game.list.mix.Mix;
 import daybreak.abilitywar.game.list.mix.triplemix.TripleMix;
 import daybreak.abilitywar.game.module.DeathManager;
 import daybreak.abilitywar.game.team.interfaces.Teamable;
-import daybreak.abilitywar.utils.annotations.Beta;
 import daybreak.abilitywar.utils.base.concurrent.TimeUnit;
 import daybreak.abilitywar.utils.base.math.FastMath;
 import daybreak.abilitywar.utils.base.math.LocationUtil;
@@ -46,7 +45,7 @@ import java.util.*;
 		"  체력을 전부 회복 후 빨라지며, 회복 효과를 받지 않습니다.",
 		"  매 초 고정 1 대미지를 입으며 주는 대미지가 4 상승하고,",
 		"  플레이어를 죽일 때마다 체력을 한 칸 회복합니다.",
-		"  §8§l광기§f 상태인 져스틴끼리는 25%의 대미지만 주고 받을 수 있습니다."
+		"  다른 져스틴이 자신을 공격하는 경우 25%의 대미지만 받습니다."
 })
 public class Justin extends CokesAbility implements ActiveHandler {
 	private static final Config<Integer> COOL = new Config<Integer>(Justin.class, "쿨타임", 120, Config.Condition.COOLDOWN) {
@@ -306,9 +305,6 @@ public class Justin extends CokesAbility implements ActiveHandler {
 				cruel += event.getFinalDamage()/2;
 				channel.update("[일반] | 잔혹함: "+cruel);
 			}
-			if (LastTimer.isRunning()) {
-				event.setCancelled(true);
-			}
 			if (!LastTimer.isRunning() && getPlayer().getHealth() - event.getFinalDamage() <= 0) {
 				event.setCancelled(true);
 				Healths.setHealth(getPlayer(), getPlayer().getAttribute(Attribute.GENERIC_MAX_HEALTH).getBaseValue());
@@ -329,16 +325,13 @@ public class Justin extends CokesAbility implements ActiveHandler {
 			}
 		}
 
+		if (attacker instanceof Player && isJustin((Player) attacker) && event.getEntity().equals(getPlayer()) && LastTimer.isRunning()) {
+			event.setDamage(event.getDamage()*0.25);
+		}
+
 		if (attacker.equals(getPlayer())) {
 			if (DangerTimer.isRunning()) {
 				Healths.setHealth(getPlayer(), getPlayer().getHealth() + event.getFinalDamage()*0.1);
-			} else if (LastTimer.isRunning()) {
-				Entity entity = event.getEntity();
-				if (entity instanceof Player && isJustin((Player) entity)) {
-					event.setDamage((event.getDamage() + 4)*0.25);
-					return;
-				}
-				event.setDamage(event.getDamage()+4);
 			}
 		}
 		onEntityDamage(event);

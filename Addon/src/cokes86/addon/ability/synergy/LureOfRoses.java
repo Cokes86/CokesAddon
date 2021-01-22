@@ -1,6 +1,7 @@
 package cokes86.addon.ability.synergy;
 
 import cokes86.addon.ability.CokesSynergy;
+import cokes86.addon.util.AttributeUtil;
 import daybreak.abilitywar.ability.AbilityManifest;
 import daybreak.abilitywar.ability.AbilityManifest.Rank;
 import daybreak.abilitywar.ability.AbilityManifest.Species;
@@ -21,10 +22,10 @@ import org.bukkit.event.entity.EntityDamageEvent;
 import java.util.function.Predicate;
 
 @AbilityManifest(name = "장미의 유혹", rank = Rank.S, species = Species.OTHERS, explain = {
-		"패시브 - 가시돋움: 상대방을 공격할 시 가시 카운터를 1씩 올리고,",
+		"§7패시브 §8- §c가시돋움: 상대방을 공격할 시 가시 카운터를 1씩 올리고,",
 		"  카운터*0.1의 추가대미지를 줍니다. (최대 5대미지)",
 		"  또한 모든 받는 대미지가 (카운터)%만큼 증가합니다. (최대 50%)",
-		"쿨타임 패시브 - 유혹: 쿨타임이 아닐 때 자신이 죽을 위기에 처할 시",
+		"§7쿨타임 패시브 §8- §c유혹: 쿨타임이 아닐 때 자신이 죽을 위기에 처할 시",
 		"  모든 카운터를 소비하고 반경 10블럭 이내 모든 플레이어에게 (소비한 카운터*0.5)초의",
 		"  블라인드 효과를 준 후 지속시간동안 자신은 무적상태가 되며,",
 		"  0.5초마다 채력을 1씩 회복합니다. $[cool]"
@@ -104,7 +105,7 @@ public class LureOfRoses extends CokesSynergy {
 					for (Player p : LocationUtil.getNearbyEntities(Player.class, getPlayer().getLocation(), 10, 10, predicate)) {
 						PotionEffects.BLINDNESS.addPotionEffect(p, 50, 0, true);
 					}
-					getPlayer().setHealth(getPlayer().getHealth() + 1);
+					getPlayer().setHealth(Math.min(AttributeUtil.getMaxHealth(getPlayer()), getPlayer().getHealth() + 1));
 				}
 
 			}.setPeriod(TimeUnit.TICKS, 10);

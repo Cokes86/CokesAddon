@@ -14,6 +14,7 @@ import daybreak.abilitywar.utils.base.concurrent.TimeUnit;
 import daybreak.abilitywar.utils.base.language.korean.KoreanUtil;
 import daybreak.abilitywar.utils.base.math.LocationUtil;
 import daybreak.abilitywar.utils.base.math.geometry.Circle;
+import daybreak.abilitywar.utils.base.minecraft.nms.NMS;
 import daybreak.abilitywar.utils.base.minecraft.version.ServerVersion;
 import daybreak.abilitywar.utils.library.MaterialX;
 import daybreak.abilitywar.utils.library.ParticleLib;
@@ -44,7 +45,6 @@ import java.util.function.Predicate;
 		"§6노움 : §f$[range_gnome]블럭 안에 있는 자신은 흙으로 된 보호막을 생성해 자신이 받는 대미지가 $[damage_decrease]% 감소합니다.",
 		"※제작자 자캐 기반 능력자"
 })
-@Beta
 public class Mir extends CokesAbility implements ActiveHandler {
 	private static final Config<Integer> cool = new Config<Integer>(Mir.class, "쿨타임", 20, Config.Condition.COOLDOWN) {
 		@Override
@@ -124,6 +124,7 @@ public class Mir extends CokesAbility implements ActiveHandler {
 			if (ServerVersion.getVersion() >= 10 && ServerVersion.getVersion() <= 16) {
 				armorStand.setInvulnerable(true);
 			}
+			NMS.removeBoundingBox(armorStand);
 
 			ItemStack chestplate = MaterialX.LEATHER_CHESTPLATE.createItem();
 			LeatherArmorMeta meta = (LeatherArmorMeta) chestplate.getItemMeta();

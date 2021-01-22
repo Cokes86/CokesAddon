@@ -12,7 +12,6 @@ import daybreak.abilitywar.ability.Tips.Level;
 import daybreak.abilitywar.ability.Tips.Stats;
 import daybreak.abilitywar.config.enums.CooldownDecrease;
 import daybreak.abilitywar.game.AbstractGame.Participant;
-import daybreak.abilitywar.utils.base.language.korean.KoreanUtil;
 import daybreak.abilitywar.utils.base.minecraft.entity.health.event.PlayerSetHealthEvent;
 import daybreak.abilitywar.utils.base.minecraft.nms.NMS;
 import daybreak.abilitywar.utils.library.SoundLib;
@@ -52,19 +51,8 @@ public class Rei extends CokesAbility {
 			return value > 0.0;
 		}
 	};
-	private static final Config<Integer> cool = new Config<Integer>(Rei.class, "쿨타임", 100, Config.Condition.COOLDOWN) {
-		public boolean condition(Integer value) {
-			return value >= 0;
-		}
-	}, respawn = new Config<Integer>(Rei.class, "부활체력", 4) {
-		public boolean condition(Integer value) {
-			return value > 0;
-		}
-
-		public String toString() {
-			return getValue().toString() + KoreanUtil.getJosa(getValue().toString(), KoreanUtil.Josa.이가);
-		}
-	};
+	private static final Config<Integer> cool = new Config<>(Rei.class, "쿨타임", 100, Config.Condition.COOLDOWN),
+			respawn = new Config<>(Rei.class, "부활체력", 4, Config.Condition.NUMBER);
 
 	private final Cooldown cooldown = new Cooldown(cool.getValue(), CooldownDecrease._75);
 

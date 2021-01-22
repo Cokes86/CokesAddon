@@ -1,6 +1,7 @@
 package cokes86.addon.ability.list;
 
 import cokes86.addon.ability.CokesAbility;
+import cokes86.addon.util.AttributeUtil;
 import daybreak.abilitywar.ability.AbilityManifest;
 import daybreak.abilitywar.ability.SubscribeEvent;
 import daybreak.abilitywar.ability.decorator.ActiveHandler;
@@ -35,33 +36,7 @@ import java.util.function.Predicate;
         "철괴 좌클릭으로 자신이 얻은 효과를 알 수 있습니다."
 })
 public class Casino extends CokesAbility implements ActiveHandler {
-    private static final Config<Integer> COOLDOWN = new Config<Integer>(Casino.class, "쿨타임", 60, Config.Condition.COOLDOWN) {
-    };
-
-    enum Effects {
-        DAMAGE_UP("주는 대미지 1 상승"),
-        WITHER("영구 위더"),
-        RESISTANCE("받는 대미지 1 감소"),
-        HEAL("체력 2 회복"),
-        TWIST("시야 뒤틀림"),
-        REGAIN("회복량 0.2배 증가"),
-        HEALTH("최대 체력 2 감소"),
-        BLEED("4회 타격 시 출혈 부여"),
-        COOLDOWN_UP("쿨타임 50% 증가"),
-        FALL("낙하대미지 무시"),
-        STUN("스턴 2초 부여"),
-        FIRE_RESISTANCE("화염저항"),
-        PROJECTILE("발사체 초기속도 25% 감소");
-
-        private final String name;
-        Effects(String name) {
-            this.name = name;
-        }
-
-        public String getName() {
-            return name;
-        }
-    }
+    private static final Config<Integer> COOLDOWN = new Config<>(Casino.class, "쿨타임", 60, Config.Condition.COOLDOWN);
 
     private final double defaultMaxHealth = Objects.requireNonNull(getPlayer().getAttribute(Attribute.GENERIC_MAX_HEALTH)).getBaseValue();
     private Cooldown cooldown = new Cooldown(COOLDOWN.getValue(), CooldownDecrease._75);
@@ -89,7 +64,7 @@ public class Casino extends CokesAbility implements ActiveHandler {
         protected void run(int count) {
             Damages.damageMagic(getPlayer(), null, true, 1);
         }
-    }.setInitialDelay(TimeUnit.SECONDS, 2).setPeriod(TimeUnit.SECONDS, 2).register(),
+    }.setInitialDelay(TimeUnit.SECONDS, 4).setPeriod(TimeUnit.SECONDS, 4).register(),
     aim = new AbilityTimer() {
         @Override
         protected void run(int count) {
@@ -126,6 +101,16 @@ public class Casino extends CokesAbility implements ActiveHandler {
     };
 
     @Override
+    protected void onUpdate(Update update) {
+        if (update == Update.ABILITY_DESTROY || update == Update.RESTRICTION_SET) {
+            AttributeUtil.setMaxHealth(getPlayer(), defaultMaxHealth);
+        } else {
+            if (effects.get(Effects.HEALTH)) {
+                AttributeUtil.setMaxHealth(getPlayer(), defaultMaxHealth - 2);
+            }
+        }
+    }
+
     public boolean ActiveSkill(Material material, ClickType clickType) {
         if (material == Material.IRON_INGOT) {
             if (clickType == ClickType.RIGHT_CLICK && !cooldown.isCooldown() && !infoTimer.isRunning()) {
@@ -198,7 +183,7 @@ public class Casino extends CokesAbility implements ActiveHandler {
     @SubscribeEvent
     public void onEntityShootBow(EntityShootBowEvent event) {
         if (event.getEntity().equals(getPlayer()) && effects.get(Effects.PROJECTILE)) {
-            event.getProjectile().setVelocity(event.getEntity().getVelocity().multiply(.75));
+            event.getProjectile().setVelocity(event.getProjectile().getVelocity().multiply(.75));
         }
     }
 
@@ -223,7 +208,32 @@ public class Casino extends CokesAbility implements ActiveHandler {
         return current;
     }
 
-    class AbilityInfoTimer extends AbilityTimer {
+    private enum Effects {
+        DAMAGE_UP("주는 대미지 1 상승"),
+        WITHER("영구 위더(4초마다)"),
+        RESISTANCE("받는 대미지 1 감소"),
+        HEAL("체력 2 회복"),
+        TWIST("시야 뒤틀림"),
+        REGAIN("회복량 0.2배 증가"),
+        HEALTH("최대 체력 2 감소"),
+        BLEED("4회 타격 시 출혈 부여"),
+        COOLDOWN_UP("쿨타임 50% 증가"),
+        FALL("낙하대미지 무시"),
+        STUN("스턴 2초 부여"),
+        FIRE_RESISTANCE("화염저항"),
+        PROJECTILE("발사체 초기속도 25% 감소");
+
+        private final String name;
+        Effects(String name) {
+            this.name = name;
+        }
+
+        public String getName() {
+            return name;
+        }
+    }
+
+    private class AbilityInfoTimer extends AbilityTimer {
         private final ChatColor[] chatColors = {
                 ChatColor.YELLOW,
                 ChatColor.RED,
@@ -304,6 +314,8 @@ public class Casino extends CokesAbility implements ActiveHandler {
                         case STUN:
                             Stun.apply(getParticipant(), TimeUnit.SECONDS, 2);
                             break;
+                        default:
+                        	break;
                     }
                     cooldown.start();
                 }

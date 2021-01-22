@@ -22,13 +22,15 @@ import daybreak.abilitywar.utils.base.concurrent.TimeUnit;
 import daybreak.abilitywar.utils.base.math.LocationUtil;
 import daybreak.abilitywar.utils.base.math.geometry.Line;
 import daybreak.abilitywar.utils.base.math.geometry.location.LocationIterator;
-import daybreak.abilitywar.utils.base.minecraft.damage.Damages;
 import daybreak.abilitywar.utils.base.minecraft.entity.health.Healths;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
+import org.bukkit.entity.Projectile;
+import org.bukkit.event.entity.EntityDamageByBlockEvent;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
+import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.util.Vector;
 
@@ -53,22 +55,9 @@ import java.util.function.Predicate;
 		"그 동안은 공격할 수도, 받을 수도 없기 때문에 도망치기 딱 좋은 능력"
 }, stats = @Stats(offense = Level.SIX, survival = Level.EIGHT, crowdControl = Level.TWO, mobility = Level.ZERO, utility = Level.ZERO), difficulty = Difficulty.EASY)
 public class Aris extends CokesAbility implements ActiveHandler {
-	private static final Config<Integer> range = new Config<Integer>(Aris.class, "범위", 7) {
-		@Override
-		public boolean condition(Integer value) {
-			return value > 0;
-		}
-	}, cool = new Config<Integer>(Aris.class, "쿨타임", 40, Config.Condition.COOLDOWN) {
-		@Override
-		public boolean condition(Integer value) {
-			return value > 0;
-		}
-	}, max_count = new Config<Integer>(Aris.class, "최대_사슬_카운터", 10) {
-		@Override
-		public boolean condition(Integer value) {
-			return value > 0;
-		}
-	};
+	private static final Config<Integer> range = new Config<>(Aris.class, "범위", 7, integer -> integer > 0),
+			cool = new Config<>(Aris.class, "쿨타임", 40, Config.Condition.COOLDOWN),
+			max_count = new Config<>(Aris.class, "최대_사슬_카운터", 10, integer -> integer > 0);
 
 	private final Predicate<Entity> predicate = entity -> {
 		if (entity.equals(getPlayer())) return false;
@@ -136,10 +125,33 @@ public class Aris extends CokesAbility implements ActiveHandler {
 	}
 
 	@SubscribeEvent
-	public void onEntityDamage(EntityDamageByEntityEvent e) {
+	public void onEntityDamageByEntity(EntityDamageByEntityEvent e) {
+		onEntityDamage(e);
+
+		Entity attacker = e.getDamager();
+		if (attacker instanceof Projectile) {
+			Projectile projectile = (Projectile) attacker;
+			if (projectile.getShooter() instanceof Player) {
+				attacker = (Entity) projectile.getShooter();
+			}
+		}
+
+		if (attacker instanceof Player) {
+			if (activeTimer.isDuration(false) && activeTimer.getGrabbedPlayer().contains(attacker)) {
+				e.setCancelled(true);
+			}
+		}
+	}
+
+	@SubscribeEvent
+	public void onEntityDamageByBlock(EntityDamageByBlockEvent e) {
+		onEntityDamage(e);
+	}
+
+	@SubscribeEvent
+	public void onEntityDamage(EntityDamageEvent e) {
 		if (e.getEntity() instanceof Player) {
 			if (activeTimer.isDuration(false) && activeTimer.getGrabbedPlayer().contains(e.getEntity())) {
-				if (getPlayer().equals(e.getDamager()) && e.getDamage() == 1.000000001) return;
 				e.setCancelled(true);
 			}
 		}

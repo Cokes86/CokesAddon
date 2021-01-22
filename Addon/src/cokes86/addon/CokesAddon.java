@@ -3,7 +3,6 @@ package cokes86.addon;
 import cokes86.addon.ability.AddonAbilityFactory;
 import cokes86.addon.ability.CokesAbility;
 import cokes86.addon.ability.CokesSynergy;
-import cokes86.addon.ability.remake.Remaking;
 import cokes86.addon.configuration.Config;
 import daybreak.abilitywar.addon.Addon;
 import daybreak.abilitywar.config.Configuration.Settings;
@@ -60,11 +59,11 @@ public class CokesAddon extends Addon implements Listener {
 
 	@EventHandler()
 	public void onGameCredit(GameCreditEvent e) {
-		e.addCredit("§a코크스에드온 §f적용중. 총 " + AddonAbilityFactory.getAddonAbilities().size() + "개의 능력이 추가되었습니다.");
+		e.addCredit("§c코크스 애드온 §f적용중. 총 " + AddonAbilityFactory.getAddonAbilities().size() + "개의 능력이 추가되었습니다.");
 		if (e.getGame() instanceof AbstractMix) {
 			e.addCredit("§a믹스! §f새로운 시너지 " + AddonAbilityFactory.nameSynergyValues().size() + "개가 추가되었습니다!");
 		}
-		e.addCredit("§a코크스에드온 §f제작자 : Cokes_86  [§7디스코드 §f: Cokes_86#9329]");
+		e.addCredit("§c코크스 애드온 §f제작자 : Cokes_86  [§7디스코드 §f: Cokes_86#9329]");
 	}
 
 	public List<String> getBugLists() throws IllegalStateException, IOException {
@@ -93,12 +92,10 @@ public class CokesAddon extends Addon implements Listener {
 			try {
 				AddonAbilityFactory.nameValues();
 				AddonAbilityFactory.nameSynergyValues();
-				AddonAbilityFactory.getAddonRemaking();
 				Config.INSTANCE.update();
 
 				CokesAbility.config.update();
 				CokesSynergy.config.update();
-				if (Settings.DeveloperSettings.isEnabled()) Remaking.config.update();
 			} catch (IOException | InvalidConfigurationException e) {
 				Bukkit.getConsoleSender().sendMessage("콘피그를 불러오는 도중 오류가 발생하였습니다.");
 			}

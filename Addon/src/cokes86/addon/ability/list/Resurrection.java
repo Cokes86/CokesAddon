@@ -7,7 +7,10 @@ import daybreak.abilitywar.ability.AbilityManifest.Species;
 import daybreak.abilitywar.ability.SubscribeEvent;
 import daybreak.abilitywar.config.Configuration.Settings;
 import daybreak.abilitywar.game.AbstractGame.Participant;
+import daybreak.abilitywar.game.team.TeamGame;
 import daybreak.abilitywar.utils.library.SoundLib;
+
+import org.bukkit.Location;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.event.entity.EntityDamageByBlockEvent;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
@@ -79,7 +82,12 @@ public class Resurrection extends CokesAbility {
 						clearPotionEffect();
 						getPlayer().setHealth(getPlayer().getAttribute(Attribute.GENERIC_MAX_HEALTH).getValue());
 						if (respawn.getValue() && spawn) {
-							getPlayer().teleport(Settings.getSpawnLocation().toBukkitLocation());
+							Location spawnLocation = Settings.getSpawnLocation().toBukkitLocation();
+							if (getGame() instanceof TeamGame) {
+								TeamGame teamGame = (TeamGame) getGame();
+								spawnLocation = teamGame.getTeam(getParticipant()).getSpawn().toBukkitLocation();
+							}
+							getPlayer().teleport(spawnLocation);
 							usable = false;
 						} else {
 							t.start();

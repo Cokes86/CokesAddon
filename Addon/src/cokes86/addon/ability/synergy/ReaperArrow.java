@@ -21,7 +21,7 @@ import org.bukkit.event.entity.ProjectileHitEvent;
 
 @AbilityManifest(name = "사신의 화살", rank = AbilityManifest.Rank.S, species = AbilityManifest.Species.GOD, explain = {
 		"매 $[duration]마다 사신의 낫이 1개씩 충전됩니다. (최대 5회)",
-		"철괴 우클릭 시 사신의 화살을 장전하며, 발사할 수 있습니다. $[cool]",
+		"철괴 우클릭 시 죽음의 화살을 장전하며, 발사할 수 있습니다. $[cool]",
 		"죽음의 화살을 맞은 엔티티는 사신의 낫의 개수에 따라 최대체력에 비례한 고정대미지를 줍니다.",
 		"1개: $[damage1]%, 2개: $[damage2]%, 3개: $[damage3]%, 4개: $[damage4]%, 5개: $[damage5]%"
 })
@@ -89,8 +89,13 @@ public class ReaperArrow extends CokesSynergy implements ActiveHandler {
 	private int stack = 0;
 	private final AbilityTimer chargeTimer = new AbilityTimer() {
 		protected void run(int arg) {
+			if (cooldown.isRunning()) {
+				ac.update("");
+				return;
+			}
 
 			if (arg % duration.getValue() == 0) {
+				if (stack >= 5) return;
 				stack++;
 			}
 			ac.update("사신의 낫: " + stack);
@@ -121,11 +126,12 @@ public class ReaperArrow extends CokesSynergy implements ActiveHandler {
 
 	@SubscribeEvent
 	public void onEntityShootBow(EntityShootBowEvent e) {
-		if (ready && e.getProjectile() instanceof Arrow) {
+		if (ready && e.getProjectile() instanceof Arrow && e.getEntity().equals(getPlayer())) {
 			SoundLib.BLOCK_GRASS_BREAK.playSound(getPlayer());
 			this.reaperArrow = (Arrow) e.getProjectile();
 			this.ready = false;
 			effect.start();
+			cooldown.start();
 		}
 	}
 
@@ -138,6 +144,7 @@ public class ReaperArrow extends CokesSynergy implements ActiveHandler {
 			if (attribute != null) {
 				double max_Health = attribute.getValue();
 				Damages.damageFixed(entity, getPlayer(), (float) (max_Health * stackDamage[stack - 1]));
+				stack = 0;
 			}
 		}
 	}
@@ -147,6 +154,7 @@ public class ReaperArrow extends CokesSynergy implements ActiveHandler {
 		if (e.getEntity().equals(reaperArrow)) {
 			effect.stop(false);
 			reaperArrow = null;
+			stack = 0;
 		}
 	}
 }

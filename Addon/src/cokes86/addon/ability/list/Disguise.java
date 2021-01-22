@@ -1,6 +1,7 @@
 package cokes86.addon.ability.list;
 
 import cokes86.addon.ability.CokesAbility;
+import cokes86.addon.ability.list.disguise.DisguiseKit;
 import daybreak.abilitywar.ability.AbilityManifest;
 import daybreak.abilitywar.ability.AbilityManifest.Rank;
 import daybreak.abilitywar.ability.AbilityManifest.Species;
@@ -20,34 +21,20 @@ import org.bukkit.entity.Arrow;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
+import org.bukkit.event.player.PlayerQuitEvent;
 
 @AbilityManifest(name = "변장술", rank = Rank.A, species = Species.HUMAN, explain = {
 		"7칸 이내의 상대방을 바라본 체 철괴로 우클릭 시 그 대상으로 변장합니다.",
 		"변장하고 있는 동안 다른 참가자에게 받는 대미지의 $[reflect]%는 대상에게 돌아갑니다.",
-		"대미지를 3회 받으면 변장이 풀립니다. $[cool]"
+		"대미지를 3회 받으면 변장이 풀립니다. $[cool]",
+		"변장하는 동안 자신의 스킨이 변장한 플레이어의 스킨으로 변경됩니다."
 })
 public class Disguise extends CokesAbility implements ActiveHandler {
-	private static final Config<Integer> range = new Config<Integer>(Disguise.class, "범위", 7) {
-		@Override
-		public boolean condition(Integer value) {
-			return value > 0;
-		}
-	}, count = new Config<Integer>(Disguise.class, "변장_후_공격받는_횟수", 3) {
-		@Override
-		public boolean condition(Integer value) {
-			return value > 0;
-		}
-	}, cool = new Config<Integer>(Disguise.class, "쿨타임", 180, Config.Condition.COOLDOWN) {
-		@Override
-		public boolean condition(Integer value) {
-			return value >= 0;
-		}
-	}, reflect = new Config<Integer>(Disguise.class, "반사(%)", 50) {
-		@Override
-		public boolean condition(Integer value) {
-			return value > 0;
-		}
-	};
+	private static final Config<Integer> range = new Config<>(Disguise.class, "범위", 7, integer -> integer > 0),
+			count = new Config<>(Disguise.class, "변장_후_공격받는_횟수", 3, integer -> integer > 0),
+			cool = new Config<>(Disguise.class, "쿨타임", 180, Config.Condition.COOLDOWN),
+			reflect = new Config<>(Disguise.class, "반사(%)", 50, integer -> integer > 0);
+	private static final Config<Boolean> changeSkin = new Config<>(Disguise.class, "스킨변경", true);
 	private final Cooldown cooldown = new Cooldown(cool.getValue());
 	private final Predicate<Entity> predicate = entity -> {
 		if (entity == null || entity.equals(getPlayer())) return false;
@@ -76,6 +63,10 @@ public class Disguise extends CokesAbility implements ActiveHandler {
 	@Override
 	protected void onUpdate(Update update) {
 		getPlayer().setPlayerListName(getPlayer().getName());
+		if (changeSkin.getValue()) {
+			DisguiseKit.changeSkin(getPlayer(), target.getPlayer().getName());
+			DisguiseKit.setPlayerNameTag(getPlayer(), target.getPlayer().getName());
+		}
 	}
 
 	@Override
@@ -86,6 +77,10 @@ public class Disguise extends CokesAbility implements ActiveHandler {
 				target = getGame().getParticipant(player.getUniqueId());
 				getPlayer().setPlayerListName(player.getName());
 				getPlayer().sendMessage(player.getName()+"님으로 변장합니다.");
+				if (changeSkin.getValue()) {
+					DisguiseKit.changeSkin(getPlayer(), target.getPlayer().getName());
+					DisguiseKit.setPlayerNameTag(getPlayer(), target.getPlayer().getName());
+				}
 				return true;
 			}
 		}
@@ -110,6 +105,10 @@ public class Disguise extends CokesAbility implements ActiveHandler {
 				check = 0;
 				getPlayer().sendMessage("변장이 풀렸습니다.");
 				getPlayer().setPlayerListName(getPlayer().getName());
+				if (changeSkin.getValue()) {
+					DisguiseKit.changeSkin(getPlayer(), target.getPlayer().getName());
+					DisguiseKit.setPlayerNameTag(getPlayer(), target.getPlayer().getName());
+				}
 				cooldown.start();
 			}
 			((Player) damager).damage(e.getDamage() * reflect.getValue() / 100.0, damager);
@@ -117,5 +116,16 @@ public class Disguise extends CokesAbility implements ActiveHandler {
 		}
 	}
 
-
+	@SubscribeEvent
+	public void onPlayerLeave(PlayerQuitEvent e) {
+		if (e.getPlayer().equals(getPlayer())) {
+			target = null;
+			check = 0;
+			getPlayer().sendMessage("변장이 풀렸습니다.");
+			getPlayer().setPlayerListName(getPlayer().getName());
+			DisguiseKit.changeSkin(getPlayer(), target.getPlayer().getName());
+			DisguiseKit.setPlayerNameTag(getPlayer(), target.getPlayer().getName());
+			cooldown.start();
+		}
+	}
 }

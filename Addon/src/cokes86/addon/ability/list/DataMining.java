@@ -37,7 +37,9 @@ import java.util.Random;
 		"§7패시브 §8- §c강화학습§r: 액티브 스킬이 존재하지 않는 플레이어 수에 따라",
 		"  매 $[duration]마다 §e마이닝 스택§f을 자동으로 얻습니다.",
 		"§7철괴 우클릭 §8- §c스캐닝§r: 자신을 제외한 모든 플레이어의 능력을 확인합니다.",
-		"§7철괴 좌클릭 §8- §c뮤트§r: §c딥러닝§r으로 인한 여부 알림을 키거나 끌 수 있습니다.",
+		"§7철괴 좌클릭 §8- §c뮤트§r: §c딥러닝§r으로 인한 알림을 컨트롤합니다.",
+		"  웅크리고 사용 시 전투와 스택 획득 여부를, 그 이외의 경우는 스킬사용의 여부를",
+		"  끄고 킬 수 있습니다.",
 		"§7금괴 우클릭 §8- §c리절트§r: 최대 스택, 스택당 상승치를 확인합니다.",
 		"※능력 아이디어: RainStar_"
 })
@@ -54,33 +56,15 @@ import java.util.Random;
 @NotAvailable(AbstractTripleMix.class)
 @Materials(materials = {Material.IRON_INGOT, Material.GOLD_INGOT})
 public class DataMining extends CokesAbility implements ActiveHandler {
-	private static final Config<Double> damageUp = new Config<Double>(DataMining.class, "최대대미지성장치", 2.5) {
-		@Override
-		public boolean condition(Double value) {
-			return value > 0;
-		}
-	}, defenseUp = new Config<Double>(DataMining.class, "최대대미지감소성장치", 25.00) {
-		@Override
-		public boolean condition(Double value) {
-			return value > 0;
-		}
-	};
-	private static final Config<Integer> player_value = new Config<Integer>(DataMining.class, "인원별_스택치", 4) {
-		@Override
-		public boolean condition(Integer value) {
-			return value > 0;
-		}
-	}, duration = new Config<Integer>(DataMining.class, "자동스택추가주기", 60, Config.Condition.TIME) {
-		@Override
-		public boolean condition(Integer value) {
-			return value > 0;
-		}
-	};
-	DecimalFormat df = new DecimalFormat("0.00");
+	private static final Config<Double> damageUp = new Config<Double>(DataMining.class, "최대대미지성장치", 2.5),
+			defenseUp = new Config<Double>(DataMining.class, "최대대미지감소성장치", 25.00);
+	private static final Config<Integer> player_value = new Config<Integer>(DataMining.class, "인원별_스택치", 4),
+			duration = new Config<Integer>(DataMining.class, "자동스택추가주기", 60, Config.Condition.TIME);
+	private final DecimalFormat df = new DecimalFormat("0.00");
 	private int damage_count = 0;
 	private int defense_count = 0;
 	private final ActionbarChannel ac = newActionbarChannel();
-	private boolean message = true;
+	private boolean pvpMessage = true, skillMessage= true;
 	private final int max_count = (getGame().getParticipants().size() - 1) * player_value.getValue();
 
 	private final AbilityTimer passive = new AbilityTimer() {
@@ -94,7 +78,7 @@ public class DataMining extends CokesAbility implements ActiveHandler {
 						up = true;
 					}
 				}
-				if (message && up) getPlayer().sendMessage("자동으로 §e마이닝 스택§f을 획득하였습니다.");
+				if (pvpMessage && up) getPlayer().sendMessage("자동으로 §e마이닝 스택§f을 획득하였습니다.");
 				final double damage_value = damageUp.getValue()*2 / max_count * damage_count;
 				final double defense_value = defenseUp.getValue()*2 / max_count * defense_count;
 				ac.update("§e마이닝 스택§f: " + (damage_count + defense_count) + " (추가대미지: " + df.format(damage_value) + "  피해감소: " + df.format(defense_value) + "%)");
@@ -136,7 +120,7 @@ public class DataMining extends CokesAbility implements ActiveHandler {
 	@SubscribeEvent
 	private void onAbilityActiveSkill(AbilityActiveSkillEvent e) {
 		if (!e.getParticipant().equals(getParticipant())) {
-			if (message) getPlayer().sendMessage("§e" + e.getPlayer().getName() + "§f님이 능력을 사용하였습니다.");
+			if (skillMessage) getPlayer().sendMessage("§e" + e.getPlayer().getName() + "§f님이 능력을 사용하였습니다.");
 			if ((damage_count + defense_count) < max_count) {
 				Active();
 			}
@@ -168,7 +152,7 @@ public class DataMining extends CokesAbility implements ActiveHandler {
 				}
 
 				if (!e.isCancelled()) {
-					if (message) getPlayer().sendMessage(
+					if (pvpMessage) getPlayer().sendMessage(
 							"§e" + damager.getName() + "§f(§c♥" + df.format(((Player) damager).getHealth()) + "§f)님이 §e" + entity.getName()
 									+ "§f(§c♥" + df.format(entity.getHealth()) + "§f)님을 공격! (대미지: " + df.format(e.getFinalDamage()) + ")");
 				}
@@ -218,9 +202,15 @@ public class DataMining extends CokesAbility implements ActiveHandler {
 			}
 			getPlayer().sendMessage("§2========================");
 		} else if (material == Material.IRON_INGOT && clickType == ClickType.LEFT_CLICK) {
-			message = (!message);
-			if (message) getPlayer().sendMessage("사실 확인 메세지를 볼 수 있게 됩니다.");
-			else getPlayer().sendMessage("더이상 사실 확인 메세지를 볼 수 없습니다.");
+			if (getPlayer().isSneaking()) {
+				pvpMessage = !pvpMessage;
+				if (pvpMessage) getPlayer().sendMessage("전투, 스택 획득 여부 메세지를 볼 수 있게 됩니다.");
+				else getPlayer().sendMessage("전투, 스택 획득 여부 메세지를 볼 수 없게 됩니다.");
+			} else {
+				skillMessage = !skillMessage;
+				if (skillMessage) getPlayer().sendMessage("스킬 사용 여부 메세지를 볼 수 있게 됩니다.");
+				else getPlayer().sendMessage("스킬 사용 여부 메세지를 볼 수 없게 됩니다.");
+			}
 		} else if (material == Material.GOLD_INGOT && clickType == ClickType.RIGHT_CLICK) {
 			getPlayer().sendMessage("최대 §e마이닝 스택§f: "+max_count);
 			getPlayer().sendMessage("§e마이닝 스택§f상승 시 대미지 상승량: "+damageUp.getValue()*2 / max_count);

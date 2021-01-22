@@ -479,17 +479,19 @@ public class PhantomThief extends CokesAbility implements ActiveHandler, TargetH
 			@Override
 			protected void onEnd() {
 				try {
-					if (mix) {
-						Mix mix = (Mix) getParticipant().getAbility();
-						if (first) {
-							mix.setAbility(PhantomThief.class, continued);
+					if (getParticipant().getAbility() != null) {
+						if (mix) {
+							Mix mix = (Mix) getParticipant().getAbility();
+							if (first) {
+								mix.setAbility(PhantomThief.class, continued);
+							} else {
+								mix.setAbility(continued, PhantomThief.class);
+							}
 						} else {
-							mix.setAbility(continued, PhantomThief.class);
+							getParticipant().setAbility(PhantomThief.class);
 						}
-					} else {
-						getParticipant().setAbility(PhantomThief.class);
+						getParticipant().getPlayer().sendMessage("당신의 능력이 팬텀 시프가 되었습니다 /aw check");
 					}
-					getParticipant().getPlayer().sendMessage("당신의 능력이 팬텀 시프가 되었습니다 /aw check");
 				} catch (Exception e) {
 					e.printStackTrace();
 				}
