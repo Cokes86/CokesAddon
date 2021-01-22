@@ -5,11 +5,14 @@ import cokes86.addon.ability.list.disguise.DisguiseKit;
 import daybreak.abilitywar.ability.AbilityManifest;
 import daybreak.abilitywar.ability.AbilityManifest.Rank;
 import daybreak.abilitywar.ability.AbilityManifest.Species;
+import daybreak.abilitywar.ability.NotAvailable;
 import daybreak.abilitywar.ability.SubscribeEvent;
 import daybreak.abilitywar.ability.decorator.ActiveHandler;
 import daybreak.abilitywar.game.AbstractGame;
 import daybreak.abilitywar.game.AbstractGame.Participant;
+import daybreak.abilitywar.game.list.mix.triplemix.AbstractTripleMix;
 import daybreak.abilitywar.game.module.DeathManager;
+import daybreak.abilitywar.game.team.TeamGame;
 import daybreak.abilitywar.game.team.interfaces.Teamable;
 import daybreak.abilitywar.utils.base.math.LocationUtil;
 import daybreak.abilitywar.utils.library.SoundLib;
@@ -23,12 +26,15 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 
+import java.util.HashMap;
+
 @AbilityManifest(name = "변장술", rank = Rank.A, species = Species.HUMAN, explain = {
 		"7칸 이내의 상대방을 바라본 체 철괴로 우클릭 시 그 대상으로 변장합니다.",
 		"변장하고 있는 동안 다른 참가자에게 받는 대미지의 $[reflect]%는 대상에게 돌아갑니다.",
 		"대미지를 3회 받으면 변장이 풀립니다. $[cool]",
 		"변장하는 동안 자신의 스킨이 변장한 플레이어의 스킨으로 변경됩니다."
 })
+@NotAvailable({TeamGame.class})
 public class Disguise extends CokesAbility implements ActiveHandler {
 	private static final Config<Integer> range = new Config<>(Disguise.class, "범위", 7, integer -> integer > 0),
 			count = new Config<>(Disguise.class, "변장_후_공격받는_횟수", 3, integer -> integer > 0),
@@ -54,6 +60,8 @@ public class Disguise extends CokesAbility implements ActiveHandler {
 		return true;
 	};
 	private Participant target = null;
+
+	private final String originalName = getPlayer().getName();
 	private int check = 0;
 
 	public Disguise(Participant arg0) {
@@ -75,6 +83,7 @@ public class Disguise extends CokesAbility implements ActiveHandler {
 			Player player = LocationUtil.getEntityLookingAt(Player.class, getPlayer(), range.getValue(), predicate);
 			if (player != null) {
 				target = getGame().getParticipant(player.getUniqueId());
+
 				getPlayer().setPlayerListName(player.getName());
 				getPlayer().sendMessage(player.getName()+"님으로 변장합니다.");
 				if (changeSkin.getValue()) {
@@ -104,10 +113,9 @@ public class Disguise extends CokesAbility implements ActiveHandler {
 				target = null;
 				check = 0;
 				getPlayer().sendMessage("변장이 풀렸습니다.");
-				getPlayer().setPlayerListName(getPlayer().getName());
 				if (changeSkin.getValue()) {
-					DisguiseKit.changeSkin(getPlayer(), getPlayer().getName());
-					DisguiseKit.setPlayerNameTag(getPlayer(), getPlayer().getName());
+					DisguiseKit.changeSkin(getPlayer(), originalName);
+					DisguiseKit.setPlayerNameTag(getPlayer(), originalName);
 				}
 				cooldown.start();
 			}
@@ -122,9 +130,10 @@ public class Disguise extends CokesAbility implements ActiveHandler {
 			target = null;
 			check = 0;
 			getPlayer().sendMessage("변장이 풀렸습니다.");
-			getPlayer().setPlayerListName(getPlayer().getName());
-			DisguiseKit.changeSkin(getPlayer(), getPlayer().getName());
-			DisguiseKit.setPlayerNameTag(getPlayer(), getPlayer().getName());
+			if (changeSkin.getValue()) {
+				DisguiseKit.changeSkin(getPlayer(), originalName);
+				DisguiseKit.setPlayerNameTag(getPlayer(), originalName);
+			}
 			cooldown.start();
 		}
 	}
