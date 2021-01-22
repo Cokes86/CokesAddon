@@ -64,8 +64,8 @@ public class Disguise extends CokesAbility implements ActiveHandler {
 	protected void onUpdate(Update update) {
 		getPlayer().setPlayerListName(getPlayer().getName());
 		if (changeSkin.getValue()) {
-			DisguiseKit.changeSkin(getPlayer(), target.getPlayer().getName());
-			DisguiseKit.setPlayerNameTag(getPlayer(), target.getPlayer().getName());
+			DisguiseKit.changeSkin(getPlayer(), getPlayer().getName());
+			DisguiseKit.setPlayerNameTag(getPlayer(), getPlayer().getName());
 		}
 	}
 
@@ -106,8 +106,8 @@ public class Disguise extends CokesAbility implements ActiveHandler {
 				getPlayer().sendMessage("변장이 풀렸습니다.");
 				getPlayer().setPlayerListName(getPlayer().getName());
 				if (changeSkin.getValue()) {
-					DisguiseKit.changeSkin(getPlayer(), target.getPlayer().getName());
-					DisguiseKit.setPlayerNameTag(getPlayer(), target.getPlayer().getName());
+					DisguiseKit.changeSkin(getPlayer(), getPlayer().getName());
+					DisguiseKit.setPlayerNameTag(getPlayer(), getPlayer().getName());
 				}
 				cooldown.start();
 			}
@@ -123,8 +123,8 @@ public class Disguise extends CokesAbility implements ActiveHandler {
 			check = 0;
 			getPlayer().sendMessage("변장이 풀렸습니다.");
 			getPlayer().setPlayerListName(getPlayer().getName());
-			DisguiseKit.changeSkin(getPlayer(), target.getPlayer().getName());
-			DisguiseKit.setPlayerNameTag(getPlayer(), target.getPlayer().getName());
+			DisguiseKit.changeSkin(getPlayer(), getPlayer().getName());
+			DisguiseKit.setPlayerNameTag(getPlayer(), getPlayer().getName());
 			cooldown.start();
 		}
 	}
