@@ -92,10 +92,6 @@ public class v1_12_R1 implements IDisguise {
                 (((CraftPlayer)pl).getHandle()).playerConnection.sendPacket(new PacketPlayOutPlayerInfo(
                         PacketPlayOutPlayerInfo.EnumPlayerInfoAction.ADD_PLAYER, ((CraftPlayer)pl).getHandle())));
 
-        GameMode original = p.getGameMode();
-        p.setGameMode(GameMode.SPECTATOR);
-        p.setGameMode(original);
-
         Bukkit.getOnlinePlayers().forEach(pl -> pl.hidePlayer(AbilityWar.getPlugin(), p));
         Bukkit.getOnlinePlayers().forEach(pl -> pl.showPlayer(AbilityWar.getPlugin(), p));
     }
