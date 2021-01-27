@@ -1,87 +1,62 @@
 package cokes86.addon.ability.list.disguise;
 
-import com.mojang.authlib.GameProfile;
 import com.mojang.authlib.properties.Property;
 import daybreak.abilitywar.AbilityWar;
+import daybreak.abilitywar.utils.base.collect.Pair;
 import net.minecraft.server.v1_16_R3.EntityPlayer;
 import net.minecraft.server.v1_16_R3.PacketPlayOutPlayerInfo;
 import org.bukkit.Bukkit;
 import org.bukkit.craftbukkit.v1_16_R3.entity.CraftPlayer;
 import org.bukkit.entity.Player;
-import org.json.simple.JSONArray;
-import org.json.simple.JSONObject;
-import org.json.simple.parser.JSONParser;
-import org.json.simple.parser.ParseException;
 
-import javax.net.ssl.HttpsURLConnection;
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.lang.reflect.Field;
-import java.net.URL;
-import java.nio.charset.StandardCharsets;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.UUID;
 
 public class v1_16_R3 implements IDisguise {
+    private static final Map<UUID, Pair<String, Property>> origin = new HashMap<>();
+
     @Override
-    public void changeSkin(Player player, String targetName) {
+    public void changeSkin(Player player, UUID uuid) {
+        saveData();
+
+        CraftPlayer cp = (CraftPlayer) player;
+        cp.getProfile().getProperties().removeAll("textures");
+        cp.getProfile().getProperties().put("textures", origin.get(uuid).getRight());
+    }
+
+    @Override
+    public void saveData() {
+        for (Player pl : Bukkit.getOnlinePlayers()) {
+            if (origin.containsKey(pl.getUniqueId())) continue;
+            CraftPlayer cp = (CraftPlayer) pl;
+            origin.put(pl.getUniqueId(), Pair.of(pl.getName(), cp.getProfile().getProperties().get("textures").iterator().next()));
+        }
+    }
+
+    @Override
+    public void clearData() {
+        origin.clear();
+    }
+
+    @Override
+    public void setPlayerNameTag(Player p, UUID uuid) {
         try {
-            GameProfile profile = ((CraftPlayer)player).getHandle().getProfile();
+            EntityPlayer enp = ((CraftPlayer)p).getHandle();
 
-            profile.getProperties().removeAll("textures");
-            profile.getProperties().put("textures", getSkin(targetName));
+            Object obj = enp.getClass().getMethod("getProfile", new Class[0]).invoke(enp);
+            Field nameField = obj.getClass().getDeclaredField("name");
+            nameField.setAccessible(true);
+            nameField.set(obj, origin.get(uuid).getLeft());
 
-            reloadPlayer(player);
-        } catch (Exception ex) {
-            ex.printStackTrace();
+            reloadPlayer(p);
+        } catch (Exception e) {
+            e.printStackTrace();
         }
     }
 
-    public Property getSkin(String name) throws IOException, ParseException {
-        JSONParser parser = new JSONParser();
-        Object obj = parser.parse(getUUID(name));
-        JSONObject json = (JSONObject)obj;
-        Object obj1 = parser.parse(getProfile((String)json.get("id")));
-        JSONObject json1 = (JSONObject)obj1;
-        JSONObject raw = (JSONObject)json1.get("raw");
-        JSONArray arr = (JSONArray)raw.get("properties");
-        JSONObject skin = (JSONObject)arr.get(0);
-        return new Property("textures", (String)skin.get("value"), (String)skin.get("signature"));
-    }
-
-    public String getUUID(String playername) throws IOException {
-        URL url = new URL("https://api.minetools.eu/uuid/" + playername);
-        HttpsURLConnection connection = (HttpsURLConnection)url.openConnection();
-        connection.setDoOutput(true);
-        connection.setRequestMethod("GET");
-        StringBuilder response = new StringBuilder();
-        BufferedReader in = new BufferedReader(
-                new InputStreamReader((InputStream)connection.getContent(), StandardCharsets.UTF_8));
-        String line;
-        while ((line = in.readLine()) != null) {
-            response.append(line);
-        }
-        in.close();
-        return response.toString();
-    }
-
-    public String getProfile(String uuid) throws IOException {
-        URL url = new URL("https://api.minetools.eu/profile/" + uuid);
-        HttpsURLConnection connection = (HttpsURLConnection)url.openConnection();
-        connection.setDoOutput(true);
-        connection.setRequestMethod("GET");
-        StringBuilder response = new StringBuilder();
-        BufferedReader in = new BufferedReader(
-                new InputStreamReader((InputStream)connection.getContent(), StandardCharsets.UTF_8));
-        String line;
-        while ((line = in.readLine()) != null) {
-            response.append(line);
-        }
-        in.close();
-        return response.toString();
-    }
-
-
+    @Override
     public void reloadPlayer(Player p) {
         Bukkit.getOnlinePlayers().forEach(pl ->
                 (((CraftPlayer)pl).getHandle()).playerConnection.sendPacket(new PacketPlayOutPlayerInfo(
@@ -93,20 +68,5 @@ public class v1_16_R3 implements IDisguise {
 
         Bukkit.getOnlinePlayers().forEach(pl -> pl.hidePlayer(AbilityWar.getPlugin(), p));
         Bukkit.getOnlinePlayers().forEach(pl -> pl.showPlayer(AbilityWar.getPlugin(), p));
-    }
-
-    public void setPlayerNameTag(Player p, String name) {
-        try {
-            EntityPlayer enp = ((CraftPlayer)p).getHandle();
-
-            Object obj = enp.getClass().getMethod("getProfile", new Class[0]).invoke(enp);
-            Field nameField = obj.getClass().getDeclaredField("name");
-            nameField.setAccessible(true);
-            nameField.set(obj, name);
-
-            reloadPlayer(p);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
     }
 }

@@ -295,7 +295,7 @@ public class Justin extends CokesAbility implements ActiveHandler {
 	
 	public void addHealth(double add) {
 		final double maxHealth = getPlayer().getAttribute(Attribute.GENERIC_MAX_HEALTH).getBaseValue();
-		getPlayer().setHealth(Math.min(getPlayer().getHealth() + add, maxHealth));
+		getPlayer().setHealth(Math.max(0, Math.min(getPlayer().getHealth() + add, maxHealth)));
 	}
 	
 	@SubscribeEvent

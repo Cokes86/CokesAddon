@@ -4,7 +4,9 @@ import daybreak.abilitywar.utils.base.minecraft.version.ServerVersion;
 import daybreak.abilitywar.utils.base.minecraft.version.VersionNotSupportedException;
 import org.bukkit.entity.Player;
 
-public class DisguiseKit {
+import java.util.UUID;
+
+public class DisguiseUtil {
     private static final IDisguise instance;
 
     static {
@@ -16,11 +18,27 @@ public class DisguiseKit {
         }
     }
 
-    public static void changeSkin(Player player, String targetName) {
-        instance.changeSkin(player, targetName);
+    public static void changeSkin(Player player, UUID uuid) {
+        instance.changeSkin(player, uuid);
     }
 
-    public static void setPlayerNameTag(Player player, String targetName){
-        instance.setPlayerNameTag(player, targetName);
+    public static void setPlayerNameTag(Player player, UUID uuid){
+        instance.setPlayerNameTag(player, uuid);
+    }
+
+    public static void saveData() {
+        instance.saveData();
+    }
+
+    public static void clearData() {
+        instance.clearData();
+    }
+
+    public static void reloadPlayer(Player player) {
+        instance.reloadPlayer(player);
+    }
+
+    public static IDisguise getInstance() {
+        return instance;
     }
 }

@@ -1,7 +1,7 @@
 package cokes86.addon.ability.list;
 
 import cokes86.addon.ability.CokesAbility;
-import cokes86.addon.ability.list.disguise.DisguiseKit;
+import cokes86.addon.ability.list.disguise.DisguiseUtil;
 import daybreak.abilitywar.ability.AbilityManifest;
 import daybreak.abilitywar.ability.AbilityManifest.Rank;
 import daybreak.abilitywar.ability.AbilityManifest.Species;
@@ -10,7 +10,6 @@ import daybreak.abilitywar.ability.SubscribeEvent;
 import daybreak.abilitywar.ability.decorator.ActiveHandler;
 import daybreak.abilitywar.game.AbstractGame;
 import daybreak.abilitywar.game.AbstractGame.Participant;
-import daybreak.abilitywar.game.list.mix.triplemix.AbstractTripleMix;
 import daybreak.abilitywar.game.module.DeathManager;
 import daybreak.abilitywar.game.team.TeamGame;
 import daybreak.abilitywar.game.team.interfaces.Teamable;
@@ -26,21 +25,20 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 
-import java.util.HashMap;
-
 @AbilityManifest(name = "변장술", rank = Rank.A, species = Species.HUMAN, explain = {
 		"7칸 이내의 상대방을 바라본 체 철괴로 우클릭 시 그 대상으로 변장합니다.",
 		"변장하고 있는 동안 다른 참가자에게 받는 대미지의 $[reflect]%는 대상에게 돌아갑니다.",
 		"대미지를 3회 받으면 변장이 풀립니다. $[cool]",
-		"변장하는 동안 자신의 스킨이 변장한 플레이어의 스킨으로 변경됩니다."
+		"변장하는 동안 자신의 스킨과 이름표가 그 대상의 것으로 바뀝니다.",
+		"§8팀전에서 이름표가 바뀌는 기능은 작동하지 않습니다."
 })
-@NotAvailable({TeamGame.class})
 public class Disguise extends CokesAbility implements ActiveHandler {
 	private static final Config<Integer> range = new Config<>(Disguise.class, "범위", 7, integer -> integer > 0),
 			count = new Config<>(Disguise.class, "변장_후_공격받는_횟수", 3, integer -> integer > 0),
 			cool = new Config<>(Disguise.class, "쿨타임", 180, Config.Condition.COOLDOWN),
 			reflect = new Config<>(Disguise.class, "반사(%)", 50, integer -> integer > 0);
-	private static final Config<Boolean> changeSkin = new Config<>(Disguise.class, "스킨변경", true);
+	private static final Config<Boolean> changeSkin = new Config<>(Disguise.class, "스킨변경", true),
+			changeNameTag = new Config<>(Disguise.class, "이름표변경", true);
 	private final Cooldown cooldown = new Cooldown(cool.getValue());
 	private final Predicate<Entity> predicate = entity -> {
 		if (entity == null || entity.equals(getPlayer())) return false;
@@ -60,8 +58,6 @@ public class Disguise extends CokesAbility implements ActiveHandler {
 		return true;
 	};
 	private Participant target = null;
-
-	private final String originalName = getPlayer().getName();
 	private int check = 0;
 
 	public Disguise(Participant arg0) {
@@ -72,9 +68,15 @@ public class Disguise extends CokesAbility implements ActiveHandler {
 	protected void onUpdate(Update update) {
 		if (update != Update.RESTRICTION_CLEAR) {
 			if (changeSkin.getValue()) {
-				DisguiseKit.changeSkin(getPlayer(), originalName);
-				DisguiseKit.setPlayerNameTag(getPlayer(), originalName);
+				DisguiseUtil.changeSkin(getPlayer(), getPlayer().getUniqueId());
 			}
+			if (changeNameTag.getValue() && !(getGame() instanceof Teamable)) {
+				DisguiseUtil.setPlayerNameTag(getPlayer(), getPlayer().getUniqueId());
+			}
+			DisguiseUtil.reloadPlayer(getPlayer());
+			DisguiseUtil.clearData();
+		} else {
+			DisguiseUtil.saveData();
 		}
 	}
 
@@ -85,11 +87,15 @@ public class Disguise extends CokesAbility implements ActiveHandler {
 			if (player != null) {
 				target = getGame().getParticipant(player.getUniqueId());
 
+				DisguiseUtil.saveData();
 				getPlayer().sendMessage(player.getName()+"님으로 변장합니다.");
 				if (changeSkin.getValue()) {
-					DisguiseKit.changeSkin(getPlayer(), target.getPlayer().getName());
-					DisguiseKit.setPlayerNameTag(getPlayer(), target.getPlayer().getName());
+					DisguiseUtil.changeSkin(getPlayer(), player.getUniqueId());
 				}
+				if (changeNameTag.getValue() && !(getGame() instanceof Teamable)) {
+					DisguiseUtil.setPlayerNameTag(getPlayer(), player.getUniqueId());
+				}
+				DisguiseUtil.reloadPlayer(getPlayer());
 				return true;
 			}
 		}
@@ -114,12 +120,15 @@ public class Disguise extends CokesAbility implements ActiveHandler {
 				check = 0;
 				getPlayer().sendMessage("변장이 풀렸습니다.");
 				if (changeSkin.getValue()) {
-					DisguiseKit.changeSkin(getPlayer(), originalName);
-					DisguiseKit.setPlayerNameTag(getPlayer(), originalName);
+					DisguiseUtil.changeSkin(getPlayer(), getPlayer().getUniqueId());
 				}
+				if (changeNameTag.getValue() && !(getGame() instanceof Teamable)) {
+					DisguiseUtil.setPlayerNameTag(getPlayer(), getPlayer().getUniqueId());
+				}
+				DisguiseUtil.reloadPlayer(getPlayer());
 				cooldown.start();
 			}
-			((Player) damager).damage(e.getDamage() * reflect.getValue() / 100.0, damager);
+			target.getPlayer().damage(e.getDamage() * reflect.getValue() / 100.0, damager);
 			e.setDamage(0);
 		}
 	}
@@ -131,9 +140,12 @@ public class Disguise extends CokesAbility implements ActiveHandler {
 			check = 0;
 			getPlayer().sendMessage("변장이 풀렸습니다.");
 			if (changeSkin.getValue()) {
-				DisguiseKit.changeSkin(getPlayer(), originalName);
-				DisguiseKit.setPlayerNameTag(getPlayer(), originalName);
+				DisguiseUtil.changeSkin(getPlayer(), getPlayer().getUniqueId());
 			}
+			if (changeNameTag.getValue() && !(getGame() instanceof Teamable)) {
+				DisguiseUtil.setPlayerNameTag(getPlayer(), getPlayer().getUniqueId());
+			}
+			DisguiseUtil.reloadPlayer(getPlayer());
 			cooldown.start();
 		}
 	}

@@ -8,6 +8,7 @@ import daybreak.abilitywar.ability.AbilityManifest;
 import daybreak.abilitywar.ability.list.*;
 import daybreak.abilitywar.game.list.mix.synergy.SynergyFactory;
 import daybreak.abilitywar.game.manager.AbilityList;
+import daybreak.abilitywar.utils.annotations.Beta;
 import daybreak.abilitywar.utils.base.logging.Logger;
 
 import java.util.ArrayList;
@@ -62,6 +63,9 @@ public class AddonAbilityFactory {
 		registerAbility(Justin.class);
 		registerAbility(Casino.class);
 
+		//1.3.0
+		registerAbility(OnlyHitYou.class);
+
 		if (PhantomThief.initPhantomThief()) {
 			registerAbility(PhantomThief.class);
 			AbilityFactory.registerAbility(PhantomThief.NullAbility.class);
@@ -69,12 +73,15 @@ public class AddonAbilityFactory {
 			logger.error("팬텀 시프는 해당 버전에서 지원하지 않습니다.");
 		}
 
+		//test
+		AbilityFactory.registerAbility(Test.class);
+
 		registerSynergy(Poker.class, Poker.class, RoyalStraightFlush.class);
 		registerSynergy(Xyz.class, Xyz.class, TheEnd.class);
 		registerSynergy(Stalker.class, Reincarnation.class, LureOfRoses.class);
 		registerSynergy(Revenge.class, Elva.class, RevengeArrow.class);
 		registerSynergy(Aris.class, Assassin.class, AirDisintegration.class);
-		//registerSynergy(Muse.class, Sealer.class, Purgatory.class);
+		registerSynergy(Muse.class, Sealer.class, Purgatory.class);
 		registerSynergy(EnchantArrow.class, EnchantArrow.class, ReaperArrow.class);
 		registerSynergy(Rune.class, Zeus.class, SlicingMaelstrom.class);
 	}
@@ -85,7 +92,7 @@ public class AddonAbilityFactory {
 			if (AbilityFactory.isRegistered(clazz)) {
 				AbilityList.registerAbility(clazz);
 				AbilityManifest am = clazz.getAnnotation(AbilityManifest.class);
-				abilities.put(am.name(), clazz);
+				if (clazz.getAnnotation(Beta.class) == null) abilities.put(am.name(), clazz);
 			} else {
 				System.out.println("등록에 실패하였습니다. : " + clazz.getName());
 			}

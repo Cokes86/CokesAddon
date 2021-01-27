@@ -47,7 +47,7 @@ import java.util.function.Predicate;
 		"  이동시킨 플레이어들에게 신의 프레셔 상태이상을 $[DEBUFF] 부여합니다.",
 		"  이미 신의 프레셔 디버프를 보유한 플레이어는 전원 집합으로 이동하지 않습니다. $[COOL]",
 		"§7상태이상 §8- §c신의 프레셔§r: 상대방에게 주는 대미지가 세트의 전쟁스택에",
-	    "  반비례하여 감소합니다. 이 수치는 최소 0, 최대 $[DEBUFF_MAX]만큼 감소합니다.",
+	    "  반비례하여 감소합니다. 이 수치는 최소 0.5, 최대 $[DEBUFF_MAX]만큼 감소합니다.",
 		"  세트가 아닌 플레이어가 사용할 경우, 1만큼만 감소합니다."
 })
 public class Seth extends CokesAbility implements ActiveHandler {

@@ -27,7 +27,6 @@ import java.util.Objects;
 		"※능력 아이디어: RainStar_"
 })
 public class EnchantArrow extends CokesAbility {
-
 	private static final Config<Integer> damage = new Config<Integer>(EnchantArrow.class, "추가대미지(%)", 10) {
 		@Override
 		public boolean condition(Integer value) {
@@ -56,6 +55,7 @@ public class EnchantArrow extends CokesAbility {
 	};
 	private int enchantStack = 0;
 	private final ActionbarChannel ac = newActionbarChannel();
+	private final String notice = "⤐";
 
 	public EnchantArrow(Participant participant) {
 		super(participant);
@@ -63,15 +63,15 @@ public class EnchantArrow extends CokesAbility {
 
 	public void onUpdate(Update update) {
 		if (update == Update.RESTRICTION_CLEAR) {
-			ac.update("§b".concat(Strings.repeat(">", enchantStack)).concat("§f").concat(Strings.repeat(">", max_stack.getValue() - enchantStack)));
+			ac.update("§b".concat(Strings.repeat(notice, enchantStack)).concat("§f").concat(Strings.repeat(notice, max_stack.getValue() - enchantStack)));
 		}
 	}
 	
 	@SubscribeEvent
 	private void onPlayerDeath(PlayerDeathEvent e) {
-		if (Objects.equals(e.getEntity().getKiller(), getPlayer())) {
+		if (e.getEntity().getKiller() != null && e.getEntity().getKiller().getUniqueId().equals(getPlayer().getUniqueId())) {
 			enchantStack = enchantStack / 2;
-			ac.update("§b".concat(Strings.repeat(">", enchantStack)).concat("§f").concat(Strings.repeat(">", max_stack.getValue() - enchantStack)));
+			ac.update("§b".concat(Strings.repeat(notice, enchantStack)).concat("§f").concat(Strings.repeat(notice, max_stack.getValue() - enchantStack)));
 		}
 	}
 
@@ -89,7 +89,7 @@ public class EnchantArrow extends CokesAbility {
 				}
 			}
 			e.getEntity().remove();
-			ac.update("§b".concat(Strings.repeat(">", enchantStack)).concat("§f").concat(Strings.repeat(">", max_stack.getValue() - enchantStack)));
+			ac.update("§b".concat(Strings.repeat(notice, enchantStack)).concat("§f").concat(Strings.repeat(notice, max_stack.getValue() - enchantStack)));
 		}
 	}
 
@@ -102,7 +102,7 @@ public class EnchantArrow extends CokesAbility {
 				final double length = getPlayer().getLocation().clone().subtract(e.getEntity().getLocation().clone()).length();
 				enchantStack += Math.min(max_stack_up.getValue(), length / 7 + 1);
 				if (enchantStack >= max_stack.getValue()) enchantStack = max_stack.getValue();
-				ac.update("§b".concat(Strings.repeat(">", enchantStack)).concat("§f").concat(Strings.repeat(">", max_stack.getValue() - enchantStack)));
+				ac.update("§b".concat(Strings.repeat(notice, enchantStack)).concat("§f").concat(Strings.repeat(notice, max_stack.getValue() - enchantStack)));
 				arrow.remove();
 			}
 		}

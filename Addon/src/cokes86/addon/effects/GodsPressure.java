@@ -6,8 +6,13 @@ import daybreak.abilitywar.ability.AbilityBase;
 import daybreak.abilitywar.game.AbstractGame;
 import daybreak.abilitywar.game.manager.effect.registry.*;
 import daybreak.abilitywar.utils.base.concurrent.TimeUnit;
+import daybreak.abilitywar.utils.base.minecraft.nms.NMS;
 import daybreak.abilitywar.utils.library.SoundLib;
 import org.bukkit.Bukkit;
+import org.bukkit.Location;
+import org.bukkit.entity.ArmorStand;
+import org.bukkit.entity.Arrow;
+import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.HandlerList;
@@ -19,12 +24,17 @@ import org.bukkit.event.entity.EntityDamageByEntityEvent;
 })
 public class GodsPressure extends AbstractGame.Effect implements Listener {
     private final double damage;
-    private final Player player;
     private final AbilityBase owner;
-    public static final EffectRegistry.EffectRegistration<GodsPressure> pressure = EffectRegistry.registerEffect(GodsPressure.class);
+    private final AbstractGame.Participant participant;
+    private final ArmorStand hologram;
+    private static final EffectRegistry.EffectRegistration<GodsPressure> pressure = EffectRegistry.registerEffect(GodsPressure.class);
 
     public static void apply(AbstractGame.Participant participant, TimeUnit timeunit, int duration, AbilityBase owner) {
         pressure.apply(participant, timeunit, duration, "set-owner", owner);
+    }
+
+    public static void apply(AbstractGame.Participant participant, TimeUnit timeunit, int duration) {
+        pressure.apply(participant, timeunit, duration);
     }
 
     @EffectConstructor(name = "set-owner")
@@ -36,24 +46,56 @@ public class GodsPressure extends AbstractGame.Effect implements Listener {
             Seth seth = (Seth) owner;
             decrease = seth.getKill() / (((double) seth.getParticipantSize()) * 2);
         } else {
-            decrease = 3.0;
+            decrease = 3.5;
         }
         this.damage = Seth.DEBUFF_MAX.getValue() - decrease;
-        this.player = participant.getPlayer();
+        this.participant = participant;
+
+        final Location location = participant.getPlayer().getLocation();
+        this.hologram = location.getWorld().spawn(location.clone().add(0, 2.2, 0), ArmorStand.class);
+        hologram.setVisible(false);
+        hologram.setGravity(false);
+        hologram.setInvulnerable(true);
+        NMS.removeBoundingBox(hologram);
+        hologram.setCustomNameVisible(true);
+        hologram.setCustomName("§c신의 프레셔");
+
+        this.setPeriod(TimeUnit.TICKS, 1);
+    }
+
+    public GodsPressure(AbstractGame.Participant participant, TimeUnit timeunit, int duration) {
+        participant.getGame().super(pressure, participant, timeunit.toTicks(duration));
+        this.owner = null;
+        this.damage = Seth.DEBUFF_MAX.getValue() - 3;
+        this.participant = participant;
+
+        final Location location = participant.getPlayer().getLocation();
+        this.hologram = location.getWorld().spawn(location.clone().add(0, 2.2, 0), ArmorStand.class);
+        hologram.setVisible(false);
+        hologram.setGravity(false);
+        hologram.setInvulnerable(true);
+        NMS.removeBoundingBox(hologram);
+        hologram.setCustomNameVisible(true);
+        hologram.setCustomName("§c신의 프레셔");
 
         this.setPeriod(TimeUnit.TICKS, 1);
     }
 
     public void onStart() {
-        player.teleport(owner.getPlayer().getLocation());
-        SoundLib.ENTITY_PLAYER_ATTACK_SWEEP.playSound(player);
-        SoundLib.ENTITY_PLAYER_ATTACK_SWEEP.playSound(owner.getPlayer());
+        SoundLib.ENTITY_PLAYER_ATTACK_SWEEP.playSound(participant.getPlayer());
+        if (owner != null) {
+            participant.getPlayer().teleport(owner.getPlayer().getLocation());
+            SoundLib.ENTITY_PLAYER_ATTACK_SWEEP.playSound(owner.getPlayer());
+        }
         Bukkit.getPluginManager().registerEvents(this, AbilityWar.getPlugin());
     }
 
     @Override
     protected void run(int arg0) {
         super.run(arg0);
+        if (hologram.isValid()) {
+            hologram.teleport(participant.getPlayer().getLocation().clone().add(0,2.2,0));
+        }
     }
 
     @Override
@@ -70,6 +112,16 @@ public class GodsPressure extends AbstractGame.Effect implements Listener {
 
     @EventHandler
     private void onEntityDamageByEntity(final EntityDamageByEntityEvent e) {
-        e.setDamage(Math.max(0, e.getDamage() - damage));
+        Entity attacker = e.getDamager();
+        if (attacker instanceof Arrow) {
+            Arrow arrow = (Arrow) attacker;
+            if (arrow.getShooter() instanceof Entity) {
+                attacker = (Entity) arrow.getShooter();
+            }
+        }
+
+        if (attacker.getUniqueId().equals(participant.getPlayer().getUniqueId())) {
+            e.setDamage(Math.max(0.5, e.getDamage() - damage));
+        }
     }
 }

@@ -148,7 +148,7 @@ public class Ovisni extends CokesAbility implements ActiveHandler {
 			this.target = target;
 			final Player targetPlayer = target.getPlayer();
 			this.hologram = NMS.newHologram(targetPlayer.getWorld(), targetPlayer.getLocation().getX(), targetPlayer.getLocation().getY() + targetPlayer.getEyeHeight() + 0.6, targetPlayer.getLocation().getZ());
-			this.hologram.setText(Strings.repeat("§2◆", stack).concat(Strings.repeat("§2◇", maxCounter - stack)));
+			this.hologram.setText(Strings.repeat("§2☣", stack).concat(Strings.repeat("§f☣", maxCounter - stack)));
 			this.hologram.display(getPlayer());
 			this.stack = 1;
 			this.start();
@@ -156,7 +156,7 @@ public class Ovisni extends CokesAbility implements ActiveHandler {
 
 		@Override
 		protected void run(int arg0) {
-			this.hologram.setText(Strings.repeat("§2◆", stack).concat(Strings.repeat("§2◇", maxCounter - stack)));
+			this.hologram.setText(Strings.repeat("§2☣", stack).concat(Strings.repeat("§f☣", maxCounter - stack)));
 			final Player targetPlayer = target.getPlayer();
 			hologram.teleport(targetPlayer.getWorld(), targetPlayer.getLocation().getX(), targetPlayer.getLocation().getY() + targetPlayer.getEyeHeight() + 0.6, targetPlayer.getLocation().getZ(), targetPlayer.getLocation().getYaw(), 0);
 			if (arg0 % (20 * DELAY.getValue()) == 0 && damageCount <= MAX_DAMAGE_HIT.getValue()) {
