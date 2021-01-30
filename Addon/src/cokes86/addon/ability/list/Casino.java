@@ -160,7 +160,7 @@ public class Casino extends CokesAbility implements ActiveHandler {
                 e.setDamage(e.getDamage()+1);
             }
             if (effects.get(Effects.BLEED)) {
-                if (predicate.test(e.getEntity())) {
+                if (predicate.test(e.getEntity()) && getGame().isParticipating(e.getEntity().getUniqueId())) {
                     AbstractGame.Participant p = getGame().getParticipant(e.getEntity().getUniqueId());
                     int hit = this.hit.getOrDefault(e.getEntity().getUniqueId(), 0) + 1;
                     if (hit >= 4) {

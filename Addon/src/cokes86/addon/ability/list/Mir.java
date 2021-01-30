@@ -10,6 +10,7 @@ import daybreak.abilitywar.game.AbstractGame.Participant;
 import daybreak.abilitywar.game.module.DeathManager;
 import daybreak.abilitywar.game.team.interfaces.Teamable;
 import daybreak.abilitywar.utils.annotations.Beta;
+import daybreak.abilitywar.utils.base.color.RGB;
 import daybreak.abilitywar.utils.base.concurrent.TimeUnit;
 import daybreak.abilitywar.utils.base.language.korean.KoreanUtil;
 import daybreak.abilitywar.utils.base.math.LocationUtil;
@@ -230,16 +231,16 @@ public class Mir extends CokesAbility implements ActiveHandler {
 	}
 
 	enum Element {
-		IFRIT(MaterialX.REDSTONE_BLOCK.getMaterial(), ParticleLib.RGB.of(255, 1, 1), range_ifrit.getValue()),
-		SHADE(MaterialX.COAL_BLOCK.getMaterial(), ParticleLib.RGB.of(1, 1, 1), range_shade.getValue()),
-		THUNDERBIRD(MaterialX.LAPIS_BLOCK.getMaterial(), ParticleLib.RGB.of(1, 1, 255), range_thunder.getValue()),
-		GNOME(MaterialX.DIRT.getMaterial(), ParticleLib.RGB.of(179, 109, 65), range_gnome.getValue());
+		IFRIT(MaterialX.REDSTONE_BLOCK.getMaterial(), RGB.of(255, 1, 1), range_ifrit.getValue()),
+		SHADE(MaterialX.COAL_BLOCK.getMaterial(), RGB.of(1, 1, 1), range_shade.getValue()),
+		THUNDERBIRD(MaterialX.LAPIS_BLOCK.getMaterial(), RGB.of(1, 1, 255), range_thunder.getValue()),
+		GNOME(MaterialX.DIRT.getMaterial(), RGB.of(179, 109, 65), range_gnome.getValue());
 
 		private final Material helmet;
-		private final ParticleLib.RGB rgb;
+		private final RGB rgb;
 		private final int range;
 
-		Element(Material helmet, ParticleLib.RGB rgb, int range) {
+		Element(Material helmet, RGB rgb, int range) {
 			this.helmet = helmet;
 			this.rgb = rgb;
 			this.range = range;

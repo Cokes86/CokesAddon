@@ -11,6 +11,7 @@ import daybreak.abilitywar.game.list.mix.Mix;
 import daybreak.abilitywar.game.list.mix.triplemix.TripleMix;
 import daybreak.abilitywar.game.module.DeathManager;
 import daybreak.abilitywar.game.team.interfaces.Teamable;
+import daybreak.abilitywar.utils.base.color.RGB;
 import daybreak.abilitywar.utils.base.concurrent.TimeUnit;
 import daybreak.abilitywar.utils.base.math.FastMath;
 import daybreak.abilitywar.utils.base.math.LocationUtil;
@@ -19,7 +20,6 @@ import daybreak.abilitywar.utils.base.minecraft.entity.health.event.PlayerSetHea
 import daybreak.abilitywar.utils.base.random.Random;
 import daybreak.abilitywar.utils.base.reflect.ReflectionUtil;
 import daybreak.abilitywar.utils.library.ParticleLib;
-import daybreak.abilitywar.utils.library.ParticleLib.RGB;
 import daybreak.abilitywar.utils.library.PotionEffects;
 import daybreak.abilitywar.utils.library.SoundLib;
 import daybreak.google.common.base.Function;

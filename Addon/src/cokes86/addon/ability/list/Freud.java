@@ -14,6 +14,7 @@ import daybreak.abilitywar.game.AbstractGame.Participant.ActionbarNotification.A
 import daybreak.abilitywar.game.module.DeathManager;
 import daybreak.abilitywar.game.module.Wreck;
 import daybreak.abilitywar.game.team.interfaces.Teamable;
+import daybreak.abilitywar.utils.base.color.RGB;
 import daybreak.abilitywar.utils.base.concurrent.TimeUnit;
 import daybreak.abilitywar.utils.base.math.LocationUtil;
 import daybreak.abilitywar.utils.base.math.geometry.Line;
@@ -21,7 +22,6 @@ import daybreak.abilitywar.utils.base.minecraft.damage.Damages;
 import daybreak.abilitywar.utils.base.minecraft.entity.decorator.Deflectable;
 import daybreak.abilitywar.utils.base.random.Random;
 import daybreak.abilitywar.utils.library.ParticleLib;
-import daybreak.abilitywar.utils.library.ParticleLib.RGB;
 import daybreak.abilitywar.utils.library.PotionEffects;
 import daybreak.google.common.base.Predicate;
 import org.bukkit.Bukkit;
@@ -317,6 +317,11 @@ public class Freud extends CokesAbility implements ActiveHandler {
 
 			public ArrowEntity(World world, double x, double y, double z) {
 				getGame().super(world, x, y, z);
+			}
+
+			@Override
+			protected void onRemove() {
+				Bullet.this.stop(false);
 			}
 
 			@Override

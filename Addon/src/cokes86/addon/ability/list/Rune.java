@@ -10,6 +10,7 @@ import daybreak.abilitywar.game.AbstractGame;
 import daybreak.abilitywar.game.AbstractGame.Participant;
 import daybreak.abilitywar.game.module.DeathManager;
 import daybreak.abilitywar.game.team.interfaces.Teamable;
+import daybreak.abilitywar.utils.base.color.RGB;
 import daybreak.abilitywar.utils.base.concurrent.TimeUnit;
 import daybreak.abilitywar.utils.base.math.LocationUtil;
 import daybreak.abilitywar.utils.base.math.geometry.Circle;
@@ -90,7 +91,7 @@ public class Rune extends CokesAbility implements ActiveHandler {
 
 			for (Location l : Circle.iteratorOf(getPlayer().getLocation(), range.getValue(), range.getValue() * 9).iterable()) {
 				l.setY(LocationUtil.getFloorYAt(Objects.requireNonNull(l.getWorld()), getPlayer().getLocation().getY(), l.getBlockX(), l.getBlockZ()) + 0.1);
-				ParticleLib.REDSTONE.spawnParticle(l, new ParticleLib.RGB(0, 179, 255));
+				ParticleLib.REDSTONE.spawnParticle(l, RGB.of(0, 179, 255));
 			}
 		}
 	}.setPeriod(TimeUnit.TICKS, 5);

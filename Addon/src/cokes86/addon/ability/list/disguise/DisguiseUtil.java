@@ -4,6 +4,7 @@ import daybreak.abilitywar.utils.base.minecraft.version.ServerVersion;
 import daybreak.abilitywar.utils.base.minecraft.version.VersionNotSupportedException;
 import org.bukkit.entity.Player;
 
+import java.io.IOException;
 import java.util.UUID;
 
 public class DisguiseUtil {
@@ -36,6 +37,10 @@ public class DisguiseUtil {
 
     public static void reloadPlayer(Player player) {
         instance.reloadPlayer(player);
+    }
+
+    public static boolean isChanged(Player player) {
+        return instance.isChanged(player);
     }
 
     public static IDisguise getInstance() {

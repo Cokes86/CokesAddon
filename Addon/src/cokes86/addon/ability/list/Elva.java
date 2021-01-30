@@ -12,11 +12,11 @@ import daybreak.abilitywar.game.AbstractGame.Participant.ActionbarNotification.A
 import daybreak.abilitywar.game.module.DeathManager;
 import daybreak.abilitywar.game.team.interfaces.Teamable;
 import daybreak.abilitywar.utils.base.ProgressBar;
+import daybreak.abilitywar.utils.base.color.RGB;
 import daybreak.abilitywar.utils.base.concurrent.TimeUnit;
 import daybreak.abilitywar.utils.base.math.LocationUtil;
 import daybreak.abilitywar.utils.base.math.geometry.Line;
 import daybreak.abilitywar.utils.library.ParticleLib;
-import daybreak.abilitywar.utils.library.ParticleLib.RGB;
 import daybreak.abilitywar.utils.library.SoundLib;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -188,7 +188,7 @@ public class Elva extends CokesAbility {
 		@Override
 		protected void run(int i) {
 			Location newLocation = lastLocation.clone().add(forward);
-			for (Iterator<Location> iterator = Line.iteratorBetween(lastLocation, newLocation, 10); iterator.hasNext(); ) {
+			for (Iterator<Location> iterator = Line.iteratorBetween(lastLocation, newLocation, 7); iterator.hasNext(); ) {
 				Location location = iterator.next();
 				entity.setLocation(location);
 				Material type = location.getBlock().getType();
@@ -221,6 +221,11 @@ public class Elva extends CokesAbility {
 		public class ArrowEntity extends CustomEntity {
 			public ArrowEntity(World world, double x, double y, double z) {
 				getGame().super(world, x, y, z);
+			}
+
+			@Override
+			protected void onRemove() {
+				Bullet.this.stop(false);
 			}
 		}
 	}

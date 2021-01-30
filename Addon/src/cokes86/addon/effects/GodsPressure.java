@@ -101,12 +101,14 @@ public class GodsPressure extends AbstractGame.Effect implements Listener {
     @Override
     protected void onEnd() {
         HandlerList.unregisterAll(this);
+        hologram.remove();
         super.onEnd();
     }
 
     @Override
     protected void onSilentEnd() {
         HandlerList.unregisterAll(this);
+        hologram.remove();
         super.onSilentEnd();
     }
 

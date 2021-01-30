@@ -73,12 +73,14 @@ public class Caught extends AbstractGame.Effect implements Listener {
     @Override
     protected void onEnd() {
         super.onEnd();
+        hologram.remove();
         HandlerList.unregisterAll(this);
     }
 
     @Override
     protected void onSilentEnd() {
         super.onSilentEnd();
+        hologram.remove();
         HandlerList.unregisterAll(this);
     }
 

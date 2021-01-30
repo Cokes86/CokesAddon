@@ -4,10 +4,11 @@ import cokes86.addon.ability.AddonAbilityFactory;
 import cokes86.addon.ability.CokesAbility;
 import cokes86.addon.ability.CokesSynergy;
 import cokes86.addon.configuration.Config;
+import cokes86.addon.gamemode.disguiseparty.DisguiseParty;
 import daybreak.abilitywar.addon.Addon;
-import daybreak.abilitywar.config.Configuration.Settings;
 import daybreak.abilitywar.game.event.GameCreditEvent;
 import daybreak.abilitywar.game.list.mix.AbstractMix;
+import daybreak.abilitywar.game.manager.GameFactory;
 import daybreak.google.gson.JsonElement;
 import daybreak.google.gson.JsonObject;
 import daybreak.google.gson.JsonParser;
@@ -48,6 +49,9 @@ public class CokesAddon extends Addon implements Listener {
 
 		// Load Configuration
 		Bukkit.getServer().getScheduler().scheduleSyncDelayedTask(getPlugin(), loader);
+
+		//Game mode
+		GameFactory.registerMode(DisguiseParty.class);
 
 		Bukkit.getPluginManager().registerEvents(this, getPlugin());
 	}

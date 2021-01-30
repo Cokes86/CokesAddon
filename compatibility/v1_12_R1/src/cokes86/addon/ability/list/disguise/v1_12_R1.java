@@ -1,16 +1,26 @@
 package cokes86.addon.ability.list.disguise;
 
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 import com.mojang.authlib.properties.Property;
 import daybreak.abilitywar.AbilityWar;
 import daybreak.abilitywar.utils.base.collect.Pair;
 import net.minecraft.server.v1_12_R1.*;
+import org.apache.commons.io.IOUtils;
 import org.bukkit.Bukkit;
-import org.bukkit.OfflinePlayer;
 import org.bukkit.craftbukkit.v1_12_R1.entity.CraftPlayer;
 import org.bukkit.entity.Player;
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
+import org.json.simple.JSONValue;
+import org.json.simple.parser.ParseException;
 
+import java.io.IOException;
+import java.io.InputStreamReader;
 import java.lang.reflect.Field;
+import java.net.URL;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
 import java.util.UUID;
 
@@ -19,17 +29,24 @@ public class v1_12_R1 implements IDisguise {
 
     @Override
     public void changeSkin(Player player, UUID uuid) {
-        CraftPlayer cp = (CraftPlayer) player;
-        cp.getProfile().getProperties().removeAll("textures");
-        cp.getProfile().getProperties().put("textures", origin.get(uuid).getRight());
+        if (origin.containsKey(uuid)) {
+            CraftPlayer cp = (CraftPlayer) player;
+            cp.getProfile().getProperties().removeAll("textures");
+            cp.getProfile().getProperties().put("textures", origin.get(uuid).getRight());
+        }
     }
 
     @Override
     public void saveData() {
         for (Player pl : Bukkit.getOnlinePlayers()) {
             if (origin.containsKey(pl.getUniqueId())) continue;
+            if (pl.getName().isEmpty()) continue;
             CraftPlayer cp = (CraftPlayer) pl;
-            origin.put(pl.getUniqueId(), Pair.of(pl.getName(), cp.getProfile().getProperties().get("textures").iterator().next()));
+
+            Iterator<Property> iterator = cp.getProfile().getProperties().get("textures").iterator();
+            if (iterator.hasNext()) {
+                origin.put(pl.getUniqueId(), Pair.of(pl.getName(), iterator.next()));
+            }
         }
     }
 
@@ -39,16 +56,37 @@ public class v1_12_R1 implements IDisguise {
     }
 
     @Override
-    public void setPlayerNameTag(Player p, UUID uuid) {
-        try {
-            EntityPlayer enp = ((CraftPlayer)p).getHandle();
+    public boolean isChanged(Player player) {
+        CraftPlayer cp = (CraftPlayer) player;
+        boolean skin = false;
+        boolean nametag;
 
-            Object obj = enp.getClass().getMethod("getProfile", new Class[0]).invoke(enp);
-            Field nameField = obj.getClass().getDeclaredField("name");
-            nameField.setAccessible(true);
-            nameField.set(obj, origin.get(uuid).getLeft());
-        } catch (Exception e) {
-            e.printStackTrace();
+        Iterator<Property> iterator = cp.getProfile().getProperties().get("textures").iterator();
+
+        if (iterator.hasNext() && origin.containsKey(player.getUniqueId())) {
+            Property property = iterator.next();
+            skin = property != origin.get(player.getUniqueId()).getRight();
+        }
+
+        EntityPlayer enp = cp.getHandle();
+        nametag = !origin.get(player.getUniqueId()).getLeft().equals(enp.getProfile().getName());
+
+        return skin || nametag;
+    }
+
+    @Override
+    public void setPlayerNameTag(Player p, UUID uuid) {
+        if (origin.containsKey(uuid)) {
+            try {
+                EntityPlayer enp = ((CraftPlayer)p).getHandle();
+
+                Object obj = enp.getClass().getMethod("getProfile", new Class[0]).invoke(enp);
+                Field nameField = obj.getClass().getDeclaredField("name");
+                nameField.setAccessible(true);
+                nameField.set(obj, origin.get(uuid).getLeft());
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
         }
     }
 

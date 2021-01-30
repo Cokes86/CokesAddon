@@ -10,6 +10,7 @@ import daybreak.abilitywar.ability.AbilityManifest.Species;
 import daybreak.abilitywar.ability.NotAvailable;
 import daybreak.abilitywar.ability.SubscribeEvent;
 import daybreak.abilitywar.ability.decorator.TargetHandler;
+import daybreak.abilitywar.config.enums.CooldownDecrease;
 import daybreak.abilitywar.game.AbstractGame.Participant;
 import daybreak.abilitywar.game.AbstractGame.Participant.ActionbarNotification.ActionbarChannel;
 import daybreak.abilitywar.game.list.mix.AbstractMix;
@@ -71,7 +72,7 @@ public class Sealer extends CokesAbility implements TargetHandler {
 		}
 	};
 
-	private final Cooldown c = new Cooldown(cool.getValue());
+	private final Cooldown c = new Cooldown(cool.getValue(), CooldownDecrease._50);
 	private final SealTimer t = new SealTimer();
 
 	public Sealer(Participant participant) {

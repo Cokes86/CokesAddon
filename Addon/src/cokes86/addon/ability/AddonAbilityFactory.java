@@ -74,7 +74,7 @@ public class AddonAbilityFactory {
 		}
 
 		//test
-		AbilityFactory.registerAbility(Test.class);
+		registerAbility(Test.class);
 
 		registerSynergy(Poker.class, Poker.class, RoyalStraightFlush.class);
 		registerSynergy(Xyz.class, Xyz.class, TheEnd.class);

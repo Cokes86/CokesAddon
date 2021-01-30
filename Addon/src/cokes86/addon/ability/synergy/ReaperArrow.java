@@ -6,6 +6,7 @@ import daybreak.abilitywar.ability.SubscribeEvent;
 import daybreak.abilitywar.ability.decorator.ActiveHandler;
 import daybreak.abilitywar.game.AbstractGame;
 import daybreak.abilitywar.utils.annotations.Beta;
+import daybreak.abilitywar.utils.base.color.RGB;
 import daybreak.abilitywar.utils.base.concurrent.TimeUnit;
 import daybreak.abilitywar.utils.base.minecraft.damage.Damages;
 import daybreak.abilitywar.utils.library.ParticleLib;
@@ -77,7 +78,7 @@ public class ReaperArrow extends CokesSynergy implements ActiveHandler {
 	}
 
 	private final AbstractGame.Participant.ActionbarNotification.ActionbarChannel ac = newActionbarChannel();
-	private final ParticleLib.RGB rgb = ParticleLib.RGB.of(1, 1, 1);
+	private final RGB rgb = RGB.of(1, 1, 1);
 	private final Cooldown cooldown = new Cooldown(cool.getValue());
 	private boolean ready = false;
 	private Arrow reaperArrow = null;

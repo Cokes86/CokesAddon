@@ -11,6 +11,7 @@ import daybreak.abilitywar.game.AbstractGame.Participant;
 import daybreak.abilitywar.game.module.DeathManager;
 import daybreak.abilitywar.game.team.interfaces.Teamable;
 import daybreak.abilitywar.utils.base.Messager;
+import daybreak.abilitywar.utils.base.color.RGB;
 import daybreak.abilitywar.utils.base.concurrent.TimeUnit;
 import daybreak.abilitywar.utils.base.math.LocationUtil;
 import daybreak.abilitywar.utils.base.math.geometry.Circle;
@@ -238,7 +239,7 @@ public class Summoner extends CokesAbility implements ActiveHandler {
 
 			for (Location particle : Circle.iteratorOf(location, 1, 16).iterable()) {
 				particle.setY(LocationUtil.getFloorYAt(particle.getWorld(), particle.getY(), particle.getBlockX(), particle.getBlockZ()) + y);
-				ParticleLib.REDSTONE.spawnParticle(particle, ParticleLib.RGB.fromRGB(Color.CYAN.getRGB()));
+				ParticleLib.REDSTONE.spawnParticle(particle, RGB.OLIVE);
 			}
 		}
 

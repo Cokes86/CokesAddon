@@ -1,6 +1,7 @@
 package cokes86.addon.ability.synergy;
 
 import cokes86.addon.ability.CokesSynergy;
+import cokes86.addon.ability.list.Elva;
 import daybreak.abilitywar.ability.AbilityManifest;
 import daybreak.abilitywar.ability.AbilityManifest.Rank;
 import daybreak.abilitywar.ability.AbilityManifest.Species;
@@ -10,13 +11,13 @@ import daybreak.abilitywar.game.AbstractGame.CustomEntity;
 import daybreak.abilitywar.game.AbstractGame.Participant;
 import daybreak.abilitywar.game.module.DeathManager;
 import daybreak.abilitywar.game.team.interfaces.Teamable;
+import daybreak.abilitywar.utils.base.color.RGB;
 import daybreak.abilitywar.utils.base.concurrent.TimeUnit;
 import daybreak.abilitywar.utils.base.math.LocationUtil;
 import daybreak.abilitywar.utils.base.math.geometry.Line;
 import daybreak.abilitywar.utils.base.minecraft.damage.Damages;
 import daybreak.abilitywar.utils.base.minecraft.entity.decorator.Deflectable;
 import daybreak.abilitywar.utils.library.ParticleLib;
-import daybreak.abilitywar.utils.library.ParticleLib.RGB;
 import daybreak.abilitywar.utils.library.item.ItemLib;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -155,6 +156,11 @@ public class RevengeArrow extends CokesSynergy {
 
 			public ArrowEntity(World world, double x, double y, double z) {
 				getGame().super(world, x, y, z);
+			}
+
+			@Override
+			protected void onRemove() {
+				Bullet.this.stop(false);
 			}
 
 			@Override

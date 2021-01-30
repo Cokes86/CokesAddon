@@ -8,6 +8,7 @@ import daybreak.abilitywar.game.manager.effect.Stun;
 import daybreak.abilitywar.game.module.DeathManager;
 import daybreak.abilitywar.game.team.interfaces.Teamable;
 import daybreak.abilitywar.utils.annotations.Beta;
+import daybreak.abilitywar.utils.base.color.RGB;
 import daybreak.abilitywar.utils.base.concurrent.TimeUnit;
 import daybreak.abilitywar.utils.base.math.LocationUtil;
 import daybreak.abilitywar.utils.base.math.geometry.Circle;
@@ -117,7 +118,7 @@ public class SlicingMaelstrom extends CokesSynergy implements ActiveHandler {
 
             for (Location location : Circle.iteratorOf(getPlayer().getLocation(), range.getValue(), range.getValue()*20).iterable()){
                 location.setY(LocationUtil.getFloorYAt(Objects.requireNonNull(location.getWorld()), getPlayer().getLocation().getY(), location.getBlockX(), location.getBlockZ()) + 0.1);
-                ParticleLib.REDSTONE.spawnParticle(location, new ParticleLib.RGB(1, 1, 255));
+                ParticleLib.REDSTONE.spawnParticle(location, new RGB(1, 1, 255));
             }
         }
     }
