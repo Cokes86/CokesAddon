@@ -76,7 +76,7 @@ public class SoulTakerRei extends CokesSynergy implements ActiveHandler {
             int x = e.getParticipant().getPlayer().getLocation().getBlockX();
             int y = e.getParticipant().getPlayer().getLocation().getBlockY();
             int z = e.getParticipant().getPlayer().getLocation().getBlockZ();
-            getPlayer().sendMessage("X "+x+" Y"+y+"Z "+z+"에 영혼이 생성되었습니다.");
+            getPlayer().sendMessage("X "+x+" Y "+y+" Z "+z+"에 영혼이 생성되었습니다.");
             new SoulRemember(e.getParticipant().getPlayer().getLocation()).start();
         }
     }
