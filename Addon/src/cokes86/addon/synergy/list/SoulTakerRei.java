@@ -21,6 +21,7 @@ import org.bukkit.Material;
 import org.bukkit.entity.Arrow;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
+import org.bukkit.event.entity.EntityDamageByBlockEvent;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
 
@@ -96,7 +97,13 @@ public class SoulTakerRei extends CokesSynergy implements ActiveHandler {
     }
 
     @SubscribeEvent
+    public void onEntityDamageByEntity(EntityDamageByBlockEvent e) {
+        onEntityDamage(e);
+    }
+
+    @SubscribeEvent
     public void onEntityDamageByEntity(EntityDamageByEntityEvent e) {
+        onEntityDamage(e);
         Entity damager = e.getDamager();
         if (damager instanceof Arrow) {
             Arrow arrow = (Arrow) e.getDamager();
