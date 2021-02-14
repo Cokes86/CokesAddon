@@ -1,7 +1,5 @@
 package cokes86.addon.ability.list.disguise;
 
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
 import com.mojang.authlib.properties.Property;
 import daybreak.abilitywar.AbilityWar;
 import daybreak.abilitywar.utils.base.collect.Pair;
@@ -11,10 +9,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.craftbukkit.v1_13_R1.entity.CraftPlayer;
 import org.bukkit.entity.Player;
 
-import java.io.IOException;
-import java.io.InputStreamReader;
 import java.lang.reflect.Field;
-import java.net.URL;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
@@ -71,17 +66,17 @@ public class v1_13_R1 implements IDisguise {
     public boolean isChanged(Player player) {
         CraftPlayer cp = (CraftPlayer) player;
         boolean skin = false;
-        boolean nametag;
+        boolean nametag = false;
 
         Iterator<Property> iterator = cp.getProfile().getProperties().get("textures").iterator();
 
         if (iterator.hasNext() && origin.containsKey(player.getUniqueId())) {
             Property property = iterator.next();
             skin = property != origin.get(player.getUniqueId()).getRight();
-        }
 
-        EntityPlayer enp = cp.getHandle();
-        nametag = !origin.get(player.getUniqueId()).getLeft().equals(enp.getProfile().getName());
+            EntityPlayer enp = cp.getHandle();
+            nametag = !origin.get(player.getUniqueId()).getLeft().equals(enp.getProfile().getName());
+        }
 
         return skin || nametag;
     }

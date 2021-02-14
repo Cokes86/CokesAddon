@@ -37,33 +37,25 @@ import java.util.List;
 		"※능력 아이디어: Sato207"})
 public class Reincarnation extends CokesAbility {
 	public static Config<Integer> duration = new Config<Integer>(Reincarnation.class, "지속시간", 25, Config.Condition.TIME) {
-
 		@Override
 		public boolean condition(Integer value) {
 			return value > 0;
 		}
-
 	}, cooldown = new Config<Integer>(Reincarnation.class, "쿨타임", 900, Config.Condition.COOLDOWN) {
-
 		@Override
 		public boolean condition(Integer value) {
 			return value > 0;
 		}
-
 	}, damage = new Config<Integer>(Reincarnation.class, "감소대미지(%)", 50) {
-
 		@Override
 		public boolean condition(Integer value) {
 			return value > 0;
 		}
-
 	}, hit = new Config<Integer>(Reincarnation.class, "타격횟수", 5) {
-
 		@Override
 		public boolean condition(Integer value) {
 			return value > 0;
 		}
-
 	}, heal = new Config<Integer>(Reincarnation.class, "회복수치량(%)", 5) {
 		@Override
 		public boolean condition(Integer value) {
@@ -158,6 +150,27 @@ public class Reincarnation extends CokesAbility {
 		}
 	}
 
+	@SubscribeEvent(priority = 999)
+	public void onEntityDamageByEntity2(EntityDamageByEntityEvent e) {
+		Entity damager = e.getDamager();
+		if (damager instanceof Projectile) {
+			Projectile projectile = (Projectile) damager;
+			if (projectile.getShooter() instanceof Entity) {
+				damager = (Entity) projectile.getShooter();
+			}
+		}
+
+		if (e.getEntity() instanceof Player && damager.equals(getPlayer())) {
+			Player target = (Player) e.getEntity();
+			if (reincarnation.isRunning() && getGame().isParticipating(target) && !e.isCancelled()) {
+				hitted += 1;
+				if (hitted == hit.getValue()) {
+					SoundLib.ENTITY_PLAYER_LEVELUP.playSound(getPlayer());
+				}
+			}
+		}
+	}
+
 	@SubscribeEvent(priority = 6)
 	public void onEntityDamageByEntity(EntityDamageByEntityEvent e) {
 		onEntityDamage(e);
@@ -172,11 +185,7 @@ public class Reincarnation extends CokesAbility {
 		if (e.getEntity() instanceof Player && damager.equals(getPlayer())) {
 			Player target = (Player) e.getEntity();
 			if (reincarnation.isRunning() && getGame().isParticipating(target) && !e.isCancelled()) {
-				hitted += 1;
 				e.setDamage(e.getDamage() * (damage.getValue() / 100.0D));
-				if (hitted == hit.getValue()) {
-					SoundLib.ENTITY_PLAYER_LEVELUP.playSound(getPlayer());
-				}
 			}
 		}
 	}

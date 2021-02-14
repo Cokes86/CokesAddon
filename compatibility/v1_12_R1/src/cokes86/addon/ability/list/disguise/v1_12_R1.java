@@ -59,17 +59,17 @@ public class v1_12_R1 implements IDisguise {
     public boolean isChanged(Player player) {
         CraftPlayer cp = (CraftPlayer) player;
         boolean skin = false;
-        boolean nametag;
+        boolean nametag = false;
 
         Iterator<Property> iterator = cp.getProfile().getProperties().get("textures").iterator();
 
         if (iterator.hasNext() && origin.containsKey(player.getUniqueId())) {
             Property property = iterator.next();
             skin = property != origin.get(player.getUniqueId()).getRight();
-        }
 
-        EntityPlayer enp = cp.getHandle();
-        nametag = !origin.get(player.getUniqueId()).getLeft().equals(enp.getProfile().getName());
+            EntityPlayer enp = cp.getHandle();
+            nametag = !origin.get(player.getUniqueId()).getLeft().equals(enp.getProfile().getName());
+        }
 
         return skin || nametag;
     }

@@ -1,54 +1,35 @@
 package cokes86.addon.ability.list;
 
 import cokes86.addon.ability.CokesAbility;
-import daybreak.abilitywar.AbilityWar;
+import cokes86.addon.effect.list.GodOfBreak;
 import daybreak.abilitywar.ability.AbilityManifest;
 import daybreak.abilitywar.ability.AbilityManifest.Rank;
 import daybreak.abilitywar.ability.AbilityManifest.Species;
 import daybreak.abilitywar.ability.decorator.ActiveHandler;
 import daybreak.abilitywar.game.AbstractGame.Participant;
-import daybreak.abilitywar.game.AbstractGame.Participant.ActionbarNotification.ActionbarChannel;
-import daybreak.abilitywar.game.event.participant.ParticipantDeathEvent;
-import daybreak.abilitywar.utils.base.TimeUtil;
+import daybreak.abilitywar.game.manager.effect.registry.EffectRegistry;
+import daybreak.abilitywar.utils.base.concurrent.SimpleTimer;
 import daybreak.abilitywar.utils.base.concurrent.TimeUnit;
-import org.bukkit.Bukkit;
 import org.bukkit.Material;
-import org.bukkit.event.EventHandler;
-import org.bukkit.event.HandlerList;
-import org.bukkit.event.Listener;
 
 @AbilityManifest(name = "신의 가호", rank = Rank.A, species = Species.HUMAN, explain = {
-		"§7철괴 우클릭 §8- §c파괴의 신§r: 지속시간 $[duration] 동안 상대방을 공격할 시 $[base]의 대미지가 추가됩니다.",
-		"  지속시간동안 플레이어 1명을 죽일 시 추가대미지가 $[add]씩 증가하며",
-		"  지속시간이 $[duration]로 변경됩니다.",
-		"  지속시간 종료 시 (지금까지 얻은 추가대미지 * $[multiply])의 대미지를 받습니다. $[cool]"
+		"§7철괴 우클릭 §8- §c파괴의 신§r: 자신에게 §e파괴의 §c신 §f효과를 $[duration] 부여합니다. $[rightCool]",
+		"§7철괴 좌클릭 §8- §c아직 안끝났어§r: 자신에게 적용중인 §e파괴의 §c신 §f효과의 지속시간을 초기화합니다. $[leftCool]"
 })
 public class GodsBless extends CokesAbility implements ActiveHandler {
 	private static final Config<Integer> duration = new Config<Integer>(GodsBless.class, "지속시간", 15, Config.Condition.TIME) {
 		public boolean condition(Integer arg0) {
 			return arg0 > 0;
 		}
-	}, cool = new Config<Integer>(GodsBless.class, "쿨타임", 60, Config.Condition.COOLDOWN) {
+	}, rightCool = new Config<Integer>(GodsBless.class, "우클릭_쿨타임", 60, Config.Condition.COOLDOWN) {
 		public boolean condition(Integer arg0) {
 			return arg0 >= 0;
 		}
-	}, base = new Config<Integer>(GodsBless.class, "추가대미지.기본", 3) {
-		public boolean condition(Integer arg0) {
-			return arg0 > 0;
-		}
-	}, add = new Config<Integer>(GodsBless.class, "추가대미지.상승량", 1) {
-		public boolean condition(Integer arg0) {
-			return arg0 > 0;
-		}
-	};
-	private static final Config<Double> multiply = new Config<Double>(GodsBless.class, "배율", 5.0) {
-		public boolean condition(Double arg0) {
-			return arg0 > 1;
-		}
-	};
-	private final ActionbarChannel ac = newActionbarChannel();
-	private final Cooldown c = new Cooldown(cool.getValue());
-	private final BlessTimer bless = new BlessTimer();
+	}, leftCool = new Config<>(GodsBless.class, "좌클릭_쿨타임", 60, Config.Condition.COOLDOWN);
+	private final Cooldown rightCooldown = new Cooldown(rightCool.getValue(), "파괴의 신"),
+	leftCooldown = new Cooldown(leftCool.getValue(), "아직 안끝났어");
+
+	private final GodsAttach observer = new GodsAttach();
 
 	public GodsBless(Participant arg0) {
 		super(arg0);
@@ -56,53 +37,23 @@ public class GodsBless extends CokesAbility implements ActiveHandler {
 
 	@Override
 	public boolean ActiveSkill(Material arg0, ClickType arg1) {
-		if (arg0 == Material.IRON_INGOT && arg1 == ClickType.RIGHT_CLICK && !c.isCooldown() && !bless.isRunning()) {
-			bless.start();
+		GodOfBreak effect = (GodOfBreak) getParticipant().getPrimaryEffect(EffectRegistry.getRegistration(GodOfBreak.class));
+		if (arg0 == Material.IRON_INGOT && arg1 == ClickType.RIGHT_CLICK && !rightCooldown.isCooldown() && effect == null) {
+			GodOfBreak.apply(getParticipant(), TimeUnit.SECONDS, duration.getValue()).attachObserver(observer);
 			return true;
+		} else if (arg0 == Material.IRON_INGOT && arg1 == ClickType.LEFT_CLICK && !leftCooldown.isCooldown()) {
+			if (effect != null) {
+				effect.setCount(duration.getValue()*20);
+				return leftCooldown.start();
+			}
 		}
 		return false;
 	}
 
-	class BlessTimer extends AbilityTimer implements Listener {
-		int add_damage = base.getValue();
-
-		public BlessTimer() {
-			super(duration.getValue());
-			this.setPeriod(TimeUnit.SECONDS, 1);
-		}
-
-		protected void onStart() {
-			Bukkit.getPluginManager().registerEvents(this, AbilityWar.getPlugin());
-		}
-
+	private class GodsAttach implements SimpleTimer.Observer {
 		@Override
-		protected void run(int arg0) {
-			ac.update("추가 대미지: " + add_damage + " | 남은 시간: " + TimeUtil.parseTimeAsString(this.getFixedCount()));
-		}
-
-		protected void onCountSet() {
-			ac.update("추가 대미지: " + add_damage + " | 남은 시간: " + TimeUtil.parseTimeAsString(this.getFixedCount()));
-		}
-
-		protected void onSilentEnd() {
-			HandlerList.unregisterAll(this);
-		}
-
-		protected void onEnd() {
-			onSilentEnd();
-			getPlayer().damage(add_damage * multiply.getValue(), getPlayer());
-			ac.update(null);
-			c.start();
-		}
-
-		@EventHandler
-		public void onParticipantDeath(ParticipantDeathEvent e) {
-			if (!e.getParticipant().equals(getParticipant())) {
-				if (e.getPlayer().getKiller() != null && e.getPlayer().getKiller().equals(getPlayer())) {
-					add_damage += add.getValue();
-					this.setCount(duration.getValue());
-				}
-			}
+		public void onEnd() {
+			rightCooldown.start();
 		}
 	}
 }

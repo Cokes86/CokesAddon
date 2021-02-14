@@ -19,7 +19,10 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.HandlerList;
 import org.bukkit.event.Listener;
+import org.bukkit.event.block.BlockBreakEvent;
+import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
+import org.bukkit.event.entity.FoodLevelChangeEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.scoreboard.Scoreboard;
@@ -39,11 +42,21 @@ public class DisguiseParty extends AbstractGame implements Winnable {
     private boolean tutorial = true;
     private DisguiseParticipant tag, target;
     private final List<UUID> eliminate = new ArrayList<>();
+    private final Scoreboard score;
+    private final Team disguiseTeam;
 
     public DisguiseParty(final String[] args) throws IllegalArgumentException {
         super(PlayerCollector.EVERY_PLAYER_EXCLUDING_SPECTATORS());
         Bukkit.getPluginManager().registerEvents(this, AbilityWar.getPlugin());
         if (args.length != 0 && "speed".equals(args[0])) this.tutorial = false;
+        if (Bukkit.getScoreboardManager() != null) {
+            score = Bukkit.getScoreboardManager().getMainScoreboard();
+            disguiseTeam = score.registerNewTeam("Disguise_Hide");
+            disguiseTeam.setOption(Team.Option.NAME_TAG_VISIBILITY, Team.OptionStatus.NEVER);
+        } else{
+            score = null;
+            disguiseTeam = null;
+        }
     }
 
     public boolean eliminate(Player player) {
@@ -52,65 +65,71 @@ public class DisguiseParty extends AbstractGame implements Winnable {
         return eliminate.add(player.getUniqueId());
     }
 
-    private final Scoreboard score = Bukkit.getScoreboardManager().getMainScoreboard();
-
-    public boolean eliminate(DisguiseParticipant participant) {
-        return eliminate(participant.getPlayer());
-    }
-
     public boolean isEliminate(Player player) {
         return eliminate.contains(player.getUniqueId());
     }
 
     public void hideNameTag(Player player) {
-        Team t = score.getTeam("DisguiseHide");
-        if(t == null) {
-            t = score.registerNewTeam("DisguiseHide");
-            t.setOption(Team.Option.NAME_TAG_VISIBILITY, Team.OptionStatus.NEVER);
+        if (score != null) {
+            disguiseTeam.addEntry(player.getName());
         }
-        t.addEntry(player.getName());
     }
 
     public void showNameTag(Player player) {
-        Team t = score.getTeam("DisguiseHide");
-        if(t == null) {
-            t = score.registerNewTeam("DisguiseHide");
-            t.setOption(Team.Option.NAME_TAG_VISIBILITY, Team.OptionStatus.NEVER);
+        if (score != null) {
+            disguiseTeam.removeEntry(player.getName());
         }
-        t.removeEntry(player.getName());
+    }
+
+    @EventHandler
+    public void onBlockPlace(BlockPlaceEvent event) {
+        if (isParticipating(event.getPlayer())) {
+            event.setCancelled(true);
+        }
+    }
+
+    @EventHandler
+    private void onFoodLevelChange(final FoodLevelChangeEvent e) {
+        if (isParticipating(e.getEntity().getUniqueId())) {
+            e.setFoodLevel(19);
+        }
+    }
+
+    @EventHandler
+    public void onBlockBreak(BlockBreakEvent event) {
+        if (isParticipating(event.getPlayer())) {
+            event.setCancelled(true);
+        }
     }
 
     @EventHandler
     public void onEntityDamageByEntity(EntityDamageByEntityEvent e) {
-        if (this.getCount() >= 43) {
-            if (tag != null && e.getDamager().equals(tag.getPlayer()) && e.getEntity() instanceof Player && isParticipating(e.getEntity().getUniqueId())) {
-                Player entity = (Player) e.getEntity();
-                if (!isEliminate(entity)) {
-                    e.setDamage(0);
-                    if (entity.equals(target.getPlayer())) {
-                        tag.getPlayer().sendMessage("§a목표§f를 찾았습니다! 게임을 종료합니다!");
-                        eliminate(entity);
-                        Win(tag);
-                        stop();
-                    } else {
-                        tag.getPlayer().sendMessage("이런 §a목표§f가 아니에요!");
-                        DisguiseUtil.changeSkin(entity, entity.getUniqueId());
-                        DisguiseUtil.setPlayerNameTag(entity, entity.getUniqueId());
-                        DisguiseUtil.reloadPlayer(entity);
-                        eliminate(entity);
+        if (tag != null && e.getDamager().equals(tag.getPlayer()) && e.getEntity() instanceof Player && isParticipating(e.getEntity().getUniqueId())) {
+            Player entity = (Player) e.getEntity();
+            if (!isEliminate(entity)) {
+                e.setDamage(0);
+                if (entity.equals(target.getPlayer())) {
+                    tag.getPlayer().sendMessage("§a목표§f를 찾았습니다! 게임을 종료합니다!");
+                    eliminate(entity);
+                    Win(tag);
+                    stop();
+                } else {
+                    tag.getPlayer().sendMessage("이런 §a목표§f가 아니에요!");
+                    DisguiseUtil.changeSkin(entity, entity.getUniqueId());
+                    DisguiseUtil.setPlayerNameTag(entity, entity.getUniqueId());
+                    DisguiseUtil.reloadPlayer(entity);
 
-                        if (getParticipants().size()-1 - eliminate.size() == ((getParticipants().size()-1)%5) +1) {
-                            Bukkit.broadcastMessage("§a목표§f를 끝까지 찾지 못했습니다! 게임을 종료합니다!");
-                            List<Participant> winner = new ArrayList<>(getParticipants());
-                            winner.remove(tag);
-                            winner.removeIf(participant -> isEliminate(participant.getPlayer()));
-                            Win(winner.toArray(new Participant[]{}));
-                        }
+                    if (eliminate(entity) && getParticipants().size() - 1 - eliminate.size() == (((getParticipants().size()-1)/5) +1)) {
+                        Bukkit.broadcastMessage("§a목표§f를 끝까지 찾지 못했습니다! 게임을 종료합니다!");
+                        List<Participant> winner = new ArrayList<>(getParticipants());
+                        winner.remove(tag);
+                        winner.removeIf(participant -> isEliminate(participant.getPlayer()));
+                        Win(winner.toArray(new Participant[]{}));
                     }
                 }
-            } else {
-                e.setCancelled(true);
             }
+        } else {
+            e.setCancelled(true);
         }
     }
 
@@ -248,13 +267,13 @@ public class DisguiseParty extends AbstractGame implements Winnable {
 
         @Override
         protected void onStart() {
-            PotionEffects.BLINDNESS.addPotionEffect(tag.getPlayer(), 30, 0, true);
+            PotionEffects.BLINDNESS.addPotionEffect(tag.getPlayer(), 40, 0, true);
             Bukkit.getPluginManager().registerEvents(this, AbilityWar.getPlugin());
         }
 
         @Override
         protected void run(int count) {
-            PotionEffects.BLINDNESS.addPotionEffect(tag.getPlayer(), 30, 0, true);
+            PotionEffects.BLINDNESS.addPotionEffect(tag.getPlayer(), 40, 0, true);
         }
 
         @Override
@@ -265,9 +284,9 @@ public class DisguiseParty extends AbstractGame implements Winnable {
                 if (participant.equals(tag)) {
                     participant.getPlayer().sendMessage("[§6우승조건§f] §a목표§f "+target.getPlayer().getName()+"을(를) 찾아라!");
                 } else if (participant.equals(target)) {
-                    participant.getPlayer().sendMessage("[§6우승조건§f] §c술래§f "+tag.getPlayer().getName()+"을(를) 피해 끝까지 생존하라!");
+                    participant.getPlayer().sendMessage("[§6우승조건§f] §c술래§f "+tag.getPlayer().getName()+"을(를) 피해 "+(((getParticipants().size()-1)/5) +1)+"명이 남을 때 까지 생존하라!");
                 } else {
-                    participant.getPlayer().sendMessage("[§6우승조건§f] §a목표§f "+target.getPlayer().getName()+"을(를) 도와 "+((getParticipants().size()-1)%5) +1+"명이 남을 때 까지 생존하라!");
+                    participant.getPlayer().sendMessage("[§6우승조건§f] §a목표§f "+target.getPlayer().getName()+"을(를) 도와 "+(((getParticipants().size()-1)/5) +1)+"명이 남을 때 까지 생존하라!");
                 }
             }
             SoundLib.ENTITY_ENDER_DRAGON_GROWL.broadcastSound();
@@ -382,6 +401,7 @@ public class DisguiseParty extends AbstractGame implements Winnable {
             DisguiseUtil.reloadPlayer(participant.getPlayer());
         }
         DisguiseUtil.clearData();
+        if (disguiseTeam != null) disguiseTeam.unregister();
         super.onEnd();
     }
 }

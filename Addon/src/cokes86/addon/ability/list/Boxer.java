@@ -24,7 +24,7 @@ import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
 
 @AbilityManifest(name = "권투선수", rank = AbilityManifest.Rank.A, species = AbilityManifest.Species.HUMAN, explain = {
-        "§7패시브 §8- §c연속 펀치§r: 상대방을 근접 공격할 시 50%씩 두번 나누어 공격을 합니다.",
+        "§7패시브 §8- §c연속 펀치§r: 상대방을 근접 공격할 시 50%씩 두 번 나누어 공격을 합니다.",
         "  $[percentage]% 확률로 상대방의 공격을 회피할 수 있습니다.",
         "  상대방을 공격하고 나서 8틱동안 상대방을 공격할 수 없습니다.",
         "§7철괴 타게팅 §8- §c스트레이트§r: $[damage]의 대미지와 함께 멀리 밀쳐냅니다. $[right_cool]",

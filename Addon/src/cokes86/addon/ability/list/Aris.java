@@ -1,7 +1,7 @@
 package cokes86.addon.ability.list;
 
 import cokes86.addon.ability.CokesAbility;
-import cokes86.addon.effects.Caught;
+import cokes86.addon.effect.list.Caught;
 import daybreak.abilitywar.ability.AbilityManifest;
 import daybreak.abilitywar.ability.AbilityManifest.Rank;
 import daybreak.abilitywar.ability.AbilityManifest.Species;
@@ -26,7 +26,6 @@ import org.bukkit.Material;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Predicate;
 
@@ -70,14 +69,19 @@ public class Aris extends CokesAbility implements ActiveHandler {
 
 	private int chain = 0;
 	private final ActionbarChannel actionbarChannel = newActionbarChannel();
-	private final ActiveTimer activeTimer = new ActiveTimer();
 	private final Cooldown cooldown = new Cooldown(cool.getValue(), CooldownDecrease._50);
+	private CaughtUpTimer duration = new CaughtUpTimer(null);
 	private final AbilityTimer passive = new AbilityTimer() {
-		final int count = (int) (Wreck.isEnabled(getGame()) ? 5 * Wreck.calculateDecreasedAmount(50) : 5);
+		int count = (int) (Wreck.isEnabled(getGame()) ? 5*20 * Wreck.calculateDecreasedAmount(50) : 5*20);
+		{
+			if (count == 0) {
+				count = 10;
+			}
+		}
 
 		@Override
 		protected void run(int arg0) {
-			if (!cooldown.isRunning() && activeTimer.isDuration(false)) {
+			if (!cooldown.isRunning() && (duration == null || !duration.isRunning())) {
 				if (arg0 % count == 0) {
 					chain++;
 					if (chain >= max_count.getValue())
@@ -88,7 +92,13 @@ public class Aris extends CokesAbility implements ActiveHandler {
 				actionbarChannel.update(null);
 			}
 		}
-	};
+
+		@Override
+		protected void onCountSet() {
+			super.onCountSet();
+			actionbarChannel.update("§d사슬 카운터: " + chain);
+		}
+	}.setPeriod(TimeUnit.TICKS, 1);
 
 	public Aris(Participant participant) {
 		super(participant);
@@ -103,101 +113,45 @@ public class Aris extends CokesAbility implements ActiveHandler {
 
 	@Override
 	public boolean ActiveSkill(Material material, ClickType clickType) {
-		if (material.equals(Material.IRON_INGOT) && clickType.equals(ClickType.RIGHT_CLICK) && activeTimer.isDuration(true) && chain != 0) {
+		if (material.equals(Material.IRON_INGOT) && clickType.equals(ClickType.RIGHT_CLICK) && (duration == null || !duration.isDuration()) && chain != 0 && !cooldown.isCooldown()) {
 			final List<Player> players = LocationUtil.getNearbyEntities(Player.class, getPlayer().getLocation(), range.getValue(), range.getValue(), predicate);
 			if (players.isEmpty()) {
 				getPlayer().sendMessage("주변에 플레이어가 존재하지 않습니다.");
 				return false;
 			}
-			activeTimer.start(players);
-			return true;
+			duration = new CaughtUpTimer(players);
+			return duration.start();
 		}
 		return false;
 	}
-	
-	class ActiveTimer {
-		private int duration;
-		private UpTimer up;
-		private ArisGrabTimer grab;
-		private List<Player> list;
 
-		public boolean start(List<Player> list) {
-			list.forEach(player -> player.setGravity(false));
-			this.duration = chain;
-			this.up = new UpTimer();
-			this.grab = new ArisGrabTimer();
+	class CaughtUpTimer extends Duration {
+		private final List<Player> list;
+		private final int duration;
+		private int cnt = 0;
+
+		public CaughtUpTimer(List<Player> list) {
+			super(chain*20 + (chain/2 + 4), cooldown);
 			this.list = list;
-			return up.start();
-		}
-		
-		public boolean stop(boolean silent) {
-			return up.stop(silent) || grab.stop(silent);
-		}
-		
-		public boolean isDuration(boolean message) {
-			if (up != null && grab != null) {
-				return up.isRunning() && (message ? grab.isDuration() : grab.isRunning());
-			}
-			return true;
+			this.duration = chain;
+			this.setPeriod(TimeUnit.TICKS, 1);
 		}
 
-		public void onStop() {
-			list.forEach(player -> player.setGravity(true));
-			list.clear();
-			chain = 0;
-		}
-		
-		class UpTimer extends AbilityTimer {
-			public UpTimer() {
-				super(duration/2 + 4);
-				this.setPeriod(TimeUnit.TICKS, 1);
-			}
-			
-			@Override
-			protected void run(int count) {
+		@Override
+		protected void onDurationProcess(int i) {
+			cnt++;
+			if (cnt >=1 && cnt < (duration/2 + 4)) {
 				for (Player player : list) {
 					Location location = player.getLocation().clone();
-					LocationIterator line = Line.iteratorBetween(location, location.add(0, 1, 0), 200);
+					LocationIterator line = Line.iteratorBetween(location, location.add(0, 1, 0), 10);
 					for (Location line_location : line.iterable()) {
 						if(line_location.clone().add(0, 1.4, 0).getBlock().getType() == Material.AIR) {
 							player.teleport(line_location);
 						}
 					}
 				}
-
-			}
-			
-			protected void onSilentEnd() {
-				onStop();
-			}
-			
-			protected void onEnd() {
-				grab.start();
-			}
-		}
-		
-		class ArisGrabTimer extends Duration {
-
-			public ArisGrabTimer() {
-				super(chain*20, cooldown);
-				setPeriod(TimeUnit.TICKS, 1);
-			}
-			
-			protected void onStart() {
-				list.forEach(player -> Caught.apply(getGame().getParticipant(player.getUniqueId()), TimeUnit.SECONDS, chain));
-			}
-
-			@Override
-			protected void onDurationProcess(int arg0) {
-
-			}
-			
-			protected void onDurationSilentEnd() {
-				onStop();
-			}
-			
-			protected void onDurationEnd() {
-				onStop();
+			} else if (cnt == duration / 2 + 5) {
+				list.forEach(player -> Caught.apply(getGame().getParticipant(player.getUniqueId()), TimeUnit.SECONDS, duration));
 			}
 		}
 	}

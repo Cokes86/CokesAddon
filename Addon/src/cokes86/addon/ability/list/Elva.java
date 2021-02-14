@@ -14,6 +14,7 @@ import daybreak.abilitywar.game.team.interfaces.Teamable;
 import daybreak.abilitywar.utils.base.ProgressBar;
 import daybreak.abilitywar.utils.base.color.RGB;
 import daybreak.abilitywar.utils.base.concurrent.TimeUnit;
+import daybreak.abilitywar.utils.base.math.FastMath;
 import daybreak.abilitywar.utils.base.math.LocationUtil;
 import daybreak.abilitywar.utils.base.math.geometry.Line;
 import daybreak.abilitywar.utils.library.ParticleLib;
@@ -140,11 +141,11 @@ public class Elva extends CokesAbility {
 
 		double radYaw = Math.toRadians(yaw), radPitch = Math.toRadians(pitch);
 
-		double cosPitch = Math.cos(radPitch);
+		double cosPitch = FastMath.cos(radPitch);
 
-		double x = -Math.sin(radYaw) * cosPitch;
-		double y = -Math.sin(radPitch);
-		double z = Math.cos(radYaw) * cosPitch;
+		double x = -FastMath.sin(radYaw) * cosPitch;
+		double y = -FastMath.sin(radPitch);
+		double z = FastMath.cos(radYaw) * cosPitch;
 
 		Vector velocity = new Vector(x, y, z);
 		return velocity.normalize();

@@ -27,11 +27,11 @@ public class Perseverance extends CokesAbility {
 		@Override
 		protected void run(int seconds) {
 			give += upg.getValue();
-			ac.update("상대방에게 주는 대미지: " + (give) + "%");
 			if (give == max.getValue()) {
 				give = max.getValue();
 				stop(false);
 			}
+			ac.update("상대방에게 주는 대미지: " + (give) + "%");
 		}
 	}.setPeriod(TimeUnit.TICKS, (int) (period.getValue()*20)).setInitialDelay(TimeUnit.TICKS, (int) (period.getValue()*20));
 
@@ -60,7 +60,8 @@ public class Perseverance extends CokesAbility {
 			e.setDamage(e.getDamage() * give / 100.00);
 			give = 100;
 			ac.update("상대방에게 주는 대미지: " + (give) + "%");
-			passive.setCount(0);
+			if (!passive.isRunning()) passive.start();
+			passive.setCount(1);
 		}
 	}
 }

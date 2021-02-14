@@ -30,7 +30,8 @@ import java.util.concurrent.ConcurrentHashMap;
 		"그 수의 2배만큼의 대미지를 입힙니다. $[COOLDOWN_CONFIG]",
 		"각각 플레이어마다 §2맹독§f은 최대 $[MAX_COUNTER_CONFIG]씩 쌓입니다.",
 		"철괴 좌클릭시 모든 플레이어의 §2맹독§f을 알 수 있습니다.",
-		"0개는 따로 표시하지 않습니다."
+		"0개는 따로 표시하지 않습니다.",
+		"맹독을 가진 플레이어는 자신이 맹독에 걸렸는 지 알 수 없습니다."
 })
 public class Ovisni extends CokesAbility implements ActiveHandler {
 

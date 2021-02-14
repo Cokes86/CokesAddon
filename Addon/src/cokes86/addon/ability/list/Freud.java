@@ -206,18 +206,8 @@ public class Freud extends CokesAbility implements ActiveHandler {
 		}
 
 		public static Magic getRandomMagic() {
-			Random r = new Random();
-			int a = r.nextInt(3);
-			switch (a) {
-				case 0:
-					return Magic.FIRE;
-				case 1:
-					return Magic.WEAKNESS;
-				case 2:
-					return Magic.EXPLOSION;
-				default:
-					return null;
-			}
+			final Random random = new Random();
+			return random.pick(values());
 		}
 
 		protected abstract void onDamaged(Damageable damageable, Player owner);

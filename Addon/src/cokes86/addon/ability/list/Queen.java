@@ -29,7 +29,6 @@ public class Queen extends CokesAbility implements ActiveHandler, TargetHandler 
 		public boolean condition(Integer value) {
 			return value >= 0;
 		}
-
 	};
 	private static final Config<Double> multiply = new Config<Double>(Queen.class, "회복배율", 1.0) {
 		@Override
@@ -38,12 +37,11 @@ public class Queen extends CokesAbility implements ActiveHandler, TargetHandler 
 		}
 	};
 	private final DecimalFormat df = new DecimalFormat(".00");
-	private final double defaultHealth = Settings.getDefaultMaxHealth();
+	private final double defaultHealth = AttributeUtil.getMaxHealth(getPlayer());
 	private final Cooldown cooldown = new Cooldown(cool.getValue());
 
 	public Queen(Participant arg0) {
 		super(arg0);
-		AttributeUtil.setMaxHealth(getPlayer(), defaultHealth);
 	}
 
 	@Override

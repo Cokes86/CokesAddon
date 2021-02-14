@@ -32,7 +32,7 @@ import java.util.Random;
 		"§7패시브 §8- §c딥러닝§r: 플레이어의 능력사용여부, 전투여부를 알 수 있습니다.",
 		"  게임에 참가중인 플레이어가 능력을 사용할 때마다 §e마이닝 스택§f이 1 상승하며,",
 		"  대미지감소, 추가대미지 중 하나가 인원에 반비례하여 상승합니다.",
-		"  각각 최대 $[defenseUp]% 대미지가 감소, $[damageUp]의 추가대미지까지 상승합니다.",
+		"  각각 최대 $[defenseUp]% 대미지 감소, $[damageUp]의 추가대미지까지 상승합니다.",
 		"  자신 또는 다른 데이터마이닝의 스킬로는 §e마이닝 스택§f이 증가하지 않습니다.",
 		"§7패시브 §8- §c강화학습§r: 액티브 스킬이 존재하지 않는 플레이어 수에 따라",
 		"  매 $[duration]마다 §e마이닝 스택§f을 자동으로 얻습니다.",
@@ -56,10 +56,10 @@ import java.util.Random;
 @NotAvailable(AbstractTripleMix.class)
 @Materials(materials = {Material.IRON_INGOT, Material.GOLD_INGOT})
 public class DataMining extends CokesAbility implements ActiveHandler {
-	private static final Config<Double> damageUp = new Config<Double>(DataMining.class, "최대대미지성장치", 2.5),
-			defenseUp = new Config<Double>(DataMining.class, "최대대미지감소성장치", 25.00);
-	private static final Config<Integer> player_value = new Config<Integer>(DataMining.class, "인원별_스택치", 4),
-			duration = new Config<Integer>(DataMining.class, "자동스택추가주기", 60, Config.Condition.TIME);
+	private static final Config<Double> damageUp = new Config<>(DataMining.class, "최대대미지성장치", 2.5),
+			defenseUp = new Config<>(DataMining.class, "최대대미지감소성장치", 25.00);
+	private static final Config<Integer> player_value = new Config<>(DataMining.class, "인원별_스택치", 4),
+			duration = new Config<>(DataMining.class, "자동스택추가주기", 60, Config.Condition.TIME);
 	private final DecimalFormat df = new DecimalFormat("0.00");
 	private int damage_count = 0;
 	private int defense_count = 0;

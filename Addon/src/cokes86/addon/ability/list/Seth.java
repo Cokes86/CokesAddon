@@ -1,38 +1,25 @@
 package cokes86.addon.ability.list;
 
 import cokes86.addon.ability.CokesAbility;
-import cokes86.addon.effects.GodsPressure;
-import daybreak.abilitywar.AbilityWar;
-import daybreak.abilitywar.ability.AbilityBase;
+import cokes86.addon.effect.list.DamageDown;
 import daybreak.abilitywar.ability.AbilityManifest;
 import daybreak.abilitywar.ability.AbilityManifest.Rank;
 import daybreak.abilitywar.ability.AbilityManifest.Species;
 import daybreak.abilitywar.ability.SubscribeEvent;
 import daybreak.abilitywar.ability.decorator.ActiveHandler;
 import daybreak.abilitywar.game.AbstractGame;
-import daybreak.abilitywar.game.AbstractGame.Effect;
 import daybreak.abilitywar.game.AbstractGame.Participant;
 import daybreak.abilitywar.game.AbstractGame.Participant.ActionbarNotification.ActionbarChannel;
-import daybreak.abilitywar.game.manager.effect.registry.ApplicationMethod;
-import daybreak.abilitywar.game.manager.effect.registry.EffectConstructor;
-import daybreak.abilitywar.game.manager.effect.registry.EffectManifest;
-import daybreak.abilitywar.game.manager.effect.registry.EffectRegistry;
-import daybreak.abilitywar.game.manager.effect.registry.EffectRegistry.EffectRegistration;
-import daybreak.abilitywar.game.manager.effect.registry.EffectType;
 import daybreak.abilitywar.game.module.DeathManager;
 import daybreak.abilitywar.game.team.interfaces.Teamable;
 import daybreak.abilitywar.utils.base.concurrent.TimeUnit;
 import daybreak.abilitywar.utils.base.math.LocationUtil;
-import daybreak.abilitywar.utils.library.SoundLib;
-import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
-import org.bukkit.event.EventHandler;
-import org.bukkit.event.HandlerList;
-import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.PlayerDeathEvent;
+import org.bukkit.util.Vector;
 
 import java.text.DecimalFormat;
 import java.util.ArrayList;
@@ -44,11 +31,8 @@ import java.util.function.Predicate;
 		"  남아있는 생존자 대비 얻은 전쟁스택에 비례하여",
 		"  자신이 상대방에게 주는 대미지가 증가합니다 (최대 $[MAX_DAMAGE] 증가)",
 		"§7철괴 우클릭 §8- §c전원 집합§r: 자신 기준 $[RANGE]블럭 이내 모든 플레이어를 자신의 위치로 이동시킨 후",
-		"  이동시킨 플레이어들에게 신의 프레셔 상태이상을 $[DEBUFF] 부여합니다.",
+		"  이동시킨 플레이어들에게 대미지 감소 상태이상을 최소 0.5, 최대 $[DEBUFF_MAX]만큼 감소하여 $[DEBUFF] 부여합니다.",
 		"  이미 신의 프레셔 디버프를 보유한 플레이어는 전원 집합으로 이동하지 않습니다. $[COOL]",
-		"§7상태이상 §8- §c신의 프레셔§r: 상대방에게 주는 대미지가 세트의 전쟁스택에",
-	    "  반비례하여 감소합니다. 이 수치는 최소 0.5, 최대 $[DEBUFF_MAX]만큼 감소합니다.",
-		"  세트가 아닌 플레이어가 사용할 경우, 1만큼만 감소합니다."
 })
 public class Seth extends CokesAbility implements ActiveHandler {
 	private final List<Participant> participants = new ArrayList<>(getGame().getParticipants());
@@ -92,7 +76,9 @@ public class Seth extends CokesAbility implements ActiveHandler {
 			if (list.size() > 0) {
 				for (Player player : list) {
 					Participant participant = getGame().getParticipant(player);
-					GodsPressure.apply(participant, TimeUnit.TICKS, DEBUFF.getValue()*20, this);
+					Vector move = getPlayer().getLocation().toVector().subtract(player.getLocation().toVector());
+					player.setVelocity(move);
+					DamageDown.apply(participant, TimeUnit.TICKS, DEBUFF.getValue()*20, getDecreaseDamage());
 				}
 				cooldown.start();
 				return true;
@@ -126,12 +112,8 @@ public class Seth extends CokesAbility implements ActiveHandler {
 			e.setDamage(e.getDamage() + damage);
 		}
 	}
-	
-	public int getKill() {
-		return kill;
-	}
-	
-	public int getParticipantSize() {
-		return participants.size();
+
+	public double getDecreaseDamage() {
+		return Math.max(0.5, Seth.DEBUFF_MAX.getValue() - (kill * 2.0 / participants.size()));
 	}
 }

@@ -36,7 +36,6 @@ import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
-import java.awt.*;
 import java.util.Map;
 import java.util.TreeMap;
 import java.util.function.Predicate;
@@ -192,7 +191,7 @@ public class Summoner extends CokesAbility implements ActiveHandler {
 		private void onInventoryClick(InventoryClickEvent e) {
 			if (e.getInventory().equals(gui)) {
 				e.setCancelled(true);
-				if (e.getCurrentItem() != null && e.getCurrentItem().hasItemMeta() && e.getCurrentItem().getItemMeta().hasDisplayName()) {
+				if (e.getCurrentItem() != null && e.getCurrentItem().getItemMeta() != null && e.getCurrentItem().getItemMeta().hasDisplayName()) {
 					if (values.containsKey(ChatColor.stripColor(e.getCurrentItem().getItemMeta().getDisplayName()))) {
 						Participant target = values.get(ChatColor.stripColor(e.getCurrentItem().getItemMeta().getDisplayName()));
 						summon.setTarget(target).start();

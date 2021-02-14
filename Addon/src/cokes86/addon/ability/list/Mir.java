@@ -9,7 +9,6 @@ import daybreak.abilitywar.ability.decorator.ActiveHandler;
 import daybreak.abilitywar.game.AbstractGame.Participant;
 import daybreak.abilitywar.game.module.DeathManager;
 import daybreak.abilitywar.game.team.interfaces.Teamable;
-import daybreak.abilitywar.utils.annotations.Beta;
 import daybreak.abilitywar.utils.base.color.RGB;
 import daybreak.abilitywar.utils.base.concurrent.TimeUnit;
 import daybreak.abilitywar.utils.base.language.korean.KoreanUtil;
@@ -17,6 +16,7 @@ import daybreak.abilitywar.utils.base.math.LocationUtil;
 import daybreak.abilitywar.utils.base.math.geometry.Circle;
 import daybreak.abilitywar.utils.base.minecraft.nms.NMS;
 import daybreak.abilitywar.utils.base.minecraft.version.ServerVersion;
+import daybreak.abilitywar.utils.base.random.Random;
 import daybreak.abilitywar.utils.library.MaterialX;
 import daybreak.abilitywar.utils.library.ParticleLib;
 import daybreak.abilitywar.utils.library.PotionEffects;
@@ -33,7 +33,6 @@ import org.bukkit.inventory.EntityEquipment;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.LeatherArmorMeta;
 
-import java.util.Random;
 import java.util.function.Predicate;
 
 @AbilityManifest(name = "미르", rank = Rank.B, species = Species.HUMAN, explain = {
@@ -181,9 +180,8 @@ public class Mir extends CokesAbility implements ActiveHandler {
 
 	public Element getRandomElement() {
 		Random random = new Random();
-		Element after = Element.values()[random.nextInt(Element.values().length)];
-		if (!after.equals(element)) return after;
-		else return getRandomElement();
+		Element after = random.pick(Element.values());
+		return element.equals(after) ? getRandomElement() : after;
 	}
 
 	@Override

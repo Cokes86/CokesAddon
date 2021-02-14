@@ -5,7 +5,9 @@ import daybreak.abilitywar.ability.AbilityManifest;
 import daybreak.abilitywar.ability.SubscribeEvent;
 import daybreak.abilitywar.ability.decorator.ActiveHandler;
 import daybreak.abilitywar.game.AbstractGame;
+import daybreak.abilitywar.game.event.participant.ParticipantDeathEvent;
 import daybreak.abilitywar.utils.annotations.Beta;
+import daybreak.abilitywar.utils.base.concurrent.TimeUnit;
 import daybreak.abilitywar.utils.base.minecraft.nms.IHologram;
 import daybreak.abilitywar.utils.base.minecraft.nms.NMS;
 import daybreak.abilitywar.utils.library.SoundLib;
@@ -17,18 +19,24 @@ import org.bukkit.entity.Projectile;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 
 @AbilityManifest(name = "너만 때린다", rank = AbilityManifest.Rank.A, species = AbilityManifest.Species.HUMAN, explain = {
-        "§7패시브 §8- §c분산 타격§r: 같은 대상을 연속으로 공격할 때 1회 타격은 75%,",
-        "  2회 타격은 100%, 3회 타격은 125%의 대미지로 공격합니다.",
+        "§7패시브 §8- §c분산 타격§r: 같은 대상을 연속으로 공격할 때 1회 타격은 $[FIRST_HIT]%,",
+        "  2회 타격은 $[SECOND_HIT]%, 3회 타격은 $[THIRD_HIT]%의 대미지로 공격합니다.",
         "  다른 이를 공격하거나, 일정 시간이 지날 시 이 수치는 초기화됩니다.",
-        "  록 온의 쿨타임동안 이 수치는 각각 25%p 감소합니다.",
+        "  록 온의 쿨타임동안 이 수치는 각각 $[COOLDOWN_DECREASE]%p 감소합니다.",
         "§7철괴 우클릭 §8- §c록 온§r: 사용 전 마지막에 타격한 플레이어만 공격할 수 있습니다.",
-        "  분산 타격의 모든 대미지 수치는 대상 한정 75%p 상승합니다. $[COOLDOWN]",
+        "  분산 타격의 모든 대미지 수치는 대상 한정 $[LOCK_ON]%p 상승합니다. $[COOLDOWN]",
         "  대상이 사망하거나 다시 사용할 경우 취소됩니다."
 })
-@Beta
 public class OnlyHitYou extends CokesAbility implements ActiveHandler {
+    private static final Config<Integer> COOLDOWN = new Config<>(OnlyHitYou.class, "쿨타임", 60, Config.Condition.COOLDOWN),
+    FIRST_HIT = new Config<>(OnlyHitYou.class, "첫번째_타격_배율(%)", 75, a -> a>0),
+    SECOND_HIT = new Config<>(OnlyHitYou.class, "두번째_타격_배율(%)", 100, a -> a>0),
+    THIRD_HIT = new Config<>(OnlyHitYou.class, "세번째_타격_배율(%)", 125, a -> a>0),
+    LOCK_ON = new Config<>(OnlyHitYou.class, "록_온_추가_배율(%)", 75, a -> a>0),
+    COOLDOWN_DECREASE = new Config<>(OnlyHitYou.class, "쿨타임_감소_배율(%)", 25, a -> a>0);
+
     private final HitTimer passive = new HitTimer();
-    private final Cooldown cool = new Cooldown(60);
+    private final Cooldown cool = new Cooldown(COOLDOWN.getValue());
 
     public OnlyHitYou(AbstractGame.Participant arg0) {
         super(arg0);
@@ -36,8 +44,13 @@ public class OnlyHitYou extends CokesAbility implements ActiveHandler {
 
     @Override
     public boolean ActiveSkill(Material material, ClickType clickType) {
-        if (material == Material.IRON_INGOT && clickType == ClickType.RIGHT_CLICK) {
+        if (material == Material.IRON_INGOT && clickType == ClickType.RIGHT_CLICK && !cool.isCooldown()) {
             passive.changeLockOn();
+            if (!passive.isLockOn()) {
+                getPlayer().sendMessage("[§c!§r] 록 온이 해제되었습니다.");
+            } else {
+                getPlayer().sendMessage("[§c!§r] 록 온!");
+            }
             return passive.isLockOn();
         }
         return false;
@@ -71,28 +84,38 @@ public class OnlyHitYou extends CokesAbility implements ActiveHandler {
                     return;
                 }
             }
-            int info = (cool.isRunning() ? -1 : 0) + (passive.isLockOn() ? 3 : 0);
-            e.setDamage(e.getDamage() * (1 + (passive.getHit() - 1)*0.25 + info*0.25));
             passive.addHit();
+            double multiply = passive.getMultiply() + (passive.isLockOn() ? LOCK_ON.getValue() : 0) - (cool.isRunning() ? COOLDOWN_DECREASE.getValue() : 0);
+            e.setDamage(e.getDamage() * multiply/100.0f);
+        }
+    }
+
+    @SubscribeEvent
+    public void onParticipantDeath(ParticipantDeathEvent e) {
+        if (e.getParticipant().getPlayer().equals(passive.getTargetPlayer()) && passive.isLockOn()) {
+            passive.changeLockOn();
+            getPlayer().sendMessage("[§c!§r] 대상이 사망하여 록 온이 자동으로 해제됩니다.");
         }
     }
 
     private class HitTimer extends AbilityTimer {
-        private final Note C = Note.natural(1, Note.Tone.C),
-                E= Note.natural(1, Note.Tone.E),
+        private final Note C = Note.natural(0, Note.Tone.C),
+                E= Note.natural(0, Note.Tone.E),
                 G= Note.natural(1, Note.Tone.G);
 
         private boolean lockOn = false;
         private Player targetPlayer = getPlayer();
         private int hit = 0;
         private final IHologram hologram;
-        private String hologramMessage = "";
+        private String hologramMessage = "§f";
+        private int multiply = 0;
 
         private HitTimer() {
             super();
             this.hologram = NMS.newHologram(targetPlayer.getWorld(), targetPlayer.getLocation().getX(), targetPlayer.getLocation().getY() + targetPlayer.getEyeHeight() + 0.6, targetPlayer.getLocation().getZ());
             this.hologram.setText(hologramMessage);
             this.register();
+            this.setPeriod(TimeUnit.TICKS, 1);
         }
 
         public void run(int count) {
@@ -119,37 +142,43 @@ public class OnlyHitYou extends CokesAbility implements ActiveHandler {
             this.hit = 0;
         }
 
-        private int getHit() {
-            return hit;
-        }
-
         private void addHit() {
-            switch(hit){
-                case 0:
+            switch(++hit){
+                case 1: {
                     SoundLib.BELL.playInstrument(getPlayer(), C);
                     hologramMessage = "§f♐";
                     hologram.display(getPlayer());
-                case 1:
+                    multiply = FIRST_HIT.getValue();
+                    break;
+                }
+                case 2: {
                     SoundLib.BELL.playInstrument(getPlayer(), E);
                     hologramMessage = "§c♐";
-                case 2:
+                    multiply = SECOND_HIT.getValue();
+                    break;
+                }
+                case 3: {
                     SoundLib.BELL.playInstrument(getPlayer(), G);
                     hologramMessage = "§f";
                     hologram.hide(getPlayer());
-            }
-
-            hit++;
-            if (hit == 3) {
-                hit = 0;
+                    multiply = THIRD_HIT.getValue();
+                    hit = 0;
+                    break;
+                }
             }
         }
 
         private void changeLockOn() {
             lockOn = !lockOn;
+            if (!lockOn) cool.start();
         }
 
         private boolean isLockOn() {
             return lockOn;
+        }
+
+        private int getMultiply() {
+            return multiply;
         }
     }
 }

@@ -2,6 +2,7 @@ package cokes86.addon.ability.list;
 
 import cokes86.addon.ability.CokesAbility;
 import cokes86.addon.util.AttributeUtil;
+import com.google.common.base.Strings;
 import daybreak.abilitywar.ability.AbilityManifest;
 import daybreak.abilitywar.ability.SubscribeEvent;
 import daybreak.abilitywar.ability.decorator.ActiveHandler;
@@ -15,6 +16,7 @@ import daybreak.abilitywar.utils.base.concurrent.TimeUnit;
 import daybreak.abilitywar.utils.base.math.LocationUtil;
 import daybreak.abilitywar.utils.base.minecraft.damage.Damages;
 import daybreak.abilitywar.utils.base.minecraft.entity.health.Healths;
+import daybreak.abilitywar.utils.base.minecraft.nms.IHologram;
 import daybreak.abilitywar.utils.base.minecraft.nms.NMS;
 import daybreak.abilitywar.utils.base.random.Random;
 import daybreak.abilitywar.utils.library.SoundLib;
@@ -57,7 +59,7 @@ public class Casino extends CokesAbility implements ActiveHandler {
             put(Effects.PROJECTILE, false);
         }
     };
-    private final Map<UUID, Integer> hit = new HashMap<>();
+    private final Map<AbstractGame.Participant, HitBleedTimer> hit = new HashMap<>();
 
     private final AbilityTimer wither = new AbilityTimer() {
         @Override
@@ -162,12 +164,8 @@ public class Casino extends CokesAbility implements ActiveHandler {
             if (effects.get(Effects.BLEED)) {
                 if (predicate.test(e.getEntity()) && getGame().isParticipating(e.getEntity().getUniqueId())) {
                     AbstractGame.Participant p = getGame().getParticipant(e.getEntity().getUniqueId());
-                    int hit = this.hit.getOrDefault(e.getEntity().getUniqueId(), 0) + 1;
-                    if (hit >= 4) {
-                        Bleed.apply(p, TimeUnit.SECONDS, 1);
-                        hit = 0;
-                    }
-                    this.hit.put(e.getEntity().getUniqueId(), hit);
+                    if (!hit.containsKey(p)) hit.put(p, new HitBleedTimer(p));
+                    hit.get(p).addHit();
                 }
             }
         }
@@ -321,6 +319,56 @@ public class Casino extends CokesAbility implements ActiveHandler {
                 }
             };
             check.start();
+        }
+    }
+
+    private class HitBleedTimer extends AbilityTimer {
+        private final AbstractGame.Participant participant;
+        private final IHologram hologram;
+        private int hit;
+
+        public HitBleedTimer(AbstractGame.Participant participant) {
+            this.participant = participant;
+            this.hologram = NMS.newHologram(participant.getPlayer().getWorld(), participant.getPlayer().getLocation().clone().add(0,2.2,0));
+            this.hologram.setText("§c".concat(Strings.repeat("☑",hit)).concat(Strings.repeat("☐", 3-hit)));
+            this.hit = 0;
+            this.setPeriod(TimeUnit.TICKS, 1);
+        }
+
+        public void onStart() {
+            hologram.display(getPlayer());
+        }
+
+        public void run(int time) {
+            hologram.teleport(participant.getPlayer().getLocation().clone().add(0,2.2,0));
+        }
+
+        public void onCountSet() {
+            String text = "§c".concat(Strings.repeat("☑",hit)).concat(Strings.repeat("☐", 3-hit));
+            hologram.setText(text);
+        }
+
+        public void onEnd() {
+            this.hologram.hide(getPlayer());
+        }
+
+        public void onSilentEnd() {
+            this.hologram.hide(getPlayer());
+        }
+
+        public void addHit() {
+            hit++;
+
+            if (hit == 1) {
+                start();
+            }
+
+            setCount(10);
+
+            if (hit == 4) {
+                stop(false);
+                Bleed.apply(participant, TimeUnit.SECONDS, 1);
+            }
         }
     }
 }
