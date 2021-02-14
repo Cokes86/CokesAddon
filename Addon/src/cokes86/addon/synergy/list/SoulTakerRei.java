@@ -84,7 +84,7 @@ public class SoulTakerRei extends CokesSynergy implements ActiveHandler {
     @SubscribeEvent
     public void onEntityDamage(EntityDamageEvent e) {
         if (e.getEntity().equals(getPlayer())) {
-            if (getPlayer().getHealth() - e.getFinalDamage() <= 0 && arousal_cool.isRunning() && soul > 0) {
+            if (getPlayer().getHealth() - e.getFinalDamage() <= 0 && !arousal_cool.isRunning() && soul > 0) {
                 e.setDamage(0);
                 Healths.setHealth(getPlayer(), soul * (1+ (duration.isRunning() ? 0.5 : 0)));
                 arousal_cool.start();
