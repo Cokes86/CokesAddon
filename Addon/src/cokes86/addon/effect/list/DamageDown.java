@@ -18,6 +18,10 @@ import org.bukkit.event.entity.EntityDamageByEntityEvent;
 
 @EffectManifest(displayName = "§e대미지 감소", name = "대미지 감소", method = ApplicationMethod.UNIQUE_LONGEST, type = {
         EffectType.COMBAT_RESTRICTION
+}, description = {
+        "자신이 상대방을 때릴 때 주는 대미지가 감소합니다.",
+        "따로 표기되지 않는 것은 0.5의 대미지 감소지만,",
+        "능력에 따라 대미지 감소량은 달라집니다."
 })
 public class DamageDown extends AbstractGame.Effect implements Listener {
     private final double damage;

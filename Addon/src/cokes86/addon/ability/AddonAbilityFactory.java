@@ -60,7 +60,9 @@ public class AddonAbilityFactory {
 
 		//1.3.0
 		registerAbility(OnlyHitYou.class);
-		//registerAbility(Cokes.class);
+
+		//1.3.1
+		registerAbility(Cokes.class);
 
 		if (PhantomThief.initPhantomThief()) {
 			registerAbility(PhantomThief.class);
@@ -86,10 +88,6 @@ public class AddonAbilityFactory {
 		} else {
 			System.out.println("이미 애드온에 등록된 능력입니다 : " + clazz.getName());
 		}
-	}
-
-	public static List<Class<? extends CokesAbility>> getAddonAbilities() {
-		return new ArrayList<>(abilities.values());
 	}
 
 	public static List<String> nameValues() {

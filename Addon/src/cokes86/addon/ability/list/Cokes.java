@@ -1,4 +1,4 @@
-/*package cokes86.addon.ability.list;
+package cokes86.addon.ability.list;
 
 import cokes86.addon.ability.CokesAbility;
 import daybreak.abilitywar.AbilityWar;
@@ -14,7 +14,6 @@ import daybreak.abilitywar.utils.library.PotionEffects;
 import daybreak.abilitywar.utils.library.SoundLib;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
-import org.bukkit.Effect;
 import org.bukkit.Material;
 import org.bukkit.entity.*;
 import org.bukkit.event.EventHandler;
@@ -23,7 +22,6 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityRegainHealthEvent;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.StringJoiner;
@@ -40,7 +38,6 @@ import java.util.StringJoiner;
         "  <E>: 재생 버프",
         "  <S>: 저항 버프"
 })
-@Beta
 public class Cokes extends CokesAbility implements ActiveHandler {
     private final Cooldown rightCool = new Cooldown(60, "이펙트"),
             leftCool = new Cooldown(30, "슬롯머신");
@@ -236,4 +233,3 @@ public class Cokes extends CokesAbility implements ActiveHandler {
         }
     }
 }
-*/

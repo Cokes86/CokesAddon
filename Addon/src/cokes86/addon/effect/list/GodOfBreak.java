@@ -15,7 +15,11 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.PlayerDeathEvent;
 
-@EffectManifest(name = "파괴의 신", displayName = "§e파괴의 §c신", method = ApplicationMethod.UNIQUE_LONGEST)
+@EffectManifest(name = "파괴의 신", displayName = "§e파괴의 §c신", method = ApplicationMethod.UNIQUE_LONGEST,  description = {
+        "자신이 상대방에게 주는 대미지가 3 증가합니다.",
+        "해당 효과를 가진 상태에서 상대방을 살해할 시 대미지가 1 추가 증가합니다.",
+        "해당 효과가 종료될 시 해당 효과로 증가한 대미지의 5배에 해당하는 대미지를 받습니다."
+})
 public class GodOfBreak extends AbstractGame.Effect implements Listener {
     private static final EffectRegistry.EffectRegistration<GodOfBreak> registration = EffectRegistry.registerEffect(GodOfBreak.class);
 

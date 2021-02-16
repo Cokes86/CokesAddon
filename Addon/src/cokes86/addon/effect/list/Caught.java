@@ -25,6 +25,10 @@ import org.bukkit.event.player.PlayerMoveEvent;
 
 @EffectManifest(displayName = "§c붙잡힘", name = "붙잡힘", method = ApplicationMethod.UNIQUE_LONGEST, type = {
         EffectType.MOVEMENT_RESTRICTION
+}, description = {
+        "움직일 수 없고, 자신의 액티브, 타겟팅 능력을 사용할 수 없습니다.",
+        "또한 자신은 상대방을 공격할 수 없으며,",
+        "매 2초마다 반칸의 대미지를 받는 대신, 그 이외의 공격을 받을 수 없습니다."
 })
 public class Caught extends AbstractGame.Effect implements Listener {
     private static final EffectRegistry.EffectRegistration<Caught> caught = EffectRegistry.registerEffect(Caught.class);

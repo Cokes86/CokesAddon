@@ -13,6 +13,8 @@ import org.bukkit.entity.ArmorStand;
 
 @EffectManifest(displayName = "§6능력 봉인", name = "능력봉인", method = ApplicationMethod.UNIQUE_LONGEST, type = {
         EffectType.ABILITY_RESTRICTION
+},  description = {
+        "자신의 능력이 비활성화됩니다."
 })
 public class Seal extends AbstractGame.Effect {
     public static final EffectRegistry.EffectRegistration<Seal> registry = EffectRegistry.registerEffect(Seal.class);
