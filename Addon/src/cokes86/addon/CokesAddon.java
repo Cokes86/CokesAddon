@@ -7,41 +7,62 @@ import cokes86.addon.synergy.CokesSynergy;
 import cokes86.addon.effect.AddonEffectFactory;
 import cokes86.addon.gamemode.disguiseparty.DisguiseParty;
 import daybreak.abilitywar.addon.Addon;
+import daybreak.abilitywar.addon.AddonLoader;
 import daybreak.abilitywar.game.Category;
 import daybreak.abilitywar.game.event.GameCreditEvent;
 import daybreak.abilitywar.game.list.mix.AbstractMix;
 import daybreak.abilitywar.game.manager.GameFactory;
+import daybreak.abilitywar.utils.base.Messager;
+import daybreak.abilitywar.utils.base.language.korean.KoreanUtil;
 import org.bukkit.Bukkit;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 
 import java.io.File;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.concurrent.CompletableFuture;
 
 public class CokesAddon extends Addon implements Listener {
-	ConfigLoader loader = new ConfigLoader();
+	private static final Map<String, Boolean> loaded = new HashMap<>();
+
+	private final ConfigLoader configLoader = new ConfigLoader();
+	private final OtherAddonLoader otherAddonLoader = new OtherAddonLoader();
 
 	@Override
 	public void onEnable() {
-		loader.run();
+		//Load Addon Ability
+		AddonAbilityFactory.nameValues();
+		AddonSynergyFactory.nameValues();
 
-		// Load Complete
-		Bukkit.getConsoleSender().sendMessage("[CokesAddon] 애드온이 활성화되었습니다.");
+		configLoader.run();
 
-		// Load Configuration
-		Bukkit.getServer().getScheduler().scheduleSyncDelayedTask(getPlugin(), loader);
-
-		//effects
+		//Load Effects
 		AddonEffectFactory.load();
 
-		//Game mode
+		//Check Other Addon
+		CompletableFuture.runAsync(otherAddonLoader);
+
+		//Load Mode
 		GameFactory.registerMode(DisguiseParty.class);
 
+		//Register Event
 		Bukkit.getPluginManager().registerEvents(this, getPlugin());
+
+		//Repeat Load Ability
+		Bukkit.getServer().getScheduler().scheduleSyncDelayedTask(getPlugin(), configLoader);
+
+		//Load Complete
+		Messager.sendConsoleMessage("[§cCokesAddon§r] "+getDisplayName()+"이 활성화되었습니다.");
 	}
 
 	@Override
 	public void onDisable() {
-		loader.run();
+		configLoader.run();
+	}
+
+	public static boolean isLoadAddon(String name) {
+		return loaded.getOrDefault(name, false);
 	}
 
 	@EventHandler()
@@ -62,11 +83,26 @@ public class CokesAddon extends Addon implements Listener {
 	static class ConfigLoader implements Runnable {
 		@Override
 		public void run() {
-			AddonAbilityFactory.nameValues();
-			AddonSynergyFactory.nameValues();
-
 			CokesAbility.config.update();
 			CokesSynergy.config.update();
+		}
+	}
+
+	class OtherAddonLoader implements Runnable {
+		@Override
+		public void run() {
+			try {
+				Thread.sleep(250L);
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			}
+			loaded.clear();
+			for (Addon addon : AddonLoader.getAddons()) {
+				if (addon.equals(CokesAddon.this)) continue;
+				loaded.put(addon.getName(), true);
+				Messager.sendConsoleMessage("[§cCokesAddon§r] "+addon.getDisplayName()+"§r"+ KoreanUtil.getJosa(addon.getDisplayName(), KoreanUtil.Josa.이가) +" 감지되었습니다.");
+			}
+			AddonSynergyFactory.loadSynergies();
 		}
 	}
 }

@@ -1,17 +1,17 @@
 package cokes86.addon.synergy;
 
+import cokes86.addon.CokesAddon;
 import cokes86.addon.ability.list.*;
 import cokes86.addon.synergy.list.*;
 import daybreak.abilitywar.ability.AbilityBase;
+import daybreak.abilitywar.ability.AbilityFactory;
 import daybreak.abilitywar.ability.AbilityManifest;
 import daybreak.abilitywar.ability.list.*;
 import daybreak.abilitywar.game.list.mix.synergy.SynergyFactory;
+import daybreak.abilitywar.utils.annotations.Beta;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class AddonSynergyFactory {
     protected static final Map<String, Class<? extends CokesSynergy>> synergies = new HashMap<>();
@@ -33,9 +33,9 @@ public class AddonSynergyFactory {
     public static void registerSynergy(Class<? extends AbilityBase> first, Class<? extends AbilityBase> second, Class<? extends CokesSynergy> synergy) {
         if (SynergyFactory.getSynergy(first, second) == null) {
             SynergyFactory.registerSynergy(first, second, synergy);
-            if (!synergies.containsValue(synergy)) {
+            if (AbilityFactory.isRegistered(synergy)) {
                 AbilityManifest am = synergy.getAnnotation(AbilityManifest.class);
-                synergies.put(am.name(), synergy);
+                if (synergy.getAnnotation(Beta.class) == null) synergies.put(am.name(), synergy);
             }
         } else {
             System.out.println("이미 등록된 시너지 능력입니다 : " + synergy.getName());
@@ -45,5 +45,23 @@ public class AddonSynergyFactory {
     @NotNull
     public static List<String> nameValues() {
         return new ArrayList<>(synergies.keySet());
+    }
+
+    public static void loadSynergies() {
+        if (CokesAddon.isLoadAddon("KunEAddon")) {
+            registerSynergy(PhantomThief.class, getAddonAbilityClass("KunEAbility.MadMiner"), AbilityThief.class);
+        }
+
+        if (CokesAddon.isLoadAddon("Yeomryo")) {
+            registerSynergy(Mir.class, getAddonAbilityClass("me.breakofday.yeomryo.abilities.Ace"), PheonixMir.class);
+        }
+    }
+
+    private static Class<? extends AbilityBase> getAddonAbilityClass(String name) {
+        try {
+            return Class.forName(name).asSubclass(AbilityBase.class);
+        } catch (Exception ignored) {
+            return null;
+        }
     }
 }

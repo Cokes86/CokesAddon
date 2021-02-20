@@ -19,6 +19,7 @@ import daybreak.abilitywar.utils.base.TimeUtil;
 import daybreak.abilitywar.utils.base.collect.Pair;
 import daybreak.abilitywar.utils.base.concurrent.TimeUnit;
 import daybreak.abilitywar.utils.base.math.LocationUtil;
+import daybreak.abilitywar.utils.base.math.geometry.Line;
 import daybreak.abilitywar.utils.base.minecraft.nms.NMS;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
@@ -101,6 +102,29 @@ public class PhantomThief extends CokesAbility implements ActiveHandler, TargetH
 		super(participant);
 	}
 
+	public Location getSafeLocation(Location center, double distance) {
+		final float playerYaw = center.getYaw();
+		final double radYaw = Math.toRadians(playerYaw + 180);
+
+		final double x = -Math.sin(radYaw);
+		final double z = Math.cos(radYaw);
+
+		final Location lastLocation = center.clone();
+		final Location finalLocation = lastLocation.clone().add(new Vector(x,0,z).normalize().multiply(10));
+		Line line = Line.between(lastLocation, finalLocation, 100);
+		Location result = lastLocation;
+		for (Vector check : line) {
+			Location checkLocation = result.clone().add(check);
+			if (!(checkLocation.getBlock().getType().isSolid() && !checkLocation.add(0, 1, 0).getBlock().getType().isSolid())) {
+				if (checkLocation.getWorld() != null && checkLocation.getWorld().getWorldBorder().isInside(checkLocation)) {
+					result = checkLocation;
+				}
+			}
+			break;
+		}
+		return result;
+	}
+
 	@Override
 	public boolean ActiveSkill(Material material, ClickType clickType) {
 		if (newAbility != null) {
@@ -114,16 +138,8 @@ public class PhantomThief extends CokesAbility implements ActiveHandler, TargetH
 				if (p != null && getGame().isParticipating(p)) {
 					this.target = getGame().getParticipant(p);
 					Location location = p.getLocation().clone();
-					float playerYaw = location.getYaw();
 
-					double radYaw = Math.toRadians(playerYaw + 180);
-
-					double x = -Math.sin(radYaw);
-					double z = Math.cos(radYaw);
-					Vector velocity = new Vector(x, 0, z);
-					velocity.normalize().multiply(10);
-
-					Location after = p.getLocation().add(velocity);
+					Location after = getSafeLocation(location, 10);
 					after.setY(LocationUtil.getFloorYAt(Objects.requireNonNull(after.getWorld()), location.getY(), after.getBlockX(), after.getBlockZ()) + 0.1);
 					getPlayer().teleport(after);
 
@@ -233,7 +249,7 @@ public class PhantomThief extends CokesAbility implements ActiveHandler, TargetH
 		return current;
 	}
 
-	Predicate<Entity> predicate = entity -> {
+	private final Predicate<Entity> predicate = entity -> {
 		if (entity.equals(getPlayer()))
 			return false;
 		if (entity instanceof Player) {
