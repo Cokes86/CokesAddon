@@ -44,7 +44,7 @@ import java.util.function.Predicate;
 public class Cokes extends CokesAbility implements ActiveHandler {
     private static final Config<Integer> RIGHT_COOL = new Config<>(Cokes.class, "이펙트_쿨타임", 60, Config.Condition.COOLDOWN),
     LEFT_COOL = new Config<>(Cokes.class, "슬롯머신_쿨타임", 30, Config.Condition.COOLDOWN),
-    LEFT_DURATION = new Config<>(Cokes.class, "슬롯머신_쿨타임", 10, Config.Condition.TIME);
+    LEFT_DURATION = new Config<>(Cokes.class, "슬롯머신_지속시간", 10, Config.Condition.TIME);
 
     private final Cooldown rightCool = new Cooldown(RIGHT_COOL.getValue(), "이펙트"),
             leftCool = new Cooldown(LEFT_COOL.getValue(), "슬롯머신");
