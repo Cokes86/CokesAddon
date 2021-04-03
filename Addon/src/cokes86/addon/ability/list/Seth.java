@@ -33,6 +33,9 @@ import java.util.function.Predicate;
 		"§7철괴 우클릭 §8- §c전원 집합§r: 자신 기준 $[RANGE]블럭 이내 모든 플레이어를 자신의 위치로 이동시킨 후",
 		"  이동시킨 플레이어들에게 대미지 감소 상태이상을 최소 0.5, 최대 $[DEBUFF_MAX]만큼 감소하여 $[DEBUFF] 부여합니다.",
 		"  이미 신의 프레셔 디버프를 보유한 플레이어는 전원 집합으로 이동하지 않습니다. $[COOL]",
+}, summarize = {
+		"플레이어가 사망할 때 마다 주는 대미지가 일정 수치까지 증가합니다.",
+		"철괴 우클릭 시 주변 플레이어를 끌어당기고 대미지 감소 효과를 부여합니다."
 })
 public class Seth extends CokesAbility implements ActiveHandler {
 	private final List<Participant> participants = new ArrayList<>(getGame().getParticipants());

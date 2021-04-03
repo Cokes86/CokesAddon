@@ -42,8 +42,11 @@ import java.util.function.Predicate;
 		"§4이프리트 : §f$[range_ifrit]블럭 안의 자신을 제외한 플레이어는 화상효과를 받습니다.",
 		"§7셰이드 : §f$[range_shade]블럭 안의 자신을 제외한 플레이어는 블라인드효과를 받습니다.",
 		"§b썬더버드 : §f$[range_thunder]블럭 안에 있는 자신이 상대방을 공격할 시 딜이 $[damage_increase]배 상승하며, 번개를 내려칩니다.",
-		"§6노움 : §f$[range_gnome]블럭 안에 있는 자신은 흙으로 된 보호막을 생성해 자신이 받는 대미지가 $[damage_decrease]% 감소합니다.",
-		"※제작자 자캐 기반 능력자"
+		"§6노움 : §f$[range_gnome]블럭 안에 있는 자신은 흙으로 된 보호막을 생성해 자신이 받는 대미지가 $[damage_decrease]% 감소합니다."
+}, summarize = {
+		"철괴 우클릭 시 무작위의 정령을 소환해 각종 효과를 받습니다.",
+		"이프리트: 자신 제외 화상, 셰이드: 자신 제외 블라인드",
+		"썬더버드: 자신이 영역 내 공격 시 대미지 증가, 노움: 대미지 감소"
 })
 public class Mir extends CokesAbility implements ActiveHandler {
 	private static final Config<Integer> cool = new Config<Integer>(Mir.class, "쿨타임", 20, Config.Condition.COOLDOWN) {

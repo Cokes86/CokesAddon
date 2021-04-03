@@ -1,6 +1,7 @@
 package cokes86.addon.ability.list;
 
 import cokes86.addon.ability.CokesAbility;
+import cokes86.addon.util.CokesUtil;
 import daybreak.abilitywar.ability.AbilityManifest;
 import daybreak.abilitywar.ability.AbilityManifest.Rank;
 import daybreak.abilitywar.ability.AbilityManifest.Species;
@@ -12,8 +13,8 @@ import daybreak.abilitywar.utils.library.SoundLib;
 import org.bukkit.Material;
 import org.bukkit.Note;
 import org.bukkit.Note.Tone;
-import org.bukkit.entity.Arrow;
 import org.bukkit.entity.Player;
+import org.bukkit.entity.Projectile;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 
 @AbilityManifest(name = "가시", rank = Rank.A, species = Species.OTHERS, explain = {
@@ -54,8 +55,8 @@ public class Thorn extends CokesAbility implements ActiveHandler {
 	@SubscribeEvent
 	private void onEntityDamageByEntity(EntityDamageByEntityEvent e) {
 		if (e.getEntity().equals(getPlayer()) && duration.isRunning()) {
-			if (e.getDamager() instanceof Arrow) {
-				Arrow a = (Arrow) e.getDamager();
+			if (CokesUtil.isInstanceOfArrow(e.getDamager())) {
+				Projectile a = (Projectile) e.getDamager();
 				if (a.getShooter() instanceof Player && !a.getShooter().equals(getPlayer())) {
 					Player shooter = (Player) a.getShooter();
 					double dam = e.getDamage();

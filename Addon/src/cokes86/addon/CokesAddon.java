@@ -24,7 +24,7 @@ import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 
 public class CokesAddon extends Addon implements Listener {
-	private static final Map<String, Boolean> loaded = new HashMap<>();
+	private static final Map<String, Addon> loaded = new HashMap<>();
 
 	private final ConfigLoader configLoader = new ConfigLoader();
 	private final OtherAddonLoader otherAddonLoader = new OtherAddonLoader();
@@ -62,7 +62,12 @@ public class CokesAddon extends Addon implements Listener {
 	}
 
 	public static boolean isLoadAddon(String name) {
-		return loaded.getOrDefault(name, false);
+		return loaded.get(name) != null;
+	}
+
+	public static Addon getLoadedAddon(String name) {
+		if (isLoadAddon(name)) return loaded.get(name);
+		return null;
 	}
 
 	@EventHandler()
@@ -99,7 +104,7 @@ public class CokesAddon extends Addon implements Listener {
 			loaded.clear();
 			for (Addon addon : AddonLoader.getAddons()) {
 				if (addon.equals(CokesAddon.this)) continue;
-				loaded.put(addon.getName(), true);
+				loaded.put(addon.getName(), addon);
 				Messager.sendConsoleMessage("[§cCokesAddon§r] "+addon.getDisplayName()+"§r"+ KoreanUtil.getJosa(addon.getDisplayName(), KoreanUtil.Josa.이가) +" 감지되었습니다.");
 			}
 			AddonSynergyFactory.loadSynergies();

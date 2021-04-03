@@ -9,6 +9,7 @@ import daybreak.abilitywar.game.AbstractGame.Participant;
 import daybreak.abilitywar.game.AbstractGame.Participant.ActionbarNotification.ActionbarChannel;
 import daybreak.abilitywar.game.module.DeathManager;
 import daybreak.abilitywar.game.team.interfaces.Teamable;
+import daybreak.abilitywar.utils.base.collect.Pair;
 import daybreak.abilitywar.utils.base.minecraft.damage.Damages;
 import daybreak.abilitywar.utils.library.PotionEffects;
 import daybreak.abilitywar.utils.library.SoundLib;
@@ -88,32 +89,31 @@ public class Poker extends CokesAbility implements ActiveHandler {
 				num[1] = r.nextInt(10) + 1;
 				num[2] = r.nextInt(10) + 1;
 				Arrays.sort(num);
-				String result = getPockerName(num);
-				int number = getPockerGet(num);
+				Pair<String,Integer> result = getPockerResult(num);
 				getPlayer().sendMessage("숫자를 뽑습니다 : " + num[0] + " " + num[1] + " " + num[2]);
-				switch (result) {
+				switch (result.getLeft()) {
 					case "Top":
 						String str = "";
 						if (num[2] == 9 || num[2] == 10) {
-							str = str + "신속 버프를 " + number + "초만큼 부여합니다.";
-							PotionEffects.SPEED.addPotionEffect(getPlayer(), number * 20, 0, true);
+							str = str + "신속 버프를 " + result.getRight() + "초만큼 부여합니다.";
+							PotionEffects.SPEED.addPotionEffect(getPlayer(), result.getRight() * 20, 0, true);
 						}
 						getPlayer().sendMessage("이런! 탑입니다! " + str);
 						break;
 					case "Pair":
-						getPlayer().sendMessage("좋습니다! §a페어§f입니다! 재생2 버프를 " + (number * 2) + "초간 받습니다.");
-						PotionEffects.REGENERATION.addPotionEffect(getPlayer(), number * 40, 0, true);
+						getPlayer().sendMessage("좋습니다! §a페어§f입니다! 재생2 버프를 " + (result.getRight() * 2) + "초간 받습니다.");
+						PotionEffects.REGENERATION.addPotionEffect(getPlayer(), result.getRight() * 40, 0, true);
 						break;
 					case "Straight":
-						getPlayer().sendMessage("와우! §b스트레이트§f입니다! 다음 공격은 추가적으로 " + (number) + "의 대미지를 줍니다.");
-						additional = number;
+						getPlayer().sendMessage("와우! §b스트레이트§f입니다! 다음 공격은 추가적으로 " + (result.getRight()) + "의 대미지를 줍니다.");
+						additional = result.getRight();
 						break;
 					case "Triple":
-						getPlayer().sendMessage("완벽합니다! §e트리플§f입니다! 자신을 제외한 모든 플레이어에게 " + (number * 1.5) + "만큼의 대미지를 줍니다.");
+						getPlayer().sendMessage("완벽합니다! §e트리플§f입니다! 자신을 제외한 모든 플레이어에게 " + (result.getRight() * 1.5) + "만큼의 대미지를 줍니다.");
 						for (Participant p : getGame().getParticipants()) {
 							if (p.equals(getParticipant())) continue;
 							if (predicate.test(p.getPlayer())) {
-								Damages.damageFixed(p.getPlayer(), getPlayer(), number * 1.5f);
+								Damages.damageFixed(p.getPlayer(), getPlayer(), result.getRight() * 1.5f);
 							}
 						}
 						Bukkit.broadcastMessage("[§c!§f] 포커가 같은 수 3개를 뽑아 모두에게 대미지를 줍니다!");
@@ -143,24 +143,14 @@ public class Poker extends CokesAbility implements ActiveHandler {
 		}
 	}
 
-	public String getPockerName(int[] num) {
+	public Pair<String, Integer> getPockerResult(int[] num) {
 		int min = num[0], mid = num[1], max = num[2];
-		if (min == mid && mid == max) return "Triple";
-		else if (mid == max - 1 && min == mid - 1) return "Straight";
-		else if (min == 1 && mid == 9 && max == 10) return "Straight";
-		else if (min == 1 && mid == 2 && max == 10) return "Straight";
-		else if (min == mid || mid == max || max == min) return "Pair";
-		else return "Top";
-	}
-
-	public int getPockerGet(int[] num) {
-		int min = num[0], mid = num[1], max = num[2];
-		if (min == mid && mid == max) return max;
-		else if (mid == max - 1 && min == mid - 1) return max;
-		else if (min == 1 && mid == 2 && max == 10) return 10;
-		else if (min == 1 && mid == 9 && max == 10) return 10;
-		else if (min == mid || mid == max) return mid;
-		else if (min == max) return max;
-		else return max;
+		if (min == mid && mid == max) return Pair.of("Triple", max);
+		else if (mid == max - 1 && min == mid - 1) return Pair.of("Straight", max);
+		else if (min == 1 && mid == 9 && max == 10) return Pair.of("Straight", 10);
+		else if (min == 1 && mid == 2 && max == 10) return Pair.of("Straight", 10);
+		else if (min == mid || mid == max) return Pair.of("Pair", mid);
+		else if (min == max) return Pair.of("Pair", max);
+		else return Pair.of("Top", max);
 	}
 }

@@ -1,11 +1,11 @@
 package cokes86.addon.synergy.list;
 
 import cokes86.addon.synergy.CokesSynergy;
+import cokes86.addon.util.CokesUtil;
 import daybreak.abilitywar.ability.AbilityManifest;
 import daybreak.abilitywar.ability.SubscribeEvent;
 import daybreak.abilitywar.ability.decorator.ActiveHandler;
 import daybreak.abilitywar.game.AbstractGame;
-import daybreak.abilitywar.utils.annotations.Beta;
 import daybreak.abilitywar.utils.base.color.RGB;
 import daybreak.abilitywar.utils.base.concurrent.TimeUnit;
 import daybreak.abilitywar.utils.base.minecraft.damage.Damages;
@@ -14,8 +14,8 @@ import daybreak.abilitywar.utils.library.SoundLib;
 import org.bukkit.Material;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.attribute.AttributeInstance;
-import org.bukkit.entity.Arrow;
 import org.bukkit.entity.LivingEntity;
+import org.bukkit.entity.Projectile;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityShootBowEvent;
 import org.bukkit.event.entity.ProjectileHitEvent;
@@ -26,7 +26,6 @@ import org.bukkit.event.entity.ProjectileHitEvent;
 		"죽음의 화살을 맞은 엔티티는 사신의 낫의 개수에 따라 최대체력에 비례한 고정대미지를 줍니다.",
 		"1개: $[damage1]%, 2개: $[damage2]%, 3개: $[damage3]%, 4개: $[damage4]%, 5개: $[damage5]%"
 })
-@Beta
 public class ReaperArrow extends CokesSynergy implements ActiveHandler {
 	private static final Config<Integer> duration = new Config<Integer>(ReaperArrow.class, "충전시간", 60, Config.Condition.TIME) {
 		@Override
@@ -81,7 +80,7 @@ public class ReaperArrow extends CokesSynergy implements ActiveHandler {
 	private final RGB rgb = RGB.of(1, 1, 1);
 	private final Cooldown cooldown = new Cooldown(cool.getValue());
 	private boolean ready = false;
-	private Arrow reaperArrow = null;
+	private Projectile reaperArrow = null;
 	private final AbilityTimer effect = new AbilityTimer() {
 		protected void run(int arg) {
 			ParticleLib.REDSTONE.spawnParticle(reaperArrow.getLocation(), rgb);
@@ -127,9 +126,9 @@ public class ReaperArrow extends CokesSynergy implements ActiveHandler {
 
 	@SubscribeEvent
 	public void onEntityShootBow(EntityShootBowEvent e) {
-		if (ready && e.getProjectile() instanceof Arrow && e.getEntity().equals(getPlayer())) {
+		if (ready && CokesUtil.isInstanceOfArrow(e.getProjectile()) && e.getEntity().equals(getPlayer())) {
 			SoundLib.BLOCK_GRASS_BREAK.playSound(getPlayer());
-			this.reaperArrow = (Arrow) e.getProjectile();
+			this.reaperArrow = (Projectile) e.getProjectile();
 			this.ready = false;
 			effect.start();
 			cooldown.start();

@@ -1,6 +1,7 @@
 package cokes86.addon.ability.list;
 
 import cokes86.addon.ability.CokesAbility;
+import cokes86.addon.util.CokesUtil;
 import daybreak.abilitywar.ability.AbilityManifest;
 import daybreak.abilitywar.ability.AbilityManifest.Rank;
 import daybreak.abilitywar.ability.AbilityManifest.Species;
@@ -9,8 +10,8 @@ import daybreak.abilitywar.game.AbstractGame.Participant;
 import daybreak.abilitywar.game.AbstractGame.Participant.ActionbarNotification.ActionbarChannel;
 import daybreak.abilitywar.utils.library.SoundLib;
 import daybreak.google.common.base.Strings;
-import org.bukkit.entity.Arrow;
 import org.bukkit.entity.Player;
+import org.bukkit.entity.Projectile;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.ProjectileHitEvent;
 
@@ -85,8 +86,8 @@ public class EnchantArrow extends CokesAbility {
 
 	@SubscribeEvent
 	private void onEntityDamageByEntity(EntityDamageByEntityEvent e) {
-		if (e.getEntity() instanceof Player && e.getDamager() instanceof Arrow && !e.getEntity().equals(getPlayer())) {
-			Arrow arrow = (Arrow) e.getDamager();
+		if (e.getEntity() instanceof Player && CokesUtil.isInstanceOfArrow(e.getDamager()) && !e.getEntity().equals(getPlayer())) {
+			Projectile arrow = (Projectile) e.getDamager();
 			if (Objects.equals(arrow.getShooter(), getPlayer())) {
 				e.setDamage(e.getDamage() * (1 + enchantStack * damage.getValue() / 100.0));
 				final double length = getPlayer().getLocation().clone().subtract(e.getEntity().getLocation().clone()).length();
