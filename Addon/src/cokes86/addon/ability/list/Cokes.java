@@ -1,6 +1,7 @@
 package cokes86.addon.ability.list;
 
 import cokes86.addon.ability.CokesAbility;
+import cokes86.addon.util.CokesUtil;
 import daybreak.abilitywar.AbilityWar;
 import daybreak.abilitywar.ability.AbilityManifest;
 import daybreak.abilitywar.ability.decorator.ActiveHandler;
@@ -15,9 +16,9 @@ import daybreak.abilitywar.utils.library.SoundLib;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
-import org.bukkit.entity.Arrow;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
+import org.bukkit.entity.Projectile;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.HandlerList;
 import org.bukkit.event.Listener;
@@ -234,8 +235,8 @@ public class Cokes extends CokesAbility implements ActiveHandler {
             }
 
             Entity attacker = e.getDamager();
-            if (attacker instanceof Arrow) {
-                Arrow arrow = (Arrow) attacker;
+            if (CokesUtil.isInstanceOfArrow(attacker)) {
+                Projectile arrow = (Projectile) attacker;
                 if (arrow.getShooter() instanceof Entity) {
                     attacker = (Entity) arrow.getShooter();
                 }

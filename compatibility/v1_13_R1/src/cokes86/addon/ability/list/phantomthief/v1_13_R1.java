@@ -1,7 +1,10 @@
 package cokes86.addon.ability.list.phantomthief;
 
+import cokes86.addon.ability.list.PhantomThief;
 import daybreak.abilitywar.AbilityWar;
 import daybreak.abilitywar.ability.AbilityBase;
+import daybreak.abilitywar.ability.SubscribeEvent;
+import daybreak.abilitywar.game.AbstractGame;
 import daybreak.abilitywar.utils.base.collect.Pair;
 import daybreak.abilitywar.utils.base.reflect.ReflectionUtil;
 import io.netty.channel.ChannelHandlerContext;
@@ -20,7 +23,7 @@ import org.bukkit.scheduler.BukkitRunnable;
 
 import java.util.*;
 
-public class v1_13_R1 implements IPhantom {
+public class v1_13_R1 extends PhantomThief {
     private final Map<UUID, Pair<CraftPlayer, ChannelOutboundHandlerAdapter>> channelHandlers = new HashMap<>();
     private static final DataWatcherObject<Byte> BYTE_DATA_WATCHER_OBJECT;
 
@@ -32,45 +35,51 @@ public class v1_13_R1 implements IPhantom {
         }
     }
 
-    public void onPlayerJoin(AbilityBase owner, PlayerJoinEvent e) {
+    public v1_13_R1(AbstractGame.Participant participant) {
+        super(participant);
+    }
+
+    @SubscribeEvent
+    public void onPlayerJoin(PlayerJoinEvent e) {
         final CraftPlayer player = (CraftPlayer) e.getPlayer();
-        if (player.equals(owner.getPlayer())) return;
+        if (player.equals(getPlayer())) return;
         new BukkitRunnable() {
             @Override
             public void run() {
                 for (PacketPlayOutEntityEquipment packet : new PacketPlayOutEntityEquipment[] {
-                        new PacketPlayOutEntityEquipment(owner.getPlayer().getEntityId(), EnumItemSlot.MAINHAND, ItemStack.a),
-                        new PacketPlayOutEntityEquipment(owner.getPlayer().getEntityId(), EnumItemSlot.OFFHAND, ItemStack.a),
-                        new PacketPlayOutEntityEquipment(owner.getPlayer().getEntityId(), EnumItemSlot.HEAD, ItemStack.a),
-                        new PacketPlayOutEntityEquipment(owner.getPlayer().getEntityId(), EnumItemSlot.CHEST, ItemStack.a),
-                        new PacketPlayOutEntityEquipment(owner.getPlayer().getEntityId(), EnumItemSlot.LEGS, ItemStack.a),
-                        new PacketPlayOutEntityEquipment(owner.getPlayer().getEntityId(), EnumItemSlot.FEET, ItemStack.a)
+                        new PacketPlayOutEntityEquipment(getPlayer().getEntityId(), EnumItemSlot.MAINHAND, ItemStack.a),
+                        new PacketPlayOutEntityEquipment(getPlayer().getEntityId(), EnumItemSlot.OFFHAND, ItemStack.a),
+                        new PacketPlayOutEntityEquipment(getPlayer().getEntityId(), EnumItemSlot.HEAD, ItemStack.a),
+                        new PacketPlayOutEntityEquipment(getPlayer().getEntityId(), EnumItemSlot.CHEST, ItemStack.a),
+                        new PacketPlayOutEntityEquipment(getPlayer().getEntityId(), EnumItemSlot.LEGS, ItemStack.a),
+                        new PacketPlayOutEntityEquipment(getPlayer().getEntityId(), EnumItemSlot.FEET, ItemStack.a)
                 }) {
                     player.getHandle().playerConnection.sendPacket(packet);
                 }
-                injectPlayer(owner, player);
+                injectPlayer(player);
             }
         }.runTaskLater(AbilityWar.getPlugin(), 2L);
     }
 
-    public void onPlayerQuit(AbilityBase owner, PlayerQuitEvent e) {
+    @SubscribeEvent
+    public void onPlayerQuit(PlayerQuitEvent e) {
         final CraftPlayer player = (CraftPlayer) e.getPlayer();
-        if (player.equals(owner.getPlayer())) return;
+        if (player.equals(getPlayer())) return;
         if (channelHandlers.containsKey(player.getUniqueId())) {
             player.getHandle().playerConnection.networkManager.channel.pipeline().remove(channelHandlers.get(player.getUniqueId()).getRight());
             channelHandlers.remove(player.getUniqueId());
         }
     }
 
-    public void show(AbilityBase owner) {
-        owner.getParticipant().attributes().TARGETABLE.setValue(true);
+    public void show() {
+        getParticipant().attributes().TARGETABLE.setValue(true);
         final PacketPlayOutEntityEquipment[] packets = {
-                new PacketPlayOutEntityEquipment(owner.getPlayer().getEntityId(), EnumItemSlot.MAINHAND, CraftItemStack.asNMSCopy(owner.getPlayer().getInventory().getItemInMainHand())),
-                new PacketPlayOutEntityEquipment(owner.getPlayer().getEntityId(), EnumItemSlot.OFFHAND, CraftItemStack.asNMSCopy(owner.getPlayer().getInventory().getItemInOffHand())),
-                new PacketPlayOutEntityEquipment(owner.getPlayer().getEntityId(), EnumItemSlot.HEAD, CraftItemStack.asNMSCopy(owner.getPlayer().getInventory().getHelmet())),
-                new PacketPlayOutEntityEquipment(owner.getPlayer().getEntityId(), EnumItemSlot.CHEST, CraftItemStack.asNMSCopy(owner.getPlayer().getInventory().getChestplate())),
-                new PacketPlayOutEntityEquipment(owner.getPlayer().getEntityId(), EnumItemSlot.LEGS, CraftItemStack.asNMSCopy(owner.getPlayer().getInventory().getLeggings())),
-                new PacketPlayOutEntityEquipment(owner.getPlayer().getEntityId(), EnumItemSlot.FEET, CraftItemStack.asNMSCopy(owner.getPlayer().getInventory().getBoots()))
+                new PacketPlayOutEntityEquipment(getPlayer().getEntityId(), EnumItemSlot.MAINHAND, CraftItemStack.asNMSCopy(getPlayer().getInventory().getItemInMainHand())),
+                new PacketPlayOutEntityEquipment(getPlayer().getEntityId(), EnumItemSlot.OFFHAND, CraftItemStack.asNMSCopy(getPlayer().getInventory().getItemInOffHand())),
+                new PacketPlayOutEntityEquipment(getPlayer().getEntityId(), EnumItemSlot.HEAD, CraftItemStack.asNMSCopy(getPlayer().getInventory().getHelmet())),
+                new PacketPlayOutEntityEquipment(getPlayer().getEntityId(), EnumItemSlot.CHEST, CraftItemStack.asNMSCopy(getPlayer().getInventory().getChestplate())),
+                new PacketPlayOutEntityEquipment(getPlayer().getEntityId(), EnumItemSlot.LEGS, CraftItemStack.asNMSCopy(getPlayer().getInventory().getLeggings())),
+                new PacketPlayOutEntityEquipment(getPlayer().getEntityId(), EnumItemSlot.FEET, CraftItemStack.asNMSCopy(getPlayer().getInventory().getBoots()))
         };
         for (Map.Entry<UUID, Pair<CraftPlayer, ChannelOutboundHandlerAdapter>> entry : channelHandlers.entrySet()) {
             final CraftPlayer player = entry.getValue().getLeft();
@@ -86,34 +95,34 @@ public class v1_13_R1 implements IPhantom {
         new BukkitRunnable() {
             @Override
             public void run() {
-                ((CraftPlayer) owner.getPlayer()).getHandle().setInvisible(false);
+                ((CraftPlayer) getPlayer()).getHandle().setInvisible(false);
             }
         }.runTaskLater(AbilityWar.getPlugin(), 2L);
     }
 
-    public void hide(AbilityBase owner) {
-        owner.getParticipant().attributes().TARGETABLE.setValue(false);
-        final CraftPlayer craftPlayer = (CraftPlayer) owner.getPlayer();
+    public void hide() {
+        getParticipant().attributes().TARGETABLE.setValue(false);
+        final CraftPlayer craftPlayer = (CraftPlayer) getPlayer();
         craftPlayer.getHandle().getDataWatcher().set(new DataWatcherObject<>(10, DataWatcherRegistry.b), 0);
         craftPlayer.getHandle().setInvisible(true);
         final PacketPlayOutEntityEquipment[] packets = {
-                new PacketPlayOutEntityEquipment(owner.getPlayer().getEntityId(), EnumItemSlot.MAINHAND, ItemStack.a),
-                new PacketPlayOutEntityEquipment(owner.getPlayer().getEntityId(), EnumItemSlot.OFFHAND, ItemStack.a),
-                new PacketPlayOutEntityEquipment(owner.getPlayer().getEntityId(), EnumItemSlot.HEAD, ItemStack.a),
-                new PacketPlayOutEntityEquipment(owner.getPlayer().getEntityId(), EnumItemSlot.CHEST, ItemStack.a),
-                new PacketPlayOutEntityEquipment(owner.getPlayer().getEntityId(), EnumItemSlot.LEGS, ItemStack.a),
-                new PacketPlayOutEntityEquipment(owner.getPlayer().getEntityId(), EnumItemSlot.FEET, ItemStack.a)
+                new PacketPlayOutEntityEquipment(getPlayer().getEntityId(), EnumItemSlot.MAINHAND, ItemStack.a),
+                new PacketPlayOutEntityEquipment(getPlayer().getEntityId(), EnumItemSlot.OFFHAND, ItemStack.a),
+                new PacketPlayOutEntityEquipment(getPlayer().getEntityId(), EnumItemSlot.HEAD, ItemStack.a),
+                new PacketPlayOutEntityEquipment(getPlayer().getEntityId(), EnumItemSlot.CHEST, ItemStack.a),
+                new PacketPlayOutEntityEquipment(getPlayer().getEntityId(), EnumItemSlot.LEGS, ItemStack.a),
+                new PacketPlayOutEntityEquipment(getPlayer().getEntityId(), EnumItemSlot.FEET, ItemStack.a)
         };
         for (CraftPlayer player : ((CraftServer) Bukkit.getServer()).getOnlinePlayers()) {
-            if (player.equals(owner.getPlayer())) continue;
+            if (player.equals(getPlayer())) continue;
             for (PacketPlayOutEntityEquipment packet : packets) {
                 player.getHandle().playerConnection.sendPacket(packet);
             }
-            injectPlayer(owner, player);
+            injectPlayer(player);
         }
     }
 
-    public void injectPlayer(AbilityBase owner, Player player) {
+    public void injectPlayer(Player player) {
         CraftPlayer player1 = (CraftPlayer) player;
         if (!player.isValid()) return;
         if (channelHandlers.containsKey(player.getUniqueId())) {
@@ -128,18 +137,18 @@ public class v1_13_R1 implements IPhantom {
             @Override
             public void write(ChannelHandlerContext ctx, Object packet, ChannelPromise promise) throws Exception {
                 if (packet instanceof PacketPlayOutEntityEquipment) {
-                    if ((int) ReflectionUtil.FieldUtil.getValue(packet, "a") == owner.getPlayer().getEntityId()) {
+                    if ((int) ReflectionUtil.FieldUtil.getValue(packet, "a") == getPlayer().getEntityId()) {
                         ReflectionUtil.FieldUtil.setValue(packet, "c", ItemStack.a);
                     }
                 } else if (packet instanceof PacketPlayOutEntityMetadata) {
-                    if ((int) ReflectionUtil.FieldUtil.getValue(packet, "a") == owner.getPlayer().getEntityId()) {
+                    if ((int) ReflectionUtil.FieldUtil.getValue(packet, "a") == getPlayer().getEntityId()) {
                         List<Item<?>> items = ReflectionUtil.FieldUtil.getValue(packet, "b");
                         if (items.size() != 0) {
                             Item<?> item = items.get(0);
                             if (BYTE_DATA_WATCHER_OBJECT.equals(item.a())) {
                                 Item<Byte> byteItem = (Item<Byte>) item;
                                 byteItem.a((byte) (byteItem.b() | 1 << 5));
-                                ((CraftPlayer) owner.getPlayer()).getHandle().setInvisible(true);
+                                ((CraftPlayer) getPlayer()).getHandle().setInvisible(true);
                             }
                         }
                     }

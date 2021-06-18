@@ -37,6 +37,7 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
 import java.util.Map;
+import java.util.Objects;
 import java.util.TreeMap;
 import java.util.function.Predicate;
 
@@ -143,9 +144,11 @@ public class Summoner extends CokesAbility implements ActiveHandler {
 				if (count / 36 == page - 1) {
 					ItemStack stack = Skulls.createSkull(entry.getKey());
 					final ItemMeta meta = stack.getItemMeta();
-					meta.setDisplayName("§f" + entry.getKey());
-					meta.setLore(Messager.asList("§f>> 소환할려면 좌클릭하세요."));
-					stack.setItemMeta(meta);
+					if (meta != null) {
+						meta.setDisplayName("§f" + entry.getKey());
+						meta.setLore(Messager.asList("§f>> 소환할려면 좌클릭하세요."));
+						stack.setItemMeta(meta);
+					}
 					gui.setItem(count % 36, stack);
 					count++;
 				}
@@ -158,6 +161,7 @@ public class Summoner extends CokesAbility implements ActiveHandler {
 
 			ItemStack stack = new ItemStack(Material.PAPER, 1);
 			ItemMeta meta = stack.getItemMeta();
+			assert meta != null;
 			meta.setDisplayName(ChatColor.translateAlternateColorCodes('&', "&6페이지 &e" + page + " &6/ &e" + maxPage));
 			stack.setItemMeta(meta);
 			gui.setItem(49, stack);
@@ -237,7 +241,7 @@ public class Summoner extends CokesAbility implements ActiveHandler {
 			}
 
 			for (Location particle : Circle.iteratorOf(location, 1, 16).iterable()) {
-				particle.setY(LocationUtil.getFloorYAt(particle.getWorld(), particle.getY(), particle.getBlockX(), particle.getBlockZ()) + y);
+				particle.setY(LocationUtil.getFloorYAt(Objects.requireNonNull(particle.getWorld()), particle.getY(), particle.getBlockX(), particle.getBlockZ()) + y);
 				ParticleLib.REDSTONE.spawnParticle(particle, RGB.OLIVE);
 			}
 		}

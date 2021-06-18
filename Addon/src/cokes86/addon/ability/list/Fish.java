@@ -9,7 +9,9 @@ import daybreak.abilitywar.ability.SubscribeEvent;
 import daybreak.abilitywar.ability.decorator.ActiveHandler;
 import daybreak.abilitywar.game.AbstractGame.Participant;
 import daybreak.abilitywar.game.AbstractGame.Participant.ActionbarNotification.ActionbarChannel;
+import daybreak.abilitywar.game.event.participant.ParticipantDeathEvent;
 import daybreak.abilitywar.utils.base.concurrent.TimeUnit;
+import daybreak.abilitywar.utils.base.math.LocationUtil;
 import daybreak.abilitywar.utils.base.minecraft.damage.Damages;
 import daybreak.abilitywar.utils.base.minecraft.item.builder.ItemBuilder;
 import daybreak.abilitywar.utils.library.MaterialX;
@@ -34,7 +36,8 @@ import org.bukkit.inventory.ItemStack;
 		"§7물 밖 §8- §c파닥파닥§r: 구속효과가 걸리며 이후 3초마다 수분이 감소합니다.",
 		"  감소할 수분이 없을 경우 1의 고정피해를 입습니다.",
 		"§7철괴 좌클릭 §8- §c촤아악§r: 자신의 위치에 물을 설치합니다. $[cool]",
-		"  이미 물이 있는 자리에서는 물이 생성되지 않습니다."
+		"  이미 물이 있는 자리에서는 물이 생성되지 않습니다.",
+		"§7사망 시 §8- §c주르륵§r: 자신이 사망할 시 자신 주변 10칸의 물을 삭제합니다."
 })
 public class Fish extends CokesAbility implements ActiveHandler {
 	private static final Config<Integer> cool = new Config<Integer>(Fish.class, "쿨타임", 30, Config.Condition.COOLDOWN) {
@@ -184,4 +187,14 @@ public class Fish extends CokesAbility implements ActiveHandler {
 		}
 	}
 
+	@SubscribeEvent
+	private void onParticipantDeath(ParticipantDeathEvent e) {
+		if (e.getParticipant().equals(getParticipant())) {
+			for (Block block : LocationUtil.getBlocks3D(getPlayer().getLocation(), 10, false, false)) {
+				if (block.getType().equals(Material.WATER)) {
+					block.setType(Material.AIR);
+				}
+			}
+		}
+	}
 }

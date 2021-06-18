@@ -6,22 +6,21 @@ import daybreak.abilitywar.ability.SubscribeEvent;
 import daybreak.abilitywar.ability.decorator.ActiveHandler;
 import daybreak.abilitywar.ability.decorator.TargetHandler;
 import daybreak.abilitywar.game.AbstractGame;
+import daybreak.abilitywar.game.manager.effect.Rooted;
 import daybreak.abilitywar.game.module.DeathManager;
 import daybreak.abilitywar.game.team.interfaces.Teamable;
-import daybreak.abilitywar.utils.base.random.Random;
 import daybreak.abilitywar.utils.base.concurrent.TimeUnit;
 import daybreak.abilitywar.utils.base.minecraft.entity.health.Healths;
+import daybreak.abilitywar.utils.base.random.Random;
 import daybreak.abilitywar.utils.library.ParticleLib;
 import daybreak.abilitywar.utils.library.SoundLib;
 import daybreak.google.common.base.Predicate;
-
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
-import org.bukkit.event.player.PlayerMoveEvent;
 
 @AbilityManifest(name = "권투선수", rank = AbilityManifest.Rank.A, species = AbilityManifest.Species.HUMAN, explain = {
         "§7패시브 §8- §c연속 펀치§r: 상대방을 근접 공격할 시 50%씩 두 번 나누어 공격을 합니다.",
@@ -29,7 +28,7 @@ import org.bukkit.event.player.PlayerMoveEvent;
         "  상대방을 공격하고 나서 8틱동안 상대방을 공격할 수 없습니다.",
         "§7철괴 타게팅 §8- §c스트레이트§r: $[damage]의 대미지와 함께 멀리 밀쳐냅니다. $[right_cool]",
         "§7철괴 좌클릭 §8- §c나도 좀 쉬자고§r: 휴식상태에 돌입해 $[duration]마다 체력 1씩 회복합니다.",
-        "  이때 자신은 이동을 할 수 없고 공격을 받거나 다시 철괴 좌클릭 시",
+        "  이때 자신은 행동불능 효과를 받고 공격을 받거나 다시 철괴 좌클릭 시",
         "  해당 효과를 취소하고 움직일 수 있습니다. $[left_cool]",
         "  공격을 회피하였을 경우, 이 효과는 취소되지 않습니다."
 })
@@ -63,6 +62,11 @@ public class Boxer extends CokesAbility implements ActiveHandler, TargetHandler 
     private final Cooldown left_cooldown = new Cooldown(left_cool.getValue(), "나도 좀 쉬자고");
     private final AbilityTimer rest = new AbilityTimer(1) {
         @Override
+        protected void onStart() {
+            Rooted.apply(getParticipant(), TimeUnit.TICKS, duration.getValue()*40);
+        }
+
+        @Override
         protected void run(int count) {
             Healths.setHealth(getPlayer(), getPlayer().getHealth() + 1);
         }
@@ -70,6 +74,13 @@ public class Boxer extends CokesAbility implements ActiveHandler, TargetHandler 
         @Override
         protected void onEnd() {
             this.start();
+        }
+
+        @Override
+        protected void onSilentEnd() {
+            AbstractGame.Effect root = getParticipant().getPrimaryEffect(Rooted.registration);
+            if(root != null)
+                root.stop(true);
         }
     }.setInitialDelay(TimeUnit.SECONDS, duration.getValue()).register();
     private final AttackTimer attack = new AttackTimer();
@@ -123,13 +134,6 @@ public class Boxer extends CokesAbility implements ActiveHandler, TargetHandler 
                     left_cooldown.start();
                 }
             }
-        }
-    }
-
-    @SubscribeEvent
-    public void onPlayerMove(PlayerMoveEvent e) {
-        if (e.getPlayer().equals(getPlayer()) && rest.isRunning()) {
-            e.setTo(e.getFrom());
         }
     }
 

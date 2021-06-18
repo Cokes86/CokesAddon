@@ -5,16 +5,14 @@ import daybreak.abilitywar.ability.AbilityFactory;
 import daybreak.abilitywar.ability.AbilityManifest;
 import daybreak.abilitywar.game.manager.AbilityList;
 import daybreak.abilitywar.utils.annotations.Beta;
-import daybreak.abilitywar.utils.base.logging.Logger;
+import daybreak.abilitywar.utils.base.minecraft.version.NMSVersion;
+import daybreak.abilitywar.utils.base.minecraft.version.ServerVersion;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.lang.annotation.*;
+import java.util.*;
 
 public class AddonAbilityFactory {
 	protected static final Map<String, Class<? extends CokesAbility>> abilities = new HashMap<>();
-	private static final Logger logger = Logger.getLogger(AddonAbilityFactory.class);
 
 	static {
 		registerAbility(Seth.class);
@@ -46,6 +44,7 @@ public class AddonAbilityFactory {
 		registerAbility(Freud.class);
 		registerAbility(Harmony.class);
 		registerAbility(Cutter.class);
+		registerAbilities(PhantomThief.class);
 
 		//1.1
 		registerAbility(Fish.class);
@@ -64,12 +63,8 @@ public class AddonAbilityFactory {
 		//1.3.1
 		registerAbility(Cokes.class);
 
-		if (PhantomThief.initPhantomThief()) {
-			registerAbility(PhantomThief.class);
-			AbilityFactory.registerAbility(PhantomThief.NullAbility.class);
-		} else {
-			logger.error("팬텀 시프는 해당 버전에서 지원하지 않습니다.");
-		}
+		//1.4.0
+		registerAbility(Emily.class);
 
 		//test
 		registerAbility(Test.class);
@@ -90,7 +85,27 @@ public class AddonAbilityFactory {
 		}
 	}
 
+	public static void registerAbilities(Class<? extends CokesAbility> clazz) {
+		SupportNMS support = clazz.getAnnotation(SupportNMS.class);
+		if (support != null) {
+			try {
+				NMSVersion version = NMSVersion.valueOf(ServerVersion.getName());
+				Class<? extends CokesAbility> clazz2 = Class.forName(clazz.getPackage().getName()+"."+ clazz.getName().toLowerCase(Locale.ROOT)+"."+version.name()).asSubclass(clazz);
+				registerAbility(clazz2);
+				return;
+			} catch (Exception ignored) {
+				System.out.println("해당 버전에 호환되지 않습니다. : " + clazz.getName());
+			}
+		}
+		System.out.println("해당 버전에 호환되지 않습니다. : " + clazz.getName());
+	}
+
 	public static List<String> nameValues() {
 		return new ArrayList<>(abilities.keySet());
 	}
+
+	@Retention(RetentionPolicy.RUNTIME)
+	@Target(ElementType.TYPE)
+	@Inherited
+	public @interface SupportNMS { }
 }

@@ -1,6 +1,7 @@
 package cokes86.addon.ability.list;
 
 import cokes86.addon.ability.CokesAbility;
+import cokes86.addon.util.AttributeUtil;
 import daybreak.abilitywar.ability.AbilityManifest;
 import daybreak.abilitywar.ability.AbilityManifest.Rank;
 import daybreak.abilitywar.ability.AbilityManifest.Species;
@@ -17,10 +18,10 @@ import daybreak.abilitywar.utils.base.minecraft.entity.health.event.PlayerSetHea
 import daybreak.abilitywar.utils.library.ParticleLib;
 import daybreak.abilitywar.utils.library.SoundLib;
 import org.bukkit.Location;
-import org.bukkit.attribute.Attribute;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Projectile;
+import org.bukkit.event.EventPriority;
 import org.bukkit.event.entity.EntityDamageByBlockEvent;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
@@ -89,10 +90,10 @@ public class Reincarnation extends CokesAbility {
 
 			if (arg0 % 5 == 0) {
 				for (Location l : Circle.iteratorOf(getPlayer().getLocation(), 3, 3 * 6).iterable()) {
-					l.setY(LocationUtil.getFloorYAt(l.getWorld(), l.getY(), l.getBlockX(), l.getBlockZ()) + 0.1);
+					l.setY(LocationUtil.getFloorYAt(getPlayer().getWorld(), l.getY(), l.getBlockX(), l.getBlockZ()) + 0.1);
 					ParticleLib.REDSTONE.spawnParticle(l, new RGB(140, 2, 120));
 
-					l.setY(LocationUtil.getFloorYAt(l.getWorld(), l.getY(), l.getBlockX(), l.getBlockZ()) + 0.8);
+					l.setY(LocationUtil.getFloorYAt(getPlayer().getWorld(), l.getY(), l.getBlockX(), l.getBlockZ()) + 0.8);
 					ParticleLib.REDSTONE.spawnParticle(l, new RGB(140, 2, 120));
 				}
 			}
@@ -101,7 +102,7 @@ public class Reincarnation extends CokesAbility {
 		@Override
 		protected void onEnd() {
 			if (hitted >= hit.getValue()) {
-				double max_Health = getPlayer().getAttribute(Attribute.GENERIC_MAX_HEALTH).getValue();
+				double max_Health = AttributeUtil.getMaxHealth(getPlayer());
 				double return_heal = Math.min(max_Health, respawn.getValue() + max_Health * (hitted - hit.getValue()) * heal.getValue() / 100.0);
 				getPlayer().setHealth(return_heal);
 			} else {
@@ -150,7 +151,7 @@ public class Reincarnation extends CokesAbility {
 		}
 	}
 
-	@SubscribeEvent(priority = 999)
+	@SubscribeEvent(priority = 999, eventPriority = EventPriority.MONITOR)
 	public void onEntityDamageByEntity2(EntityDamageByEntityEvent e) {
 		Entity damager = e.getDamager();
 		if (damager instanceof Projectile) {

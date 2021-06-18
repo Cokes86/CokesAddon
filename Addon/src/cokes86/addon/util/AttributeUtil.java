@@ -18,11 +18,6 @@ public class AttributeUtil {
         instance.setBaseValue(health);
     }
 
-    public static double getDefaultMaxHealth(LivingEntity entity) {
-        AttributeInstance instance = getInstance(entity, Attribute.GENERIC_MAX_HEALTH);
-        return instance.getDefaultValue();
-    }
-
     public static double getMaxHealth(LivingEntity entity) {
         AttributeInstance instance = getInstance(entity, Attribute.GENERIC_MAX_HEALTH);
         return instance.getValue();

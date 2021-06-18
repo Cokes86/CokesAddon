@@ -2,14 +2,17 @@ package cokes86.addon.synergy.list;
 
 import cokes86.addon.synergy.CokesSynergy;
 import daybreak.abilitywar.ability.AbilityBase;
+import daybreak.abilitywar.ability.AbilityFactory;
 import daybreak.abilitywar.ability.AbilityManifest;
 import daybreak.abilitywar.ability.AbilityManifest.Rank;
 import daybreak.abilitywar.ability.AbilityManifest.Species;
 import daybreak.abilitywar.ability.SubscribeEvent;
 import daybreak.abilitywar.ability.decorator.ActiveHandler;
+import daybreak.abilitywar.config.Configuration;
 import daybreak.abilitywar.game.AbstractGame.Participant;
 import daybreak.abilitywar.game.list.mix.AbstractMix;
 import daybreak.abilitywar.game.list.mix.Mix;
+import daybreak.abilitywar.game.list.mix.synergy.SynergyFactory;
 import daybreak.abilitywar.game.manager.object.AbilitySelect.AbilityCollector;
 import daybreak.abilitywar.utils.base.minecraft.BroadBar;
 import daybreak.abilitywar.utils.base.random.Random;
@@ -19,7 +22,10 @@ import org.bukkit.boss.BarColor;
 import org.bukkit.boss.BarStyle;
 import org.bukkit.event.entity.EntityDamageEvent;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @AbilityManifest(name = "연옥", rank = Rank.S, species = Species.OTHERS, explain = {
 		"모든 플레이어는 죄를 씻기 위해 연옥으로 이송될지어니.",
@@ -28,6 +34,8 @@ import java.util.List;
 		"이후 지속시간이 종료될 시 모든 플레이어는 모든 죄를 씻고 능력을 재추첨받습니다."
 })
 public class Purgatory extends CokesSynergy implements ActiveHandler {
+	private final Random random = new Random();
+	private final Map<Participant, Boolean> wasSynergy = new HashMap<>();
 	private final Duration timer = new Duration(10) {
 		private BroadBar bar;
 
@@ -38,9 +46,11 @@ public class Purgatory extends CokesSynergy implements ActiveHandler {
 				if (participant.getAbility() != null) {
 					if (participant.getAbility() instanceof Mix) {
 						Mix mix = (Mix) participant.getAbility();
+						wasSynergy.put(participant, mix.hasSynergy());
 						mix.removeAbility();
 					} else {
 						participant.removeAbility();
+						wasSynergy.put(participant, false);
 					}
 				}
 			}
@@ -56,10 +66,8 @@ public class Purgatory extends CokesSynergy implements ActiveHandler {
 			for (Participant participant : getGame().getParticipants()) {
 				try {
 					if (participant instanceof AbstractMix.MixParticipant) {
-						Mix mix = ((AbstractMix.MixParticipant) participant).getAbility();
-						mix.setAbility(getRandomAbility(), getRandomAbility());
-					}
-					else {
+						changeAbility((AbstractMix.MixParticipant) participant);
+					} else {
 						participant.setAbility(getRandomAbility());
 					}
 				} catch (Exception ignored) {}
@@ -68,6 +76,15 @@ public class Purgatory extends CokesSynergy implements ActiveHandler {
 
 		protected void onDurationSilentEnd() {
 			bar.unregister();
+			for (Participant participant : getGame().getParticipants()) {
+				try {
+					if (participant instanceof AbstractMix.MixParticipant) {
+						changeAbility((AbstractMix.MixParticipant) participant);
+					} else {
+						participant.setAbility(getRandomAbility());
+					}
+				} catch (Exception ignored) {}
+			}
 		}
 	};
 
@@ -96,7 +113,31 @@ public class Purgatory extends CokesSynergy implements ActiveHandler {
 		for (Participant participant : getGame().getParticipants()) {
 			if (participant.getAbility() != null) list.remove(participant.getAbility().getClass());
 		}
-		Random random = new Random();
 		return random.pick(list);
+	}
+
+	public AbilityFactory.AbilityRegistration getRandomSynergy() {
+		List<AbilityFactory.AbilityRegistration> synergies = new ArrayList<>();
+
+		for (AbilityFactory.AbilityRegistration synergy : SynergyFactory.getSynergies()) {
+			String name = synergy.getManifest().name();
+			if (!Configuration.Settings.isBlacklisted(name) && !name.equals("연옥")) {
+				synergies.add(synergy);
+			}
+		}
+		return random.pick(synergies);
+	}
+
+	public void changeAbility(AbstractMix.MixParticipant participant) {
+		try {
+			Mix mix = participant.getAbility();
+			if (mix != null) {
+				if (wasSynergy.getOrDefault(participant, false)) {
+					mix.setSynergy(getRandomSynergy());
+				} else {
+					mix.setAbility(getRandomAbility(), getRandomAbility());
+				}
+			}
+		} catch (Exception ignored) {}
 	}
 }

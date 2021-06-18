@@ -1,6 +1,7 @@
 package cokes86.addon.ability.list;
 
 import cokes86.addon.ability.CokesAbility;
+import cokes86.addon.util.AttributeUtil;
 import daybreak.abilitywar.ability.AbilityManifest;
 import daybreak.abilitywar.ability.AbilityManifest.Rank;
 import daybreak.abilitywar.ability.AbilityManifest.Species;
@@ -16,7 +17,6 @@ import daybreak.abilitywar.utils.base.minecraft.entity.health.event.PlayerSetHea
 import daybreak.abilitywar.utils.base.minecraft.nms.NMS;
 import daybreak.abilitywar.utils.library.SoundLib;
 import org.bukkit.GameMode;
-import org.bukkit.attribute.Attribute;
 import org.bukkit.entity.Arrow;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
@@ -73,7 +73,7 @@ public class Rei extends CokesAbility {
 
 		if (e.getEntity() instanceof Player && !e.getEntity().equals(getPlayer()) && damager.equals(getPlayer()) && !cooldown.isRunning() && !e.isCancelled()) {
 			e.setDamage(e.getDamage() + damage.getValue());
-			final double maxHealth = getPlayer().getAttribute(Attribute.GENERIC_MAX_HEALTH).getBaseValue(), health = getPlayer().getHealth();
+			final double maxHealth = AttributeUtil.getMaxHealth(getPlayer()), health = getPlayer().getHealth();
 			final float absorption = NMS.getAbsorptionHearts(getPlayer());
 			final double damage = maxHealth * cost.getValue() / 100.0f;
 			if (getPlayer().getGameMode().equals(GameMode.SURVIVAL) || getPlayer().getGameMode().equals(GameMode.ADVENTURE)) {

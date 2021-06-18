@@ -1,6 +1,7 @@
 package cokes86.addon.ability.list;
 
 import cokes86.addon.ability.CokesAbility;
+import cokes86.addon.util.AttributeUtil;
 import daybreak.abilitywar.ability.AbilityManifest;
 import daybreak.abilitywar.ability.AbilityManifest.Rank;
 import daybreak.abilitywar.ability.AbilityManifest.Species;
@@ -8,10 +9,9 @@ import daybreak.abilitywar.ability.SubscribeEvent;
 import daybreak.abilitywar.config.Configuration.Settings;
 import daybreak.abilitywar.game.AbstractGame.Participant;
 import daybreak.abilitywar.game.team.TeamGame;
+import daybreak.abilitywar.game.team.interfaces.Members;
 import daybreak.abilitywar.utils.library.SoundLib;
-
 import org.bukkit.Location;
-import org.bukkit.attribute.Attribute;
 import org.bukkit.event.entity.EntityDamageByBlockEvent;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
@@ -29,13 +29,14 @@ public class Resurrection extends CokesAbility {
 		}
 	};
 	private static final Config<Boolean> respawn = new Config<Boolean>(Resurrection.class, "리스폰_이동", true){};
+	@SuppressWarnings("unused")
 	private static final Object explain = new Object() {
 		public String toString() {
 			String result;
 			if (spawn) {
-				result = "이후 게임 스폰으로 이동합니다. (게임 스폰으로 이동할 수 없을 경우, "+cool.toString()+"간 무적이 됩니다.)";
+				result = "이후 게임 스폰으로 이동합니다. (게임 스폰으로 이동할 수 없을 경우, "+ cool +"간 무적이 됩니다.)";
 			} else {
-				result = "이후 "+cool.toString()+"간 무적상태가 됩니다.";
+				result = "이후 "+ cool +"간 무적상태가 됩니다.";
 			}
 			return result;
 		}
@@ -80,12 +81,13 @@ public class Resurrection extends CokesAbility {
 						getPlayer().setFireTicks(0);
 						SoundLib.ENTITY_FIREWORK_ROCKET_TWINKLE.playSound(getPlayer());
 						clearPotionEffect();
-						getPlayer().setHealth(getPlayer().getAttribute(Attribute.GENERIC_MAX_HEALTH).getValue());
+						getPlayer().setHealth(AttributeUtil.getMaxHealth(getPlayer()));
 						if (respawn.getValue() && spawn) {
 							Location spawnLocation = Settings.getSpawnLocation().toBukkitLocation();
 							if (getGame() instanceof TeamGame) {
 								TeamGame teamGame = (TeamGame) getGame();
-								spawnLocation = teamGame.getTeam(getParticipant()).getSpawn().toBukkitLocation();
+								Members team = teamGame.getTeam(getParticipant());
+								if (team != null) spawnLocation = team.getSpawn().toBukkitLocation();
 							}
 							getPlayer().teleport(spawnLocation);
 							usable = false;

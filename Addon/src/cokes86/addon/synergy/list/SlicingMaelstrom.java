@@ -33,7 +33,6 @@ import java.util.function.Predicate;
         "번개를 3회 맞을 시 스턴이 1초 부여됩니다.",
         "번개를 2회 맞을 때 마다 입는 피해가 1씩 상승합니다."
 })
-@Beta
 public class SlicingMaelstrom extends CokesSynergy implements ActiveHandler {
     public static final Config<Integer> cooldown = new Config<Integer>(SlicingMaelstrom.class, "쿨타임", 60, Config.Condition.COOLDOWN) {
         @Override

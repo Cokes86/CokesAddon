@@ -1,6 +1,6 @@
 package cokes86.addon.gamemode.disguiseparty;
 
-import cokes86.addon.ability.list.disguise.DisguiseUtil;
+import cokes86.addon.util.disguise.DisguiseUtil;
 import daybreak.abilitywar.AbilityWar;
 import daybreak.abilitywar.ability.AbilityBase;
 import daybreak.abilitywar.ability.AbilityFactory;
@@ -384,11 +384,7 @@ public class DisguiseParty extends AbstractGame implements Winnable {
 
     @Override
     public void executeCommand(CommandType commandType, CommandSender sender, String command, String[] args, Plugin plugin) {
-        if (commandType == CommandType.ABI) {
-            sender.sendMessage(ChatColor.RED + "이 게임모드에서 사용할 수 없는 명령어입니다.");
-        } else {
-            super.executeCommand(commandType, sender, command, args, plugin);
-        }
+        sender.sendMessage(ChatColor.RED + "이 게임모드에서 사용할 수 없는 명령어입니다.");
     }
 
     @Override

@@ -14,8 +14,9 @@ public class CokesUtil {
      @return 발사한 물체의 화살 여부
      */
     public static boolean isInstanceOfArrow(Projectile projectile) {
+        if (projectile == null) return false;
         if (projectile instanceof Arrow) return true;
-        else return ServerVersion.getVersion() >= 14 && projectile instanceof AbstractArrow;
+        return ServerVersion.getVersion() >= 14 && projectile instanceof AbstractArrow;
     }
 
     /**
@@ -24,6 +25,7 @@ public class CokesUtil {
      @return 엔티티의 발사체 여부와 발사한 물체의 화살 여부
      */
     public static boolean isInstanceOfArrow(Entity entity) {
+        if (entity == null) return false;
         return entity instanceof Projectile && isInstanceOfArrow((Projectile) entity);
     }
 }

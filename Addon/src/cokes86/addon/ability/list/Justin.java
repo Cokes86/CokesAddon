@@ -29,7 +29,6 @@ import daybreak.google.common.base.Predicate;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
-import org.bukkit.attribute.Attribute;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Projectile;
@@ -44,7 +43,10 @@ import org.bukkit.event.player.PlayerMoveEvent;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
-import java.util.*;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Objects;
+import java.util.StringJoiner;
 
 @AbilityManifest(name = "져스틴", rank= AbilityManifest.Rank.L, species = AbilityManifest.Species.HUMAN, explain = {
 		"$(EXPLAIN)",
@@ -63,6 +65,7 @@ public class Justin extends CokesAbility implements ActiveHandler {
 	private static final Config<Double> DANGER_ADD_DAMAGE = new Config<>(Justin.class, "위험.추가대미지", 3.0, aDouble -> aDouble > 0),
 	LAST_ADD_DAMAGE = new Config<>(Justin.class, "광기.추가대미지", 4.0, aDouble -> aDouble > 0);
 
+	@SuppressWarnings("unused")
 	private final Object EXPLAIN = new Object() {
 		@Override
 		public String toString() {
@@ -117,11 +120,13 @@ public class Justin extends CokesAbility implements ActiveHandler {
 
 		final Function<String, String> valueProvider = string -> {
 			try {
-				final Field field = Justin.class.getDeclaredField(string);
-				if (Modifier.isStatic(field.getModifiers())) {
-					try {
-						return String.valueOf(ReflectionUtil.setAccessible(field).get(null));
-					} catch (IllegalAccessException ignored) {
+				if (string != null) {
+					final Field field = Justin.class.getDeclaredField(string);
+					if (Modifier.isStatic(field.getModifiers())) {
+						try {
+							return String.valueOf(ReflectionUtil.setAccessible(field).get(null));
+						} catch (IllegalAccessException ignored) {
+						}
 					}
 				}
 			} catch (NoSuchFieldException ignored) {

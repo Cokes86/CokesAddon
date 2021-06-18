@@ -28,6 +28,9 @@ public class AddonSynergyFactory {
 
         //1.3.0
         registerSynergy(Rei.class, Rei.class, SoulTakerRei.class);
+
+        //1.4.0
+        registerSynergy(Sniper.class, Perseverance.class, ShrineOfGod.class);
     }
 
     public static void registerSynergy(Class<? extends AbilityBase> first, Class<? extends AbilityBase> second, Class<? extends CokesSynergy> synergy) {
@@ -47,21 +50,19 @@ public class AddonSynergyFactory {
         return new ArrayList<>(synergies.keySet());
     }
 
-    public static void loadSynergies() {
+    public static void loadAddonSynergies() {
         if (CokesAddon.isLoadAddon("KunEAddon")) {
             registerSynergy(PhantomThief.class, getAddonAbilityClass("KunEAbility.MadMiner"), AbilityThief.class);
-        }
-
-        if (CokesAddon.isLoadAddon("Yeomryo")) {
-            registerSynergy(Mir.class, getAddonAbilityClass("me.breakofday.yeomryo.abilities.Ace"), PheonixMir.class);
         }
     }
 
     private static Class<? extends AbilityBase> getAddonAbilityClass(String name) {
+        Class<? extends AbilityBase> result;
         try {
-            return Class.forName(name).asSubclass(AbilityBase.class);
+            result = Class.forName(name).asSubclass(AbilityBase.class);
         } catch (Exception ignored) {
-            return null;
+            result = null;
         }
+        return result;
     }
 }

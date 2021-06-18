@@ -1,7 +1,7 @@
 package cokes86.addon.ability.list;
 
+import cokes86.addon.ability.AddonAbilityFactory.SupportNMS;
 import cokes86.addon.ability.CokesAbility;
-import cokes86.addon.ability.list.phantomthief.PhantomThiefKit;
 import daybreak.abilitywar.ability.*;
 import daybreak.abilitywar.ability.decorator.ActiveHandler;
 import daybreak.abilitywar.ability.decorator.TargetHandler;
@@ -44,7 +44,14 @@ import java.util.function.Predicate;
 @AbilityManifest(name = "팬텀 시프", rank = AbilityManifest.Rank.S, species = AbilityManifest.Species.HUMAN, explain = {
 		"$(Explain)" })
 @NotAvailable(AbstractTripleMix.class)
-public class PhantomThief extends CokesAbility implements ActiveHandler, TargetHandler {
+@SupportNMS
+public abstract class PhantomThief extends CokesAbility implements ActiveHandler, TargetHandler {
+	static {
+		if (!AbilityFactory.isRegistered(NullAbility.class)) {
+			AbilityFactory.registerAbility(NullAbility.class);
+		}
+	}
+
 	private AbilityBase newAbility = null;
 	private final Object Explain = new Object() {
 		@Override
@@ -92,10 +99,6 @@ public class PhantomThief extends CokesAbility implements ActiveHandler, TargetH
 
 	public AbilityBase getStealedAbility() {
 		return newAbility;
-	}
-
-	public static boolean initPhantomThief() {
-		return PhantomThiefKit.getInstance() != null;
 	}
 
 	public PhantomThief(AbstractGame.Participant participant) {
@@ -190,17 +193,16 @@ public class PhantomThief extends CokesAbility implements ActiveHandler, TargetH
 		}
 	}
 
-	@SubscribeEvent
-	public void onPlayerJoin(PlayerJoinEvent e) {
-		if (!timer.isInvincible())
-			return;
-		PhantomThiefKit.onPlayerJoin(this, e);
-	}
+	protected abstract void show();
+	protected abstract void hide();
+	protected abstract void injectPlayer(Player player);
 
 	@SubscribeEvent
-	public void onPlayerQuit(PlayerQuitEvent e) {
-		PhantomThiefKit.onPlayerQuit(this, e);
-	}
+	protected abstract void onPlayerJoin(PlayerJoinEvent e);
+
+	@SubscribeEvent
+	protected abstract void onPlayerQuit(PlayerQuitEvent e);
+
 
 	private static String returnAbilityExplain(StringJoiner joiner, AbilityBase ability) {
 		if (ability != null) {
@@ -215,11 +217,11 @@ public class PhantomThief extends CokesAbility implements ActiveHandler, TargetH
 		} else {
 			for (String str : new String[] {
 					"자신의 기본 이동 속도가 1.2배 빨라집니다.",
-					"철괴 좌클릭 시 가장 멀리있는 플레이어의 등 뒤 10칸으로 워프 후, 팬텀 모드가 " + duration.toString() + " 지속됩니다. "
-							+ cooldown.toString(),
+					"철괴 좌클릭 시 가장 멀리있는 플레이어의 등 뒤 10칸으로 워프 후, 팬텀 모드가 " + duration + " 지속됩니다. "
+							+ cooldown,
 					"팬텀 모드 동안에는 투명화, 갑옷 삭제효과를 받는 대신, 공격할 수 없습니다.", "팬텀 모드 동안 대상에게 철괴로 우클릭시 팬텀 모드가 즉시 종료되고,",
-					"발광효과를 " + glowing.toString() + "동안 받습니다. 이때 대상은 이 사실을 알 수 있습니다.",
-					"발광효과동안 대상에게 공격을 받지 않았을 경우 해당 플레이어의 능력을 훔치고,", "대상은 " + change.toString() + " 뒤 팬텀시프로 능력이 바뀝니다.",
+					"발광효과를 " + glowing + "동안 받습니다. 이때 대상은 이 사실을 알 수 있습니다.",
+					"발광효과동안 대상에게 공격을 받지 않았을 경우 해당 플레이어의 능력을 훔치고,", "대상은 " + change + " 뒤 팬텀시프로 능력이 바뀝니다.",
 					"반대로 공격을 받았을 경우 1초간 스턴상태가 되며 모두에게 자신의 능력이 공개됩니다.", "타게팅에 실패하거나 공격을 받아 스턴상태가 되었을 경우 쿨타임이 반으로 감소합니다.",
 					"※능력 아이디어: RainStar_" }) {
 				joiner.add(str);
@@ -288,11 +290,13 @@ public class PhantomThief extends CokesAbility implements ActiveHandler, TargetH
 	public void setNullAbility(AbstractGame.Participant target) throws Exception {
 		target.setAbility(NullAbility.class);
 		NullAbility nullAbility = (NullAbility) target.getAbility();
+		assert nullAbility != null;
 		nullAbility.startPhase3();
 	}
 
 	public void setNullAbilityInMix(AbstractMix.MixParticipant target, boolean first, Class<? extends AbilityBase> continued) throws Exception {
 		Mix mix = target.getAbility();
+		assert mix != null;
 		NullAbility nullAbility;
 		if (first) {
 			mix.setAbility(NullAbility.class, continued);
@@ -339,7 +343,7 @@ public class PhantomThief extends CokesAbility implements ActiveHandler, TargetH
 			}
 
 			public void onDurationStart() {
-				PhantomThiefKit.hide(PhantomThief.this);
+				hide();
 			}
 
 			@Override
@@ -347,7 +351,7 @@ public class PhantomThief extends CokesAbility implements ActiveHandler, TargetH
 			}
 
 			public void onDurationSilentEnd() {
-				PhantomThiefKit.show(PhantomThief.this);
+				show();
 			}
 
 			public void onDurationEnd() {
@@ -373,11 +377,13 @@ public class PhantomThief extends CokesAbility implements ActiveHandler, TargetH
 				NMS.clearTitle(target.getPlayer());
 				getPlayer().removePotionEffect(PotionEffectType.GLOWING);
 				try {
-					if (target != null && target.hasAbility()) {
+					if (target != null && target.getAbility() != null) {
 						if (target instanceof AbstractMix.MixParticipant && getParticipant() instanceof AbstractMix.MixParticipant) {
 							Mix targetMix = (Mix) target.getAbility();
 							Mix mix = (Mix) getParticipant().getAbility();
-							if (targetMix.hasAbility() && mix.hasAbility()) {
+							assert targetMix != null;
+							assert mix != null;
+							if ((targetMix.getFirst() != null || targetMix.getSecond() != null) && (mix.getFirst() != null || mix.getSecond() != null)) {
 								boolean first = false;
 								Class<? extends AbilityBase> continued;
 
@@ -385,7 +391,7 @@ public class PhantomThief extends CokesAbility implements ActiveHandler, TargetH
 									Synergy synergy = targetMix.getSynergy();
 									Pair<AbilityFactory.AbilityRegistration, AbilityFactory.AbilityRegistration> pair = SynergyFactory
 											.getSynergyBase(synergy.getRegistration());
-									if (mix.getFirst() != null && mix.getFirst().getClass().equals(PhantomThief.class)) {
+									if (mix.getFirst().getClass().getName().equals(PhantomThief.this.getClass().getName())) {
 										first = true;
 										continued = pair.getRight().getAbilityClass();
 										newAbility = create(pair.getLeft().getAbilityClass(), getParticipant());
@@ -394,12 +400,12 @@ public class PhantomThief extends CokesAbility implements ActiveHandler, TargetH
 										newAbility = create(pair.getRight().getAbilityClass(), getParticipant());
 									}
 								} else {
-									if (mix.getFirst() != null && mix.getFirst().getClass().equals(PhantomThief.class)) {
+									if (mix.getFirst().getClass().getName().equals(PhantomThief.this.getClass().getName())) {
 										first = true;
 										continued = targetMix.getSecond().getClass();
 
 										Class<? extends AbilityBase> change = targetMix.getFirst().getClass();
-										if (change == PhantomThief.class) {
+										if (mix.getFirst().getClass().getName().equals(PhantomThief.this.getClass().getName())) {
 											PhantomThief thief = (PhantomThief) targetMix.getFirst();
 											if (thief.getStealedAbility() != null) change = thief.getStealedAbility().getClass();
 										}
@@ -407,7 +413,7 @@ public class PhantomThief extends CokesAbility implements ActiveHandler, TargetH
 									} else {
 										continued = targetMix.getFirst().getClass();
 										Class<? extends AbilityBase> change = targetMix.getSecond().getClass();
-										if (change == PhantomThief.class) {
+										if (change.getName().equals("PhantomThief")) {
 											PhantomThief thief = (PhantomThief) targetMix.getSecond();
 											if (thief.getStealedAbility() != null) change = thief.getStealedAbility().getClass();
 										}
@@ -418,7 +424,7 @@ public class PhantomThief extends CokesAbility implements ActiveHandler, TargetH
 							}
 						} else {
 							Class<? extends AbilityBase> change = target.getAbility().getClass();
-							if (change == PhantomThief.class) {
+							if (change.getName().equals("PhantomThief")) {
 								PhantomThief thief = (PhantomThief) target.getAbility();
 								if (thief.getStealedAbility() != null) change = thief.getStealedAbility().getClass();
 							}
@@ -481,6 +487,7 @@ public class PhantomThief extends CokesAbility implements ActiveHandler, TargetH
 				this.ac = newActionbarChannel();
 				this.mix = true;
 				Mix mix = (Mix) getParticipant().getAbility();
+				assert mix != null;
 				this.first = mix.getFirst().getClass().equals(NullAbility.this.getClass());
 				this.continued = continued;
 				this.start();
