@@ -5,7 +5,6 @@ import daybreak.abilitywar.ability.AbilityFactory;
 import daybreak.abilitywar.ability.AbilityManifest;
 import daybreak.abilitywar.game.manager.AbilityList;
 import daybreak.abilitywar.utils.annotations.Beta;
-import daybreak.abilitywar.utils.base.minecraft.version.NMSVersion;
 import daybreak.abilitywar.utils.base.minecraft.version.ServerVersion;
 
 import java.lang.annotation.*;
@@ -66,6 +65,10 @@ public class AddonAbilityFactory {
 		//1.4.0
 		registerAbility(Emily.class);
 
+		//1.4.1
+		registerAbility(Rude.class);
+		registerAbility(Iris.class);
+
 		//test
 		registerAbility(Test.class);
 	}
@@ -89,12 +92,13 @@ public class AddonAbilityFactory {
 		SupportNMS support = clazz.getAnnotation(SupportNMS.class);
 		if (support != null) {
 			try {
-				NMSVersion version = NMSVersion.valueOf(ServerVersion.getName());
-				Class<? extends CokesAbility> clazz2 = Class.forName(clazz.getPackage().getName()+"."+ clazz.getName().toLowerCase(Locale.ROOT)+"."+version.name()).asSubclass(clazz);
+				Class<? extends CokesAbility> clazz2 = Class.forName(clazz.getPackage().getName()+"."+ clazz.getSimpleName().toLowerCase(Locale.ROOT)+"."+ServerVersion.getName()).asSubclass(clazz);
 				registerAbility(clazz2);
 				return;
-			} catch (Exception ignored) {
+			} catch (Exception ex) {
+				ex.printStackTrace();
 				System.out.println("해당 버전에 호환되지 않습니다. : " + clazz.getName());
+				return;
 			}
 		}
 		System.out.println("해당 버전에 호환되지 않습니다. : " + clazz.getName());

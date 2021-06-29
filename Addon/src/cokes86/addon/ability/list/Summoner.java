@@ -46,8 +46,7 @@ import java.util.function.Predicate;
 		"위치로 소환합니다. $[cooldown]",
 		"소환되는 위치는 능력을 발동한 시점의 위치입니다.",
 		"플레이어를 선택하지 않은 경우 3초의 쿨타임이 적용됩니다."
-}
-)
+})
 public class Summoner extends CokesAbility implements ActiveHandler {
 	public static Config<Integer> duration = new Config<Integer>(Summoner.class, "대기시간", 3, Config.Condition.TIME) {
 		public boolean condition(Integer value) {

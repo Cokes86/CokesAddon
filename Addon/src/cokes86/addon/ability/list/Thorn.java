@@ -1,7 +1,6 @@
 package cokes86.addon.ability.list;
 
 import cokes86.addon.ability.CokesAbility;
-import cokes86.addon.util.CokesUtil;
 import daybreak.abilitywar.ability.AbilityManifest;
 import daybreak.abilitywar.ability.AbilityManifest.Rank;
 import daybreak.abilitywar.ability.AbilityManifest.Species;
@@ -9,6 +8,7 @@ import daybreak.abilitywar.ability.SubscribeEvent;
 import daybreak.abilitywar.ability.decorator.ActiveHandler;
 import daybreak.abilitywar.game.AbstractGame.Participant;
 import daybreak.abilitywar.utils.base.minecraft.damage.Damages;
+import daybreak.abilitywar.utils.base.minecraft.nms.NMS;
 import daybreak.abilitywar.utils.library.SoundLib;
 import org.bukkit.Material;
 import org.bukkit.Note;
@@ -55,7 +55,7 @@ public class Thorn extends CokesAbility implements ActiveHandler {
 	@SubscribeEvent
 	private void onEntityDamageByEntity(EntityDamageByEntityEvent e) {
 		if (e.getEntity().equals(getPlayer()) && duration.isRunning()) {
-			if (CokesUtil.isInstanceOfArrow(e.getDamager())) {
+			if (NMS.isArrow(e.getDamager())) {
 				Projectile a = (Projectile) e.getDamager();
 				if (a.getShooter() instanceof Player && !a.getShooter().equals(getPlayer())) {
 					Player shooter = (Player) a.getShooter();

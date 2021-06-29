@@ -18,8 +18,8 @@ import org.bukkit.event.entity.EntityDamageByEntityEvent;
 		"※능력 아이디어: RainStar_"}
 )
 public class Perseverance extends CokesAbility {
-	private static final Config<Integer> max = new Config<>(Perseverance.class, "최대치(%)", 200),
-			upg = new Config<>(Perseverance.class, "성장치(%p)", 20);
+	private static final Config<Integer> max = new Config<>(Perseverance.class, "최대치(%)", 200);
+	private static final Config<Integer> upg = new Config<>(Perseverance.class, "성장치(%p)", 20);
 	private static final Config<Double> period = new Config<>(Perseverance.class, "주기", 3.5);
 	private double give = 100;
 	private final ActionbarChannel ac = newActionbarChannel();

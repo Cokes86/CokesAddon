@@ -7,7 +7,8 @@ public enum AddonEffectFactory {
     CAUGHT(Caught.class),
     DAMAGE_DOWN(DamageDown.class),
     SEAL(Seal.class),
-    GOD_OF_BREAK(GodOfBreak.class);
+    GOD_OF_BREAK(GodOfBreak.class),
+    NIGHTMARE(Nightmare.class);
 
     Class<? extends AbstractGame.Effect> clazz;
 

@@ -1,7 +1,6 @@
 package cokes86.addon.synergy.list;
 
 import cokes86.addon.synergy.CokesSynergy;
-import cokes86.addon.util.CokesUtil;
 import daybreak.abilitywar.ability.AbilityManifest;
 import daybreak.abilitywar.ability.SubscribeEvent;
 import daybreak.abilitywar.ability.decorator.ActiveHandler;
@@ -9,6 +8,7 @@ import daybreak.abilitywar.game.AbstractGame;
 import daybreak.abilitywar.utils.base.color.RGB;
 import daybreak.abilitywar.utils.base.concurrent.TimeUnit;
 import daybreak.abilitywar.utils.base.minecraft.damage.Damages;
+import daybreak.abilitywar.utils.base.minecraft.nms.NMS;
 import daybreak.abilitywar.utils.library.ParticleLib;
 import daybreak.abilitywar.utils.library.SoundLib;
 import org.bukkit.Material;
@@ -126,7 +126,7 @@ public class ReaperArrow extends CokesSynergy implements ActiveHandler {
 
 	@SubscribeEvent
 	public void onEntityShootBow(EntityShootBowEvent e) {
-		if (ready && CokesUtil.isInstanceOfArrow(e.getProjectile()) && e.getEntity().equals(getPlayer())) {
+		if (ready && NMS.isArrow(e.getProjectile()) && e.getEntity().equals(getPlayer())) {
 			SoundLib.BLOCK_GRASS_BREAK.playSound(getPlayer());
 			this.reaperArrow = (Projectile) e.getProjectile();
 			this.ready = false;

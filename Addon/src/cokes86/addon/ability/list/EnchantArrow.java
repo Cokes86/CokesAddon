@@ -1,13 +1,13 @@
 package cokes86.addon.ability.list;
 
 import cokes86.addon.ability.CokesAbility;
-import cokes86.addon.util.CokesUtil;
 import daybreak.abilitywar.ability.AbilityManifest;
 import daybreak.abilitywar.ability.AbilityManifest.Rank;
 import daybreak.abilitywar.ability.AbilityManifest.Species;
 import daybreak.abilitywar.ability.SubscribeEvent;
 import daybreak.abilitywar.game.AbstractGame.Participant;
 import daybreak.abilitywar.game.AbstractGame.Participant.ActionbarNotification.ActionbarChannel;
+import daybreak.abilitywar.utils.base.minecraft.nms.NMS;
 import daybreak.abilitywar.utils.library.SoundLib;
 import daybreak.google.common.base.Strings;
 import org.bukkit.entity.Player;
@@ -86,7 +86,7 @@ public class EnchantArrow extends CokesAbility {
 
 	@SubscribeEvent
 	private void onEntityDamageByEntity(EntityDamageByEntityEvent e) {
-		if (e.getEntity() instanceof Player && CokesUtil.isInstanceOfArrow(e.getDamager()) && !e.getEntity().equals(getPlayer())) {
+		if (e.getEntity() instanceof Player && NMS.isArrow(e.getDamager()) && !e.getEntity().equals(getPlayer())) {
 			Projectile arrow = (Projectile) e.getDamager();
 			if (Objects.equals(arrow.getShooter(), getPlayer())) {
 				e.setDamage(e.getDamage() * (1 + enchantStack * damage.getValue() / 100.0));

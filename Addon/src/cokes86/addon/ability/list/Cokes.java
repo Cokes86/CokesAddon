@@ -1,7 +1,6 @@
 package cokes86.addon.ability.list;
 
 import cokes86.addon.ability.CokesAbility;
-import cokes86.addon.util.CokesUtil;
 import daybreak.abilitywar.AbilityWar;
 import daybreak.abilitywar.ability.AbilityManifest;
 import daybreak.abilitywar.ability.decorator.ActiveHandler;
@@ -235,7 +234,7 @@ public class Cokes extends CokesAbility implements ActiveHandler {
             }
 
             Entity attacker = e.getDamager();
-            if (CokesUtil.isInstanceOfArrow(attacker)) {
+            if (NMS.isArrow(attacker)) {
                 Projectile arrow = (Projectile) attacker;
                 if (arrow.getShooter() instanceof Entity) {
                     attacker = (Entity) arrow.getShooter();
