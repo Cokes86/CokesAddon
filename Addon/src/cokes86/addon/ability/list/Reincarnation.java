@@ -35,7 +35,8 @@ import java.util.List;
 		"지속시간이 종료 시 상대방을 $[hit]번 공격에 성공했을 경우 자신의 체력이 $[respawn] 되어 부활하고,",
 		"이후 추가 타격마다 전체 체력의 $[heal]%씩 누적되어 추가적으로 회복합니다.",
 		"하지만 타격 횟수를 채우지 못하였을 경우, 사망하게 됩니다.",
-		"※능력 아이디어: Sato207"})
+		"[아이디어 제공자 §bSato207§f]"
+})
 public class Reincarnation extends CokesAbility {
 	public static Config<Integer> duration = new Config<Integer>(Reincarnation.class, "지속시간", 25, Config.Condition.TIME) {
 		@Override

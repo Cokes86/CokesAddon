@@ -25,7 +25,7 @@
 	<name>CokesAddon</name>
 
 	<properties>
-		<revision>1.4.1</revision>
+		<revision>1.4.2</revision>
 		<encoding>UTF-8</encoding>
 		<maven.compiler.target>1.8</maven.compiler.target>
 		<maven.compiler.source>1.8</maven.compiler.source>

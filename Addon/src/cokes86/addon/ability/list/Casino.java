@@ -294,7 +294,7 @@ public class Casino extends CokesAbility implements ActiveHandler {
                 protected void onEnd() {
                     effects.put(result, true);
                     NMS.clearTitle(getPlayer());
-                    getPlayer().sendMessage("[Casino] §e"+result.getName()+ " §r효과를 얻었습니다.");
+                    getPlayer().sendMessage("[Casino] §e"+result.getName()+ " §f효과를 얻었습니다.");
 
                     switch (result) {
                         case WITHER:

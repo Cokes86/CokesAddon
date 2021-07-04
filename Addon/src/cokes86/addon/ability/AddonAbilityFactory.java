@@ -92,7 +92,7 @@ public class AddonAbilityFactory {
 		SupportNMS support = clazz.getAnnotation(SupportNMS.class);
 		if (support != null) {
 			try {
-				Class<? extends CokesAbility> clazz2 = Class.forName(clazz.getPackage().getName()+"."+ clazz.getSimpleName().toLowerCase(Locale.ROOT)+"."+ServerVersion.getName()).asSubclass(clazz);
+				Class<? extends CokesAbility> clazz2 = Class.forName(clazz.getName().toLowerCase(Locale.ROOT)+"."+ServerVersion.getName()).asSubclass(clazz);
 				registerAbility(clazz2);
 				return;
 			} catch (Exception ex) {

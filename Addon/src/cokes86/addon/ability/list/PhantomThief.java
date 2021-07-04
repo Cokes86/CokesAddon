@@ -223,7 +223,7 @@ public abstract class PhantomThief extends CokesAbility implements ActiveHandler
 					"발광효과를 " + glowing + "동안 받습니다. 이때 대상은 이 사실을 알 수 있습니다.",
 					"발광효과동안 대상에게 공격을 받지 않았을 경우 해당 플레이어의 능력을 훔치고,", "대상은 " + change + " 뒤 팬텀시프로 능력이 바뀝니다.",
 					"반대로 공격을 받았을 경우 1초간 스턴상태가 되며 모두에게 자신의 능력이 공개됩니다.", "타게팅에 실패하거나 공격을 받아 스턴상태가 되었을 경우 쿨타임이 반으로 감소합니다.",
-					"※능력 아이디어: RainStar_" }) {
+					"[아이디어 제공자 §bRainStar_§f]" }) {
 				joiner.add(str);
 			}
 		}

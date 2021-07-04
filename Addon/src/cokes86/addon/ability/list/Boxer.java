@@ -23,11 +23,11 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 
 @AbilityManifest(name = "권투선수", rank = AbilityManifest.Rank.A, species = AbilityManifest.Species.HUMAN, explain = {
-        "§7패시브 §8- §c연속 펀치§r: 상대방을 근접 공격할 시 50%씩 두 번 나누어 공격을 합니다.",
+        "§7패시브 §8- §c연속 펀치§f: 상대방을 근접 공격할 시 50%씩 두 번 나누어 공격을 합니다.",
         "  $[percentage]% 확률로 상대방의 공격을 회피할 수 있습니다.",
         "  상대방을 공격하고 나서 8틱동안 상대방을 공격할 수 없습니다.",
-        "§7철괴 타게팅 §8- §c스트레이트§r: $[damage]의 대미지와 함께 멀리 밀쳐냅니다. $[right_cool]",
-        "§7철괴 좌클릭 §8- §c나도 좀 쉬자고§r: 휴식상태에 돌입해 $[duration]마다 체력 1씩 회복합니다.",
+        "§7철괴 타게팅 §8- §c스트레이트§f: $[damage]의 대미지와 함께 멀리 밀쳐냅니다. $[right_cool]",
+        "§7철괴 좌클릭 §8- §c나도 좀 쉬자고§f: 휴식상태에 돌입해 $[duration]마다 체력 1씩 회복합니다.",
         "  이때 자신은 행동불능 효과를 받고 공격을 받거나 다시 철괴 좌클릭 시",
         "  해당 효과를 취소하고 움직일 수 있습니다. $[left_cool]",
         "  공격을 회피하였을 경우, 이 효과는 취소되지 않습니다."

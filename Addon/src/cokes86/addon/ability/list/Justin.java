@@ -71,8 +71,8 @@ public class Justin extends CokesAbility implements ActiveHandler {
 		public String toString() {
 			StringJoiner joiner = new StringJoiner("\n");
 			String[] explain = new String[]{
-					"§7패시브(일반) §8- §c진실§r: 받은 피해의 절반만큼 잔혹함 수치가 쌓입니다.",
-					"§7철괴 우클릭(일반) §8- §c누가 진짜일까§f: 잔혹함 수치만큼 §4위험 상태§r 인격이 됩니다.",
+					"§7패시브(일반) §8- §c진실§f: 받은 피해의 절반만큼 잔혹함 수치가 쌓입니다.",
+					"§7철괴 우클릭(일반) §8- §c누가 진짜일까§f: 잔혹함 수치만큼 §4위험 상태§f 인격이 됩니다.",
 					"  돌입할 때 체력 $[DANGER_COST] 소모하고 주변 플레이어를 밀쳐냅니다. $[COOL]",
 					"  돌입할 때 소모할 체력이 부족할 경우 발동하지 않습니다.",
 					"  돌입을 시도할 때 $[DANGER_DELAY]의 딜레이가 존재합니다.",
@@ -81,9 +81,9 @@ public class Justin extends CokesAbility implements ActiveHandler {
 			};
 			if (dangerTimer.isRunning()) {
 				explain = new String[] {
-						"§7패시브(§4위험§r) §8- §c놀아볼까?§f: 회복 효과를 받지 않습니다.",
+						"§7패시브(§4위험§f) §8- §c놀아볼까?§f: 회복 효과를 받지 않습니다.",
 						"  공격 시 $[DANGER_ADD_DAMAGE]의 추가대미지를 주고 대미지의 10%만큼 회복합니다.",
-						"§7철괴 우클릭(§4위험§r) §8- §c위험할 뻔했어§f: 능력의 쿨타임이 25% 증가하고,",
+						"§7철괴 우클릭(§4위험§f) §8- §c위험할 뻔했어§f: 능력의 쿨타임이 25% 증가하고,",
 						"  주변 $[TELEPORT_RANGE]칸 내 랜덤한 안전한 위치로 이동합니다.",
 						"  이후 자신은 일반 상태 인격으로 돌아갑니다.",
 				};
@@ -199,7 +199,7 @@ public class Justin extends CokesAbility implements ActiveHandler {
 		protected void run(int count) {
 			PotionEffects.SPEED.addPotionEffect(getPlayer(), 50, 3, true);
 			if (count % 20 == 0) Healths.setHealth(getPlayer(), getPlayer().getHealth() -1);
-			channel.update("[§8§l광기§r]");
+			channel.update("[§8§l광기§f]");
 
 			t += 0.1;
 			if (t >= 2.00) {

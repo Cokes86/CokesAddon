@@ -45,23 +45,24 @@ import java.util.*;
 import java.util.function.Predicate;
 
 @AbilityManifest(name= "에밀리", rank= AbilityManifest.Rank.S, species = AbilityManifest.Species.HUMAN, explain = {
-        "§7패시브 §8-§c 알케미 마스터리§r: 각종 캡슐을 가지고 상대방을 혼란시킵니다.",
-        "  자신의§c 알케미 마스터리§r 상태에 따라 능력의 효과가 뒤바뀝니다.",
-        "§7검 들고 F키 §8-§c 알케미 캡슐§r: 자신이 바라보고 있는 방향으로 구체를 날려",
-        "  블럭이나 플레이어에 맞출 시§a 알케미 에리어§r를 $[ALCHEMY_CAPSULE_DURATION]간 생성시킵니다.",
+        "§7패시브 §8-§c 알케미 마스터리§f: 각종 캡슐을 가지고 상대방을 혼란시킵니다.",
+        "  자신의§c 알케미 마스터리§f 상태에 따라 능력의 효과가 뒤바뀝니다.",
+        "§7검 들고 F키 §8-§c 알케미 캡슐§f: 자신이 바라보고 있는 방향으로 구체를 날려",
+        "  블럭이나 플레이어에 맞출 시§a 알케미 에리어§f를 $[ALCHEMY_CAPSULE_DURATION]간 생성시킵니다.",
         "  구체가 플레이어나 땅의 맞은 위치의 $[ALCHEMY_CAPSULE_AREA_RANGE]블럭 이내 플레이어가 있을 경우 ",
         "  $[ALCHEMY_CAPSULE_DAMAGE]의 대미지를 줍니다. $[ALCHEMY_CAPSULE_COOL]",
         "  사용 시 약간의 경직이 생깁니다.",
-        "§a알케미 에리어§r: 해당 영역에 존재하는 에밀리를 제외한 플레이어",
-        "  §c 알케미 마스터리§r 상태에 따라 아래의 효과를 받습니다.",
-        "  §4화상§r: 에리어에 불장판을 설치합니다. 에밀리는 에리어 내에서 화상 대미지를 입지 않습니다.",
-        "  §7둔화§r: 0.5초마다 쿨타임이 $[ALCHEMY_AREA_SLOWDOWN_COOL] 증가하고",
+        "§a알케미 에리어§f: 해당 영역에 존재하는 에밀리를 제외한 플레이어",
+        "  §c 알케미 마스터리§f 상태에 따라 아래의 효과를 받습니다.",
+        "  §4화상§f: 에리어에 불장판을 설치합니다. 에밀리는 에리어 내에서 화상 대미지를 입지 않습니다.",
+        "    영역 내 화상대미지가 $[ALCHEMY_AREA_BONUS_DAMAGE] 증가합니다.",
+        "  §7둔화§f: 0.5초마다 쿨타임이 $[ALCHEMY_AREA_SLOWDOWN_COOL] 증가하고",
         "    빙결 효과 1.5초를 각 플레이어마다 최대 $[ALCHEMY_AREA_FROST_MAX_COUNT]번 받습니다.",
-        "  §a폭발§r: 1초마다 $[ALCHEMY_AREA_EXPLOSION_DAMAGE]의 대미지를 주는 폭발을 일으킵니다.",
-        "§7철괴 우클릭 §8-§c 알케미 체인지§r: 자신의§c 알케미 마스터리§r 상태를 바꿉니다. §c쿨타임 §7: §r0.25초"
+        "  §a폭발§f: 1초마다 $[ALCHEMY_AREA_EXPLOSION_DAMAGE]의 대미지를 주는 폭발을 일으킵니다.",
+        "§7철괴 우클릭 §8-§c 알케미 체인지§f: 자신의§c 알케미 마스터리§f 상태를 바꿉니다. §c쿨타임 §7: §f0.25초"
 }, summarize = {
-        "철괴 우클릭으로 적절히 자신의 §c 알케미 마스터리§r를 조절해",
-        "검 들고 F키를 통해 §c 알케미 캡슐§r을 날려 상대방을 견제하자."
+        "철괴 우클릭으로 적절히 자신의 §c 알케미 마스터리§f를 조절해",
+        "검 들고 F키를 통해 §c 알케미 캡슐§f을 날려 상대방을 견제하자."
 })
 public class Emily extends CokesAbility implements ActiveHandler {
     private static final Set<Material> swords;
@@ -89,7 +90,8 @@ public class Emily extends CokesAbility implements ActiveHandler {
     }, Config.Condition.NORMAL, a -> a>0);
     private static final Config<Double> ALCHEMY_CAPSULE_DAMAGE = new Config<>(Emily.class, "알케미_캡슐_대미지", 5.0, a -> a > 0.0);
     private static final Config<Double> ALCHEMY_CAPSULE_AREA_RANGE = new Config<>(Emily.class, "알케미_캡슐_에리어_범위", 6.5, a -> a > 0);
-    private static final Config<Double> ALCHEMY_AREA_EXPLOSION_DAMAGE = new Config<>(Emily.class, "알케미_에리어_폭발_대미지", 5.0, a -> a > 0f);
+    private static final Config<Double> ALCHEMY_AREA_EXPLOSION_DAMAGE = new Config<>(Emily.class, "알케미_에리어_폭발_대미지", 5.0, a -> a > 0);
+    private static final Config<Double> ALCHEMY_AREA_BONUS_DAMAGE = new Config<>(Emily.class, "알케미_에리어_화상_추가대미지", 3.0, a -> a > 0);
 
     private final Cooldown cooldown = new Cooldown(ALCHEMY_CAPSULE_COOL.getValue(), CooldownDecrease._25);
     private final AbilityTimer alchemyChangeCooldown = new AbilityTimer(1){}.setPeriod(TimeUnit.TICKS, 4);
@@ -357,10 +359,15 @@ public class Emily extends CokesAbility implements ActiveHandler {
 
         @EventHandler
         public void onEntityDamage(EntityDamageEvent e) {
-            if (e.getEntity().equals(getPlayer()) && e.getCause() == EntityDamageEvent.DamageCause.FIRE) {
-                if (LocationUtil.isInCircle(center, getPlayer().getLocation(), ALCHEMY_CAPSULE_AREA_RANGE.getValue())) {
-                    getPlayer().setFireTicks(0);
-                    e.setCancelled(true);
+            if (e.getCause() == EntityDamageEvent.DamageCause.FIRE) {
+                if (LocationUtil.isInCircle(center, e.getEntity().getLocation(), ALCHEMY_CAPSULE_AREA_RANGE.getValue())) {
+                    if (e.getEntity().equals(getPlayer())) {
+                        getPlayer().setFireTicks(0);
+                        e.setCancelled(true);
+                        e.setDamage(0.0);
+                    } else {
+                        e.setDamage(e.getDamage() + ALCHEMY_AREA_BONUS_DAMAGE.getValue());
+                    }
                 }
             }
         }

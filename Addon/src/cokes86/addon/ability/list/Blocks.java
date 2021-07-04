@@ -39,7 +39,7 @@ import java.util.Objects;
 		"§f유리 §f: 받는 대미지가 $[glass]% 증폭합니다. 유리상태동안 자신은 블라인드 버프를 얻습니다. 또한 스킬의 대상이 되지 않습니다.",
 		"§5옵시디언 §f: 폭발피해를 입지 않습니다. 넉백당하지 않습니다."},
 summarize = {
-		"§6철괴 우클릭 시 §r자신이 받는 효과를 순차적으로 바꿀 수 있습니다.",
+		"§6철괴 우클릭 시 §f자신이 받는 효과를 순차적으로 바꿀 수 있습니다.",
 		"§7돌§f: 받는 대미지 감소, 곡괭이로 공격받을 시 검의 대미지로 받음.",
 		"§6모래§f: 낙하대미지 삭제, 피해 받을 시 일정시간 무적",
 		"§f유리§f: 받는 대미지 증가, 투명화, 타게팅 대상 제외",
@@ -47,7 +47,7 @@ summarize = {
 })
 @Tips(tip = {
 		"4가지 상태를 다양한 상황에 맞추어 사용 가능",
-		"돌상태는 상대방이 곡괭이가 있지 않는 이상 늘 20% 대미지 감소"
+		"돌상태는 상대방이 곡괭이가 있지 않는 이상 늘 대미지 감소"
 }, stats = @Tips.Stats(offense = Tips.Level.ZERO, survival = Tips.Level.EIGHT, crowdControl = Tips.Level.ZERO, mobility = Tips.Level.ZERO, utility = Tips.Level.EIGHT), difficulty = Tips.Difficulty.EASY)
 public class Blocks extends CokesAbility implements ActiveHandler {
 	private static final Config<Integer> stone = new Config<Integer>(Blocks.class, "돌_받는대미지감소량(%)", 20) {

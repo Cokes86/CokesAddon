@@ -18,11 +18,11 @@ import org.bukkit.entity.Projectile;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 
 @AbilityManifest(name = "너만 때린다", rank = AbilityManifest.Rank.A, species = AbilityManifest.Species.HUMAN, explain = {
-        "§7패시브 §8- §c분산 타격§r: 같은 대상을 연속으로 공격할 때 1회 타격은 $[FIRST_HIT]%,",
+        "§7패시브 §8- §c분산 타격§f: 같은 대상을 연속으로 공격할 때 1회 타격은 $[FIRST_HIT]%,",
         "  2회 타격은 $[SECOND_HIT]%, 3회 타격은 $[THIRD_HIT]%의 대미지로 공격합니다.",
         "  다른 이를 공격하거나, 일정 시간이 지날 시 이 수치는 초기화됩니다.",
         "  록 온의 쿨타임동안 이 수치는 각각 $[COOLDOWN_DECREASE]%p 감소합니다.",
-        "§7철괴 우클릭 §8- §c록 온§r: 사용 전 마지막에 타격한 플레이어만 공격할 수 있습니다.",
+        "§7철괴 우클릭 §8- §c록 온§f: 사용 전 마지막에 타격한 플레이어만 공격할 수 있습니다.",
         "  분산 타격의 모든 대미지 수치는 대상 한정 $[LOCK_ON]%p 상승합니다. $[COOLDOWN]",
         "  대상이 사망하거나 다시 사용할 경우 취소됩니다."
 })
@@ -46,9 +46,9 @@ public class OnlyHitYou extends CokesAbility implements ActiveHandler {
         if (material == Material.IRON_INGOT && clickType == ClickType.RIGHT_CLICK && !cool.isCooldown()) {
             passive.changeLockOn();
             if (!passive.isLockOn()) {
-                getPlayer().sendMessage("[§c!§r] 록 온이 해제되었습니다.");
+                getPlayer().sendMessage("[§c!§f] 록 온이 해제되었습니다.");
             } else {
-                getPlayer().sendMessage("[§c!§r] 록 온!");
+                getPlayer().sendMessage("[§c!§f] 록 온!");
             }
             return passive.isLockOn();
         }
@@ -78,7 +78,7 @@ public class OnlyHitYou extends CokesAbility implements ActiveHandler {
                 if (!passive.isLockOn()) {
                     passive.setTargetPlayer(target);
                 } else {
-                    getPlayer().sendMessage("[§c!§r] 록 온 사용 전 마지막에 타격한 플레이어만 공격 가능합니다.");
+                    getPlayer().sendMessage("[§c!§f] 록 온 사용 전 마지막에 타격한 플레이어만 공격 가능합니다.");
                     e.setCancelled(true);
                     return;
                 }
@@ -93,7 +93,7 @@ public class OnlyHitYou extends CokesAbility implements ActiveHandler {
     public void onParticipantDeath(ParticipantDeathEvent e) {
         if (e.getParticipant().getPlayer().equals(passive.getTargetPlayer()) && passive.isLockOn()) {
             passive.changeLockOn();
-            getPlayer().sendMessage("[§c!§r] 대상이 사망하여 록 온이 자동으로 해제됩니다.");
+            getPlayer().sendMessage("[§c!§f] 대상이 사망하여 록 온이 자동으로 해제됩니다.");
         }
     }
 

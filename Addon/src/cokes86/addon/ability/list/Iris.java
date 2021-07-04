@@ -11,6 +11,7 @@ import daybreak.abilitywar.utils.annotations.Beta;
 import daybreak.abilitywar.utils.base.Formatter;
 import daybreak.abilitywar.utils.base.concurrent.TimeUnit;
 import daybreak.abilitywar.utils.base.math.LocationUtil;
+import daybreak.abilitywar.utils.library.SoundLib;
 import daybreak.google.common.base.Predicate;
 import org.bukkit.Material;
 import org.bukkit.entity.Entity;
@@ -26,8 +27,8 @@ import java.util.Map;
         "§7철괴 우클릭 §8- §c레인보우§r: $[RAINBOW_RANGE]블럭 이내 상대방을 보고 우클릭 시",
         "  대상에게 $[RAINBOW_DAMAGE]의 대미지를 주고 무지개 스택을 1씩 증가합니다. $[RAINBOW_COOLDOWN]",
         "  각 플레이어 머리 위에 1 이상의 무지개 스택이 표기됩니다.",
-        "§7철괴 우클릭 §8- §c나이트메어§r: 상대방을 보지않고 우클릭 시, 무지개 스택이 3 이상인 모든 플레이어에게",
-        "  악몽 상태이상을 $[NIGHTMARE_DURATION] 부여합니다. $[NIGHTMARE_COOLDOWN]",
+        "§7철괴 우클릭 §8- §c나이트메어§r: 상대방을 보지않고 우클릭 시,",
+        "  무지개 스택이 3 이상인 모든 플레이어에게 악몽 상태이상을 $[NIGHTMARE_DURATION] 부여합니다. $[NIGHTMARE_COOLDOWN]",
         "  무지개 스택이 3 이상인 플레이어가 존재하지 않다면 발동하지 않으며,",
         "  사용되었을 시 스택 개수에 상관없이 모든 스택이 초기화됩니다.",
         "§7철괴 좌클릭 §8- §c레디 투 나이트메어§r: 모든 플레이어의 무지개 스택을 확인합니다.",
@@ -79,6 +80,7 @@ public class Iris extends CokesAbility implements ActiveHandler {
                     AbstractGame.Participant target = getGame().getParticipant(player);
                     rainbowStack.put(target, rainbowStack.getOrDefault(target, 0)+1);
                     player.damage(RAINBOW_DAMAGE.getValue(), getPlayer());
+                    SoundLib.AMBIENT_CAVE.playSound(player);
                     return rainbow.start();
                 }
             } else {

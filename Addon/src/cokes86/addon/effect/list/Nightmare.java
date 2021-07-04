@@ -15,6 +15,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.entity.ArmorStand;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.HandlerList;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
@@ -56,7 +57,7 @@ public class Nightmare extends AbstractGame.Effect implements Listener {
 
     @Override
     protected void run(int count) {
-        PotionEffects.BLINDNESS.addPotionEffect(participant.getPlayer(), 10, 0, true);
+        PotionEffects.BLINDNESS.addPotionEffect(participant.getPlayer(), 30, 0, true);
         if (hologram.isValid()) {
             hologram.teleport(participant.getPlayer().getLocation().clone().add(0,2.2,0));
         }
@@ -65,12 +66,14 @@ public class Nightmare extends AbstractGame.Effect implements Listener {
     @Override
     protected void onEnd() {
         hologram.remove();
+        HandlerList.unregisterAll(this);
         super.onEnd();
     }
 
     @Override
     protected void onSilentEnd() {
         hologram.remove();
+        HandlerList.unregisterAll(this);
         super.onSilentEnd();
     }
 

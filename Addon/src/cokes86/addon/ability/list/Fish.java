@@ -29,15 +29,15 @@ import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.inventory.ItemStack;
 
 @AbilityManifest(name = "물고기", rank = Rank.B, species = Species.ANIMAL, explain = {
-		"§7능력 활성화 §8- §c철푸덕§r: 능력이 활성화되면 물갈퀴III 인챈트 쿠폰을 획득하며,",
+		"§7능력 활성화 §8- §c철푸덕§f: 능력이 활성화되면 물갈퀴III 인챈트 쿠폰을 획득하며,",
 		"  신발 착용 중 쿠폰을 우클릭하면 인챈트가 부여됩니다.",
-		"§7물 속 §8- §c첨벙첨벙§r: 이동 속도가 빨라지고, 수중 호흡 효과를 얻으며",
+		"§7물 속 §8- §c첨벙첨벙§f: 이동 속도가 빨라지고, 수중 호흡 효과를 얻으며",
 		"  받는 대미지가 1 감소합니다.",
-		"§7물 밖 §8- §c파닥파닥§r: 구속효과가 걸리며 이후 3초마다 수분이 감소합니다.",
+		"§7물 밖 §8- §c파닥파닥§f: 구속효과가 걸리며 이후 3초마다 수분이 감소합니다.",
 		"  감소할 수분이 없을 경우 1의 고정피해를 입습니다.",
-		"§7철괴 좌클릭 §8- §c촤아악§r: 자신의 위치에 물을 설치합니다. $[cool]",
+		"§7철괴 좌클릭 §8- §c촤아악§f: 자신의 위치에 물을 설치합니다. $[cool]",
 		"  이미 물이 있는 자리에서는 물이 생성되지 않습니다.",
-		"§7사망 시 §8- §c주르륵§r: 자신이 사망할 시 자신 주변 10칸의 물을 삭제합니다."
+		"§7사망 시 §8- §c주르륵§f: 자신이 사망할 시 자신 주변 10칸의 물을 삭제합니다."
 })
 public class Fish extends CokesAbility implements ActiveHandler {
 	private static final Config<Integer> cool = new Config<Integer>(Fish.class, "쿨타임", 30, Config.Condition.COOLDOWN) {

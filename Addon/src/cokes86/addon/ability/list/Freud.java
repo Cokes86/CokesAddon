@@ -10,7 +10,6 @@ import daybreak.abilitywar.ability.decorator.ActiveHandler;
 import daybreak.abilitywar.game.AbstractGame;
 import daybreak.abilitywar.game.AbstractGame.CustomEntity;
 import daybreak.abilitywar.game.AbstractGame.Participant;
-import daybreak.abilitywar.game.AbstractGame.Participant.ActionbarNotification.ActionbarChannel;
 import daybreak.abilitywar.game.module.DeathManager;
 import daybreak.abilitywar.game.module.Wreck;
 import daybreak.abilitywar.game.team.interfaces.Teamable;
@@ -28,6 +27,9 @@ import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.World;
+import org.bukkit.boss.BarColor;
+import org.bukkit.boss.BarStyle;
+import org.bukkit.boss.BossBar;
 import org.bukkit.entity.Damageable;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
@@ -47,64 +49,43 @@ import java.util.Set;
 import java.util.UUID;
 
 @AbilityManifest(name = "프리드", rank = Rank.A, species = Species.HUMAN, explain = {
-		"프리드는 마나 100을 가지고 시작하며 5틱마다 1씩 회복합니다. (최대 100)",
-		"철괴 우클릭시 일정한 마나를 소모하여, 가장 가까운 플레이어에게 유도 마법구를 2초간 날립니다.",
-		"플레이어가 해당 마법구를 맞을 시 효과가 나타납니다.",
-		"마법은 발사할 때 마다 랜덤하게 바뀝니다.",
-		"§c화상§f: 마나 $[mana_burn]소모, 상대방에게 고정 $[damage_burn]의 대미지를 주고 $[fireTick]틱의 화상효과 부여",
-		"§8나약함§f: 마나 $[mana_weakness]소모, 상대방에게 고정 $[damage_weakness]의 대미지를 주고 상대방의 나약함 디버프를 $[weakness_duration]초 부여.",
-		"§a폭발§f: 마나 $[mana_explosion]소모, 상대방에게 고정 $[damage_explosion]의 대미지를 주고 $[fuse]의 위력으로 폭발."
+		"§7패시브 §8- §b마나§f: 프리드는 고유 자원인 §b마나§f가 존재합니다.",
+		"  $[MANA_REGAIN_TIME]틱마다 마나가 1씩 회복하며, 최대 100까지 상승합니다.",
+		"§7철괴 우클릭 §8- §c엘리멘탈 서클§f: 특수한 효과를 가진 유도 발사체를",
+		"  가장 가까운 플레이어에게 $[ELEMENTAL_CIRCLE_DURATION]간 발사됩니다.",
+		"  대미지와 효과는 발사 후 무작위로 바뀝니다.",
+		"    §c화상§f: 고정 $[damage_burn]의 대미지를 주고 $[fireTick]틱의 화상효과 부여. $[mana_burn]",
+		"    §8나약함§f: 고정 $[damage_weakness]의 대미지를 주고 상대방의 나약함 디버프를 $[weakness_duration]초 부여. $[mana_weakness]",
+		"    §a폭발§f: 고정 $[damage_explosion]의 대미지를 주고 $[fuse]의 위력으로 폭발. $[mana_explosion]"
 })
 public class Freud extends CokesAbility implements ActiveHandler {
-	private static final Config<Integer> mana_burn = new Config<Integer>(Freud.class, "마나소모량.화상", 30) {
+	private static final Config<Integer> mana_burn = new Config<Integer>(Freud.class, "마나소모량.화상", 30, a -> a > 0) {
 		@Override
-		public boolean condition(Integer value) {
-			return value > 0;
-		}
-	}, mana_weakness = new Config<Integer>(Freud.class, "마나소모량.나약함", 45) {
-		@Override
-		public boolean condition(Integer value) {
-			return value > 0;
-		}
-	}, mana_explosion = new Config<Integer>(Freud.class, "마나소모량.폭발", 80) {
-		@Override
-		public boolean condition(Integer value) {
-			return value > 0;
-		}
-	}, damage_burn = new Config<Integer>(Freud.class, "고정대미지.화상", 2) {
-		@Override
-		public boolean condition(Integer value) {
-			return value > 0;
-		}
-	}, damage_weakness = new Config<Integer>(Freud.class, "고정대미지.나약함", 3) {
-		@Override
-		public boolean condition(Integer value) {
-			return value > 0;
-		}
-	}, damage_explosion = new Config<Integer>(Freud.class, "고정대미지.폭발", 2) {
-		@Override
-		public boolean condition(Integer value) {
-			return value > 0;
-		}
-	}, fireTick = new Config<Integer>(Freud.class, "화상시간(틱)", 50) {
-		@Override
-		public boolean condition(Integer value) {
-			return value > 0;
-		}
-	}, weakness_duration = new Config<Integer>(Freud.class, "나약함_지속시간(초)", 3) {
-		@Override
-		public boolean condition(Integer value) {
-			return value > 0;
+		public String toString() {
+			return "§c소모 §7: §b"+getValue();
 		}
 	};
-	private static final Config<Float> fuse = new Config<Float>(Freud.class, "폭발위력", 0.4f) {
+	private static final Config<Integer> mana_weakness = new Config<Integer>(Freud.class, "마나소모량.나약함", 45, a -> a > 0){
 		@Override
-		public boolean condition(Float value) {
-			return value > 0;
+		public String toString() {
+			return "§c소모 §7: §b"+getValue();
 		}
 	};
+	private static final Config<Integer> mana_explosion = new Config<Integer>(Freud.class, "마나소모량.폭발", 80, a -> a > 0){
+		@Override
+		public String toString() {
+			return "§c소모 §7: §b"+getValue();
+		}
+	};
+	private static final Config<Integer> damage_burn = new Config<>(Freud.class, "고정대미지.화상", 2, a -> a > 0);
+	private static final Config<Integer> damage_weakness = new Config<>(Freud.class, "고정대미지.나약함", 3, a -> a > 0);
+	private static final Config<Integer> damage_explosion = new Config<>(Freud.class, "고정대미지.폭발", 2, a -> a > 0);
+	private static final Config<Integer> fireTick = new Config<>(Freud.class, "화상시간(틱)", 50, a -> a > 0);
+	private static final Config<Integer> weakness_duration = new Config<>(Freud.class, "나약함_지속시간(초)", 3, a -> a > 0);
+	private static final Config<Float> fuse = new Config<>(Freud.class, "폭발위력", 0.4f, a -> a > 0);
+	private static final Config<Integer> MANA_REGAIN_TIME = new Config<>(Freud.class, "마나회복시간(틱)", 5, a -> a > 0);
+	private static final Config<Integer> ELEMENTAL_CIRCLE_DURATION = new Config<>(Freud.class, "엘리멘탈_서클_지속시간", 2, Config.Condition.TIME);
 
-	private final ActionbarChannel ac = newActionbarChannel();
 	private final Set<UUID> explosion = new HashSet<>();
 
 	private final Predicate<Entity> predicate = entity -> {
@@ -127,16 +108,36 @@ public class Freud extends CokesAbility implements ActiveHandler {
 	private Magic magic;
 	private int mana = 100;
 	private final AbilityTimer passiveTimer = new AbilityTimer() {
+		BossBar bar;
+		final String mana_info = "§b마나";
+		final String mana_using_info = "§b§l마나";
+
+		@Override
+		protected void onStart() {
+			bar = Bukkit.createBossBar(mana >= magic.getMana() ? mana_using_info : mana_info, magic.getBarColor(), BarStyle.SEGMENTED_10);
+			bar.addPlayer(getPlayer());
+			bar.setVisible(true);
+		}
+
+		@Override
+		protected void onEnd() {
+			bar.removeAll();
+		}
+
+		@Override
+		protected void onSilentEnd() {
+			bar.removeAll();
+		}
 
 		@Override
 		protected void run(int arg0) {
-			if (mana != 100 && this.getCount() % (Wreck.isEnabled(getGame()) ? 2 : 5) == 0) {
+			if (mana != 100 && this.getCount() % (MANA_REGAIN_TIME.getValue()/(Wreck.isEnabled(getGame()) ? 2 : 1)) == 0) {
 				mana += 1;
 			}
-
-			ac.update("마나: " + mana + " 마법: " + magic.getName());
+			bar.setColor(magic.getBarColor());
+			bar.setProgress(mana / 100.0);
+			bar.setTitle(mana >= magic.getMana() ? mana_using_info : mana_info);
 		}
-
 	};
 
 	public Freud(Participant arg0) {
@@ -167,7 +168,7 @@ public class Freud extends CokesAbility implements ActiveHandler {
 			Player target = LocationUtil.getNearestEntity(Player.class, getPlayer().getLocation(), predicate);
 			if (target != null) {
 				mana -= magic.getMana();
-				new Bullet(getPlayer(), getPlayer().getLocation(), target, magic).start();
+				new Bullet(getPlayer(), getPlayer().getLocation().clone().add(0,1.5,0), target, magic).start();
 				magic = Magic.getRandomMagic();
 				return true;
 			}
@@ -177,32 +178,35 @@ public class Freud extends CokesAbility implements ActiveHandler {
 	}
 
 	enum Magic {
-		FIRE("§c화상§f", mana_burn.getValue(), RGB.of(209, 1, 1)) {
+		FIRE("§c화상§f", mana_burn.getValue(), RGB.of(209, 1, 1), BarColor.RED) {
 			protected void onDamaged(Damageable target, Player owner) {
 				Damages.damageFixed(target, owner, damage_burn.getValue());
 				target.setFireTicks(fireTick.getValue());
 			}
 		},
-		WEAKNESS("§8나약함§f", mana_weakness.getValue(), RGB.of(85, 85, 85)) {
+		WEAKNESS("§8나약함§f", mana_weakness.getValue(), RGB.of(85, 85, 85), BarColor.WHITE) {
 			protected void onDamaged(Damageable target, Player owner) {
 				Damages.damageFixed(target, owner, damage_weakness.getValue());
 				PotionEffects.WEAKNESS.addPotionEffect((LivingEntity) target, weakness_duration.getValue() * 20, 0, false);
 			}
 		},
-		EXPLOSION("§a폭발§f", mana_explosion.getValue(), RGB.of(102, 153, 1)) {
+		EXPLOSION("§a폭발§f", mana_explosion.getValue(), RGB.of(102, 153, 1), BarColor.GREEN) {
 			protected void onDamaged(Damageable target, Player owner) {
 				Damages.damageFixed(target, owner, damage_explosion.getValue());
 				target.getWorld().createExplosion(target.getLocation().clone().add(0, -0.3, 0), fuse.getValue());
 			}
 		};
 
-		int mana;
-		RGB magicColor;
-		String name;
-		Magic(String name, int mana, RGB magicColor) {
+		private final int mana;
+		private final RGB magicColor;
+		private final String name;
+		private final BarColor bar;
+
+		Magic(String name, int mana, RGB magicColor, BarColor bar) {
 			this.name = name;
 			this.mana = mana;
 			this.magicColor = magicColor;
+			this.bar = bar;
 		}
 
 		public static Magic getRandomMagic() {
@@ -223,6 +227,10 @@ public class Freud extends CokesAbility implements ActiveHandler {
 		public String getName() {
 			return name;
 		}
+
+		public BarColor getBarColor() {
+			return bar;
+		}
 	}
 
 	public class Bullet extends AbilityTimer implements Listener {
@@ -235,14 +243,14 @@ public class Freud extends CokesAbility implements ActiveHandler {
 		private Location lastLocation;
 
 		private Bullet(LivingEntity shooter, Location startLocation, Entity target, Magic magic) {
-			super(40);
+			super(ELEMENTAL_CIRCLE_DURATION.getValue()*20);
 			setPeriod(TimeUnit.TICKS, 1);
 			this.shooter = shooter;
 
-			Vector first = target.getLocation().clone().subtract(getPlayer().getLocation().clone()).toVector();
+			Vector first = target.getLocation().clone().add(0, 1.5,0).subtract(getPlayer().getLocation().clone().add(0, 1.5,0)).toVector();
 
 			this.entity = new ArrowEntity(startLocation.getWorld(), startLocation.getX() + first.getX() / 0.25, startLocation.getY() + first.getY() / 0.25, startLocation.getZ() + first.getZ() / 0.25).resizeBoundingBox(-.75, -.75, -.75, .75, .75, .75);
-			this.velocity = target.getLocation().clone().subtract(getPlayer().getLocation().clone()).toVector().normalize().multiply(0.65);
+			this.velocity = target.getLocation().clone().add(0, 1.5,0).subtract(getPlayer().getLocation().clone().add(0, 1.5,0)).toVector().normalize().multiply(0.65);
 			this.magic = magic;
 			this.lastLocation = startLocation;
 			this.target = target;
@@ -259,7 +267,7 @@ public class Freud extends CokesAbility implements ActiveHandler {
 
 		@Override
 		protected void run(int i) {
-			this.velocity = target.getLocation().clone().subtract(lastLocation.clone()).toVector().normalize().multiply(0.65);
+			this.velocity = target.getLocation().clone().add(0, 1.5,0).subtract(lastLocation.clone()).toVector().normalize().multiply(0.65);
 			Location newLocation = lastLocation.clone().add(velocity);
 			for (Iterator<Location> iterator = Line.iteratorBetween(lastLocation, newLocation, 40); iterator.hasNext(); ) {
 				Location location = iterator.next();

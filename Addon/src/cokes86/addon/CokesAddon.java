@@ -25,13 +25,18 @@ import java.util.concurrent.CompletableFuture;
 
 public class CokesAddon extends Addon implements Listener {
 	private static final Map<String, Addon> loaded = new HashMap<>();
-
+	private static CokesAddon addon;
 	private final ConfigLoader configLoader = new ConfigLoader();
 	private final OtherAddonLoader otherAddonLoader = new OtherAddonLoader();
+
+	public static CokesAddon getAddon() {
+		return addon;
+	}
 
 	@Override
 	public void onEnable() {
 		//Load Addon Ability
+		addon = this;
 		AddonAbilityFactory.nameValues();
 		AddonSynergyFactory.nameValues();
 

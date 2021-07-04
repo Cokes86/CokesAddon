@@ -31,8 +31,8 @@ import java.util.function.Predicate;
 
 @AbilityManifest(name = "코크스", rank = AbilityManifest.Rank.SPECIAL, species = AbilityManifest.Species.SPECIAL, explain = {
         "도박에 미쳐버린 개발자",
-        "§7철괴 우클릭 §9- §c이펙트 맛 좀 봐라!§r: 무작위 대상에게 무작위 상태이상을 1 ~ 15초로 부여합니다. $[RIGHT_COOL]",
-        "§7철괴 좌클릭 §8- §c화려한 슬롯머신§r: §a슬롯머신 §r하나를 가동합니다. $[LEFT_COOL]",
+        "§7철괴 우클릭 §9- §c이펙트 맛 좀 봐라!§f: 무작위 대상에게 무작위 상태이상을 1 ~ 15초로 부여합니다. $[RIGHT_COOL]",
+        "§7철괴 좌클릭 §8- §c화려한 슬롯머신§f: §a슬롯머신 §f하나를 가동합니다. $[LEFT_COOL]",
         "  총 5개의 슬롯이 돌아가며, 각 슬롯마다 효과를 $[LEFT_DURATION]간 얻습니다.",
         "  2개 이상의 같은 슬롯일 경우, 이 효과는 최대 3번 합적용됩니다.",
         "  <C>: 주는 대미지 0.75 상승.",
@@ -82,8 +82,8 @@ public class Cokes extends CokesAbility implements ActiveHandler {
             if (e == null) {
                 return ActiveSkill(material, clickType);
             }
-            getPlayer().sendMessage(participant.getPlayer().getName()+"에게 "+registration.getManifest().displayName()+" §r"+second+"초 부여!");
-            participant.getPlayer().sendMessage("[§b코크스§r] "+registration.getManifest().displayName()+"§r 효과를 "+second+"초 받습니다!");
+            getPlayer().sendMessage(participant.getPlayer().getName()+"에게 "+registration.getManifest().displayName()+" §f"+second+"초 부여!");
+            participant.getPlayer().sendMessage("[§b코크스§f] "+registration.getManifest().displayName()+"§f 효과를 "+second+"초 받습니다!");
             return rightCool.start();
         }
         return false;
@@ -120,7 +120,7 @@ public class Cokes extends CokesAbility implements ActiveHandler {
             results.put("K", 0);
             results.put("E", 0);
             results.put("S", 0);
-            joiner = new StringJoiner("§r ");
+            joiner = new StringJoiner("§f ");
         }
 
         public void run(int count) {

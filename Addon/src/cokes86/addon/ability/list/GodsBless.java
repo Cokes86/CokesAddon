@@ -13,9 +13,9 @@ import daybreak.abilitywar.utils.base.concurrent.TimeUnit;
 import org.bukkit.Material;
 
 @AbilityManifest(name = "신의 가호", rank = Rank.A, species = Species.HUMAN, explain = {
-		"§7철괴 우클릭 §8- §c파괴의 신§r: 자신에게 §e파괴의 §c신 §f효과를 $[duration] 부여합니다. $[rightCool]",
-		"§7철괴 좌클릭 §8- §c아직 안끝났어§r: 자신에게 적용중인 §e파괴의 §c신 §f효과의 지속시간을 초기화합니다. $[leftCool]",
-		"§7상태이상 §8- §e파괴의 §c신§r: 일정 시간동안 자신의 공격력이 3 증가합니다.",
+		"§7철괴 우클릭 §8- §c파괴의 신§f: 자신에게 §e파괴의 §c신 §f효과를 $[duration] 부여합니다. $[rightCool]",
+		"§7철괴 좌클릭 §8- §c아직 안끝났어§f: 자신에게 적용중인 §e파괴의 §c신 §f효과의 지속시간을 초기화합니다. $[leftCool]",
+		"§7상태이상 §8- §e파괴의 §c신§f: 일정 시간동안 자신의 공격력이 3 증가합니다.",
 		"  상대방을 살해할 시 공격력이 1 더 추가하고 지속시간을 초기화합니다.",
 		"  지속시간 종료 시 자신이 얻은 공격력의 5배에 달하는 대미지를 받습니다."
 })

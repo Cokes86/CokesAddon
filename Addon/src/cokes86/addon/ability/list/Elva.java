@@ -37,7 +37,7 @@ import java.util.function.Predicate;
 		"기존의 화살은 사용할 수 없습니다.",
 		"마법의 화살은 대미지를 주거나, 블럭에 닿을 시 소멸합니다.",
 		"해당 화살은 플렉터가 튕겨낼 수 없습니다.",
-		"※능력 아이디어: Sato207"
+		"[아이디어 제공자 §bSato207§f]"
 })
 public class Elva extends CokesAbility {
 	private static final Config<Integer> maxarrow = new Config<Integer>(Elva.class, "마법화살수", 200) {

@@ -23,7 +23,7 @@ import java.util.Objects;
 		"적중에 실패할 시 인챈트 스택이 거리에 비례하여 1에서 $[max_stack_down]만큼 감소합니다.",
 		"인챈트 스택이 0인 상태로 적중에 실패할 시 고정 $[risk]의 대미지를 입습니다.",
 		"자신이 쏜 화살은 명중 시 바로 사라집니다.",
-		"※능력 아이디어: RainStar_"
+		"[아이디어 제공자 §bRainStar_§f]"
 })
 public class EnchantArrow extends CokesAbility {
 	private static final Config<Integer> damage = new Config<Integer>(EnchantArrow.class, "추가대미지(%)", 10) {

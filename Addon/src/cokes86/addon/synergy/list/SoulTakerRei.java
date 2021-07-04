@@ -25,18 +25,18 @@ import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
 
 @AbilityManifest(name = "레이<소울테이커>", rank = AbilityManifest.Rank.L, species = AbilityManifest.Species.HUMAN, explain = {
-        "§7패시브 §8- §c소울 커팅§r: 상대방을 공격할 때 주는 대미지가 $[DAMAGE]만큼 상승합니다.",
-        "  추가로 자신이 가진 §e흡수 체력§r $[DEMAND_ABSORPTION]당 대미지가 1씩 상승합니다.",
-        "§7플레이어 사망 §8- §c리멤버§r: 플레이어가 사망한 자리에 영혼이 남아 돌아다닙니다.",
+        "§7패시브 §8- §c소울 커팅§f: 상대방을 공격할 때 주는 대미지가 $[DAMAGE]만큼 상승합니다.",
+        "  추가로 자신이 가진 §e흡수 체력§f $[DEMAND_ABSORPTION]당 대미지가 1씩 상승합니다.",
+        "§7플레이어 사망 §8- §c리멤버§f: 플레이어가 사망한 자리에 영혼이 남아 돌아다닙니다.",
         "  영혼 근처 $[RANGE]블럭에 다가갈 경우 영혼을 흡수하여",
-        "  자신의 §e흡수 체력§r이 $[REMEMBER_ABSORPTION]만큼 증가합니다.",
-        "§7철괴 우클릭 §8- §c이맨서페이션§r: $[DURATION]동안 주는 대미지가 $[ADDITIONAL]만큼 증가합니다.",
+        "  자신의 §e흡수 체력§f이 $[REMEMBER_ABSORPTION]만큼 증가합니다.",
+        "§7철괴 우클릭 §8- §c이맨서페이션§f: $[DURATION]동안 주는 대미지가 $[ADDITIONAL]만큼 증가합니다.",
         "  대신, 공격을 시도할 때 마다 자신 최대 체력의 $[COST]%만큼 지불합니다. $[EMANCIPATION_COOL]",
         "  지속동안 철괴 우클릭 시 자동으로 종료되며",
         "  남은 시간에 비례하여 최대 50%까지 쿨타임이 감소합니다.",
-        "§7사망 위기 §8- §c어아우절§r: 사망을 무시하고 §c리멤버§r를 통해 흡수한",
+        "§7사망 위기 §8- §c어아우절§f: 사망을 무시하고 §c리멤버§f를 통해 흡수한",
         "  영혼의 수를 모두 소모해 체력이 영혼당 1씩 회복됩니다. $[AROUSAL_COOL]",
-        "  §c이맨서페이션§r 지속시간 도중 발동되었다면, 0.5배 더 회복합니다."
+        "  §c이맨서페이션§f 지속시간 도중 발동되었다면, 0.5배 더 회복합니다."
 })
 public class SoulTakerRei extends CokesSynergy implements ActiveHandler {
     public static final Config<Integer> DAMAGE = new Config<>(SoulTakerRei.class, "추가대미지", 3, a -> a > 0),

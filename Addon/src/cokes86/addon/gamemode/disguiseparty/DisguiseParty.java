@@ -8,12 +8,15 @@ import daybreak.abilitywar.game.*;
 import daybreak.abilitywar.game.interfaces.Winnable;
 import daybreak.abilitywar.utils.annotations.Beta;
 import daybreak.abilitywar.utils.base.Formatter;
+import daybreak.abilitywar.utils.base.minecraft.BroadBar;
 import daybreak.abilitywar.utils.base.minecraft.PlayerCollector;
 import daybreak.abilitywar.utils.library.PotionEffects;
 import daybreak.abilitywar.utils.library.SoundLib;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.GameMode;
+import org.bukkit.boss.BarColor;
+import org.bukkit.boss.BarStyle;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -44,6 +47,9 @@ public class DisguiseParty extends AbstractGame implements Winnable {
     private final List<UUID> eliminate = new ArrayList<>();
     private final Scoreboard score;
     private final Team disguiseTeam;
+    private int attack_chance=0;
+    private int max_attack_chance=0;
+    private BroadBar bar = null;
 
     public DisguiseParty(final String[] args) throws IllegalArgumentException {
         super(PlayerCollector.EVERY_PLAYER_EXCLUDING_SPECTATORS());
@@ -53,10 +59,11 @@ public class DisguiseParty extends AbstractGame implements Winnable {
             score = Bukkit.getScoreboardManager().getMainScoreboard();
             disguiseTeam = score.registerNewTeam("Disguise_Hide");
             disguiseTeam.setOption(Team.Option.NAME_TAG_VISIBILITY, Team.OptionStatus.NEVER);
-        } else{
+        } else {
             score = null;
             disguiseTeam = null;
         }
+
     }
 
     public boolean eliminate(Player player) {
@@ -102,6 +109,18 @@ public class DisguiseParty extends AbstractGame implements Winnable {
         }
     }
 
+    private void setMaxAttackChance(int chance) {
+        max_attack_chance = chance;
+        setAttackChance(chance);
+    }
+
+    private void setAttackChance(int chance) {
+        attack_chance = chance;
+        if (bar != null) {
+            bar.setProgress((double)chance / max_attack_chance);
+        }
+    }
+
     @EventHandler
     public void onEntityDamageByEntity(EntityDamageByEntityEvent e) {
         if (tag != null && e.getDamager().equals(tag.getPlayer()) && e.getEntity() instanceof Player && isParticipating(e.getEntity().getUniqueId())) {
@@ -118,13 +137,18 @@ public class DisguiseParty extends AbstractGame implements Winnable {
                     DisguiseUtil.changeSkin(entity, entity.getUniqueId());
                     DisguiseUtil.setPlayerNameTag(entity, entity.getUniqueId());
                     DisguiseUtil.reloadPlayer(entity);
+                    setAttackChance(attack_chance--);
 
-                    if (eliminate(entity) && getParticipants().size() - 1 - eliminate.size() == (((getParticipants().size()-1)/5) +1)) {
+                    if (eliminate(entity) && attack_chance < 1) {
                         Bukkit.broadcastMessage("§a목표§f를 끝까지 찾지 못했습니다! 게임을 종료합니다!");
                         List<Participant> winner = new ArrayList<>(getParticipants());
                         winner.remove(tag);
                         winner.removeIf(participant -> isEliminate(participant.getPlayer()));
                         Win(winner.toArray(new Participant[]{}));
+                        if (bar != null) {
+                            bar.unregister();
+                            bar = null;
+                        }
                     }
                 }
             }
@@ -183,11 +207,11 @@ public class DisguiseParty extends AbstractGame implements Winnable {
                 break;
             }
             case 6: {
-                Bukkit.broadcastMessage("30초 동안 숨은 뒤 §c술래§f는 진짜 §a목표§f를 찾아 죽이시면 됩니다.");
+                Bukkit.broadcastMessage("30초 동안 §c술래§f는 가려진 뒤 진짜 §a목표§f를 찾아 때리시면 됩니다.");
                 break;
             }
             case 7: {
-                Bukkit.broadcastMessage("§c술래§f는 §a목표§f를 잡으면 승리하고, §a목표§f는 자기를 포함해 일정 인원수 이상 살아남으면 승리합니다.");
+                Bukkit.broadcastMessage("§c술래§f는 §a목표§f를 잡으면 승리하고, §a목표§f는 남은 공격 기회가 없어질 때 까지 들키지 않으면 승리!");
                 break;
             }
             case 8: {
@@ -234,6 +258,7 @@ public class DisguiseParty extends AbstractGame implements Winnable {
                     DisguiseUtil.reloadPlayer(participant.getPlayer());
                 }
                 target.getPlayer().sendMessage("최대한 숨어서 오래 살아남으세요!");
+                attack_chance = ((getParticipants().size()-1) / 5) + 1;
                 break;
             }
         }
@@ -279,10 +304,12 @@ public class DisguiseParty extends AbstractGame implements Winnable {
         @Override
         protected void onEnd() {
             super.onEnd();
+            bar = new BroadBar("남은 공격 기회", BarColor.BLUE, BarStyle.SEGMENTED_10);
+            setMaxAttackChance((getParticipants().size()-1)/5 +1);
             Bukkit.broadcastMessage("게임이 시작되었습니다!");
             for (DisguiseParticipant participant : getParticipants()) {
                 if (participant.equals(tag)) {
-                    participant.getPlayer().sendMessage("[§6우승조건§f] §a목표§f "+target.getPlayer().getName()+"을(를) 찾아라!");
+                    participant.getPlayer().sendMessage("[§6우승조건§f] §a목표§f "+target.getPlayer().getName()+"을(를) "+max_attack_chance+"번 안에 찾아라!");
                 } else if (participant.equals(target)) {
                     participant.getPlayer().sendMessage("[§6우승조건§f] §c술래§f "+tag.getPlayer().getName()+"을(를) 피해 "+(((getParticipants().size()-1)/5) +1)+"명이 남을 때 까지 생존하라!");
                 } else {

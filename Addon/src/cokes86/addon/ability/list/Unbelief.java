@@ -27,7 +27,7 @@ import java.util.function.Predicate;
 		"팀끼리는 서로 공격할 수 없습니다.",
 		"팀을 맺은 상대방이 자신을 $[hit]회 타격할 시 팀이 깨지며",
 		"팀을 맺었던 플레이어 한정으로 공격할 시 $[damage]의 추가대미지가 생깁니다.",
-		"※능력 아이디어: RainStar_"
+		"[아이디어 제공자 §bRainStar_§f]"
 })
 public class Unbelief extends CokesAbility implements ActiveHandler {
 	private static final Config<Integer> hit = new Config<Integer>(Unbelief.class, "공격횟수", 5) {

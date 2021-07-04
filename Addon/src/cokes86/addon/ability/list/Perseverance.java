@@ -15,7 +15,7 @@ import org.bukkit.event.entity.EntityDamageByEntityEvent;
 @AbilityManifest(name = "인내심", rank = Rank.B, species = Species.HUMAN, explain = {
 		"매 $[period]초마다 상대방에게 주는 피해가 $[upg]%p씩 상승하며 최대 $[max]%까지 상승합니다.",
 		"상대방을 공격할 시 이는 초기화되어 100%로 돌아갑니다",
-		"※능력 아이디어: RainStar_"}
+		"[아이디어 제공자 §bRainStar_§f]"}
 )
 public class Perseverance extends CokesAbility {
 	private static final Config<Integer> max = new Config<>(Perseverance.class, "최대치(%)", 200);
