@@ -131,6 +131,10 @@ public class Xyz extends CokesAbility implements ActiveHandler {
 		@Override
 		protected void onDurationSilentEnd() {
 			HandlerList.unregisterAll(this);
+			for (ActionbarChannel channel : map.values()) {
+				channel.unregister();
+			}
+			map.clear();
 		}
 
 		@EventHandler

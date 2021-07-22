@@ -33,6 +33,7 @@ import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Projectile;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
 import org.bukkit.event.HandlerList;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
@@ -322,13 +323,17 @@ public class Justin extends CokesAbility implements ActiveHandler {
 				cruel += event.getFinalDamage()/2;
 				channel.update("[일반] | 잔혹함: "+cruel);
 			}
-			if (!lastTimer.isRunning() && getPlayer().getHealth() - event.getFinalDamage() <= 0) {
-				event.setCancelled(true);
-				Healths.setHealth(getPlayer(), AttributeUtil.getMaxHealth(getPlayer()));
-				lastTimer.start();
-				dangerTimer.stop(true);
-				SoundLib.ENTITY_ENDER_DRAGON_GROWL.playSound(getPlayer().getLocation());
-			}
+		}
+	}
+
+	@SubscribeEvent(priority = 100)
+	public void onEntityDamage2(EntityDamageEvent event) {
+		if (!lastTimer.isRunning() && getPlayer().getHealth() - event.getFinalDamage() <= 0) {
+			event.setCancelled(true);
+			Healths.setHealth(getPlayer(), AttributeUtil.getMaxHealth(getPlayer()));
+			lastTimer.start();
+			dangerTimer.stop(true);
+			SoundLib.ENTITY_ENDER_DRAGON_GROWL.playSound(getPlayer().getLocation());
 		}
 	}
 

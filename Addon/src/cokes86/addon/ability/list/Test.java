@@ -4,19 +4,29 @@ import cokes86.addon.ability.CokesAbility;
 import daybreak.abilitywar.ability.AbilityManifest;
 import daybreak.abilitywar.ability.Materials;
 import daybreak.abilitywar.ability.decorator.ActiveHandler;
+import daybreak.abilitywar.ability.decorator.TargetHandler;
 import daybreak.abilitywar.game.AbstractGame;
 import daybreak.abilitywar.utils.annotations.Beta;
 import daybreak.abilitywar.utils.base.color.RGB;
 import daybreak.abilitywar.utils.base.concurrent.TimeUnit;
 import daybreak.abilitywar.utils.base.math.LocationUtil;
 import daybreak.abilitywar.utils.library.ParticleLib;
+import net.minecraft.server.v1_12_R1.DataWatcher;
+import net.minecraft.server.v1_12_R1.EntityPlayer;
+import net.minecraft.server.v1_12_R1.PacketPlayOutEntityMetadata;
+import org.apache.commons.lang.reflect.FieldUtils;
 import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.craftbukkit.v1_12_R1.entity.CraftPlayer;
+import org.bukkit.entity.LivingEntity;
+import org.bukkit.entity.Player;
+
+import java.util.Map;
 
 @AbilityManifest(name = "코크스테스트",rank = AbilityManifest.Rank.SPECIAL, species = AbilityManifest.Species.SPECIAL)
 @Beta
 @Materials(materials = {Material.IRON_INGOT, Material.GOLD_INGOT})
-public class Test extends CokesAbility implements ActiveHandler {
+public class Test extends CokesAbility implements ActiveHandler, TargetHandler {
     public Test(AbstractGame.Participant participant) throws IllegalStateException {
         super(participant);
     }
@@ -24,13 +34,61 @@ public class Test extends CokesAbility implements ActiveHandler {
     @Override
     public boolean ActiveSkill(Material material, ClickType clickType) {
         if (material == Material.IRON_INGOT && clickType == ClickType.RIGHT_CLICK && !getPlayer().isSneaking()) {
-            if (rainstarParticle.isRunning()) rainstarParticle.stop(false);
-            else rainstarParticle.start();
-        } else if (material == Material.IRON_INGOT && clickType == ClickType.RIGHT_CLICK && getPlayer().isSneaking()) {
+
+        } /*
+        else if (material == Material.IRON_INGOT && clickType == ClickType.RIGHT_CLICK && getPlayer().isSneaking()) {
             if (xParticle.isRunning()) xParticle.stop(false);
             else xParticle.start();
-        }
+        }*/
         return false;
+    }
+
+    @Override
+    public void TargetSkill(Material material, LivingEntity livingEntity) {
+        if (material == Material.IRON_INGOT && livingEntity instanceof Player) {
+            setGlowing((Player) livingEntity, getPlayer(), !isGlowing((Player) livingEntity));
+        }
+    }
+
+    @Override
+    protected void onUpdate(Update update) {
+    }
+
+    public boolean isGlowing(Player glowingPlayer) {
+        EntityPlayer entityPlayer = ((CraftPlayer) glowingPlayer).getHandle();
+        return entityPlayer.glowing;
+    }
+
+    @SuppressWarnings("unchecked")
+    public void setGlowing(Player glowingPlayer, Player sendPacketPlayer, boolean glow) {
+        try {
+            EntityPlayer entityPlayer = ((CraftPlayer) glowingPlayer).getHandle();
+
+            DataWatcher dataWatcher = entityPlayer.getDataWatcher();
+
+            entityPlayer.glowing = glow; // For the update method in EntityPlayer to prevent switching back.
+
+            // The map that stores the DataWatcherItems is private within the DataWatcher Object.
+            // We need to use Reflection to access it from Apache Commons and change it.
+            Map<Integer, DataWatcher.Item<?>> map = (Map<Integer, DataWatcher.Item<?>>) FieldUtils.readDeclaredField(dataWatcher, "d", true);
+
+            // Get the 0th index for the BitMask value. http://wiki.vg/Entities#Entity
+            @SuppressWarnings("rawtypes")
+            DataWatcher.Item item = map.get(0);
+            byte initialBitMask = (Byte) item.b(); // Gets the initial bitmask/byte value so we don't overwrite anything.
+            //byte bitMaskIndex = (byte) 0x40; // The index as specified in wiki.vg/Entities
+            if (glow) {
+                item.a((byte) (initialBitMask | 1));
+            } else {
+                item.a((byte) (initialBitMask & ~(1))); // Inverts the specified bit from the index.
+            }
+
+            PacketPlayOutEntityMetadata metadataPacket = new PacketPlayOutEntityMetadata(glowingPlayer.getEntityId(), dataWatcher, true);
+
+            ((CraftPlayer) sendPacketPlayer).getHandle().playerConnection.sendPacket(metadataPacket);
+        } catch (IllegalAccessException e) { // Catch statement necessary for FieldUtils.readDeclaredField()
+            e.printStackTrace();
+        }
     }
 
     private final AbilityTimer xParticle = new AbilityTimer() {
@@ -140,4 +198,6 @@ public class Test extends CokesAbility implements ActiveHandler {
             super.onSilentEnd();
         }
     }.register();
+
+
 }

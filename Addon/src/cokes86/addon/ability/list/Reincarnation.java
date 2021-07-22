@@ -43,7 +43,7 @@ public class Reincarnation extends CokesAbility {
 		public boolean condition(Integer value) {
 			return value > 0;
 		}
-	}, cooldown = new Config<Integer>(Reincarnation.class, "쿨타임", 900, Config.Condition.COOLDOWN) {
+	}, cooldown = new Config<Integer>(Reincarnation.class, "쿨타임", 600, Config.Condition.COOLDOWN) {
 		@Override
 		public boolean condition(Integer value) {
 			return value > 0;

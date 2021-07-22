@@ -17,9 +17,9 @@ import daybreak.abilitywar.utils.base.minecraft.entity.health.event.PlayerSetHea
 import daybreak.abilitywar.utils.base.minecraft.nms.NMS;
 import daybreak.abilitywar.utils.library.SoundLib;
 import org.bukkit.GameMode;
-import org.bukkit.entity.Arrow;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
+import org.bukkit.entity.Projectile;
 import org.bukkit.event.entity.EntityDamageByBlockEvent;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
@@ -41,15 +41,8 @@ import org.bukkit.event.entity.EntityDamageEvent;
 },
 stats = @Stats(offense = Level.NINE, survival = Level.FIVE, crowdControl = Level.ZERO, mobility = Level.ZERO, utility = Level.THREE), difficulty = Difficulty.NORMAL)
 public class Rei extends CokesAbility {
-	private static final Config<Double> damage = new Config<Double>(Rei.class, "추가대미지", 3.0) {
-		public boolean condition(Double value) {
-			return value >= 0.0;
-		}
-	}, cost = new Config<Double>(Rei.class, "코스트(%)", 5.0) {
-		public boolean condition(Double value) {
-			return value > 0.0;
-		}
-	};
+	private static final Config<Double> damage = new Config<>(Rei.class, "추가대미지", 4.0, a->a>0),
+			cost = new Config<>(Rei.class, "코스트(%)", 4.5, a->a>0);
 	private static final Config<Integer> cool = new Config<>(Rei.class, "쿨타임", 100, Config.Condition.COOLDOWN),
 			respawn = new Config<>(Rei.class, "부활체력", 4, Config.Condition.NUMBER);
 
@@ -64,8 +57,8 @@ public class Rei extends CokesAbility {
 		onEntityDamage(e);
 
 		Entity damager = e.getDamager();
-		if (damager instanceof Arrow) {
-			Arrow arrow = (Arrow) e.getDamager();
+		if (NMS.isArrow(damager)) {
+			Projectile arrow = (Projectile) e.getDamager();
 			if (arrow.getShooter() instanceof Entity) {
 				damager = (Entity) arrow.getShooter();
 			}

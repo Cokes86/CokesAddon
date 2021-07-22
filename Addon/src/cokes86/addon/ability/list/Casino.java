@@ -35,7 +35,7 @@ import java.util.*;
 import java.util.function.Predicate;
 
 @AbilityManifest(name="카지노", rank = AbilityManifest.Rank.B, species = AbilityManifest.Species.HUMAN, explain = {
-        "철괴 우클릭시 아래 효과 중 하나를 영구적으로 얻습니다. $[COOLDOWN]",
+        "철괴 우클릭시 랜덤한 효과 하나를 영구적으로 얻습니다. $[COOLDOWN]",
         "이미 얻은 효과는 다시 나오지 않습니다.",
         "새로운 효과를 얻었을 경우, 기존 효과를 계속 유지합니다.",
         "철괴 좌클릭으로 자신이 얻은 효과를 알 수 있습니다."

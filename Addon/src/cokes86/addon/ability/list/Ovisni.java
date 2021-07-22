@@ -50,7 +50,7 @@ public class Ovisni extends CokesAbility implements ActiveHandler {
 		public boolean condition(Integer value) {
 			return value > 0;
 		}
-	}, MAX_DAMAGE_HIT = new Config<Integer>(Ovisni.class, "최대_맴독_타격_횟수", 12) {
+	}, MAX_DAMAGE_HIT = new Config<Integer>(Ovisni.class, "최대_맹독_타격_횟수", 12) {
 		@Override
 		public boolean condition(Integer arg0) {
 			return arg0 > 0;

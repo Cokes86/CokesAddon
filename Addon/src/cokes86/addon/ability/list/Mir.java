@@ -15,7 +15,6 @@ import daybreak.abilitywar.utils.base.language.korean.KoreanUtil;
 import daybreak.abilitywar.utils.base.math.LocationUtil;
 import daybreak.abilitywar.utils.base.math.geometry.Circle;
 import daybreak.abilitywar.utils.base.minecraft.nms.NMS;
-import daybreak.abilitywar.utils.base.minecraft.version.ServerVersion;
 import daybreak.abilitywar.utils.base.random.Random;
 import daybreak.abilitywar.utils.library.MaterialX;
 import daybreak.abilitywar.utils.library.ParticleLib;
@@ -124,9 +123,7 @@ public class Mir extends CokesAbility implements ActiveHandler {
 			armorStand.setGravity(false);
 			armorStand.setSmall(true);
 			armorStand.setVisible(false);
-			if (ServerVersion.getVersion() >= 10 && ServerVersion.getVersion() <= 16) {
-				armorStand.setInvulnerable(true);
-			}
+			armorStand.setInvulnerable(true);
 			NMS.removeBoundingBox(armorStand);
 
 			ItemStack chestplate = MaterialX.LEATHER_CHESTPLATE.createItem();

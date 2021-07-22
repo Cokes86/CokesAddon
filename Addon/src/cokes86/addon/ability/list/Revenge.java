@@ -18,7 +18,8 @@ import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import java.text.DecimalFormat;
 
 @AbilityManifest(name = "복수", rank = Rank.A, species = Species.HUMAN, explain = {
-		"상대방을 공격할 시 최근에 플레이어에게 받았던 대미지의 $[PERCENTAGE]% 만큼의 고정대미지를 상대방에게 추가적으로 입힙니다."
+		"상대방을 공격할 시 최근에 플레이어에게 받았던 대미지의 $[PERCENTAGE]% 만큼의 고정대미지를 상대방에게 추가적으로 입힙니다.",
+		"추가 대미지는 일부 무적 능력의 효과를 무시할 수 있습니다."
 })
 public class Revenge extends CokesAbility {
 	public static Config<Integer> PERCENTAGE = new Config<>(Revenge.class, "반사대미지(%)", 40, integer -> integer > 0);
@@ -55,7 +56,9 @@ public class Revenge extends CokesAbility {
 				new AbilityTimer(1) {
 					public void run(int arg0) {
 						Player target = (Player) e.getEntity();
-						if (!target.isDead()) Healths.setHealth(target, target.getHealth() - plus);
+						if (!target.isDead()) {
+							Healths.setHealth(target, target.getHealth() - plus);
+						}
 					}
 				}.setInitialDelay(TimeUnit.TICKS, 1).setPeriod(TimeUnit.TICKS, 1).start();
 			}

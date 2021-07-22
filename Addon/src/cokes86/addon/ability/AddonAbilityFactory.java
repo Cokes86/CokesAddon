@@ -69,6 +69,9 @@ public class AddonAbilityFactory {
 		registerAbility(Rude.class);
 		registerAbility(Iris.class);
 
+		//1.5.0
+		registerAbility(Reisen.class);
+
 		//test
 		registerAbility(Test.class);
 	}

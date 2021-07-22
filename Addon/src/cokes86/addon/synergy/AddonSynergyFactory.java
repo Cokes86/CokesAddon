@@ -31,6 +31,9 @@ public class AddonSynergyFactory {
 
         //1.4.0
         registerSynergy(Sniper.class, Perseverance.class, ShrineOfGod.class);
+
+        //1.5.0
+        registerSynergy(Elva.class, Cokes.class, CokesSoldier.class);
     }
 
     public static void registerSynergy(Class<? extends AbilityBase> first, Class<? extends AbilityBase> second, Class<? extends CokesSynergy> synergy) {

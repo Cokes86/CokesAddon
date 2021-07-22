@@ -14,9 +14,11 @@ import daybreak.abilitywar.utils.base.minecraft.entity.health.Healths;
 import daybreak.abilitywar.utils.base.minecraft.nms.NMS;
 import daybreak.abilitywar.utils.library.MaterialX;
 import daybreak.abilitywar.utils.library.ParticleLib;
+import daybreak.abilitywar.utils.library.SoundLib;
 import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.Note;
 import org.bukkit.entity.Arrow;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
@@ -160,6 +162,7 @@ public class SoulTakerRei extends CokesSynergy implements ActiveHandler {
                 NMS.setAbsorptionHearts(getPlayer(), NMS.getAbsorptionHearts(getPlayer())+REMEMBER_ABSORPTION.getValue());
                 stop(true);
                 channel.update("§8흡수한 영혼: "+ (++soul));
+                SoundLib.BELL.playInstrument(getPlayer(), Note.natural(1, Note.Tone.E));
             }
         }
     }

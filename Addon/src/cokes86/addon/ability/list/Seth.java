@@ -17,6 +17,7 @@ import daybreak.abilitywar.utils.base.math.LocationUtil;
 import org.bukkit.Material;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
+import org.bukkit.event.EventPriority;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.util.Vector;
@@ -92,7 +93,7 @@ public class Seth extends CokesAbility implements ActiveHandler {
 		return false;
 	}
 
-	@SubscribeEvent(priority = 99)
+	@SubscribeEvent(priority = 99, eventPriority = EventPriority.MONITOR)
 	private void onPlayerDeath(PlayerDeathEvent e) {
 		if (!e.getEntity().equals(getPlayer())) {
 			kill += 1;

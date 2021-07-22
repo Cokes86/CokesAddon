@@ -31,7 +31,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Set;
 
-@AbilityManifest(name = "봉인자", rank = Rank.S, species = Species.HUMAN, explain = {
+@AbilityManifest(name = "봉인자", rank = Rank.L, species = Species.HUMAN, explain = {
 		"철괴로 상대방을 우클릭할 시 상대방의 능력을 $[duration]간 비활성화시킵니다. $[cool]",
 		"이미 비활성화되어있는 능력에겐 이 능력이 발동하지 않습니다.",
 		"봉인한 능력의 등급에 따라 자신에게 각종 효과를 $[duration]간 부여합니다.",

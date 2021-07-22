@@ -61,13 +61,7 @@ public class Blocks extends CokesAbility implements ActiveHandler {
 			return value > 100;
 		}
 	};
-	private static final Config<Double> inv = new Config<Double>(Blocks.class, "모래_무적시간", 0.3,
-			"#0.0 단위로 작성") {
-		@Override
-		public boolean condition(Double value) {
-			return value > 0 && Math.ceil(value * 10) == value * 10;
-		}
-	};
+	private static final Config<Integer> inv = new Config<>(Blocks.class, "모래_무적시간", 6, a-> a>0, "단위: 틱");
 	private Condition condition = Condition.STONE;
 	private final Participant.ActionbarNotification.ActionbarChannel ac = this.newActionbarChannel();
 	private ArmorStand armorStand;
@@ -113,13 +107,7 @@ public class Blocks extends CokesAbility implements ActiveHandler {
 			armorStand.remove();
 		}
 	}.setPeriod(TimeUnit.TICKS, 1);
-	private final AbilityTimer invTimer = new AbilityTimer() {
-		@Override
-		protected void run(int count) {
-			if (count == inv.getValue() * 20)
-				this.stop(false);
-		}
-	}.setPeriod(TimeUnit.TICKS, 1);
+	private final AbilityTimer invTimer = new AbilityTimer(inv.getValue()){}.setPeriod(TimeUnit.TICKS, 1);
 
 	public Blocks(Participant arg0) {
 		super(arg0);
