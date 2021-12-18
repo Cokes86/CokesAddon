@@ -180,6 +180,7 @@ public class CokesSoldier extends CokesSynergy implements ActiveHandler {
                         damageable.setNoDamageTicks(0);
                         double damage = K2_DAMAGE.getValue();
                         Damages.damageArrow(damageable, shooter, (float) damage);
+                        damageable.setNoDamageTicks(0);
                         stop(false);
                         return;
                     }

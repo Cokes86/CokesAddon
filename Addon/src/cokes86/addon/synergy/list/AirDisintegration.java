@@ -14,6 +14,8 @@ import daybreak.abilitywar.game.module.Wreck;
 import daybreak.abilitywar.game.team.interfaces.Teamable;
 import daybreak.abilitywar.utils.base.concurrent.TimeUnit;
 import daybreak.abilitywar.utils.base.math.LocationUtil;
+import daybreak.abilitywar.utils.base.minecraft.damage.Damages;
+import daybreak.abilitywar.utils.base.minecraft.entity.health.Healths;
 import daybreak.abilitywar.utils.library.SoundLib;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
@@ -33,7 +35,7 @@ import java.util.function.Predicate;
 @AbilityManifest(name = "공중 분해", rank = Rank.A, species = Species.HUMAN, explain = {
 		"5초마다 §d사슬 카운터§f를 1씩 상승하며 최대 8만큼 상승합니다.",
 		"철괴 우클릭시 §d사슬 카운터§f를 전부 소모하여 플레이어를 (§d사슬 카운터§f/2+5)블럭만큼 공중에 고정시킨 후",
-		"3틱마다 고정된 플레이어 중 한명에게 이동하고 누적된 (§d사슬 카운터§f*2)만큼의 대미지를 준 후 떨어트립니다. $[cool]",
+		"3틱마다 고정된 플레이어 중 한명에게 이동하고 누적된 (§d사슬 카운터§f*0.625)만큼의 고정대미지를 준 후 떨어트립니다. $[cool]",
 		"능력 사용 이후 1회에 한정해 낙하대미지를 받지 않습니다."
 })
 public class AirDisintegration extends CokesSynergy implements ActiveHandler {
@@ -106,7 +108,7 @@ public class AirDisintegration extends CokesSynergy implements ActiveHandler {
 					if (count % 3 == 0) {
 						LivingEntity e = entities.remove();
 						getPlayer().teleport(e);
-						e.damage(chain * 2, getPlayer());
+						Damages.damageFixed(e, getPlayer(), 0.625f*chain);
 						SoundLib.ENTITY_PLAYER_ATTACK_SWEEP.playSound(getPlayer());
 						SoundLib.ENTITY_EXPERIENCE_ORB_PICKUP.playSound(getPlayer());
 						stun.remove(e);

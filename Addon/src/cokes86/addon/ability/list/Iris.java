@@ -4,6 +4,7 @@ import cokes86.addon.ability.CokesAbility;
 import cokes86.addon.effect.list.Nightmare;
 import daybreak.abilitywar.ability.AbilityManifest;
 import daybreak.abilitywar.ability.decorator.ActiveHandler;
+import daybreak.abilitywar.config.enums.CooldownDecrease;
 import daybreak.abilitywar.game.AbstractGame;
 import daybreak.abilitywar.game.module.DeathManager;
 import daybreak.abilitywar.game.team.interfaces.Teamable;
@@ -31,24 +32,25 @@ import java.util.Map;
         "  무지개 스택은 최대 10초까지 유지됩니다.",
         "  §c나이트메어§r와 쿨타임을 공유합니다.",
         "§7철괴 우클릭 §8- §c나이트메어§r: 상대방을 보지않고 우클릭 시,",
-        "  무지개 스택이 3 이상인 모든 플레이어에게 악몽 상태이상을 $[NIGHTMARE_DURATION] 부여합니다. $[NIGHTMARE_COOLDOWN]",
-        "  무지개 스택이 3 이상인 플레이어가 존재하지 않다면 발동하지 않으며,",
+        "  무지개 스택이 $[STACK_PREDICATE] 이상인 모든 플레이어에게 악몽 상태이상을 $[NIGHTMARE_DURATION] 부여합니다. $[NIGHTMARE_COOLDOWN]",
+        "  무지개 스택이 $[STACK_PREDICATE] 이상인 플레이어가 존재하지 않다면 발동하지 않으며,",
         "  사용되었을 시 스택 개수에 상관없이 모든 스택이 초기화됩니다.",
         "  §c레인보우§r와 쿨타임을 공유합니다.",
         "§7철괴 좌클릭 §8- §c레디 투 나이트메어§r: 모든 플레이어의 무지개 스택을 확인합니다.",
-        "§7상태이상 §8- 악몽§r: 움직일 수 없고, 시야가 가려집니다. 받는 대미지가 1.5배 증가하고",
+        "§7상태이상 §8- 악몽§r: 움직일 수 없고, 시야가 가려집니다.",
         "  액티브, 타겟팅 능력을 사용할 수 없습니다."
 })
 @Beta
 public class Iris extends CokesAbility implements ActiveHandler {
-    private static final Config<Integer> RAINBOW_COOLDOWN = new Config<>(Iris.class, "레인보우_쿨타임", 7, COOLDOWN);
+    private static final Config<Integer> RAINBOW_COOLDOWN = new Config<>(Iris.class, "레인보우_쿨타임", 10, COOLDOWN);
     private static final Config<Integer> RAINBOW_RANGE = new Config<>(Iris.class, "레인보우_범위", 7, a -> a > 0);
     private static final Config<Double> RAINBOW_DAMAGE = new Config<>(Iris.class, "레인보우_대미지", 3.0, a -> a > 0);
     private static final Config<Integer> NIGHTMARE_DURATION = new Config<>(Iris.class, "악몽_지속시간", 7, TIME);
-    private static final Config<Integer> NIGHTMARE_COOLDOWN = new Config<>(Iris.class, "나이트메어_쿨타임", 30, COOLDOWN);
+    private static final Config<Integer> NIGHTMARE_COOLDOWN = new Config<>(Iris.class, "나이트메어_쿨타임", 50, COOLDOWN);
+    private static final Config<Integer> STACK_PREDICATE = new Config<>(Iris.class, "나이트메어_스택조건", 5, a -> a > 0);
 
-    private final Cooldown rainbow = new Cooldown(RAINBOW_COOLDOWN.getValue(), "레인보우");
-    private final Cooldown nightmare = new Cooldown(NIGHTMARE_COOLDOWN.getValue(), "나이트메어");
+    private final Cooldown rainbow = new Cooldown(RAINBOW_COOLDOWN.getValue(), "레인보우", CooldownDecrease._90);
+    private final Cooldown nightmare = new Cooldown(NIGHTMARE_COOLDOWN.getValue(), "나이트메어", CooldownDecrease._90);
 
     private final Predicate<Entity> predicate = entity -> {
         if (entity == null || entity.equals(getPlayer())) return false;
@@ -94,7 +96,7 @@ public class Iris extends CokesAbility implements ActiveHandler {
                 } else {
                     int nightmared = 0;
                     for (Rainbow rainbows : rainbowMap.values()) {
-                        if (rainbows.getStack() >= 3) {
+                        if (rainbows.getStack() >= STACK_PREDICATE.getValue()) {
                             nightmared++;
                             Nightmare.apply(rainbows.getParticipant(), TimeUnit.SECONDS, NIGHTMARE_DURATION.getValue());
                         }

@@ -33,11 +33,10 @@ import java.util.function.Predicate;
 
 @AbilityManifest(name = "레이센", rank = AbilityManifest.Rank.A, species = AbilityManifest.Species.OTHERS, explain = {
         "§7패시브 §8- §9마인드 쉐이커§f: 상대방을 3회 타격할 때 마다 §9마인드 쉐이커§f의 수치가 1씩 증가합니다.",
-        "  §9마인드 쉐이커§f의 수치에 따라 능력이 점점 강해집니다.",
         "  §9마인드 쉐이커§f의 수치가 $[MIND_SHAKER_ENHANCE_PREDICATE] 이상일 경우, ",
-        "  자신의 모든 공격에 뒤틀림 효과를 $[MIND_SHAKER_ENHANCE_DURATION] 부여합니다.",
-        "§7패시브 §8- §c광기를 다루는 자§f: 매 $[MADNESS_PERIOD]마다 $[MADNESS_RANGE]블럭 이내 플레이어의 시야를 뒤틉니다.",
-        "  이 효과로 뒤튼 플레이어 수 마다 §9마인드 쉐이커§f가 증가합니다.",
+        "  자신의 모든 공격에 §8뒤틀림§f 효과를 $[MIND_SHAKER_ENHANCE_DURATION] 부여합니다.",
+        "§7패시브 §8- §c광기를 다루는 자§f: 매 $[MADNESS_PERIOD]마다 $[MADNESS_RANGE]블럭 이내 플레이어의 시야를 무작위로 변경합니다.",
+        "  이 효과로 시야가 바뀐 플레이어 수 마다 §9마인드 쉐이커§f가 증가합니다.",
         "  §9마인드 쉐이커§f의 수치가 $[MADNESS_ENHANCE_PREDICATE] 이상일 경우 주기가 $[MADNESS_ENHANCE_PERIOD_DECREASE]% 감소합니다.",
         "§7철괴 우클릭 §8- §c광기의 눈동자§f: $[EYES_RANGE]칸 이내 플레이어를 바라보고 사용할 수 있습니다.",
         "  대상을 $[EYES_DURATION]간 액티브, 타겟팅 스킬을 사용할 수 없게 합니다.",

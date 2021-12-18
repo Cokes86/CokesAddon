@@ -25,7 +25,7 @@ import java.util.function.Predicate;
 @AbilityManifest(name = "하모니", rank = Rank.C, species = Species.HUMAN, explain = {
 		"$[duration]마다 주변 $[range]블럭 이내의 플레이어의 수의 반만큼 체력을 회복하고,",
 		"그 주변 플레이어 역시 0.5의 체력을 증가시켜줍니다.",
-		"주변 플레이어가 아래 3개의 조건 중 하나 이상을 만족할 경우",
+		"주변 3명 이상의 플레이어가 아래 3개의 조건 중 하나 이상을 만족할 경우",
 		"이 능력은 2배의 효과를 가집니다.",
 		"  ● 모든 플레이어의 능력의 등급이 모두 같거나 다르다.",
 		"  ● 모든 플레이어의 능력의 종족이 모두 같거나 다르다.",
@@ -74,25 +74,45 @@ public class Harmony extends CokesAbility {
 			Map<Species, Integer> speciesMap = new HashMap<>();
 			int cokes = 0;
 			boolean enhance = true;
-			for (Player p : near) {
-				Participant participant = getGame().getParticipant(p);
-				if (participant instanceof AbstractMix.MixParticipant && getParticipant() instanceof AbstractMix.MixParticipant) {
-					Mix me = ((AbstractMix.MixParticipant) getParticipant()).getAbility();
-					Mix mix = ((AbstractMix.MixParticipant) participant).getAbility();
+			if (near.size() >= 3) {
+				for (Player p : near) {
+					Participant participant = getGame().getParticipant(p);
+					if (participant instanceof AbstractMix.MixParticipant && getParticipant() instanceof AbstractMix.MixParticipant) {
+						Mix me = ((AbstractMix.MixParticipant) getParticipant()).getAbility();
+						Mix mix = ((AbstractMix.MixParticipant) participant).getAbility();
 
-					if (me != null && me.hasAbility() && me.getSynergy() != null && (me.getFirst().getClass().equals(Fish.class) || me.getSecond().getClass().equals(Fish.class))) {
-						if (mix != null && mix.hasAbility() && mix.getSynergy() != null) {
-							AbilityBase base = me.getFirst().getClass().equals(Fish.class) ? mix.getFirst() : mix.getSecond();
+						if (me != null && me.hasAbility() && me.getSynergy() != null && (me.getFirst().getClass().equals(Fish.class) || me.getSecond().getClass().equals(Fish.class))) {
+							if (mix != null && mix.hasAbility() && mix.getSynergy() != null) {
+								AbilityBase base = me.getFirst().getClass().equals(Fish.class) ? mix.getFirst() : mix.getSecond();
 
-							Rank rank = base.getRank();
+								Rank rank = base.getRank();
+								rankMap.put(rank, rankMap.getOrDefault(rank, 0)+1);
+
+								//종족
+								Species species = base.getSpecies();
+								speciesMap.put(species, speciesMap.getOrDefault(species, 0)+1);
+
+								//코크스
+								if (base instanceof CokesAbility) {
+									cokes++;
+								}
+							} else {
+								enhance = false;
+								break;
+							}
+						}
+					} else {
+						if (participant.getAbility() != null) {
+							//등급
+							Rank rank = participant.getAbility().getRank();
 							rankMap.put(rank, rankMap.getOrDefault(rank, 0)+1);
 
 							//종족
-							Species species = base.getSpecies();
+							Species species = participant.getAbility().getSpecies();
 							speciesMap.put(species, speciesMap.getOrDefault(species, 0)+1);
 
 							//코크스
-							if (base instanceof CokesAbility) {
+							if (participant.getAbility() instanceof CokesAbility) {
 								cokes++;
 							}
 						} else {
@@ -100,57 +120,39 @@ public class Harmony extends CokesAbility {
 							break;
 						}
 					}
-				} else {
-					if (participant.getAbility() != null) {
-						//등급
-						Rank rank = participant.getAbility().getRank();
-						rankMap.put(rank, rankMap.getOrDefault(rank, 0)+1);
-
-						//종족
-						Species species = participant.getAbility().getSpecies();
-						speciesMap.put(species, speciesMap.getOrDefault(species, 0)+1);
-
-						//코크스
-						if (participant.getAbility() instanceof CokesAbility) {
-							cokes++;
-						}
-					} else {
-						enhance = false;
-						break;
-					}
 				}
-			}
 
-			if (enhance) {
-				boolean first = true, second = true, third = true;
-				if (rankMap.keySet().size() != 1) {
-					for (int i : rankMap.values()) {
-						if (i != 1) {
-							first = false;
-							break;
+				if (enhance) {
+					boolean first = true, second = true, third = true;
+					if (rankMap.keySet().size() != 1) {
+						for (int i : rankMap.values()) {
+							if (i != 1) {
+								first = false;
+								break;
+							}
 						}
 					}
-				}
-				if (speciesMap.keySet().size() != 1) {
-					for (int i : speciesMap.values()) {
-						if (i != 1) {
-							second = false;
-							break;
+					if (speciesMap.keySet().size() != 1) {
+						for (int i : speciesMap.values()) {
+							if (i != 1) {
+								second = false;
+								break;
+							}
 						}
 					}
-				}
-				if (cokes != near.size()) {
-					third = false;
-				}
+					if (cokes != near.size()) {
+						third = false;
+					}
 
-				enhance = first || second || third;
+					enhance = first || second || third;
 
-				if (first && second && third && !hidden) {
-					SoundLib.UI_TOAST_CHALLENGE_COMPLETE.playSound(getPlayer());
-					getPlayer().sendMessage("§8[§7HIDDEN§8] §f당신은 모든 조화로움을 받아냈습니다.");
-					getPlayer().sendMessage("§8[§7HIDDEN§8] §b완벽한 조화§f를 달성하였습니다.");
-					hidden = true;
-					this.setPeriod(TimeUnit.SECONDS, duration.getValue()/2);
+					if (first && second && third && !hidden) {
+						SoundLib.UI_TOAST_CHALLENGE_COMPLETE.playSound(getPlayer());
+						getPlayer().sendMessage("§8[§7HIDDEN§8] §f당신은 모든 조화로움을 받아냈습니다.");
+						getPlayer().sendMessage("§8[§7HIDDEN§8] §b완벽한 조화§f를 달성하였습니다.");
+						hidden = true;
+						this.setPeriod(TimeUnit.SECONDS, duration.getValue()/2);
+					}
 				}
 			}
 

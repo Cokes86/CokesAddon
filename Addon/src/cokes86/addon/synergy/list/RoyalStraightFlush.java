@@ -10,6 +10,7 @@ import daybreak.abilitywar.game.AbstractGame.Participant;
 import daybreak.abilitywar.game.module.DeathManager;
 import daybreak.abilitywar.game.team.interfaces.Teamable;
 import daybreak.abilitywar.utils.base.math.LocationUtil;
+import daybreak.abilitywar.utils.base.minecraft.damage.Damages;
 import daybreak.abilitywar.utils.library.SoundLib;
 import org.bukkit.Material;
 import org.bukkit.entity.Entity;
@@ -21,7 +22,7 @@ import java.util.function.Predicate;
 @AbilityManifest(name = "로열 스트레이트 플러쉬", rank = Rank.S, species = Species.OTHERS, explain = {
 		"철괴 우클릭시 1 ~ 20사이의 숫자를 2개 뽑습니다.",
 		"주변 $[range]범위 이내 모든 플레이어에게",
-		"뽑은 두 숫자의 평균에 해당하는 대미지를 줍니다. $[cool]"
+		"뽑은 두 숫자의 합을 3으로 나눈 값에 해당하는 고정대미지를 줍니다. $[cool]"
 })
 public class RoyalStraightFlush extends CokesSynergy implements ActiveHandler {
 	public static Config<Integer> range = new Config<Integer>(RoyalStraightFlush.class, "범위", 15) {
@@ -30,7 +31,7 @@ public class RoyalStraightFlush extends CokesSynergy implements ActiveHandler {
 			return value > 0;
 		}
 	},
-			cool = new Config<Integer>(RoyalStraightFlush.class, "쿨타임", 90, Config.Condition.COOLDOWN) {
+			cool = new Config<Integer>(RoyalStraightFlush.class, "쿨타임", 60, Config.Condition.COOLDOWN) {
 				@Override
 				public boolean condition(Integer arg0) {
 					return arg0 >= 0;
@@ -66,9 +67,9 @@ public class RoyalStraightFlush extends CokesSynergy implements ActiveHandler {
 				int r = range.getValue();
 				int a = new Random().nextInt(20)+1, b = new Random().nextInt(20)+1;
 				getPlayer().sendMessage("숫자를 뽑습니다 : " + a + ", " + b);
-				getPlayer().sendMessage("총 " + (a + b) / 2.0 + "대미지를 상대방에게 줍니다.");
+				getPlayer().sendMessage("총 " + (a + b) / 3.0 + "의 고정대미지를 상대방에게 줍니다.");
 				for (Player p : LocationUtil.getNearbyEntities(Player.class, getPlayer().getLocation(), r, r, predicate)) {
-					p.damage((a + b) / 2.0);
+					Damages.damageFixed(p, getPlayer(), (a + b) / 3.0f);
 					SoundLib.ENTITY_FIREWORK_ROCKET_TWINKLE_FAR.playSound(p);
 				}
 				cooldown.start();

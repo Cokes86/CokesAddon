@@ -17,17 +17,15 @@ import org.bukkit.entity.ArmorStand;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.HandlerList;
 import org.bukkit.event.Listener;
-import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
 
 @EffectManifest(name = "악몽", displayName = "§8악몽", method = ApplicationMethod.UNIQUE_LONGEST, type = {
-        EffectType.COMBAT_RESTRICTION,
         EffectType.MOVEMENT_RESTRICTION,
         EffectType.SIGHT_RESTRICTION,
         EffectType.ABILITY_RESTRICTION
 }, description = {
         "지속시간동안 움직일 수 없고 시야가 봉인됩니다.",
-        "받는 대미지가 1.5배 증가하고 자신의 액티브, 타겟팅 능력을 사용할 수 없습니다."
+        "자신의 액티브, 타겟팅 능력을 사용할 수 없습니다."
 })
 public class Nightmare extends AbstractGame.Effect implements Listener {
     private static final EffectRegistry.EffectRegistration<Nightmare> registration = EffectRegistry.registerEffect(Nightmare.class);
@@ -95,13 +93,6 @@ public class Nightmare extends AbstractGame.Effect implements Listener {
     public void onAbilityUse(AbilityPreTargetEvent e) {
         if (e.getParticipant().equals(participant)) {
             e.setCancelled(true);
-        }
-    }
-
-    @EventHandler
-    public void onEntityDamage(EntityDamageEvent e) {
-        if (e.getEntity().equals(participant.getPlayer())) {
-            e.setDamage(e.getDamage() * 1.5);
         }
     }
 }
