@@ -6,15 +6,20 @@ import cokes86.addon.synergy.AddonSynergyFactory;
 import cokes86.addon.synergy.CokesSynergy;
 import cokes86.addon.effect.AddonEffectFactory;
 import cokes86.addon.gamemode.disguiseparty.DisguiseParty;
+import daybreak.abilitywar.AbilityWar;
+import daybreak.abilitywar.Command;
 import daybreak.abilitywar.addon.Addon;
 import daybreak.abilitywar.addon.AddonLoader;
 import daybreak.abilitywar.game.Category;
+import daybreak.abilitywar.game.GameManager;
 import daybreak.abilitywar.game.event.GameCreditEvent;
 import daybreak.abilitywar.game.list.mix.AbstractMix;
 import daybreak.abilitywar.game.manager.GameFactory;
 import daybreak.abilitywar.utils.base.Messager;
 import daybreak.abilitywar.utils.base.language.korean.KoreanUtil;
 import org.bukkit.Bukkit;
+import org.bukkit.command.CommandSender;
+import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 
@@ -56,6 +61,23 @@ public class CokesAddon extends Addon implements Listener {
 
 		//Repeat Load Ability
 		Bukkit.getServer().getScheduler().scheduleSyncDelayedTask(getPlugin(), configLoader);
+
+		//command
+		AbilityWar.getPlugin().getCommands().getMainCommand().addSubCommand("ctest", new Command() {
+			@Override
+			protected boolean onCommand(CommandSender sender, String command, String[] args) {
+				if (GameManager.isGameRunning()) {
+					if (AddonAbilityFactory.remakeNameValues().contains(args[0])) {
+						try {
+							final Class<? extends CokesAbility> clazz = AddonAbilityFactory.getRemakeAbilityByName(args[0]);
+							GameManager.getGame().getParticipant((Player) sender).setAbility(clazz);
+							sender.sendMessage(args[0]+" 능력으로 변경했습니다.");
+						} catch (Exception ignored){}
+					}
+				}
+				return false;
+			}
+		});
 
 		//Load Complete
 		Messager.sendConsoleMessage("[§cCokesAddon§r] "+getDisplayName()+"이 활성화되었습니다.");

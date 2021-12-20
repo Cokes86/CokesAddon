@@ -1,6 +1,7 @@
 package cokes86.addon.ability;
 
 import cokes86.addon.ability.list.*;
+import cokes86.addon.ability.remake.JustinR;
 import daybreak.abilitywar.ability.AbilityFactory;
 import daybreak.abilitywar.ability.AbilityManifest;
 import daybreak.abilitywar.game.manager.AbilityList;
@@ -12,6 +13,7 @@ import java.util.*;
 
 public class AddonAbilityFactory {
 	protected static final Map<String, Class<? extends CokesAbility>> abilities = new HashMap<>();
+	protected static final Map<String, Class<? extends CokesAbility>> reabilities = new HashMap<>();
 
 	static {
 		registerAbility(Seth.class);
@@ -74,6 +76,7 @@ public class AddonAbilityFactory {
 
 		//test
 		registerAbility(Test.class);
+		registerRemakeAbility(JustinR.class);
 	}
 
 	public static void registerAbility(Class<? extends CokesAbility> clazz) {
@@ -83,6 +86,20 @@ public class AddonAbilityFactory {
 				AbilityList.registerAbility(clazz);
 				AbilityManifest am = clazz.getAnnotation(AbilityManifest.class);
 				if (clazz.getAnnotation(Beta.class) == null) abilities.put(am.name(), clazz);
+			} else {
+				System.out.println("등록에 실패하였습니다. : " + clazz.getName());
+			}
+		} else {
+			System.out.println("이미 애드온에 등록된 능력입니다 : " + clazz.getName());
+		}
+	}
+
+	public static void registerRemakeAbility(Class<? extends CokesAbility> clazz) {
+		if (!reabilities.containsValue(clazz)) {
+			AbilityFactory.registerAbility(clazz);
+			if (AbilityFactory.isRegistered(clazz)) {
+				AbilityManifest am = clazz.getAnnotation(AbilityManifest.class);
+				if (clazz.getAnnotation(Beta.class) == null) reabilities.put(am.name(), clazz);
 			} else {
 				System.out.println("등록에 실패하였습니다. : " + clazz.getName());
 			}
@@ -109,6 +126,14 @@ public class AddonAbilityFactory {
 
 	public static List<String> nameValues() {
 		return new ArrayList<>(abilities.keySet());
+	}
+
+	public static List<String> remakeNameValues() {
+		return new ArrayList<>(reabilities.keySet());
+	}
+
+	public static Class<? extends CokesAbility> getRemakeAbilityByName(String name) {
+		return reabilities.get(name);
 	}
 
 	@Retention(RetentionPolicy.RUNTIME)
