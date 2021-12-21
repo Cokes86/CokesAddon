@@ -8,9 +8,11 @@ public enum AddonEffectFactory {
     DAMAGE_DOWN(DamageDown.class),
     SEAL(Seal.class),
     GOD_OF_BREAK(GodOfBreak.class),
-    NIGHTMARE(Nightmare.class);
+    NIGHTMARE(Nightmare.class),
+    WARP(Warp.class),
+    ARMOR_BROKEN(ArmorBroken.class);
 
-    Class<? extends AbstractGame.Effect> clazz;
+    final Class<? extends AbstractGame.Effect> clazz;
 
     AddonEffectFactory(Class<? extends AbstractGame.Effect> clazz) {
         this.clazz = clazz;

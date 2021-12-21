@@ -1,4 +1,4 @@
-package cokes86.addon.ability.list;
+package cokes86.addon.ability.test;
 
 import cokes86.addon.ability.CokesAbility;
 import daybreak.abilitywar.ability.AbilityManifest;

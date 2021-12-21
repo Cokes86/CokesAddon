@@ -1,7 +1,7 @@
 package cokes86.addon.ability;
 
 import cokes86.addon.ability.list.*;
-import cokes86.addon.ability.remake.JustinR;
+import cokes86.addon.ability.test.*;
 import daybreak.abilitywar.ability.AbilityFactory;
 import daybreak.abilitywar.ability.AbilityManifest;
 import daybreak.abilitywar.game.manager.AbilityList;
@@ -13,7 +13,7 @@ import java.util.*;
 
 public class AddonAbilityFactory {
 	protected static final Map<String, Class<? extends CokesAbility>> abilities = new HashMap<>();
-	protected static final Map<String, Class<? extends CokesAbility>> reabilities = new HashMap<>();
+	protected static final Map<String, Class<? extends CokesAbility>> test_abilities = new HashMap<>();
 
 	static {
 		registerAbility(Seth.class);
@@ -75,8 +75,8 @@ public class AddonAbilityFactory {
 		registerAbility(Reisen.class);
 
 		//test
-		registerAbility(Test.class);
-		registerRemakeAbility(JustinR.class);
+		registerTestAbility(Test.class);
+		registerTestAbility(JustinR.class);
 	}
 
 	public static void registerAbility(Class<? extends CokesAbility> clazz) {
@@ -94,12 +94,12 @@ public class AddonAbilityFactory {
 		}
 	}
 
-	public static void registerRemakeAbility(Class<? extends CokesAbility> clazz) {
-		if (!reabilities.containsValue(clazz)) {
+	public static void registerTestAbility(Class<? extends CokesAbility> clazz) {
+		if (!test_abilities.containsValue(clazz)) {
 			AbilityFactory.registerAbility(clazz);
 			if (AbilityFactory.isRegistered(clazz)) {
 				AbilityManifest am = clazz.getAnnotation(AbilityManifest.class);
-				if (clazz.getAnnotation(Beta.class) == null) reabilities.put(am.name(), clazz);
+				if (clazz.getAnnotation(Beta.class) == null) test_abilities.put(am.name(), clazz);
 			} else {
 				System.out.println("등록에 실패하였습니다. : " + clazz.getName());
 			}
@@ -128,12 +128,12 @@ public class AddonAbilityFactory {
 		return new ArrayList<>(abilities.keySet());
 	}
 
-	public static List<String> remakeNameValues() {
-		return new ArrayList<>(reabilities.keySet());
+	public static List<String> testNameValues() {
+		return new ArrayList<>(test_abilities.keySet());
 	}
 
-	public static Class<? extends CokesAbility> getRemakeAbilityByName(String name) {
-		return reabilities.get(name);
+	public static Class<? extends CokesAbility> getTestAbilityByName(String name) {
+		return test_abilities.get(name);
 	}
 
 	@Retention(RetentionPolicy.RUNTIME)

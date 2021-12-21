@@ -67,9 +67,9 @@ public class CokesAddon extends Addon implements Listener {
 			@Override
 			protected boolean onCommand(CommandSender sender, String command, String[] args) {
 				if (GameManager.isGameRunning()) {
-					if (AddonAbilityFactory.remakeNameValues().contains(args[0])) {
+					if (AddonAbilityFactory.testNameValues().contains(args[0])) {
 						try {
-							final Class<? extends CokesAbility> clazz = AddonAbilityFactory.getRemakeAbilityByName(args[0]);
+							final Class<? extends CokesAbility> clazz = AddonAbilityFactory.getTestAbilityByName(args[0]);
 							GameManager.getGame().getParticipant((Player) sender).setAbility(clazz);
 							sender.sendMessage(args[0]+" 능력으로 변경했습니다.");
 						} catch (Exception ignored){}
