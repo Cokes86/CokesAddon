@@ -54,8 +54,8 @@ public class AddonSynergyFactory {
     }
 
     public static void loadAddonSynergies() {
-        if (CokesAddon.isLoadAddon("KunEAddon")) {
-            registerSynergy(PhantomThief.class, getAddonAbilityClass("KunEAbility.MadMiner"), AbilityThief.class);
+        if (CokesAddon.isLoadAddon("RainStarAddon")){
+            int a = 0;
         }
     }
 

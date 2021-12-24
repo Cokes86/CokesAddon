@@ -24,7 +24,7 @@ import java.util.function.Predicate;
 
 @AbilityManifest(name = "불신", rank = Rank.A, species = Species.HUMAN, explain = {
 		"게임 중 1회에 한해 $[range]칸 이내의 상대방을 바라본 체 철괴로 우클릭 시 불신 전용 2인 팀을 만듭니다.",
-		"팀끼리는 서로 공격할 수 없습니다.",
+		"팀을 만든 이후 2초간 무적상태가 된 후 팀끼리는 서로 공격할 수 없습니다.",
 		"팀을 맺은 상대방이 자신을 $[hit]회 타격할 시 팀이 깨지며",
 		"팀을 맺었던 플레이어 한정으로 공격할 시 $[damage]의 추가대미지가 생깁니다.",
 		"[아이디어 제공자 §bRainStar_§f]"
@@ -68,6 +68,7 @@ public class Unbelief extends CokesAbility implements ActiveHandler {
 	private Participant teammate;
 	private ActionbarChannel teamNotice = null;
 	private int hitted = 0;
+	private final AbilityTimer invTimer = new AbilityTimer(2) {};
 
 	public Unbelief(Participant arg0) {
 		super(arg0);
@@ -98,6 +99,10 @@ public class Unbelief extends CokesAbility implements ActiveHandler {
 		}
 
 		if (teammate != null) {
+			if (invTimer.isRunning() && (e.getEntity().equals(teammate.getPlayer()) || e.getEntity().equals(getPlayer()))) {
+				e.setCancelled(true);
+			}
+
 			if (damager.equals(teammate.getPlayer()) && e.getEntity().equals(getPlayer())) {
 				if (!attackable) {
 					hitted += 1;
@@ -138,6 +143,8 @@ public class Unbelief extends CokesAbility implements ActiveHandler {
 
 				notice.update("§e팀 §f: " + player.getName());
 				teamNotice.update("§e팀 §f: " + getPlayer().getName());
+
+				invTimer.start();
 			}
 		}
 		return false;

@@ -33,8 +33,10 @@ import org.bukkit.util.Vector;
 import java.util.Objects;
 
 @AbilityManifest(name = "블럭", rank = Rank.A, species = Species.OTHERS, explain = {
-		"철괴 우클릭시 자신의 상태를 변화시킵니다. 자신의 상태에따라 추가효과를 얻습니다.", "§7돌 §f: 받는 대미지가 $[stone]% 감소합니다.",
-		"곡괭이로 자신이 공격받을 시 그 재료로 만든 검의 데미지를 받습니다.", "이때, 효율은 날카로움 취급을 받으며, 공속에 영향을 받지 않습니다.",
+		"철괴 우클릭시 자신의 상태를 변화시킵니다. 자신의 상태에따라 추가효과를 얻습니다.",
+		"§7돌 §f: 받는 대미지가 $[stone]% 감소합니다.",
+		"  곡괭이로 자신이 공격받을 시 그 재료로 만든 검의 데미지를 받습니다.",
+		"  이때, 효율은 날카로움 취급을 받으며, 공속에 영향을 받지 않습니다.",
 		"§6모래 §f: 낙하 대미지를 입지 않습니다. 피해를 입을 시 $[inv]초간 무적상태가 되어 무적상태에선 넉백당하지 않습니다.",
 		"§f유리 §f: 받는 대미지가 $[glass]% 증폭합니다. 유리상태동안 자신은 블라인드 버프를 얻습니다. 또한 스킬의 대상이 되지 않습니다.",
 		"§5옵시디언 §f: 폭발피해를 입지 않습니다. 넉백당하지 않습니다."},
@@ -271,8 +273,8 @@ public class Blocks extends CokesAbility implements ActiveHandler {
 			}
 		};
 
-		String name;
-		MaterialX materialX;
+		final String name;
+		final MaterialX materialX;
 
 		Condition(String name, MaterialX materialX) {
 			this.name = name;
@@ -295,8 +297,8 @@ public class Blocks extends CokesAbility implements ActiveHandler {
 		IRON(MaterialX.IRON_PICKAXE.getMaterial(), 6), GOLD(MaterialX.GOLDEN_PICKAXE.getMaterial(), 4),
 		DIAMOND(MaterialX.DIAMOND_PICKAXE.getMaterial(), 7), NETHERITE(MaterialX.NETHERITE_PICKAXE.getMaterial(), 8);
 
-		Material m;
-		double damage;
+		final Material m;
+		final double damage;
 
 		Pickaxe(Material m, double damage) {
 			this.damage = damage;

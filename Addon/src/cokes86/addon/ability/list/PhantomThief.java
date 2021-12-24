@@ -34,6 +34,7 @@ import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 import org.bukkit.util.Vector;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.Iterator;
 import java.util.Objects;
@@ -279,7 +280,7 @@ public abstract class PhantomThief extends CokesAbility implements ActiveHandler
 	};
 
 	@Override
-	public String getDisplayName() {
+	public @NotNull String getDisplayName() {
 		String result = getName();
 		if (newAbility != null) {
 			result += " ("+newAbility.getDisplayName()+")";

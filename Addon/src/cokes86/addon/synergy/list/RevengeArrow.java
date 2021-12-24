@@ -83,14 +83,14 @@ public class RevengeArrow extends CokesSynergy {
 					ItemLib.removeItem(getPlayer().getInventory(), Material.ARROW, 1);
 					Vector vector = damager.getLocation().clone().subtract(getPlayer().getLocation().clone()).toVector()
 							.normalize();
-					new Bullet(getPlayer(), getPlayer().getLocation().clone().add(0, 1.5, 0).add(vector.multiply(.25)), vector,
+					new RevengeArrowBullet(getPlayer(), getPlayer().getLocation().clone().add(0, 1.5, 0).add(vector.multiply(.25)), vector,
 							RGB.of(100, 100, 100), e.getDamage() * multiply.getValue()).start();
 				}
 			}
 		}
 	}
 
-	public class Bullet extends AbilityTimer {
+	public class RevengeArrowBullet extends AbilityTimer {
 
 		private final Player shooter;
 		private final CustomEntity entity;
@@ -100,8 +100,8 @@ public class RevengeArrow extends CokesSynergy {
 		private final RGB color;
 		private Location lastLocation;
 
-		private Bullet(Player shooter, Location startLocation, Vector arrowVelocity, RGB color, double damage) {
-			super(100);
+		private RevengeArrowBullet(Player shooter, Location startLocation, Vector arrowVelocity, RGB color, double damage) {
+			super();
 			setPeriod(TimeUnit.TICKS, 1);
 			this.shooter = shooter;
 			this.entity = new ArrowEntity(startLocation.getWorld(), startLocation.getX(), startLocation.getY(),
@@ -131,6 +131,7 @@ public class RevengeArrow extends CokesSynergy {
 				}
 				for (Damageable damageable : LocationUtil.getConflictingEntities(Damageable.class, shooter.getWorld(), entity.getBoundingBox(), predicate)) {
 					if (!shooter.equals(damageable) && !damageable.isDead()) {
+						if (damageable instanceof Player) ((Player) damageable).setNoDamageTicks(0);
 						Damages.damageArrow(damageable, getPlayer(), (float) damage);
 						stop(false);
 						return;
@@ -159,14 +160,14 @@ public class RevengeArrow extends CokesSynergy {
 
 			@Override
 			protected void onRemove() {
-				Bullet.this.stop(false);
+				RevengeArrowBullet.this.stop(false);
 			}
 
 			@Override
 			public void onDeflect(Participant deflector, Vector newDirection) {
 				stop(false);
 				Player deflectedPlayer = deflector.getPlayer();
-				new Bullet(deflectedPlayer, lastLocation, newDirection, color, Bullet.this.getDamage()).start();
+				new RevengeArrowBullet(deflectedPlayer, lastLocation, newDirection, color, RevengeArrowBullet.this.getDamage()).start();
 			}
 
 			@Override
@@ -176,7 +177,7 @@ public class RevengeArrow extends CokesSynergy {
 
 			@Override
 			public Vector getDirection() {
-				return RevengeArrow.Bullet.this.forward.clone();
+				return RevengeArrowBullet.this.forward.clone();
 			}
 		}
 	}
