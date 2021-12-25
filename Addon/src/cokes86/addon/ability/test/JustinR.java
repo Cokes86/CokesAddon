@@ -32,14 +32,14 @@ import java.util.concurrent.ConcurrentHashMap;
         "  인격에 따라 각기 다른 효과를 부여받습니다.",
         "  [§b1인격§f] -",
         "  [§52인격§f] 타 플레이어에게 받는 근거리 대미지가 §c$[TWO_PERSON_DAMAGE_INCREASE]% 증가합니다.",
-        "§7검으로 공격 시§8 -§c슬래시 §f: 인격에 따라 각기 다른 효과를 가집니다.",
+        "§7검으로 공격 시§8 -§c슬래시§f: 인격에 따라 각기 다른 효과를 가집니다.",
         "  [§b1인격§f] 대미지가 $[DAMAGE]%로 감소된 체 공격됩니다.",
         "  [§52인격§f] 상대방에게 §4흑심 카운터§f를 1개씩 남깁니다. (최대 $[MAX_COUNTER]회)",
         "§7검 우클릭§8 - §c이거나 받아라§f: 인격에 따라 각기 다른 효과를 가집니다.",
         "  [§b1인격§f] 공격 준비 이후 §c0.5초 §f이내에 사용 시, 적을 §b밀쳐내고§f 감소했던 대미지를 줍니다.",
         "  [§52인격§f] §4흑심 카운터§f를 가지고 있던 플레이어에게 개당 $[GET_THIS_DAMAGE]의 고정 대미지를 줍니다. $[GET_THIS_COOLDOWN]",
         "§7철괴 우클릭§8 - §c탈출§f: 자신의 인격을 강제로 변경합니다. $[ESCAPE_COOLDOWN]",
-        "  이때, 바뀐 인격의 주기는 §c반으로 감소합니다."
+        "  이때, 바뀐 인격은 더욱 불안정해 주기가 §c반으로 감소합니다."
 })
 @Beta
 public class JustinR extends CokesAbility implements ActiveHandler {

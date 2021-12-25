@@ -151,7 +151,7 @@ public class Iris extends CokesAbility implements ActiveHandler {
         @Override
         protected void onSilentEnd() {
             hologram.unregister();
-            rainbowMap.remove(Rainbow.this);
+            rainbowMap.remove(this.participant);
         }
 
         public void addStack() {

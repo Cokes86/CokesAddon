@@ -5,6 +5,8 @@ import daybreak.abilitywar.ability.AbilityManifest;
 import daybreak.abilitywar.ability.SubscribeEvent;
 import daybreak.abilitywar.ability.decorator.ActiveHandler;
 import daybreak.abilitywar.game.AbstractGame;
+import daybreak.abilitywar.game.GameManager;
+import daybreak.abilitywar.game.module.Wreck;
 import daybreak.abilitywar.utils.base.color.RGB;
 import daybreak.abilitywar.utils.base.concurrent.TimeUnit;
 import daybreak.abilitywar.utils.base.minecraft.damage.Damages;
@@ -94,7 +96,9 @@ public class ReaperArrow extends CokesSynergy implements ActiveHandler {
 				return;
 			}
 
-			if (arg % duration.getValue() == 0) {
+			int reloadCount = Wreck.isEnabled(GameManager.getGame()) ? (int) (Wreck.calculateDecreasedAmount(20) * duration.getValue()) : duration.getValue();
+			if (reloadCount == 0) reloadCount = (int) (0.2 * duration.getValue());
+			if (arg % reloadCount == 0) {
 				if (stack >= 5) return;
 				stack++;
 			}

@@ -128,10 +128,6 @@ public class AddonAbilityFactory {
 		return new ArrayList<>(abilities.keySet());
 	}
 
-	public static List<String> testNameValues() {
-		return new ArrayList<>(test_abilities.keySet());
-	}
-
 	public static Class<? extends CokesAbility> getTestAbilityByName(String name) {
 		return test_abilities.get(name);
 	}
