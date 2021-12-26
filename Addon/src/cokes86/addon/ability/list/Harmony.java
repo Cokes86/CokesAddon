@@ -81,9 +81,9 @@ public class Harmony extends CokesAbility {
 						Mix me = ((AbstractMix.MixParticipant) getParticipant()).getAbility();
 						Mix mix = ((AbstractMix.MixParticipant) participant).getAbility();
 
-						if (me != null && me.hasAbility() && me.getSynergy() != null && (me.getFirst().getClass().equals(Fish.class) || me.getSecond().getClass().equals(Fish.class))) {
-							if (mix != null && mix.hasAbility() && mix.getSynergy() != null) {
-								AbilityBase base = me.getFirst().getClass().equals(Fish.class) ? mix.getFirst() : mix.getSecond();
+						if (me != null && me.hasAbility() && (me.getFirst().getClass().equals(Harmony.class) || me.getSecond().getClass().equals(Harmony.class))) {
+							if (mix != null && mix.hasAbility() && !mix.hasSynergy()) {
+								AbilityBase base = me.getFirst().getClass().equals(Harmony.class) ? mix.getFirst() : mix.getSecond();
 
 								Rank rank = base.getRank();
 								rankMap.put(rank, rankMap.getOrDefault(rank, 0)+1);
@@ -98,7 +98,6 @@ public class Harmony extends CokesAbility {
 								}
 							} else {
 								enhance = false;
-								break;
 							}
 						}
 					} else {
@@ -115,9 +114,6 @@ public class Harmony extends CokesAbility {
 							if (participant.getAbility() instanceof CokesAbility) {
 								cokes++;
 							}
-						} else {
-							enhance = false;
-							break;
 						}
 					}
 				}
@@ -154,6 +150,8 @@ public class Harmony extends CokesAbility {
 						this.setPeriod(TimeUnit.SECONDS, duration.getValue()/2);
 					}
 				}
+			} else {
+				enhance = false;
 			}
 
 			for (Player p : near) {

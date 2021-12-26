@@ -77,6 +77,7 @@ public class AddonAbilityFactory {
 		//test
 		registerTestAbility(Test.class);
 		registerTestAbility(JustinR.class);
+		registerTestAbility(Dolores.class);
 	}
 
 	public static void registerAbility(Class<? extends CokesAbility> clazz) {
