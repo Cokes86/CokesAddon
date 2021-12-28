@@ -61,7 +61,7 @@ import java.util.Random;
 @Materials(materials = {Material.IRON_INGOT, Material.GOLD_INGOT})
 public class DataMining extends CokesAbility implements ActiveHandler {
 	private static final Config<Double> damageUp = new Config<>(DataMining.class, "최대대미지성장치", 2.5),
-			defenseUp = new Config<>(DataMining.class, "최대대미지감소성장치", 25.00);
+			defenseUp = new Config<>(DataMining.class, "최대대미지감소성장치", 25.00, "#단위: %");
 	private static final Config<Integer> player_value = new Config<>(DataMining.class, "인원별_스택치", 4),
 			duration = new Config<>(DataMining.class, "자동스택추가주기", 60, Config.Condition.TIME);
 	private final DecimalFormat df = new DecimalFormat("0.00");
@@ -171,7 +171,7 @@ public class DataMining extends CokesAbility implements ActiveHandler {
 			getPlayer().sendMessage("§2===== §a능력자 목록 §2=====");
 			int count = 0;
 			for (Participant p : game.getParticipants()) {
-				AbilityBase ability = p.getAbility();
+				daybreak.abilitywar.ability.AbilityBase ability = p.getAbility();
 				if (p.equals(getParticipant()))
 					continue;
 				if (ability == null)
@@ -227,7 +227,7 @@ public class DataMining extends CokesAbility implements ActiveHandler {
 		int result = 0;
 		for (Participant participant : getGame().getParticipants()) {
 			if (participant.getAbility()!=null) {
-				AbilityBase ability = participant.getAbility();
+				daybreak.abilitywar.ability.AbilityBase ability = participant.getAbility();
 				if (ability instanceof Mix) {
 					Mix mix = (Mix) ability;
 					if (!(mix.getFirst() instanceof ActiveHandler && mix.getSecond() instanceof ActiveHandler)) {

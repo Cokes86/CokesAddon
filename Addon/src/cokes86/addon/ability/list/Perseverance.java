@@ -13,15 +13,15 @@ import org.bukkit.entity.Entity;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 
 @AbilityManifest(name = "인내심", rank = Rank.B, species = Species.HUMAN, explain = {
-		"매 $[period]초마다 상대방에게 주는 피해가 $[upg]%p씩 상승하며 최대 $[max]%까지 상승합니다.",
+		"매 $[period]초마다 상대방에게 주는 대미지 증가량이 $[upg]%p씩 상승하며 최대 $[max]%까지 상승합니다.",
 		"상대방을 공격할 시 이는 초기화되어 100%로 돌아갑니다",
 		"[아이디어 제공자 §bRainStar_§f]"}
 )
 public class Perseverance extends CokesAbility {
-	private static final Config<Integer> max = new Config<>(Perseverance.class, "최대치(%)", 200);
+	private static final Config<Integer> max = new Config<>(Perseverance.class, "최대치(%)", 100);
 	private static final Config<Integer> upg = new Config<>(Perseverance.class, "성장치(%p)", 20);
 	private static final Config<Double> period = new Config<>(Perseverance.class, "주기", 3.5);
-	private double give = 100;
+	private double give = 0;
 	private final ActionbarChannel ac = newActionbarChannel();
 	private final AbilityTimer passive = new AbilityTimer() {
 		@Override
@@ -31,7 +31,7 @@ public class Perseverance extends CokesAbility {
 				give = max.getValue();
 				stop(false);
 			}
-			ac.update("상대방에게 주는 대미지: " + (give) + "%");
+			ac.update("상대방에게 주는 대미지 증가량: " + (give) + "%");
 		}
 	}.setPeriod(TimeUnit.TICKS, (int) (period.getValue()*20)).setInitialDelay(TimeUnit.TICKS, (int) (period.getValue()*20));
 
@@ -57,9 +57,9 @@ public class Perseverance extends CokesAbility {
 		}
 
 		if (damager.equals(getPlayer())) {
-			e.setDamage(e.getDamage() * give / 100.00);
-			give = 100;
-			ac.update("상대방에게 주는 대미지: " + (give) + "%");
+			e.setDamage(e.getDamage() * (1 + give / 100.00));
+			give = 0;
+			ac.update("상대방에게 주는 대미지 증가량: " + (give) + "%");
 			if (!passive.isRunning()) passive.start();
 			passive.setCount(1);
 		}

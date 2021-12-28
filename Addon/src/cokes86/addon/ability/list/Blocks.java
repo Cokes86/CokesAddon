@@ -38,7 +38,7 @@ import java.util.Objects;
 		"  곡괭이로 자신이 공격받을 시 그 재료로 만든 검의 데미지를 받습니다.",
 		"  이때, 효율은 날카로움 취급을 받으며, 공속에 영향을 받지 않습니다.",
 		"§6모래 §f: 낙하 대미지를 입지 않습니다. 피해를 입을 시 $[inv]초간 무적상태가 되어 무적상태에선 넉백당하지 않습니다.",
-		"§f유리 §f: 받는 대미지가 $[glass]% 증폭합니다. 유리상태동안 자신은 블라인드 버프를 얻습니다. 또한 스킬의 대상이 되지 않습니다.",
+		"§f유리 §f: 받는 대미지가 $[glass]% 증가합니다. 유리상태동안 자신은 블라인드 버프를 얻습니다. 또한 스킬의 대상이 되지 않습니다.",
 		"§5옵시디언 §f: 폭발피해를 입지 않습니다. 넉백당하지 않습니다."},
 summarize = {
 		"§6철괴 우클릭 시 §f자신이 받는 효과를 순차적으로 바꿀 수 있습니다.",
@@ -57,10 +57,10 @@ public class Blocks extends CokesAbility implements ActiveHandler {
 		public boolean condition(Integer value) {
 			return value > 0 && value < 100;
 		}
-	}, glass = new Config<Integer>(Blocks.class, "유리_받는대미지(%)", 200) {
+	}, glass = new Config<Integer>(Blocks.class, "유리_받는대미지(%)", 100) {
 		@Override
 		public boolean condition(Integer value) {
-			return value > 100;
+			return value > 0;
 		}
 	};
 	private static final Config<Integer> inv = new Config<>(Blocks.class, "모래_무적시간", 6, a-> a>0, "단위: 틱");
@@ -194,7 +194,7 @@ public class Blocks extends CokesAbility implements ActiveHandler {
 					}
 					invTimer.start();
 				} else if (condition.equals(Condition.GLASS)) {
-					e.setDamage(1.0 * e.getDamage() * glass.getValue() / 100.0);
+					e.setDamage(e.getDamage() * (1 + glass.getValue() / 100.0));
 				} else if (condition.equals(Condition.OBSIDIAN)) {
 					if (e.getCause().equals(DamageCause.BLOCK_EXPLOSION)
 							|| e.getCause().equals(DamageCause.ENTITY_EXPLOSION)) {

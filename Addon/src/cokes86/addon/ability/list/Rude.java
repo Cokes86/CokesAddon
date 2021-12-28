@@ -3,6 +3,7 @@ package cokes86.addon.ability.list;
 import cokes86.addon.ability.CokesAbility;
 import cokes86.addon.util.AttributeUtil;
 import daybreak.abilitywar.ability.AbilityManifest;
+import daybreak.abilitywar.ability.SubscribeEvent;
 import daybreak.abilitywar.ability.decorator.ActiveHandler;
 import daybreak.abilitywar.game.AbstractGame;
 import daybreak.abilitywar.game.module.DeathManager;
@@ -14,26 +15,31 @@ import daybreak.abilitywar.utils.library.SoundLib;
 import org.bukkit.Material;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
-import org.bukkit.event.Listener;
+import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.inventory.ItemStack;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Objects;
 import java.util.function.Predicate;
 
-import static cokes86.addon.ability.CokesAbility.Config.Condition.*;
+import static cokes86.addon.ability.CokesAbility.Config.Condition.COOLDOWN;
+import static cokes86.addon.ability.CokesAbility.Config.Condition.TIME;
 
 @AbilityManifest(name = "진상", rank = AbilityManifest.Rank.A, species = AbilityManifest.Species.HUMAN, explain = {
         "철괴 우클릭 시 1초마다 $[RUDE_RANGE]블럭 내 모든 플레이어의",
         "인벤토리를 뒤엎어버린 후, 고정 1대미지를 줍니다.",
         "이는 $[RUDE_DURATION]간 반복되며, 이미 한 번 뒤엎은 플레이어가 있다면",
         "더이상 뒤엎지 않습니다.",
-        "지속시간동안 이동속도가 매우 느려지지만, 넉백당하지 않습니다. $[RUDE_COOLDOWN]",
+        "지속시간동안 이동속도가 매우 느려지지만, 받는 대미지가 $[DAMAGE]% 감소합니다 $[RUDE_COOLDOWN]",
         "갑옷과, 양 손의 아이템은 뒤엎지 않습니다."
 })
 public class Rude extends CokesAbility implements ActiveHandler {
     private static final Config<Integer> RUDE_RANGE = new Config<>(Rude.class, "범위", 10, a -> a > 0);
     private static final Config<Integer> RUDE_DURATION = new Config<>(Rude.class, "지속시간", 5, TIME);
     private static final Config<Integer> RUDE_COOLDOWN = new Config<>(Rude.class, "쿨타임", 60, COOLDOWN);
+    private static final Config<Integer> DAMAGE = new Config<>(Rude.class, "받는_대미지_감소량(%)", 20, a -> a > 0 && a < 100);
     private final Cooldown cooldown = new Cooldown(RUDE_COOLDOWN.getValue());
     private final RudeDuration duration = new RudeDuration();
 
@@ -71,7 +77,14 @@ public class Rude extends CokesAbility implements ActiveHandler {
         return false;
     }
 
-    private class RudeDuration extends Duration implements Listener {
+    @SubscribeEvent
+    public void onEntityDamage(EntityDamageEvent e) {
+        if (e.getEntity().equals(getPlayer()) && duration.isRunning()) {
+            e.setDamage(e.getDamage() * (1 - DAMAGE.getValue() / 100.0));
+        }
+    }
+
+    private class RudeDuration extends Duration {
         private final List<Player> inventory = new ArrayList<>();
         private double knockback;
         private final ItemStack nullItemStack = new ItemStack(Material.AIR);
