@@ -8,6 +8,7 @@ import daybreak.abilitywar.config.enums.CooldownDecrease;
 import daybreak.abilitywar.game.AbstractGame;
 import daybreak.abilitywar.game.module.DeathManager;
 import daybreak.abilitywar.game.team.interfaces.Teamable;
+import daybreak.abilitywar.utils.annotations.Beta;
 import daybreak.abilitywar.utils.base.concurrent.SimpleTimer;
 import daybreak.abilitywar.utils.base.concurrent.TimeUnit;
 import daybreak.abilitywar.utils.base.math.LocationUtil;
@@ -35,6 +36,7 @@ import java.util.function.Predicate;
         "  주변에 플레이어가 없거나, 축척한 대미지가 $[PREDICATE_DAMAGE] 이하일 경우",
         "  발동하지 않으며, 쿨타임 종료 시 쿨타임이 기존보다 $[COOLDOWN_INCREASE_PERCENT]% 증가합니다."
 })
+@Beta
 public class Dolores extends CokesAbility {
     private static final Config<Integer> RECEIVE_DAMAGE = new Config<>(Dolores.class, "받는_대미지_증가량(%)", 20, a -> a > 0);
     private static final Config<Integer> MAX = new Config<>(Dolores.class, "최대_축척대미지", 20, a -> a > 0);

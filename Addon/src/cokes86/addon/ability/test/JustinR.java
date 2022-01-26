@@ -115,9 +115,10 @@ public class JustinR extends CokesAbility implements ActiveHandler {
                     stackMap.clear();
                 }
             }
-        } else if (escapeCooldown.isCooldown() && material.equals(Material.IRON_INGOT) && clickType.equals(ClickType.RIGHT_CLICK)) {
+        } else if (material.equals(Material.IRON_INGOT) && clickType.equals(ClickType.RIGHT_CLICK) && !escapeCooldown.isCooldown()) {
             justinChangeTimer.stop(false);
             justinChangeTimer.setCount(justinChangeTimer.getCount()/2);
+            return escapeCooldown.start();
         }
         return false;
     }

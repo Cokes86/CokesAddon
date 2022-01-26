@@ -100,7 +100,7 @@ public class AddonAbilityFactory {
 			AbilityFactory.registerAbility(clazz);
 			if (AbilityFactory.isRegistered(clazz)) {
 				AbilityManifest am = clazz.getAnnotation(AbilityManifest.class);
-				if (clazz.getAnnotation(Beta.class) == null) test_abilities.put(am.name(), clazz);
+				test_abilities.put(am.name(), clazz);
 			} else {
 				System.out.println("등록에 실패하였습니다. : " + clazz.getName());
 			}

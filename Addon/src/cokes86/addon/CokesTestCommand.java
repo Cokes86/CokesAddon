@@ -19,9 +19,9 @@ public class CokesTestCommand extends Command {
 
     @Override
     protected boolean onCommand(CommandSender sender, String command, String[] args) {
-        if (GameManager.isGameRunning() && sender instanceof Player && GameManager.getGame().isParticipating((Player) sender)) {
+        if (GameManager.isGameRunning() && sender instanceof Player && GameManager.getGame().isParticipating((Player) sender) && args.length >= 1) {
             if (GameManager.getGame() instanceof AbstractMix) {
-                final String[] names = String.join(" ", Arrays.copyOfRange(args, 1, args.length)).split(",");
+                final String[] names = String.join(" ", Arrays.copyOfRange(args, 0, args.length)).split(",");
                 if (names.length != 2) {
                     Messager.sendErrorMessage(sender, "능력이 두 개 보다 많이 입력되었거나 적게 입력되었습니다.");
                     return false;
@@ -40,8 +40,8 @@ public class CokesTestCommand extends Command {
                     if (Configuration.Settings.DeveloperSettings.isEnabled()) e.printStackTrace();
                 }
             } else {
-                final String name = String.join(" ", Arrays.copyOfRange(args, 1, args.length));
-                Class<? extends AbilityBase> class1 = AddonAbilityFactory.getTestAbilityByName(name) != null ? AddonAbilityFactory.getTestAbilityByName(name) : AbilityList.getByString(name);
+                final String name = String.join(" ", Arrays.copyOfRange(args, 0, args.length));
+                Class<? extends AbilityBase> class1 = AddonAbilityFactory.getTestAbilityByName(name);
                 AbstractGame.Participant participant = GameManager.getGame().getParticipant((Player) sender);
                 try {
                     participant.setAbility(class1);
