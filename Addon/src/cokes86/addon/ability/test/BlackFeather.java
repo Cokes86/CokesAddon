@@ -65,9 +65,9 @@ public class BlackFeather extends CokesAbility {
             while(iterator.hasNext()) {
                 BlackFeatherCounter counter = iterator.next();
                 if (counter.getParticipant().equals(e.getParticipant())) {
-
+                    counter.stop(true);
                     iterator.remove();
-                    new BlackFeatherCounter(getParticipant());
+                    new BlackFeatherCounter();
                 }
             }
         }
