@@ -48,6 +48,10 @@ public class CokesAbility extends AbilityBase {
 			this(aClass, name, value, description, Condition.NORMAL, predicate);
 		}
 
+		public Config(Class<? extends CokesAbility> aClass, String name, T value, Condition arg3, String... description) {
+			this(aClass, name, value, description, arg3, a -> true);
+		}
+
 		public String toString() {
 			if (condition == Condition.COOLDOWN && getValue() instanceof Integer) {
 				return Formatter.formatCooldown((Integer) getValue());
