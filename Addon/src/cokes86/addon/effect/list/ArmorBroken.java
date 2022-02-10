@@ -33,7 +33,7 @@ public class ArmorBroken extends AbstractGame.Effect implements Listener {
     }
 
     private final AbstractGame.Participant participant;
-    private AttributeModifier modifier;
+    private final AttributeModifier modifier = new AttributeModifier(UUID.randomUUID(), "brokenArmor", -1, AttributeModifier.Operation.ADD_NUMBER);
 
     public ArmorBroken(AbstractGame.Participant participant, TimeUnit timeUnit, int duration) {
         participant.getGame().super(broken, participant, timeUnit.toTicks(duration));
@@ -55,7 +55,6 @@ public class ArmorBroken extends AbstractGame.Effect implements Listener {
 
     public void onStart() {
         super.onStart();
-        modifier = new AttributeModifier(UUID.randomUUID(), "brokenArmor", -1, AttributeModifier.Operation.ADD_NUMBER);
         AttributeUtil.getInstance(participant.getPlayer(), Attribute.GENERIC_ARMOR).addModifier(modifier);
         AttributeUtil.getInstance(participant.getPlayer(), Attribute.GENERIC_ARMOR_TOUGHNESS).addModifier(modifier);
         Bukkit.getPluginManager().registerEvents(this, AbilityWar.getPlugin());

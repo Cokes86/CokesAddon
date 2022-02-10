@@ -10,5 +10,6 @@ public interface IDisguise {
     void setPlayerNameTag(Player player, UUID uuid);
     void saveData();
     void clearData();
+    void addData(UUID uuid);
     boolean isChanged(Player player);
 }

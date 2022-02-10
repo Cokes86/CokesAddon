@@ -184,7 +184,6 @@ public class DisguiseParty extends AbstractGame implements Winnable {
                 Bukkit.broadcastMessage("§5DisguiseParty §f- §d변장 파티");
                 Bukkit.broadcastMessage("§b개발자 §7: §fCokes_86 코크스");
                 Bukkit.broadcastMessage("§9디스코드 §7: §f코크스§7#9329");
-                DisguiseUtil.saveData();
                 break;
             }
             case 2: {
@@ -242,6 +241,7 @@ public class DisguiseParty extends AbstractGame implements Winnable {
             case 12: {
                 Bukkit.broadcastMessage("§a목표§f: "+target.getPlayer().getName());
                 SoundLib.ENTITY_ARROW_HIT_PLAYER.broadcastSound();
+                DisguiseUtil.addData(target.getPlayer().getUniqueId());
                 break;
             }
 

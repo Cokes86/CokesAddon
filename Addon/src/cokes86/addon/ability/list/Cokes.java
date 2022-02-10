@@ -84,7 +84,7 @@ public class Cokes extends CokesAbility implements ActiveHandler {
             }
             EffectRegistry.EffectRegistration<?> registration = random.pick(EffectRegistry.values().toArray(new EffectRegistry.EffectRegistration[0]));
             int second = random.nextInt(EFFECT_DURATION.getValue())+1;
-            if (registration.getEffectType().contains(EffectType.MOVEMENT_RESTRICTION)) {
+            if (registration.getEffectType().contains(EffectType.MOVEMENT_RESTRICTION) || registration.getEffectType().contains(EffectType.MOVEMENT_INTERRUPT)) {
                 second = random.nextInt(MOVEMENT_DURATION.getValue())+1;
             }
 

@@ -42,6 +42,19 @@ public class v1_16_R1 implements IDisguise {
     }
 
     @Override
+    public void addData(UUID uuid) {
+        if (origin.containsKey(uuid)) return;
+        Player pl = Bukkit.getPlayer(uuid);
+        if (pl == null) return;
+        CraftPlayer cp = (CraftPlayer) pl;
+
+        Iterator<Property> iterator = cp.getProfile().getProperties().get("textures").iterator();
+        if (iterator.hasNext()) {
+            origin.put(uuid, Pair.of(pl.getName(), iterator.next()));
+        }
+    }
+
+    @Override
     public void clearData() {
         origin.clear();
     }

@@ -8,12 +8,13 @@ import daybreak.abilitywar.ability.SubscribeEvent;
 import daybreak.abilitywar.game.AbstractGame.Participant;
 import daybreak.abilitywar.game.AbstractGame.Participant.ActionbarNotification.ActionbarChannel;
 import daybreak.abilitywar.utils.base.concurrent.TimeUnit;
-import daybreak.abilitywar.utils.base.minecraft.entity.health.Healths;
+import daybreak.abilitywar.utils.base.minecraft.damage.Damages;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Arrow;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
+import org.bukkit.event.entity.EntityDamageEvent;
 
 import java.text.DecimalFormat;
 
@@ -50,14 +51,15 @@ public class Revenge extends CokesAbility {
 					damager = (Entity) arrow.getShooter();
 				}
 			}
-
+			if (e.getCause() == EntityDamageEvent.DamageCause.MAGIC) return;
 			if (damager.equals(getPlayer()) && e.getEntity() instanceof Player && !e.getEntity().equals(getPlayer())) {
 				float plus = (float) (finalDamage * PERCENTAGE.getValue() / 100.0f);
 				new AbilityTimer(1) {
 					public void run(int arg0) {
 						Player target = (Player) e.getEntity();
 						if (!target.isDead()) {
-							Healths.setHealth(target, target.getHealth() - plus);
+							target.setNoDamageTicks(0);
+							Damages.damageMagic(target, getPlayer(), true, (float) finalDamage);
 						}
 					}
 				}.setInitialDelay(TimeUnit.TICKS, 1).setPeriod(TimeUnit.TICKS, 1).start();

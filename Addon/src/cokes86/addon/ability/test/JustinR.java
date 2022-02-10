@@ -21,6 +21,7 @@ import org.bukkit.Note;
 import org.bukkit.entity.Damageable;
 import org.bukkit.entity.Player;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
+import org.bukkit.event.entity.EntityDamageEvent;
 
 import java.util.Map;
 import java.util.Set;
@@ -37,7 +38,7 @@ import java.util.concurrent.ConcurrentHashMap;
         "  [§52인격§f] 상대방에게 §4흑심 카운터§f를 1개씩 남깁니다. (최대 $[MAX_COUNTER]회)",
         "§7검 우클릭§8 - §c이거나 받아라§f: 인격에 따라 각기 다른 효과를 가집니다.",
         "  [§b1인격§f] 공격 준비 이후 §c0.5초 §f이내에 사용 시, 적을 §b밀쳐내고§f 감소했던 대미지를 줍니다.",
-        "  [§52인격§f] §4흑심 카운터§f를 가지고 있던 플레이어에게 개당 $[GET_THIS_DAMAGE]의 고정 대미지를 줍니다. $[GET_THIS_COOLDOWN]",
+        "  [§52인격§f] §4흑심 카운터§f를 가지고 있던 플레이어에게 개당 $[GET_THIS_DAMAGE]의 고정 마법 대미지를 줍니다. $[GET_THIS_COOLDOWN]",
         "§7철괴 우클릭§8 - §c탈출§f: 자신의 인격을 강제로 변경합니다. $[ESCAPE_COOLDOWN]",
         "  이때, 바뀐 인격은 더욱 불안정해 주기가 §c반으로 감소합니다."
 })
@@ -144,6 +145,7 @@ public class JustinR extends CokesAbility implements ActiveHandler {
                 normalTimer = new NormalTimer((Damageable) e.getEntity(), damage*(1-decrease));
                 normalTimer.start();
             } else {
+                if (e.getCause() == EntityDamageEvent.DamageCause.MAGIC) return;
                 if (getGame().isGameStarted() && e.getEntity() instanceof Player) {
                     if (getGame().isParticipating(e.getEntity().getUniqueId())) {
                         final AbstractGame.Participant victim = getGame().getParticipant(e.getEntity().getUniqueId());
@@ -236,7 +238,7 @@ public class JustinR extends CokesAbility implements ActiveHandler {
             new AbilityTimer(stack) {
                 @Override
                 protected void run(int count) {
-                    Damages.damageFixed(target.getPlayer(), getPlayer(), GET_THIS_DAMAGE.getValue());
+                    Damages.damageMagic(target.getPlayer(), getPlayer(), true, GET_THIS_DAMAGE.getValue());
                     target.getPlayer().setNoDamageTicks(0);
                 }
             }.setPeriod(TimeUnit.TICKS, 10).start();

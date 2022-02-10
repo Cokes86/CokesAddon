@@ -7,6 +7,7 @@ import daybreak.abilitywar.config.Configuration;
 import daybreak.abilitywar.game.AbstractGame;
 import daybreak.abilitywar.game.GameManager;
 import daybreak.abilitywar.game.list.mix.AbstractMix;
+import daybreak.abilitywar.game.list.mix.Mix;
 import daybreak.abilitywar.game.manager.AbilityList;
 import daybreak.abilitywar.utils.base.Messager;
 import org.bukkit.Bukkit;
@@ -32,11 +33,17 @@ public class CokesTestCommand extends Command {
                 try {
                     Class<? extends AbilityBase> class1 = AddonAbilityFactory.getTestAbilityByName(names[0]) != null ? AddonAbilityFactory.getTestAbilityByName(names[0]) : AbilityList.getByString(names[0]);
                     Class<? extends AbilityBase> class2 = AddonAbilityFactory.getTestAbilityByName(names[1]) != null ? AddonAbilityFactory.getTestAbilityByName(names[1]) : AbilityList.getByString(names[1]);
+                    if (participant.getAbility() == null) {
+                        participant.setAbility(Mix.class);
+                    }
                     participant.getAbility().setAbility(class1, class2);
                     Bukkit.broadcastMessage("§e" + sender.getName() + "§a님이 §f" + sender.getName() + "§a님에게 능력을 임의로 부여하였습니다.");
                     return true;
                 } catch (ReflectiveOperationException e) {
                     Messager.sendErrorMessage(sender, "능력 설정 도중 오류가 발생하였습니다.");
+                    if (Configuration.Settings.DeveloperSettings.isEnabled()) e.printStackTrace();
+                } catch (NullPointerException e) {
+                    Messager.sendErrorMessage(sender, "존재하지 않는 능력을 입력하였습니다.");
                     if (Configuration.Settings.DeveloperSettings.isEnabled()) e.printStackTrace();
                 }
             } else {
@@ -49,6 +56,9 @@ public class CokesTestCommand extends Command {
                     return true;
                 } catch (ReflectiveOperationException e) {
                     Messager.sendErrorMessage(sender, "능력 설정 도중 오류가 발생하였습니다.");
+                    if (Configuration.Settings.DeveloperSettings.isEnabled()) e.printStackTrace();
+                } catch (NullPointerException e) {
+                    Messager.sendErrorMessage(sender, "존재하지 않는 테스트 능력입니다.");
                     if (Configuration.Settings.DeveloperSettings.isEnabled()) e.printStackTrace();
                 }
             }

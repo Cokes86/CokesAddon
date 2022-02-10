@@ -8,6 +8,7 @@ import daybreak.abilitywar.game.event.participant.ParticipantDeathEvent;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Projectile;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -40,7 +41,7 @@ public class BlackFeather extends CokesAbility {
     }
 
     @SubscribeEvent
-    public void onEntityDamageByEntity(EntityDamageByEntityEvent e) {
+    public void onEntityDamageByEntity(@NotNull EntityDamageByEntityEvent e) {
         Entity damager = e.getDamager();
         if (damager instanceof Projectile) {
             Projectile projectile = (Projectile) damager;
@@ -59,7 +60,7 @@ public class BlackFeather extends CokesAbility {
     }
 
     @SubscribeEvent
-    public void onParticipantDeath(ParticipantDeathEvent e) {
+    public void onParticipantDeath(@NotNull ParticipantDeathEvent e) {
         if (!e.getParticipant().equals(getParticipant())) {
             Iterator<BlackFeatherCounter> iterator = counterList.iterator();
             while(iterator.hasNext()) {

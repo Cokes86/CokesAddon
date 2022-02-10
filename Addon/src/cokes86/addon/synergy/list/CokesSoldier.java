@@ -241,9 +241,7 @@ public class CokesSoldier extends CokesSynergy implements ActiveHandler {
         }
 
         @Override
-        protected void onDurationProcess(int i) {
-
-        }
+        protected void onDurationProcess(int i) {}
 
         @EventHandler
         public void onPlayerMove(PlayerMoveEvent e) {

@@ -34,6 +34,8 @@ public class DisguiseUtil {
         instance.clearData();
     }
 
+    public static void addData(UUID uuid) { instance.addData(uuid); }
+
     public static void reloadPlayer(Player player) {
         instance.reloadPlayer(player);
     }
