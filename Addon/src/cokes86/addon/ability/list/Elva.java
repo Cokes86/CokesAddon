@@ -1,6 +1,7 @@
 package cokes86.addon.ability.list;
 
 import cokes86.addon.ability.CokesAbility;
+import cokes86.addon.util.PredicateUnit;
 import daybreak.abilitywar.ability.AbilityManifest;
 import daybreak.abilitywar.ability.AbilityManifest.Rank;
 import daybreak.abilitywar.ability.AbilityManifest.Species;
@@ -31,38 +32,17 @@ import java.util.Iterator;
 import java.util.function.Predicate;
 
 @AbilityManifest(name = "엘바", rank = Rank.B, species = Species.OTHERS, explain = {
-		"활을 비주류 손에 들고 있을 경우",
-		"마법의 화살이 전방으로 $[speed]틱 간격으로 자동으로 발사되며 최대 $[maxarrow]발까지 발사됩니다.",
-		"마법의 화살은 $[damage]의 대미지를 주며, 화살을 다 소비할 시 재장전합니다.",
-		"기존의 화살은 사용할 수 없습니다.",
-		"마법의 화살은 대미지를 주거나, 블럭에 닿을 시 소멸합니다.",
-		"해당 화살은 플렉터가 튕겨낼 수 없습니다.",
+		"§7활 들고 F키 §8- §a마법의 화살§f: 활이 비주류 손에 있는 한 마법의 화살이 전방으로 발사됩니다.",
+		"  이는 $[speed]틱의 간격으로 자동으로 발사되며, $[damage]의 대미지를 줍니다.",
+		"  한번에 최대 $[maxarrow]발까지 발사되며, 다 소비할 경우 자동으로 재장전합니다.",
+		"  마법의 화살은 대미지를 주거나 블럭에 닿을 시 소멸하며, 플렉터가 튕겨낼 수 없습니다.",
 		"[아이디어 제공자 §bSato207§f]"
 })
 public class Elva extends CokesAbility {
-	private static final Config<Integer> maxarrow = new Config<Integer>(Elva.class, "마법화살수", 200) {
+	private static final Config<Integer> maxarrow = new Config<>(Elva.class, "마법화살수", 200, PredicateUnit.positive(Integer.class));
+	private static final Config<Integer> speed = new Config<>(Elva.class, "발사속도(틱)", 4, PredicateUnit.positive(Integer.class));
+	private static final Config<Double> damage = new Config<>(Elva.class, "마법화살대미지", 2.5, PredicateUnit.positive(Double.class));
 
-		@Override
-		public boolean condition(Integer value) {
-			return value > 0;
-		}
-
-	}, speed = new Config<Integer>(Elva.class, "발사속도(틱)", 4) {
-
-		@Override
-		public boolean condition(Integer value) {
-			return value > 0;
-		}
-
-	};
-	private static final Config<Double> damage = new Config<Double>(Elva.class, "마법화살대미지", 2.5) {
-
-		@Override
-		public boolean condition(Double value) {
-			return value > 0.0;
-		}
-
-	};
 	private final Predicate<Entity> predicate = entity -> {
 		if (entity.equals(getPlayer())) return false;
 		if (entity instanceof Player) {

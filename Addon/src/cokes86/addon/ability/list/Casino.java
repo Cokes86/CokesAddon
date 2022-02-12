@@ -35,10 +35,9 @@ import java.util.*;
 import java.util.function.Predicate;
 
 @AbilityManifest(name="카지노", rank = AbilityManifest.Rank.B, species = AbilityManifest.Species.HUMAN, explain = {
-        "철괴 우클릭시 랜덤한 효과 하나를 영구적으로 얻습니다. $[COOLDOWN]",
-        "이미 얻은 효과는 다시 나오지 않습니다.",
-        "새로운 효과를 얻었을 경우, 기존 효과를 계속 유지합니다.",
-        "철괴 좌클릭으로 자신이 얻은 효과를 알 수 있습니다."
+        "철괴 우클릭시 랜덤한 효과 하나를 영구히 부여합니다. $[COOLDOWN]",
+        "이미 부여한 효과는 다시 나오지 않습니다.",
+        "철괴 좌클릭으로 자신에게 부여된 효과를 알 수 있습니다."
 })
 public class Casino extends CokesAbility implements ActiveHandler {
     private static final Config<Integer> COOLDOWN = new Config<>(Casino.class, "쿨타임", 60, Config.Condition.COOLDOWN);
@@ -210,18 +209,18 @@ public class Casino extends CokesAbility implements ActiveHandler {
     }
 
     private enum Effects {
-        DAMAGE_UP("주는 대미지 1 상승"),
-        WITHER("영구 위더(4초마다)"),
+        DAMAGE_UP("주는 대미지 1 증가"),
+        WITHER("4초마다 1의 고정 마법 대미지 부여"),
         RESISTANCE("받는 대미지 1 감소"),
-        HEAL("체력 2 회복"),
-        TWIST("시야 뒤틀림"),
+        HEAL("체력 2 즉시 회복"),
+        TWIST("10초마다 시야 뒤틀림"),
         REGAIN("회복량 0.2배 증가"),
         HEALTH("최대 체력 2 감소"),
         BLEED("4회 타격 시 출혈 부여"),
         COOLDOWN_UP("쿨타임 50% 증가"),
         FALL("낙하대미지 무시"),
         STUN("스턴 2초 부여"),
-        FIRE_RESISTANCE("화염저항"),
+        FIRE_RESISTANCE("화염저항 영구히 부여"),
         PROJECTILE("발사체 초기속도 25% 감소");
 
         private final String name;

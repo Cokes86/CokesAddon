@@ -55,7 +55,7 @@ import java.util.function.Predicate;
         "§a알케미 에리어§f: 해당 영역에 존재하는 에밀리를 제외한 플레이어",
         "  §c 알케미 마스터리§f 상태에 따라 아래의 효과를 받습니다.",
         "  §4화상§f: 에리어에 불장판을 설치합니다. 에밀리는 에리어 내에서 화상 대미지를 입지 않습니다.",
-        "    영역 내 화상대미지가 $[ALCHEMY_AREA_BONUS_DAMAGE] 증가합니다.",
+        "    영역 내 화상 대미지가 $[ALCHEMY_AREA_BONUS_DAMAGE] 증가합니다.",
         "  §7둔화§f: 0.5초마다 쿨타임이 $[ALCHEMY_AREA_SLOWDOWN_COOL] 증가하고",
         "    빙결 효과 1.5초를 각 플레이어마다 최대 $[ALCHEMY_AREA_FROST_MAX_COUNT]번 받습니다.",
         "  §a폭발§f: 1초마다 $[ALCHEMY_AREA_EXPLOSION_DAMAGE]의 대미지를 주는 폭발을 일으킵니다.",

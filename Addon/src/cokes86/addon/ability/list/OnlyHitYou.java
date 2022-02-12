@@ -1,6 +1,7 @@
 package cokes86.addon.ability.list;
 
 import cokes86.addon.ability.CokesAbility;
+import cokes86.addon.util.PredicateUnit;
 import daybreak.abilitywar.ability.AbilityManifest;
 import daybreak.abilitywar.ability.SubscribeEvent;
 import daybreak.abilitywar.ability.decorator.ActiveHandler;
@@ -18,21 +19,21 @@ import org.bukkit.entity.Projectile;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 
 @AbilityManifest(name = "너만 때린다", rank = AbilityManifest.Rank.A, species = AbilityManifest.Species.HUMAN, explain = {
-        "§7패시브 §8- §c분산 타격§f: 같은 대상을 연속으로 공격할 때 1회 타격은 $[FIRST_HIT]%,",
-        "  2회 타격은 $[SECOND_HIT]%, 3회 타격은 $[THIRD_HIT]%의 대미지로 공격합니다.",
+        "§7패시브 §8- §c분산 타격§f: 같은 대상을 연속으로 공격할 시 대미지가 1회 타격은 $[FIRST_HIT]%,",
+        "  2회 타격은 $[SECOND_HIT]%, 3회 타격은 $[THIRD_HIT]%로 변경합니다.",
         "  다른 이를 공격하거나, 일정 시간이 지날 시 이 수치는 초기화됩니다.",
-        "  록 온의 쿨타임동안 이 수치는 각각 $[COOLDOWN_DECREASE]%p 감소합니다.",
+        "  §c록 온§f 쿨타임동안 이 수치는 각각 $[COOLDOWN_DECREASE]%p 감소합니다.",
         "§7철괴 우클릭 §8- §c록 온§f: 사용 전 마지막에 타격한 플레이어만 공격할 수 있습니다.",
         "  분산 타격의 모든 대미지 수치는 대상 한정 $[LOCK_ON]%p 상승합니다. $[COOLDOWN]",
         "  대상이 사망하거나 다시 사용할 경우 취소됩니다."
 })
 public class OnlyHitYou extends CokesAbility implements ActiveHandler {
-    private static final Config<Integer> COOLDOWN = new Config<>(OnlyHitYou.class, "쿨타임", 60, Config.Condition.COOLDOWN),
-    FIRST_HIT = new Config<>(OnlyHitYou.class, "첫번째_타격_배율(%)", 75, a -> a>0),
-    SECOND_HIT = new Config<>(OnlyHitYou.class, "두번째_타격_배율(%)", 100, a -> a>0),
-    THIRD_HIT = new Config<>(OnlyHitYou.class, "세번째_타격_배율(%)", 125, a -> a>0),
-    LOCK_ON = new Config<>(OnlyHitYou.class, "록_온_추가_배율(%)", 75, a -> a>0),
-    COOLDOWN_DECREASE = new Config<>(OnlyHitYou.class, "쿨타임_감소_배율(%)", 25, a -> a>0);
+    private static final Config<Integer> COOLDOWN = new Config<>(OnlyHitYou.class, "쿨타임", 60, Config.Condition.COOLDOWN);
+    private static final Config<Integer> FIRST_HIT = new Config<>(OnlyHitYou.class, "첫번째_타격_배율(%)", 75, PredicateUnit.positive(Integer.class));
+    private static final Config<Integer> SECOND_HIT = new Config<>(OnlyHitYou.class, "두번째_타격_배율(%)", 100, PredicateUnit.positive(Integer.class));
+    private static final Config<Integer> THIRD_HIT = new Config<>(OnlyHitYou.class, "세번째_타격_배율(%)", 125, PredicateUnit.positive(Integer.class));
+    private static final Config<Integer> LOCK_ON = new Config<>(OnlyHitYou.class, "록_온_추가_배율(%)", 75, PredicateUnit.positive(Integer.class));
+    private static final Config<Integer> COOLDOWN_DECREASE = new Config<>(OnlyHitYou.class, "쿨타임_감소_배율(%)", 25, PredicateUnit.positive(Integer.class));
 
     private final HitTimer passive = new HitTimer();
     private final Cooldown cool = new Cooldown(COOLDOWN.getValue());

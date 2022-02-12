@@ -21,7 +21,7 @@ import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
 
 @AbilityManifest(name = "케일리", rank = AbilityManifest.Rank.S, species = AbilityManifest.Species.HUMAN, explain = {
 		"자신은 폭발공격을 받지 않습니다.",
-		"$[dura]마다 스위치를 1개씩 얻으며 최대 $[max_switch]개까지 얻습니다.",
+		"$[dura]마다 스위치를 1개씩 얻으며 최대 $[max_switch]개까지 증가합니다.",
 		"철괴 우클릭 시 스위치를 전부 소모해 자신의 위치에서 (소모한 스위치 * $[fuse])의 위력으로 폭발하고",
 		"$[duration]간 공중에 날 수 있습니다. $[cool]",
 		"또한 능력 사용 직후 1회에 한해 낙하데미지를 받지 않습니다."

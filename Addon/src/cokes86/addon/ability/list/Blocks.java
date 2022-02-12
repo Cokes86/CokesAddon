@@ -57,7 +57,7 @@ public class Blocks extends CokesAbility implements ActiveHandler {
 		public boolean condition(Integer value) {
 			return value > 0 && value < 100;
 		}
-	}, glass = new Config<Integer>(Blocks.class, "유리_받는대미지(%)", 100) {
+	}, glass = new Config<Integer>(Blocks.class, "유리_받는대미지_증가량(%)", 100) {
 		@Override
 		public boolean condition(Integer value) {
 			return value > 0;

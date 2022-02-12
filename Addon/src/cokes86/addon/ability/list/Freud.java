@@ -50,13 +50,13 @@ import java.util.UUID;
 
 @AbilityManifest(name = "프리드", rank = Rank.A, species = Species.HUMAN, explain = {
 		"§7패시브 §8- §b마나§f: 프리드는 고유 자원인 §b마나§f가 존재합니다.",
-		"  $[MANA_REGAIN_TIME]틱마다 마나가 1씩 회복하며, 최대 100까지 상승합니다.",
+		"  $[MANA_REGAIN_TIME]틱마다 마나가 1씩 회복하며, 최대 100까지 증가합니다.",
 		"§7철괴 우클릭 §8- §c엘리멘탈 서클§f: 특수한 효과를 가진 유도 발사체를",
 		"  가장 가까운 플레이어에게 $[ELEMENTAL_CIRCLE_DURATION]간 발사됩니다.",
 		"  대미지와 효과는 발사 후 무작위로 바뀝니다.",
-		"    §c화상§f: 고정 $[damage_burn]의 대미지를 주고 $[fireTick]틱의 화상효과 부여. $[mana_burn]",
-		"    §8나약함§f: 고정 $[damage_weakness]의 대미지를 주고 상대방의 나약함 디버프를 $[weakness_duration]초 부여. $[mana_weakness]",
-		"    §a폭발§f: 고정 $[damage_explosion]의 대미지를 주고 $[fuse]의 위력으로 폭발. $[mana_explosion]"
+		"    §c화상§f: $[damage_burn]의 고정 대미지를 주고 $[fireTick]틱의 화상효과 부여. $[mana_burn]",
+		"    §8나약함§f: $[damage_weakness]의 고정 대미지를 주고 상대방의 나약함 디버프를 $[weakness_duration]초 부여. $[mana_weakness]",
+		"    §a폭발§f: $[damage_explosion]의 고정 대미지를 주고 $[fuse]의 위력으로 폭발. $[mana_explosion]"
 })
 public class Freud extends CokesAbility implements ActiveHandler {
 	private static final Config<Integer> mana_burn = new Config<Integer>(Freud.class, "마나소모량.화상", 30, a -> a > 0) {

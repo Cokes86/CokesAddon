@@ -17,7 +17,6 @@ public class AddonAbilityFactory {
 
 	static {
 		registerAbility(Seth.class);
-		registerAbility(Rabbit.class);
 		registerAbility(Ovisni.class);
 		registerAbility(Resurrection.class);
 		registerAbility(Blocks.class);
@@ -74,7 +73,7 @@ public class AddonAbilityFactory {
 		//1.5.0
 		registerAbility(Reisen.class);
 
-		//test
+		//1.7.0
 		registerTestAbility(Test.class);
 		registerTestAbility(JustinR.class);
 		registerTestAbility(BlackFeather.class);

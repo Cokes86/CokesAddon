@@ -40,7 +40,6 @@ import java.util.Map;
         "§7상태이상 §8- 악몽§r: 움직일 수 없고, 시야가 가려집니다.",
         "  액티브, 타겟팅 능력을 사용할 수 없습니다."
 })
-@Beta
 public class Iris extends CokesAbility implements ActiveHandler {
     private static final Config<Integer> RAINBOW_COOLDOWN = new Config<>(Iris.class, "레인보우_쿨타임", 10, COOLDOWN);
     private static final Config<Integer> RAINBOW_RANGE = new Config<>(Iris.class, "레인보우_범위", 7, a -> a > 0);

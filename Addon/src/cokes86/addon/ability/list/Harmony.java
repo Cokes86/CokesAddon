@@ -24,7 +24,7 @@ import java.util.function.Predicate;
 
 @AbilityManifest(name = "하모니", rank = Rank.C, species = Species.HUMAN, explain = {
 		"$[duration]마다 주변 $[range]블럭 이내의 플레이어의 수의 반만큼 체력을 회복하고,",
-		"그 주변 플레이어 역시 0.5의 체력을 증가시켜줍니다.",
+		"그 주변 플레이어 역시 0.5의 체력이 증가합니다.",
 		"주변 3명 이상의 플레이어가 아래 3개의 조건 중 하나 이상을 만족할 경우",
 		"이 능력은 2배의 효과를 가집니다.",
 		"  ● 모든 플레이어의 능력의 등급이 모두 같거나 다르다.",

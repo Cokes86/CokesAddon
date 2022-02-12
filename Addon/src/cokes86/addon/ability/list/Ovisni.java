@@ -1,6 +1,7 @@
 package cokes86.addon.ability.list;
 
 import cokes86.addon.ability.CokesAbility;
+import cokes86.addon.util.PredicateUnit;
 import daybreak.abilitywar.ability.AbilityManifest;
 import daybreak.abilitywar.ability.AbilityManifest.Rank;
 import daybreak.abilitywar.ability.AbilityManifest.Species;
@@ -24,38 +25,21 @@ import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
 @AbilityManifest(name = "오비스니", rank = Rank.A, species = Species.HUMAN, explain = {
-		"상대방을 공격할 시 상대방에게 §2맹독§f을 1씩 상승시키며",
-		"상대방은 매 $[DELAY]마다 §2맹독§f만큼의 대미지를 수시로 입습니다. (최대 $[MAX_DAMAGE_HIT])",
-		"철괴 우클릭시 모든 플레이어의 §2맹독§f을 모두 없애고",
+		"상대방을 공격할 시 상대방에게 §2맹독§f을 1 증가합니다.",
+		"상대방은 매 $[DELAY]마다 §2맹독§f만큼의 대미지를 받습니다. (최대 $[MAX_DAMAGE_HIT])",
+		"철괴 우클릭시 모든 플레이어의 §2맹독§f을 모두 감소하고",
 		"그 수의 2배만큼의 대미지를 입힙니다. $[COOLDOWN_CONFIG]",
-		"각각 플레이어마다 §2맹독§f은 최대 $[MAX_COUNTER_CONFIG]씩 쌓입니다.",
+		"각각 플레이어마다 §2맹독§f은 최대 $[MAX_COUNTER_CONFIG]까지 증가합니다.",
 		"철괴 좌클릭시 모든 플레이어의 §2맹독§f을 알 수 있습니다.",
 		"0개는 따로 표시하지 않습니다.",
 		"맹독을 가진 플레이어는 자신이 맹독에 걸렸는 지 알 수 없습니다."
 })
 public class Ovisni extends CokesAbility implements ActiveHandler {
 
-	public static final Config<Integer> COOLDOWN_CONFIG = new Config<Integer>(Ovisni.class, "쿨타임", 30, Config.Condition.COOLDOWN) {
-		@Override
-		public boolean condition(Integer value) {
-			return value > 0;
-		}
-	}, MAX_COUNTER_CONFIG = new Config<Integer>(Ovisni.class, "최대카운터", 7) {
-		@Override
-		public boolean condition(Integer value) {
-			return value > 0;
-		}
-	}, DELAY = new Config<Integer>(Ovisni.class, "지속딜레이", 10, Config.Condition.TIME) {
-		@Override
-		public boolean condition(Integer value) {
-			return value > 0;
-		}
-	}, MAX_DAMAGE_HIT = new Config<Integer>(Ovisni.class, "최대_맹독_타격_횟수", 12) {
-		@Override
-		public boolean condition(Integer arg0) {
-			return arg0 > 0;
-		}
-	};
+	public static final Config<Integer> COOLDOWN_CONFIG = new Config<>(Ovisni.class, "쿨타임", 30, Config.Condition.COOLDOWN);
+	public static final Config<Integer> MAX_COUNTER_CONFIG = new Config<>(Ovisni.class, "최대카운터", 7, PredicateUnit.positive(Integer.class));
+	public static final Config<Integer> DELAY = new Config<>(Ovisni.class, "지속딜레이", 10, Config.Condition.TIME);
+	public static final Config<Integer> MAX_DAMAGE_HIT = new Config<>(Ovisni.class, "최대_맹독_타격_횟수", 12, PredicateUnit.positive(Integer.class));
 
 	private final Map<Participant, OvisniStack> stackMap = new ConcurrentHashMap<>();
 

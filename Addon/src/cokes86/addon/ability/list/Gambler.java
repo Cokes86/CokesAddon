@@ -15,10 +15,10 @@ import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
 
 @AbilityManifest(name = "겜블러", rank = Rank.B, species = Species.HUMAN, explain = {
-		"매 $[du]마다 받는 대미지와 주는 대미지의 비율이",
-		"$[min]%에서 $[max]% 사이로 랜덤하게 바뀝니다.",
+		"매 $[du]마다 받는 대미지와 주는 대미지가",
+		"$[min]%에서 $[max]% 사이로 랜덤하게 변경됩니다.",
 		"게임 중 단 한 번 철괴 우클릭 시 다음 차례에는 비율이 바뀌지 않고 고정됩니다.",
-		"※능력 아이디어: RainStar_"
+		"[아이디어 제공자 §bRainStar_§f]"
 })
 public class Gambler extends CokesAbility implements ActiveHandler {
 	private static final Config<Integer> du = new Config<Integer>(Gambler.class, "주기", 15, Config.Condition.TIME) {

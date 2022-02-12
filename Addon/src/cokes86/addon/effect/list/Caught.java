@@ -9,6 +9,7 @@ import daybreak.abilitywar.game.manager.effect.registry.EffectManifest;
 import daybreak.abilitywar.game.manager.effect.registry.EffectRegistry;
 import daybreak.abilitywar.game.manager.effect.registry.EffectType;
 import daybreak.abilitywar.utils.base.concurrent.TimeUnit;
+import daybreak.abilitywar.utils.base.minecraft.damage.Damages;
 import daybreak.abilitywar.utils.base.minecraft.entity.health.Healths;
 import daybreak.abilitywar.utils.base.minecraft.nms.NMS;
 import org.bukkit.Bukkit;
@@ -28,7 +29,7 @@ import org.bukkit.event.player.PlayerMoveEvent;
 }, description = {
         "움직일 수 없고, 자신의 액티브, 타겟팅 능력을 사용할 수 없습니다.",
         "또한 자신은 상대방을 공격할 수 없으며,",
-        "매 2초마다 반칸의 대미지를 받는 대신, 그 이외의 공격을 받을 수 없습니다."
+        "매 2초마다 1의 고정 마법 대미지를 받는 대신, 그 이외의 공격을 받을 수 없습니다."
 })
 public class Caught extends AbstractGame.Effect implements Listener {
     private static final EffectRegistry.EffectRegistration<Caught> caught = EffectRegistry.registerEffect(Caught.class);
@@ -67,7 +68,7 @@ public class Caught extends AbstractGame.Effect implements Listener {
             hologram.teleport(hologram.getLocation().clone().add(0, direction ? .008 : -.008, 0));
         }
         if (count % 40 == 0 && participant.getPlayer().getHealth() > 1) {
-            Healths.setHealth(participant.getPlayer(), participant.getPlayer().getHealth() - 1);
+            Damages.damageMagic(participant.getPlayer(), null, true, 1.0f);
         }
     }
 
@@ -137,6 +138,7 @@ public class Caught extends AbstractGame.Effect implements Listener {
     @EventHandler
     public void onEntityDamage(EntityDamageEvent e) {
         if (e.getEntity().getUniqueId().equals(participant.getPlayer().getUniqueId())) {
+            if (e.getCause() == EntityDamageEvent.DamageCause.MAGIC && e.getFinalDamage() == 1.0) return;
             e.setCancelled(true);
         }
     }

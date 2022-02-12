@@ -18,10 +18,10 @@ import org.bukkit.event.entity.ProjectileHitEvent;
 import java.util.Objects;
 
 @AbilityManifest(name = "인챈트 애로우", rank = Rank.S, species = Species.HUMAN, explain = {
-		"활로 플레이어를 적중할 시 인챈트 스택이 거리에 비례하여 1에서 $[max_stack_up]만큼 상승하며,",
-		"스택당 추가 $[damage]%의 대미지를 입힙니다. (최대 $[max_stack]회, 합적용)",
+		"활로 플레이어를 적중할 시 원거리 대미지가 (인챈트 스택 * $[damage])% 증가하며,",
+		"인챈트 스택이 거리에 비례하여 1에서 $[max_stack_up]만큼 증가합니다. (최대 $[max_stack]회)",
 		"적중에 실패할 시 인챈트 스택이 거리에 비례하여 1에서 $[max_stack_down]만큼 감소합니다.",
-		"인챈트 스택이 0인 상태로 적중에 실패할 시 고정 $[risk]의 대미지를 입습니다.",
+		"인챈트 스택이 0인 상태로 적중에 실패할 시 $[risk]의 고정 대미지를 입습니다.",
 		"자신이 쏜 화살은 명중 시 바로 사라집니다.",
 		"[아이디어 제공자 §bRainStar_§f]"
 })
