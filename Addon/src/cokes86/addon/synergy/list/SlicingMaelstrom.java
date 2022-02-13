@@ -27,10 +27,10 @@ import java.util.function.Predicate;
 
 @AbilityManifest(name="날카로운 소용돌이", rank = AbilityManifest.Rank.A, species = AbilityManifest.Species.HUMAN, explain = {
         "철괴 우클릭 시 강력한 소용돌이를 생성해 자기 주변을 휩쓸어버립니다.",
-        "$[range]블럭 내에 0.5초마다 고정 1의 대미지를 주는 번개를 만들어",
+        "$[range]블럭 내에 0.5초마다 1의 고정 대미지를 주는 번개를 만들어",
         "범위 내 모든 플레이어에게 총 $[LIGHTNING_COUNT]번 내리꽂아버립니다. $[cooldown]",
         "번개를 3회 맞을 시 스턴이 1초 부여됩니다.",
-        "번개를 2회 맞을 때 마다 입는 피해가 1씩 상승합니다."
+        "번개를 2회 맞을 때 마다 해당 능력으로 받는 고정 대미지가 1씩 상승합니다."
 })
 public class SlicingMaelstrom extends CokesSynergy implements ActiveHandler {
     public static final Config<Integer> cooldown = new Config<Integer>(SlicingMaelstrom.class, "쿨타임", 60, Config.Condition.COOLDOWN) {

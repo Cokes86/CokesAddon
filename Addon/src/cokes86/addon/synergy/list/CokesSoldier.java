@@ -37,7 +37,7 @@ import java.util.function.Predicate;
 
 @AbilityManifest(name = "코크스<군인>", rank = AbilityManifest.Rank.SPECIAL, species = AbilityManifest.Species.OTHERS, explain = {
         "§7철괴 우클릭 §8- §cK2§f: 전방을 향해 점사 3발을 연속으로 발사합니다.",
-        "  해당 총알을 맞은 플레이어는 각각 $[K2_DAMAGE]만큼의 대미지를 입습니다. $[K2_COOLDOWN]",
+        "  해당 총알을 맞은 플레이어는 각각 $[K2_DAMAGE]의 대미지를 입습니다. $[K2_COOLDOWN]",
         "  발사 시, 반동에 의하여 잠시 움직일 수 없게 됩니다.",
         "§7금괴 우클릭 §8- §e§l사단장 방문§f: §e§l사단장님§f이 부대를 방문해 군기를 잡습니다.",
         "  장성에 대한 경례곡이 모두에게 울려퍼지며, 울려퍼지는동안 자신은",

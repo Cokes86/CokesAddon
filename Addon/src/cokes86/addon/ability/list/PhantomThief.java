@@ -62,26 +62,10 @@ public abstract class PhantomThief extends CokesAbility implements ActiveHandler
 		}
 	};
 
-	private static final Config<Integer> cooldown = new Config<Integer>(PhantomThief.class, "쿨타임", 120, Config.Condition.COOLDOWN) {
-		public boolean condition(Integer value) {
-			return value >= 0;
-		}
-	}, duration = new Config<Integer>(PhantomThief.class, "팬텀모드_지속시간", 15, Config.Condition.TIME) {
-		@Override
-		public boolean condition(Integer value) {
-			return value > 0;
-		}
-	}, glowing = new Config<Integer>(PhantomThief.class, "발광모드_지속시간", 10, Config.Condition.TIME) {
-		@Override
-		public boolean condition(Integer value) {
-			return value > 0;
-		}
-	}, change = new Config<Integer>(PhantomThief.class, "능력변환_대기시간", 30, Config.Condition.TIME) {
-		@Override
-		public boolean condition(Integer value) {
-			return value > 0;
-		}
-	};
+	private static final Config<Integer> cooldown = new Config<>(PhantomThief.class, "쿨타임", 120, Config.Condition.COOLDOWN);
+	private static final Config<Integer> duration = new Config<>(PhantomThief.class, "팬텀모드_지속시간", 15, Config.Condition.TIME);
+	private static final Config<Integer> glowing = new Config<>(PhantomThief.class, "발광모드_지속시간", 10, Config.Condition.TIME);
+	private static final Config<Integer> change = new Config<>(PhantomThief.class, "능력변환_대기시간", 30, Config.Condition.TIME);
 
 	private final Cooldown c = new Cooldown(cooldown.getValue());
 	private final PhantomThiefTimer timer = new PhantomThiefTimer();
@@ -218,12 +202,14 @@ public abstract class PhantomThief extends CokesAbility implements ActiveHandler
 		} else {
 			for (String str : new String[] {
 					"자신의 기본 이동 속도가 1.2배 빨라집니다.",
-					"철괴 좌클릭 시 가장 멀리있는 플레이어의 등 뒤 10칸으로 워프 후, 팬텀 모드가 " + duration + " 지속됩니다. "
-							+ cooldown,
-					"팬텀 모드 동안에는 투명화, 갑옷 삭제효과를 받는 대신, 공격할 수 없습니다.", "팬텀 모드 동안 대상에게 철괴로 우클릭시 팬텀 모드가 즉시 종료되고,",
+					"철괴 좌클릭 시 가장 멀리있는 플레이어의 등 뒤 10칸으로 워프 후, 팬텀 모드가 " + duration + " 지속됩니다. " + cooldown,
+					"팬텀 모드 동안에는 투명화, 갑옷 삭제효과를 받는 대신, 공격할 수 없습니다.",
+					"팬텀 모드 동안 대상에게 철괴로 우클릭시 팬텀 모드가 즉시 종료되고,",
 					"발광효과를 " + glowing + "동안 받습니다. 이때 대상은 이 사실을 알 수 있습니다.",
-					"발광효과동안 대상에게 공격을 받지 않았을 경우 해당 플레이어의 능력을 훔치고,", "대상은 " + change + " 뒤 팬텀시프로 능력이 바뀝니다.",
-					"반대로 공격을 받았을 경우 1초간 스턴상태가 되며 모두에게 자신의 능력이 공개됩니다.", "타게팅에 실패하거나 공격을 받아 스턴상태가 되었을 경우 쿨타임이 반으로 감소합니다.",
+					"발광효과동안 대상에게 공격을 받지 않았을 경우 해당 플레이어의 능력을 훔치고,",
+					"대상은 " + change + " 뒤 팬텀시프로 능력이 바뀝니다.",
+					"반대로 공격을 받았을 경우 1초간 스턴상태가 되며 모두에게 자신의 능력이 공개됩니다.",
+					"타게팅에 실패하거나 공격을 받아 스턴상태가 되었을 경우 쿨타임이 반으로 감소합니다.",
 					"[아이디어 제공자 §bRainStar_§f]" }) {
 				joiner.add(str);
 			}

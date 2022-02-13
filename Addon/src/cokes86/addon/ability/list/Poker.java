@@ -28,9 +28,9 @@ import java.util.function.Predicate;
 		"철괴 우클릭 시 1~10 사이의 숫자를 3개 뽑습니다. 이 3개의 숫자의 조합에 따라 각종 효과를 얻습니다. $[cool]",
 		"탑: 아무런 조합이 되지 않는 경우. 가장 높은 수가 9 또는 10일 경우 신속1 버프를 (높은 수)초 만큼 부여합니다.",
 		"§a페어§f : 2개의 숫자가 같은 경우입니다. (페어의 수 * 2)초 만큼 재생2 버프를 부여합니다.",
-		"§b스트레이트§f : 3개의 숫자가 연달아 나오는 경우입니다. 다음 공격은 (가장 높은 수)의 대미지를 추가로 입힙니다.",
+		"§b스트레이트§f : 3개의 숫자가 연달아 나오는 경우입니다. 다음 공격의 주는 대미지가 (가장 높은 수)만큼 증가합니다.",
 		"§e트리플§f : 3개의 숫자가 모두 같은 경우입니다.",
-		"자신과 팀을 제외한 모든 플레이어에게 (트리플의 수 * 1.5)의 관통대미지를 줍니다."
+		"자신과 팀을 제외한 모든 플레이어에게 (트리플의 수 * 1.5)의 고정 대미지를 줍니다."
 })
 public class Poker extends CokesAbility implements ActiveHandler {
 	private static final Config<Integer> cool = new Config<Integer>(Poker.class, "쿨타임", 30, Config.Condition.COOLDOWN) {

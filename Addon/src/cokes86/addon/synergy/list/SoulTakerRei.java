@@ -27,8 +27,8 @@ import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
 
 @AbilityManifest(name = "레이<소울테이커>", rank = AbilityManifest.Rank.L, species = AbilityManifest.Species.HUMAN, explain = {
-        "§7패시브 §8- §c소울 커팅§f: 상대방을 공격할 때 주는 대미지가 $[DAMAGE]만큼 상승합니다.",
-        "  추가로 자신이 가진 §e흡수 체력§f $[DEMAND_ABSORPTION]당 대미지가 1씩 상승합니다.",
+        "§7패시브 §8- §c소울 커팅§f: 상대방을 공격할 시 주는 대미지가 $[DAMAGE] 증가합니다.",
+        "  추가로 자신이 가진 §e흡수 체력§f $[DEMAND_ABSORPTION]당 대미지가 1 증가합니다.",
         "§7플레이어 사망 §8- §c리멤버§f: 플레이어가 사망한 자리에 영혼이 남아 돌아다닙니다.",
         "  영혼 근처 $[RANGE]블럭에 다가갈 경우 영혼을 흡수하여",
         "  자신의 §e흡수 체력§f이 $[REMEMBER_ABSORPTION]만큼 증가합니다.",

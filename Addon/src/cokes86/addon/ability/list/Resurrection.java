@@ -18,7 +18,7 @@ import org.bukkit.potion.PotionEffect;
 
 @AbilityManifest(name = "부활", rank = Rank.S, species = Species.DEMIGOD, explain = {
 		"치명적인 공격을 받았을 시 모든 체력을 회복하고 모든 버프가 사라집니다.",
-		"그 이후 모든 공격에 $[BONUS_DAMAGE]의 대미지를 추가로 줍니다."
+		"그 이후 모든 공격이 상대에게 주는 대미지가 $[BONUS_DAMAGE] 증가합니다."
 })
 public class Resurrection extends CokesAbility {
 	private static final Config<Double> BONUS_DAMAGE = new Config<>(Resurrection.class, "추가대미지", 2.0, a -> a > 0);

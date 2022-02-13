@@ -22,7 +22,7 @@ import java.util.function.Predicate;
 @AbilityManifest(name = "로열 스트레이트 플러쉬", rank = Rank.S, species = Species.OTHERS, explain = {
 		"철괴 우클릭시 1 ~ 20사이의 숫자를 2개 뽑습니다.",
 		"주변 $[range]범위 이내 모든 플레이어에게",
-		"뽑은 두 숫자의 합을 3으로 나눈 값에 해당하는 고정대미지를 줍니다. $[cool]"
+		"뽑은 두 숫자의 합을 3으로 나눈 값에 해당하는 고정 대미지를 줍니다. $[cool]"
 })
 public class RoyalStraightFlush extends CokesSynergy implements ActiveHandler {
 	public static Config<Integer> range = new Config<Integer>(RoyalStraightFlush.class, "범위", 15) {
