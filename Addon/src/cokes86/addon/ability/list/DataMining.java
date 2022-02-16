@@ -64,7 +64,7 @@ public class DataMining extends CokesAbility implements ActiveHandler {
 			defenseUp = new Config<>(DataMining.class, "최대받는대미지감소성장치", 25.00, "#단위: %");
 	private static final Config<Integer> player_value = new Config<>(DataMining.class, "인원별_스택치", 4),
 			duration = new Config<>(DataMining.class, "자동스택추가주기", 60, Config.Condition.TIME);
-	private final DecimalFormat df = new DecimalFormat("0.00");
+	private final DecimalFormat df = new DecimalFormat("#.##");
 	private int damage_count = 0;
 	private int defense_count = 0;
 	private final ActionbarChannel ac = newActionbarChannel();

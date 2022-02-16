@@ -35,7 +35,7 @@ public class Queen extends CokesAbility implements ActiveHandler, TargetHandler 
 			return aDouble >= 0;
 		}
 	};
-	private final DecimalFormat df = new DecimalFormat(".00");
+	private final DecimalFormat df = new DecimalFormat("#.##");
 	private final double defaultHealth = AttributeUtil.getMaxHealth(getPlayer());
 	private final Cooldown cooldown = new Cooldown(cool.getValue());
 

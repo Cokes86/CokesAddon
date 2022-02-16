@@ -41,7 +41,6 @@ import java.util.Objects;
 import java.util.StringJoiner;
 import java.util.function.Predicate;
 
-@SuppressWarnings(value = { "unused" })
 @AbilityManifest(name = "팬텀 시프", rank = AbilityManifest.Rank.S, species = AbilityManifest.Species.HUMAN, explain = {
 		"$(Explain)" })
 @NotAvailable(AbstractTripleMix.class)

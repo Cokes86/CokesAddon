@@ -15,13 +15,12 @@ import java.util.Iterator;
 import java.util.List;
 
 @AbilityManifest(name = "블랙 패더", rank = AbilityManifest.Rank.A, species = AbilityManifest.Species.OTHERS, explain = {
-        "패시브 - 검은 날개: 상대방을 공격할 시 주는 대미지가 $[DAMAGE]%로 조정됩니다.",
-        "  모든 플레이어가 가지고 있는 블랙 패더 카운터 1개 당",
-        "  $[DAMAGE_UPGRADE]%p만큼 증가합니다.",
-        "공격 시 - 검은 비수: 상대방에게 블랙 패더 카운터 1개를 $[DURATION]동안 남깁니다.",
-        "  이는 검은 날개가 적용된 이후 증가됩니다.",
-        "플래이어 사망 시 - 검은 잔해: 가지고 있던 모든 블랙 패더 카운터를 자기가 흡수합니다.",
-        "  흡수한 블랙 패더 카운터는 영구히 적용됩니다."
+        "§7공격 시 §8- §c검은 날개§f: 상대방을 공격할 시 주는 대미지가 ($[DAMAGE] + 게임 내 존재하는 §7블랙 패더 카운터§f * $[DAMAGE_UPGRADE])%로 변경됩니다.",
+        "  이후 상대방에게 §7블랙 패더 카운터§f를 1 상승시킵니다.",
+        "  이는 $[DURATION] 유지됩니다.",
+        "§7플래이어 사망 시 §8- §c검은 잔해§f: 가지고 있던 §7블랙 패더 카운터§f를 전부 제거하고",
+        "  그 제거한 수치만큼 자신에게 §7블랙 패더 카운터§f를 상승시킵니다.",
+        "  이는 영구히 증가합니다."
 })
 public class BlackFeather extends CokesAbility {
     private static final Config<Double> DAMAGE = new Config<>(BlackFeather.class, "damage", 80.0, a -> a >= 0,

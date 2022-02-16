@@ -97,7 +97,6 @@ public class Rude extends CokesAbility implements ActiveHandler {
         @Override
         protected void onDurationStart() {
             knockback = AttributeUtil.getKnockbackResistance(getPlayer());
-            AttributeUtil.setKnockbackResistance(getPlayer(), 0);
         }
 
         @Override
@@ -116,7 +115,6 @@ public class Rude extends CokesAbility implements ActiveHandler {
         @Override
         protected void onDurationEnd() {
             inventory.clear();
-            AttributeUtil.setKnockbackResistance(getPlayer(), knockback);
             PotionEffects.SLOW.removePotionEffect(getPlayer());
         }
 

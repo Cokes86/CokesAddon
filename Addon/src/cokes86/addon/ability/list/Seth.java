@@ -41,7 +41,7 @@ import java.util.function.Predicate;
 public class Seth extends CokesAbility implements ActiveHandler {
 	private final List<Participant> participants = new ArrayList<>(getGame().getParticipants());
 	private int kill = 0;
-	private final DecimalFormat df = new DecimalFormat("0.00");
+	private final DecimalFormat df = new DecimalFormat("0.##");
 	public static final Config<Integer> MAX_DAMAGE = new Config<>(Seth.class, "추가대미지", 9, value -> value >= 0),
 			COOL = new Config<>(Seth.class, "쿨타임", 60, Config.Condition.COOLDOWN),
 			DEBUFF = new Config<>(Seth.class, "디버프시간", 5, Config.Condition.TIME),

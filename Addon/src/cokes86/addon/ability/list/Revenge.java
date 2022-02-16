@@ -23,7 +23,7 @@ import java.text.DecimalFormat;
 })
 public class Revenge extends CokesAbility {
 	public static Config<Integer> PERCENTAGE = new Config<>(Revenge.class, "반사대미지(%)", 40, integer -> integer > 0);
-	private final DecimalFormat df = new DecimalFormat("0.00");
+	private final DecimalFormat df = new DecimalFormat("0.##");
 	private double finalDamage = 0;
 	private final ActionbarChannel ac = newActionbarChannel();
 
