@@ -2,6 +2,7 @@ package cokes86.addon.ability.list;
 
 import cokes86.addon.ability.CokesAbility;
 import cokes86.addon.util.AttributeUtil;
+import cokes86.addon.util.PredicateUnit;
 import daybreak.abilitywar.ability.AbilityManifest;
 import daybreak.abilitywar.ability.AbilityManifest.Rank;
 import daybreak.abilitywar.ability.AbilityManifest.Species;
@@ -38,37 +39,12 @@ import java.util.List;
 		"[아이디어 제공자 §bSato207§f]"
 })
 public class Reincarnation extends CokesAbility {
-	public static Config<Integer> duration = new Config<Integer>(Reincarnation.class, "지속시간", 25, Config.Condition.TIME) {
-		@Override
-		public boolean condition(Integer value) {
-			return value > 0;
-		}
-	}, cooldown = new Config<Integer>(Reincarnation.class, "쿨타임", 600, Config.Condition.COOLDOWN) {
-		@Override
-		public boolean condition(Integer value) {
-			return value > 0;
-		}
-	}, damage = new Config<Integer>(Reincarnation.class, "감소대미지(%)", 50) {
-		@Override
-		public boolean condition(Integer value) {
-			return value > 0;
-		}
-	}, hit = new Config<Integer>(Reincarnation.class, "타격횟수", 5) {
-		@Override
-		public boolean condition(Integer value) {
-			return value > 0;
-		}
-	}, heal = new Config<Integer>(Reincarnation.class, "회복수치량(%)", 5) {
-		@Override
-		public boolean condition(Integer value) {
-			return value > 0;
-		}
-	}, respawn = new Config<Integer>(Reincarnation.class, "회복량", 2) {
-		@Override
-		public boolean condition(Integer value) {
-			return value > 0;
-		}
-
+	public static final Config<Integer> duration = new Config<>(Reincarnation.class, "지속시간", 25, Config.Condition.TIME);
+	public static final Config<Integer> cooldown = new Config<>(Reincarnation.class, "쿨타임", 600, Config.Condition.COOLDOWN);
+	public static final Config<Integer> damage = new Config<>(Reincarnation.class, "감소대미지(%)", 50, PredicateUnit.positive());
+	public static final Config<Integer> hit = new Config<>(Reincarnation.class, "타격횟수", 5, PredicateUnit.positive());
+	public static final Config<Integer> heal = new Config<>(Reincarnation.class, "회복수치량(%)", 5, PredicateUnit.positive());
+	public static final Config<Integer> respawn = new Config<Integer>(Reincarnation.class, "회복량", 2, PredicateUnit.positive()) {
 		public String toString() {
 			return getValue().toString() + KoreanUtil.getJosa(getValue().toString(), KoreanUtil.Josa.이가);
 		}

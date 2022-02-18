@@ -2,6 +2,7 @@ package cokes86.addon.ability.list;
 
 import cokes86.addon.ability.CokesAbility;
 import cokes86.addon.util.PredicateUnit;
+import cokes86.addon.util.TextMaker;
 import daybreak.abilitywar.ability.AbilityManifest;
 import daybreak.abilitywar.ability.AbilityManifest.Rank;
 import daybreak.abilitywar.ability.AbilityManifest.Species;
@@ -12,7 +13,6 @@ import daybreak.abilitywar.game.event.participant.ParticipantDeathEvent;
 import daybreak.abilitywar.utils.base.concurrent.TimeUnit;
 import daybreak.abilitywar.utils.base.minecraft.nms.IHologram;
 import daybreak.abilitywar.utils.base.minecraft.nms.NMS;
-import daybreak.google.common.base.Strings;
 import org.bukkit.Material;
 import org.bukkit.entity.Arrow;
 import org.bukkit.entity.Entity;
@@ -37,13 +37,15 @@ import java.util.concurrent.ConcurrentHashMap;
 public class Ovisni extends CokesAbility implements ActiveHandler {
 
 	public static final Config<Integer> COOLDOWN_CONFIG = new Config<>(Ovisni.class, "쿨타임", 30, Config.Condition.COOLDOWN);
-	public static final Config<Integer> MAX_COUNTER_CONFIG = new Config<>(Ovisni.class, "최대카운터", 7, PredicateUnit.positive(Integer.class));
+	public static final Config<Integer> MAX_COUNTER_CONFIG = new Config<>(Ovisni.class, "최대카운터", 7, PredicateUnit.positive());
 	public static final Config<Integer> DELAY = new Config<>(Ovisni.class, "지속딜레이", 10, Config.Condition.TIME);
-	public static final Config<Integer> MAX_DAMAGE_HIT = new Config<>(Ovisni.class, "최대_맹독_타격_횟수", 12, PredicateUnit.positive(Integer.class));
+	public static final Config<Integer> MAX_DAMAGE_HIT = new Config<>(Ovisni.class, "최대_맹독_타격_횟수", 12, PredicateUnit.positive());
 
 	private final Map<Participant, OvisniStack> stackMap = new ConcurrentHashMap<>();
 
 	private final Cooldown cooldownTimer = new Cooldown(COOLDOWN_CONFIG.getValue());
+
+	private final String icon = "☣";
 
 	public Ovisni(Participant participant) {
 		super(participant);
@@ -133,7 +135,7 @@ public class Ovisni extends CokesAbility implements ActiveHandler {
 			this.target = target;
 			final Player targetPlayer = target.getPlayer();
 			this.hologram = NMS.newHologram(targetPlayer.getWorld(), targetPlayer.getLocation().getX(), targetPlayer.getLocation().getY() + targetPlayer.getEyeHeight() + 0.6, targetPlayer.getLocation().getZ());
-			this.hologram.setText(Strings.repeat("§2☣", stack).concat(Strings.repeat("§f☣", maxCounter - stack)));
+			this.hologram.setText(TextMaker.repeatWithTwoColor(icon, '2', stack, 'f', maxCounter-stack));
 			this.hologram.display(getPlayer());
 			this.stack = 1;
 			this.start();
@@ -141,7 +143,7 @@ public class Ovisni extends CokesAbility implements ActiveHandler {
 
 		@Override
 		protected void run(int arg0) {
-			this.hologram.setText(Strings.repeat("§2☣", stack).concat(Strings.repeat("§f☣", maxCounter - stack)));
+			this.hologram.setText(TextMaker.repeatWithTwoColor(icon, '2', stack, 'f', maxCounter-stack));
 			final Player targetPlayer = target.getPlayer();
 			hologram.teleport(targetPlayer.getWorld(), targetPlayer.getLocation().getX(), targetPlayer.getLocation().getY() + targetPlayer.getEyeHeight() + 0.6, targetPlayer.getLocation().getZ(), targetPlayer.getLocation().getYaw(), 0);
 			if (arg0 % (20 * DELAY.getValue()) == 0 && damageCount <= MAX_DAMAGE_HIT.getValue()) {

@@ -1,6 +1,7 @@
 package cokes86.addon.ability.list;
 
 import cokes86.addon.ability.CokesAbility;
+import cokes86.addon.util.PredicateUnit;
 import daybreak.abilitywar.AbilityWar;
 import daybreak.abilitywar.ability.AbilityManifest;
 import daybreak.abilitywar.ability.decorator.ActiveHandler;
@@ -45,15 +46,15 @@ import java.util.function.Predicate;
         "  <S>: 저항 버프"
 })
 public class Cokes extends CokesAbility implements ActiveHandler {
-    private static final Config<Integer> RIGHT_COOL = new Config<>(Cokes.class, "이펙트_쿨타임", 60, Config.Condition.COOLDOWN),
-    LEFT_COOL = new Config<>(Cokes.class, "슬롯머신_쿨타임", 30, Config.Condition.COOLDOWN),
-    LEFT_DURATION = new Config<>(Cokes.class, "슬롯머신_지속시간", 10, Config.Condition.TIME);
+    private static final Config<Integer> RIGHT_COOL = new Config<>(Cokes.class, "이펙트_쿨타임", 60, Config.Condition.COOLDOWN);
+    private static final Config<Integer> LEFT_COOL = new Config<>(Cokes.class, "슬롯머신_쿨타임", 30, Config.Condition.COOLDOWN);
+    private static final Config<Integer> LEFT_DURATION = new Config<>(Cokes.class, "슬롯머신_지속시간", 10, Config.Condition.TIME);
 
-    private static final Config<Integer> EFFECT_DURATION = new Config<>(Cokes.class, "이펙트_일반상태이상_지속시간", 15, a -> a>1);
-    private static final Config<Integer> MOVEMENT_DURATION = new Config<>(Cokes.class, "이펙트_이동상태이상_지속시간", 5, a -> a>1);
+    private static final Config<Integer> EFFECT_DURATION = new Config<>(Cokes.class, "이펙트_일반상태이상_지속시간", 15, PredicateUnit.upper(1));
+    private static final Config<Integer> MOVEMENT_DURATION = new Config<>(Cokes.class, "이펙트_이동상태이상_지속시간", 5, PredicateUnit.upper(1));
 
-    private final Cooldown rightCool = new Cooldown(RIGHT_COOL.getValue(), "이펙트"),
-            leftCool = new Cooldown(LEFT_COOL.getValue(), "슬롯머신");
+    private final Cooldown rightCool = new Cooldown(RIGHT_COOL.getValue(), "이펙트");
+    private final Cooldown leftCool = new Cooldown(LEFT_COOL.getValue(), "슬롯머신");
     private final SlotMachineTimer slot = new SlotMachineTimer();
 
     public Cokes(AbstractGame.Participant arg0) {

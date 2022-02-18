@@ -33,12 +33,7 @@ import java.util.function.Predicate;
 		"자신과 팀을 제외한 모든 플레이어에게 (트리플의 수 * 1.5)의 고정 대미지를 줍니다."
 })
 public class Poker extends CokesAbility implements ActiveHandler {
-	private static final Config<Integer> cool = new Config<Integer>(Poker.class, "쿨타임", 30, Config.Condition.COOLDOWN) {
-		@Override
-		public boolean condition(Integer value) {
-			return value >= 0;
-		}
-	};
+	private static final Config<Integer> cool = new Config<>(Poker.class, "쿨타임", 30, Config.Condition.COOLDOWN);
 	private final int[] num = new int[3];
 	private int additional = 0;
 	private final ActionbarChannel ac = newActionbarChannel();

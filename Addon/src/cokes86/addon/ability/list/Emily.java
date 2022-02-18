@@ -1,6 +1,7 @@
 package cokes86.addon.ability.list;
 
 import cokes86.addon.ability.CokesAbility;
+import cokes86.addon.util.PredicateUnit;
 import daybreak.abilitywar.AbilityWar;
 import daybreak.abilitywar.ability.AbilityManifest;
 import daybreak.abilitywar.ability.SubscribeEvent;
@@ -77,21 +78,21 @@ public class Emily extends CokesAbility implements ActiveHandler {
     private static final Config<Integer> ALCHEMY_CAPSULE_COOL = new Config<>(Emily.class, "알케미_캡슐_쿨타임", 15, Config.Condition.COOLDOWN);
     private static final Config<Integer> ALCHEMY_CAPSULE_DURATION = new Config<>(Emily.class, "알케미_캡슐_지속시간", 7, Config.Condition.TIME);
     private static final Config<Integer> ALCHEMY_AREA_SLOWDOWN_COOL = new Config<>(Emily.class, "알케미_에리어_둔화_쿨타임_증가량", 1, Config.Condition.TIME);
-    private static final Config<Integer> ALCHEMY_AREA_FROST_MAX_COUNT = new Config<>(Emily.class, "알케미_에리어_둔화_빙결_횟수", 3, a -> a>0);
+    private static final Config<Integer> ALCHEMY_AREA_FROST_MAX_COUNT = new Config<>(Emily.class, "알케미_에리어_둔화_빙결_횟수", 3, PredicateUnit.positive());
     private static final Config<Double> ALCHEMY_CAPSULE_POWER = new Config<>(Emily.class, "알케미_캡슐_힘", 1.35, new String[] {
             "알케미 캡슐이 날아가는 힘을 조절합니다.",
             "1을 기준으로 값이 커질수록 더욱 강한 힘으로 날아갑니다.",
             "기본값: 1.35"
-    }, Config.Condition.NORMAL, a -> a>0);
+    }, Config.Condition.NORMAL, PredicateUnit.positive());
     private static final Config<Double> ALCHEMY_CAPSULE_SPEED = new Config<>(Emily.class, "알케미_캡슐_속도", 1.5, new String[] {
             "알케미 캡슐이 날아가는 속도를 조절합니다.",
             "1을 기준으로 값이 커질수록 더욱 빠르게 날아갑니다.",
             "기본값: 1.5"
-    }, Config.Condition.NORMAL, a -> a>0);
-    private static final Config<Double> ALCHEMY_CAPSULE_DAMAGE = new Config<>(Emily.class, "알케미_캡슐_대미지", 5.0, a -> a > 0.0);
-    private static final Config<Double> ALCHEMY_CAPSULE_AREA_RANGE = new Config<>(Emily.class, "알케미_캡슐_에리어_범위", 6.5, a -> a > 0);
-    private static final Config<Double> ALCHEMY_AREA_EXPLOSION_DAMAGE = new Config<>(Emily.class, "알케미_에리어_폭발_대미지", 5.0, a -> a > 0);
-    private static final Config<Double> ALCHEMY_AREA_BONUS_DAMAGE = new Config<>(Emily.class, "알케미_에리어_화상_추가대미지", 3.0, a -> a > 0);
+    }, Config.Condition.NORMAL, PredicateUnit.positive());
+    private static final Config<Double> ALCHEMY_CAPSULE_DAMAGE = new Config<>(Emily.class, "알케미_캡슐_대미지", 5.0, PredicateUnit.positive());
+    private static final Config<Double> ALCHEMY_CAPSULE_AREA_RANGE = new Config<>(Emily.class, "알케미_캡슐_에리어_범위", 6.5, PredicateUnit.positive());
+    private static final Config<Double> ALCHEMY_AREA_EXPLOSION_DAMAGE = new Config<>(Emily.class, "알케미_에리어_폭발_대미지", 5.0, PredicateUnit.positive());
+    private static final Config<Double> ALCHEMY_AREA_BONUS_DAMAGE = new Config<>(Emily.class, "알케미_에리어_화상_추가대미지", 3.0, PredicateUnit.positive());
 
     private final Cooldown cooldown = new Cooldown(ALCHEMY_CAPSULE_COOL.getValue(), CooldownDecrease._25);
     private final AbilityTimer alchemyChangeCooldown = new AbilityTimer(1){}.setPeriod(TimeUnit.TICKS, 4);

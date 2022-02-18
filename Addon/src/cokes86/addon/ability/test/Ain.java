@@ -1,6 +1,7 @@
 package cokes86.addon.ability.test;
 
 import cokes86.addon.ability.CokesAbility;
+import cokes86.addon.util.PredicateUnit;
 import daybreak.abilitywar.ability.AbilityManifest;
 import daybreak.abilitywar.ability.decorator.ActiveHandler;
 import daybreak.abilitywar.game.AbstractGame;
@@ -13,15 +14,15 @@ import java.util.List;
 
 @AbilityManifest(name = "아인", rank = AbilityManifest.Rank.A, species = AbilityManifest.Species.HUMAN, explain = {
         "철괴 우클릭 - 능력 망각: 주변 $[RANGE]블럭 이내 능력자가 쿨타임이 작동중일 때,",
-        "  그 쿨타임을 $[INCREASE]초 증가시킵키다. $[COOL]"
+        "  그 쿨타임을 $[INCREASE] 증가시킵키다. $[COOL]"
 })
 public class Ain extends CokesAbility implements ActiveHandler {
-    private static final Config<Integer> RANGE = new Config<>(Ain.class, "range", 5, a -> a > 0,
+    private static final Config<Integer> RANGE = new Config<>(Ain.class, "range", 5, PredicateUnit.positive(),
             "# 능력 망각 범위", "# 기본값: 5 (블럭)");
-    private static final Config<Integer> INCREASE = new Config<>(Ain.class, "increase", 30, a -> a > 0,
+    private static final Config<Integer> INCREASE = new Config<>(Ain.class, "increase", 30, Config.Condition.TIME,
             "# 능력 망각 상대방 쿨타임 증가량", "# 기본값: 30 (초)");
     private static final Config<Integer> COOL = new Config<>(Ain.class, "cooldown", 60, Config.Condition.COOLDOWN,
-            "# 능력 망각 범위", "# 기본값: 5 (블럭)");
+            "# 능력 망각 쿨타임", "# 기본값: 60 (초)");
 
     private final Cooldown cooldown = new Cooldown(COOL.getValue());
 

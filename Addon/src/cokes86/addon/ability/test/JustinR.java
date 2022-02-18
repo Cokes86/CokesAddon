@@ -1,6 +1,7 @@
 package cokes86.addon.ability.test;
 
 import cokes86.addon.ability.CokesAbility;
+import cokes86.addon.util.PredicateUnit;
 import daybreak.abilitywar.ability.AbilityManifest;
 import daybreak.abilitywar.ability.SubscribeEvent;
 import daybreak.abilitywar.ability.decorator.ActiveHandler;
@@ -45,12 +46,12 @@ import java.util.concurrent.ConcurrentHashMap;
 @Beta
 public class JustinR extends CokesAbility implements ActiveHandler {
     private static final Config<Integer> PERIOD = new Config<>(JustinR.class, "두가지_인격.인격변경주기", 45, Config.Condition.TIME);
-    private static final Config<Integer> MAX_COUNTER = new Config<>(JustinR.class, "슬래시.흑심카운터_최대치", 10, a -> a>1);
+    private static final Config<Integer> MAX_COUNTER = new Config<>(JustinR.class, "슬래시.흑심카운터_최대치", 10, PredicateUnit.upper(1));
     private static final Config<Integer> GET_THIS_COOLDOWN = new Config<>(JustinR.class, "이거나_받아라.2인격_쿨타임", 60, Config.Condition.COOLDOWN);
     private static final Config<Integer> ESCAPE_COOLDOWN = new Config<>(JustinR.class, "탈출_쿨타임", 45, Config.Condition.COOLDOWN);
-    private static final Config<Integer> DAMAGE = new Config<>(JustinR.class, "슬래시.1인격_대미지_감소량(%)", 70, a -> a>0);
-    private static final Config<Float> GET_THIS_DAMAGE = new Config<>(JustinR.class, "이거나_받아라.2인격_고정대미지", 2.0f, a->a>0);
-    private static final Config<Integer> TWO_PERSON_DAMAGE_INCREASE = new Config<>(JustinR.class, "두가지_인격.2인격_받는대미지_증가량(%)", 120, a -> a > 100);
+    private static final Config<Integer> DAMAGE = new Config<>(JustinR.class, "슬래시.1인격_대미지_감소량(%)", 70, PredicateUnit.positive());
+    private static final Config<Float> GET_THIS_DAMAGE = new Config<>(JustinR.class, "이거나_받아라.2인격_고정대미지", 2.0f, PredicateUnit.positive());
+    private static final Config<Integer> TWO_PERSON_DAMAGE_INCREASE = new Config<>(JustinR.class, "두가지_인격.2인격_받는대미지_증가량(%)", 20, PredicateUnit.positive());
 
     private static final Set<Material> swords = ImmutableSet.of(MaterialX.WOODEN_SWORD.getMaterial(), Material.STONE_SWORD, Material.IRON_SWORD, MaterialX.GOLDEN_SWORD.getMaterial(), Material.DIAMOND_SWORD);
     static {

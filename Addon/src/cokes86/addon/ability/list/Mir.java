@@ -51,12 +51,12 @@ import java.util.function.Predicate;
 public class Mir extends CokesAbility implements ActiveHandler {
 	private static final Config<Integer> cool = new Config<>(Mir.class, "쿨타임", 20, Config.Condition.COOLDOWN);
 	private static final Config<Integer> duration = new Config<>(Mir.class, "지속시간", 10, Config.Condition.TIME);
-	private static final Config<Integer> range_ifrit = new Config<>(Mir.class, "범위.이프리트", 8, PredicateUnit.positive(Integer.class));
-	private static final Config<Integer> range_shade = new Config<>(Mir.class, "범위.셰이드", 12, PredicateUnit.positive(Integer.class));
-	private static final Config<Integer> range_thunder = new Config<>(Mir.class, "범위.썬더버드", 12, PredicateUnit.positive(Integer.class));
-	private static final Config<Integer> range_gnome = new Config<>(Mir.class, "범위.노움", 15, PredicateUnit.positive(Integer.class));
-	private static final Config<Integer> damage_decrease = new Config<>(Mir.class, "노움_대미지감소율(%)", 25, PredicateUnit.positive(Integer.class));
-	private static final Config<Integer> damage_increase = new Config<>(Mir.class, "썬더버드_딜증가배율(%)", 20, PredicateUnit.positive(Integer.class));
+	private static final Config<Integer> range_ifrit = new Config<>(Mir.class, "범위.이프리트", 8, PredicateUnit.positive());
+	private static final Config<Integer> range_shade = new Config<>(Mir.class, "범위.셰이드", 12, PredicateUnit.positive());
+	private static final Config<Integer> range_thunder = new Config<>(Mir.class, "범위.썬더버드", 12, PredicateUnit.positive());
+	private static final Config<Integer> range_gnome = new Config<>(Mir.class, "범위.노움", 15, PredicateUnit.positive());
+	private static final Config<Integer> damage_decrease = new Config<>(Mir.class, "노움_대미지감소율(%)", 25, PredicateUnit.positive());
+	private static final Config<Integer> damage_increase = new Config<>(Mir.class, "썬더버드_딜증가배율(%)", 20, PredicateUnit.positive());
 
 	private final Predicate<Entity> predicate = entity -> {
 		if (entity.equals(getPlayer())) return false;

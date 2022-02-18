@@ -1,6 +1,7 @@
 package cokes86.addon.ability.list;
 
 import cokes86.addon.ability.CokesAbility;
+import cokes86.addon.util.PredicateUnit;
 import cokes86.addon.util.disguise.DisguiseUtil;
 import daybreak.abilitywar.ability.AbilityManifest;
 import daybreak.abilitywar.ability.AbilityManifest.Rank;
@@ -32,12 +33,12 @@ import org.bukkit.event.player.PlayerQuitEvent;
 		"§8팀전에서 이름표가 바뀌는 기능은 작동하지 않습니다."
 })
 public class Disguise extends CokesAbility implements ActiveHandler {
-	private static final Config<Integer> range = new Config<>(Disguise.class, "범위", 7, integer -> integer > 0),
-			count = new Config<>(Disguise.class, "변장_후_공격받는_횟수", 3, integer -> integer > 0),
-			cool = new Config<>(Disguise.class, "쿨타임", 180, Config.Condition.COOLDOWN),
-			reflect = new Config<>(Disguise.class, "반사(%)", 50, integer -> integer > 0);
-	private static final Config<Boolean> changeSkin = new Config<>(Disguise.class, "스킨변경", true),
-			changeNameTag = new Config<>(Disguise.class, "이름표변경", true);
+	private static final Config<Integer> range = new Config<>(Disguise.class, "범위", 7, PredicateUnit.positive());
+	private static final Config<Integer> count = new Config<>(Disguise.class, "변장_후_공격받는_횟수", 3, PredicateUnit.positive());
+	private static final Config<Integer> cool = new Config<>(Disguise.class, "쿨타임", 180, Config.Condition.COOLDOWN);
+	private static final Config<Integer> reflect = new Config<>(Disguise.class, "반사(%)", 50, PredicateUnit.positive());
+	private static final Config<Boolean> changeSkin = new Config<>(Disguise.class, "스킨변경", true);
+	private static final Config<Boolean> changeNameTag = new Config<>(Disguise.class, "이름표변경", true);
 	private final Cooldown cooldown = new Cooldown(cool.getValue());
 	private final Predicate<Entity> predicate = entity -> {
 		if (entity == null || entity.equals(getPlayer())) return false;

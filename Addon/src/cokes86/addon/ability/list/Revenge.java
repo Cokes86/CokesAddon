@@ -1,6 +1,7 @@
 package cokes86.addon.ability.list;
 
 import cokes86.addon.ability.CokesAbility;
+import cokes86.addon.util.PredicateUnit;
 import daybreak.abilitywar.ability.AbilityManifest;
 import daybreak.abilitywar.ability.AbilityManifest.Rank;
 import daybreak.abilitywar.ability.AbilityManifest.Species;
@@ -22,7 +23,7 @@ import java.text.DecimalFormat;
 		"상대방을 공격할 시 최근에 플레이어에게 받았던 대미지의 $[PERCENTAGE]% 만큼의 고정 마법 대미지를 상대방에게 추가적으로 입힙니다."
 })
 public class Revenge extends CokesAbility {
-	public static Config<Integer> PERCENTAGE = new Config<>(Revenge.class, "반사대미지(%)", 40, integer -> integer > 0);
+	public static final Config<Integer> PERCENTAGE = new Config<>(Revenge.class, "반사대미지(%)", 40, PredicateUnit.positive());
 	private final DecimalFormat df = new DecimalFormat("0.##");
 	private double finalDamage = 0;
 	private final ActionbarChannel ac = newActionbarChannel();

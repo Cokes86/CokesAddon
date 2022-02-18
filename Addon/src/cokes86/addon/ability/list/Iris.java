@@ -2,13 +2,13 @@ package cokes86.addon.ability.list;
 
 import cokes86.addon.ability.CokesAbility;
 import cokes86.addon.effect.list.Nightmare;
+import cokes86.addon.util.PredicateUnit;
 import daybreak.abilitywar.ability.AbilityManifest;
 import daybreak.abilitywar.ability.decorator.ActiveHandler;
 import daybreak.abilitywar.config.enums.CooldownDecrease;
 import daybreak.abilitywar.game.AbstractGame;
 import daybreak.abilitywar.game.module.DeathManager;
 import daybreak.abilitywar.game.team.interfaces.Teamable;
-import daybreak.abilitywar.utils.annotations.Beta;
 import daybreak.abilitywar.utils.base.Formatter;
 import daybreak.abilitywar.utils.base.concurrent.TimeUnit;
 import daybreak.abilitywar.utils.base.math.LocationUtil;
@@ -42,11 +42,11 @@ import java.util.Map;
 })
 public class Iris extends CokesAbility implements ActiveHandler {
     private static final Config<Integer> RAINBOW_COOLDOWN = new Config<>(Iris.class, "레인보우_쿨타임", 10, COOLDOWN);
-    private static final Config<Integer> RAINBOW_RANGE = new Config<>(Iris.class, "레인보우_범위", 7, a -> a > 0);
-    private static final Config<Double> RAINBOW_DAMAGE = new Config<>(Iris.class, "레인보우_대미지", 3.0, a -> a > 0);
+    private static final Config<Integer> RAINBOW_RANGE = new Config<>(Iris.class, "레인보우_범위", 7, PredicateUnit.positive());
+    private static final Config<Double> RAINBOW_DAMAGE = new Config<>(Iris.class, "레인보우_대미지", 3.0, PredicateUnit.positive());
     private static final Config<Integer> NIGHTMARE_DURATION = new Config<>(Iris.class, "악몽_지속시간", 7, TIME);
     private static final Config<Integer> NIGHTMARE_COOLDOWN = new Config<>(Iris.class, "나이트메어_쿨타임", 50, COOLDOWN);
-    private static final Config<Integer> STACK_PREDICATE = new Config<>(Iris.class, "나이트메어_스택조건", 5, a -> a > 0);
+    private static final Config<Integer> STACK_PREDICATE = new Config<>(Iris.class, "나이트메어_스택조건", 5, PredicateUnit.positive());
 
     private final Cooldown rainbow = new Cooldown(RAINBOW_COOLDOWN.getValue(), "레인보우", CooldownDecrease._90);
     private final Cooldown nightmare = new Cooldown(NIGHTMARE_COOLDOWN.getValue(), "나이트메어", CooldownDecrease._90);

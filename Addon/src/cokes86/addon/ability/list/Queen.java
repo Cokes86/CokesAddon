@@ -2,6 +2,7 @@ package cokes86.addon.ability.list;
 
 import cokes86.addon.ability.CokesAbility;
 import cokes86.addon.util.AttributeUtil;
+import cokes86.addon.util.PredicateUnit;
 import daybreak.abilitywar.ability.AbilityBase;
 import daybreak.abilitywar.ability.AbilityManifest;
 import daybreak.abilitywar.ability.SubscribeEvent;
@@ -23,19 +24,9 @@ import java.text.DecimalFormat;
 		"철괴 좌클릭시, 자신의 최대체력을 수치로 확인할 수 있습니다."
 })
 public class Queen extends CokesAbility implements ActiveHandler, TargetHandler {
-	private static final Config<Integer> cool = new Config<Integer>(Queen.class, "쿨타임", 120, Config.Condition.COOLDOWN) {
-		@Override
-		public boolean condition(Integer value) {
-			return value >= 0;
-		}
-	};
-	private static final Config<Double> multiply = new Config<Double>(Queen.class, "회복배율", 1.0) {
-		@Override
-		public boolean condition(Double aDouble) {
-			return aDouble >= 0;
-		}
-	};
-	private final DecimalFormat df = new DecimalFormat("#.##");
+	private static final Config<Integer> cool = new Config<>(Queen.class, "쿨타임", 120, Config.Condition.COOLDOWN);
+	private static final Config<Double> multiply = new Config<>(Queen.class, "회복배율", 1.0, PredicateUnit.greaterThanOrEqual(0.0));
+	private final DecimalFormat df = new DecimalFormat("0.##");
 	private final double defaultHealth = AttributeUtil.getMaxHealth(getPlayer());
 	private final Cooldown cooldown = new Cooldown(cool.getValue());
 

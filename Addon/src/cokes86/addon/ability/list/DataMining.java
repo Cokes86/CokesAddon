@@ -1,6 +1,7 @@
 package cokes86.addon.ability.list;
 
 import cokes86.addon.ability.CokesAbility;
+import cokes86.addon.util.PredicateUnit;
 import daybreak.abilitywar.ability.*;
 import daybreak.abilitywar.ability.AbilityFactory.AbilityRegistration;
 import daybreak.abilitywar.ability.Tips.Description;
@@ -60,10 +61,10 @@ import java.util.Random;
 @NotAvailable(AbstractTripleMix.class)
 @Materials(materials = {Material.IRON_INGOT, Material.GOLD_INGOT})
 public class DataMining extends CokesAbility implements ActiveHandler {
-	private static final Config<Double> damageUp = new Config<>(DataMining.class, "최대주는대미지성장치", 2.5),
-			defenseUp = new Config<>(DataMining.class, "최대받는대미지감소성장치", 25.00, "#단위: %");
-	private static final Config<Integer> player_value = new Config<>(DataMining.class, "인원별_스택치", 4),
-			duration = new Config<>(DataMining.class, "자동스택추가주기", 60, Config.Condition.TIME);
+	private static final Config<Double> damageUp = new Config<>(DataMining.class, "최대주는대미지성장치", 2.5, PredicateUnit.positive());
+	private static final Config<Double> defenseUp = new Config<>(DataMining.class, "최대받는대미지감소성장치", 25.00, PredicateUnit.positive(), "#단위: %");
+	private static final Config<Integer> player_value = new Config<>(DataMining.class, "인원별_스택치", 4, PredicateUnit.positive());
+	private static final Config<Integer> duration = new Config<>(DataMining.class, "자동스택추가주기", 60, Config.Condition.TIME);
 	private final DecimalFormat df = new DecimalFormat("#.##");
 	private int damage_count = 0;
 	private int defense_count = 0;

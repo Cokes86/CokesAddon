@@ -34,9 +34,9 @@ import java.util.function.Predicate;
 		"철괴 우클릭시 자신 주위 $[range]블럭 이내 랜덤한 1명에게 1의 고정 데미지를 줍니다.",
 		"이 행위는 0.25초 간격으로 $[damage]번 반복합니다. $[cool]"})
 public class Rune extends CokesAbility implements ActiveHandler {
-	public static Config<Integer> damage = new Config<>(Rune.class, "반복횟수", 7, PredicateUnit.positive(Integer.class));
+	public static Config<Integer> damage = new Config<>(Rune.class, "반복횟수", 7, PredicateUnit.positive());
 	public static Config<Integer> cool = new Config<>(Rune.class, "쿨타임", 60, Config.Condition.COOLDOWN);
-	public static Config<Integer> range = new Config<>(Rune.class, "범위", 5);
+	public static Config<Integer> range = new Config<>(Rune.class, "범위", 5, PredicateUnit.positive());
 
 	private final Predicate<Entity> predicate = entity -> {
 		if (entity.equals(getPlayer())) return false;

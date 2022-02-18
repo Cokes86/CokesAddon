@@ -48,15 +48,8 @@ import java.util.function.Predicate;
 		"플레이어를 선택하지 않은 경우 3초의 쿨타임이 적용됩니다."
 })
 public class Summoner extends CokesAbility implements ActiveHandler {
-	public static Config<Integer> duration = new Config<Integer>(Summoner.class, "대기시간", 3, Config.Condition.TIME) {
-		public boolean condition(Integer value) {
-			return value >= 0;
-		}
-	}, cooldown = new Config<Integer>(Summoner.class, "쿨타임", 150, Config.Condition.COOLDOWN) {
-		public boolean condition(Integer value) {
-			return value >= 0;
-		}
-	};
+	public static Config<Integer> duration = new Config<>(Summoner.class, "대기시간", 3, Config.Condition.TIME);
+	public static Config<Integer> cooldown = new Config<>(Summoner.class, "쿨타임", 150, Config.Condition.COOLDOWN);
 	private final Predicate<Entity> predicate = entity -> {
 		if (entity.equals(getPlayer())) return false;
 		if (entity instanceof Player) {

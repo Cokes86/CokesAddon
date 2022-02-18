@@ -1,6 +1,7 @@
 package cokes86.addon.ability.list;
 
 import cokes86.addon.ability.CokesAbility;
+import cokes86.addon.util.PredicateUnit;
 import daybreak.abilitywar.ability.AbilityManifest;
 import daybreak.abilitywar.ability.SubscribeEvent;
 import daybreak.abilitywar.ability.decorator.ActiveHandler;
@@ -37,8 +38,8 @@ import java.util.function.Predicate;
 		"  자경단원은 자경단장을 공격할 때, 자경단장이 받는 대미지가 30% 감소합니다."
 })
 public class VigilanteLeader extends CokesAbility implements ActiveHandler {
-	public static Config<Integer> r = new Config<>(VigilanteLeader.class, "아지트범위", 10, a->a>0),
-			cool = new Config<>(VigilanteLeader.class, "쿨타임", 90, Config.Condition.COOLDOWN);
+	public static final Config<Integer> r = new Config<>(VigilanteLeader.class, "아지트범위", 10, PredicateUnit.positive());
+	public static final Config<Integer> cool = new Config<>(VigilanteLeader.class, "쿨타임", 90, Config.Condition.COOLDOWN);
 	private final ActionbarChannel channel = this.newActionbarChannel();
 	private final RGB color = RGB.of(0, 162, 232);
 	private final Set<Participant> vigilantes = new HashSet<>();

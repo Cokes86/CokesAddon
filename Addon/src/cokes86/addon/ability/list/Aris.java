@@ -2,6 +2,7 @@ package cokes86.addon.ability.list;
 
 import cokes86.addon.ability.CokesAbility;
 import cokes86.addon.effect.list.Caught;
+import cokes86.addon.util.PredicateUnit;
 import daybreak.abilitywar.ability.AbilityManifest;
 import daybreak.abilitywar.ability.AbilityManifest.Rank;
 import daybreak.abilitywar.ability.AbilityManifest.Species;
@@ -45,11 +46,11 @@ import java.util.function.Predicate;
 		"그 동안은 공격할 수도, 받을 수도 없기 때문에 도망치기 딱 좋은 능력"
 }, stats = @Stats(offense = Level.SIX, survival = Level.EIGHT, crowdControl = Level.TWO, mobility = Level.ZERO, utility = Level.ZERO), difficulty = Difficulty.EASY)
 public class Aris extends CokesAbility implements ActiveHandler {
-	private static final Config<Integer> range = new Config<>(Aris.class, "범위", 7, integer -> integer > 0,
+	private static final Config<Integer> range = new Config<>(Aris.class, "범위", 7, PredicateUnit.positive(),
 			"# 사슬무덤 범위", "# 기본값: 7 (블럭)");
 	private static final Config<Integer> cool = new Config<>(Aris.class, "쿨타임", 40, Config.Condition.COOLDOWN,
 			"# 사슬무덤 쿨타임", "# 기본값: 40 (초)");
-	private static final Config<Integer> max_count = new Config<>(Aris.class, "최대_사슬_카운터", 10, integer -> integer > 0,
+	private static final Config<Integer> max_count = new Config<>(Aris.class, "최대_사슬_카운터", 10, PredicateUnit.positive(),
 			"# 체인 사슬 카운터의 최대 보유량", "# 기본값: 10 (개)");
 
 	private final Predicate<Entity> predicate = entity -> {

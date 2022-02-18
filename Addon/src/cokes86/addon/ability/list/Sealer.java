@@ -40,16 +40,8 @@ import java.util.Set;
 })
 @NotAvailable({AbstractTripleMix.class})
 public class Sealer extends CokesAbility implements TargetHandler {
-	private static final Config<Integer> cool = new Config<Integer>(Sealer.class, "쿨타임", 60, Config.Condition.COOLDOWN) {
-		public boolean condition(Integer value) {
-			return value >= 0;
-		}
-	}, duration = new Config<Integer>(Sealer.class, "지속시간", 7, Config.Condition.TIME) {
-		@Override
-		public boolean condition(Integer value) {
-			return value >= 0;
-		}
-	};
+	private static final Config<Integer> cool = new Config<>(Sealer.class, "쿨타임", 60, Config.Condition.COOLDOWN);
+	private static final Config<Integer> duration = new Config<>(Sealer.class, "지속시간", 7, Config.Condition.TIME);
 
 	private final Set<Player> synergy = new HashSet<>();
 	private final HashMap<Rank, Integer> rank = new HashMap<Rank, Integer>() {
@@ -100,6 +92,12 @@ public class Sealer extends CokesAbility implements TargetHandler {
 			if (target instanceof AbstractMix.MixParticipant) {
 				AbstractMix.MixParticipant participant = (AbstractMix.MixParticipant) target;
 				Mix mix = participant.getAbility();
+				if (mix == null) {
+					this.stop(true);
+					getPlayer().sendMessage("해당 플레이어의 능력이 존재하지 않습니다.");
+					c.setCount(0);
+					return;
+				}
 				if (!mix.hasAbility() || mix.isRestricted()) {
 					this.stop(true);
 					getPlayer().sendMessage("해당 플레이어의 능력이 존재하지 않습니다.");

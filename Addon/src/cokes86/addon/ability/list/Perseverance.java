@@ -19,9 +19,9 @@ import org.bukkit.event.entity.EntityDamageByEntityEvent;
 		"[아이디어 제공자 §bRainStar_§f]"}
 )
 public class Perseverance extends CokesAbility {
-	private static final Config<Integer> max = new Config<>(Perseverance.class, "최대치(%)", 100, PredicateUnit.positive(Integer.class));
-	private static final Config<Integer> upg = new Config<>(Perseverance.class, "성장치(%p)", 20, PredicateUnit.positive(Integer.class));
-	private static final Config<Double> period = new Config<>(Perseverance.class, "주기", 3.5, PredicateUnit.positive(Double.class));
+	private static final Config<Integer> max = new Config<>(Perseverance.class, "최대치(%)", 100, PredicateUnit.positive());
+	private static final Config<Integer> upg = new Config<>(Perseverance.class, "성장치(%p)", 20, PredicateUnit.positive());
+	private static final Config<Double> period = new Config<>(Perseverance.class, "주기", 3.5, PredicateUnit.positive());
 
 	private double give = 0;
 	private final ActionbarChannel ac = newActionbarChannel();

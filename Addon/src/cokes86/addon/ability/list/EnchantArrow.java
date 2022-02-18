@@ -1,6 +1,8 @@
 package cokes86.addon.ability.list;
 
 import cokes86.addon.ability.CokesAbility;
+import cokes86.addon.util.PredicateUnit;
+import cokes86.addon.util.TextMaker;
 import daybreak.abilitywar.ability.AbilityManifest;
 import daybreak.abilitywar.ability.AbilityManifest.Rank;
 import daybreak.abilitywar.ability.AbilityManifest.Species;
@@ -9,7 +11,6 @@ import daybreak.abilitywar.game.AbstractGame.Participant;
 import daybreak.abilitywar.game.AbstractGame.Participant.ActionbarNotification.ActionbarChannel;
 import daybreak.abilitywar.utils.base.minecraft.nms.NMS;
 import daybreak.abilitywar.utils.library.SoundLib;
-import daybreak.google.common.base.Strings;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Projectile;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
@@ -18,40 +19,19 @@ import org.bukkit.event.entity.ProjectileHitEvent;
 import java.util.Objects;
 
 @AbilityManifest(name = "인챈트 애로우", rank = Rank.S, species = Species.HUMAN, explain = {
-		"활로 플레이어를 적중할 시 원거리 대미지가 (인챈트 스택 * $[damage])% 증가하며,",
-		"인챈트 스택이 거리에 비례하여 1에서 $[max_stack_up]만큼 증가합니다. (최대 $[max_stack]회)",
-		"적중에 실패할 시 인챈트 스택이 거리에 비례하여 1에서 $[max_stack_down]만큼 감소합니다.",
-		"인챈트 스택이 0인 상태로 적중에 실패할 시 $[risk]의 고정 대미지를 입습니다.",
+		"활로 플레이어를 적중할 시 원거리 대미지가 (§b인챈트 스택§f * $[damage])% 증가하며,",
+		"§b인챈트 스택§f이 거리에 비례하여 1에서 $[max_stack_up]만큼 증가합니다. (최대 $[max_stack]회)",
+		"적중에 실패할 시 §b인챈트 스택§f이 거리에 비례하여 1에서 $[max_stack_down]만큼 감소합니다.",
+		"§b인챈트 스택§f이 0인 상태로 적중에 실패할 시 $[risk]의 고정 대미지를 입습니다.",
 		"자신이 쏜 화살은 명중 시 바로 사라집니다.",
 		"[아이디어 제공자 §bRainStar_§f]"
 })
 public class EnchantArrow extends CokesAbility {
-	private static final Config<Integer> damage = new Config<Integer>(EnchantArrow.class, "추가대미지(%)", 10) {
-		@Override
-		public boolean condition(Integer value) {
-			return value > 0;
-		}
-	}, risk = new Config<Integer>(EnchantArrow.class, "리스크", 1) {
-		@Override
-		public boolean condition(Integer value) {
-			return value >= 0;
-		}
-	}, max_stack = new Config<Integer>(EnchantArrow.class, "최대스택", 9) {
-		@Override
-		public boolean condition(Integer value) {
-			return value > 0;
-		}
-	}, max_stack_up = new Config<Integer>(EnchantArrow.class, "최대스택상승치", 3) {
-		@Override
-		public boolean condition(Integer value) {
-			return value > 0;
-		}
-	}, max_stack_down = new Config<Integer>(EnchantArrow.class, "최대스택감소치", 3) {
-		@Override
-		public boolean condition(Integer value) {
-			return value > 0;
-		}
-	};
+	private static final Config<Integer> damage = new Config<>(EnchantArrow.class, "추가대미지(%)", 10, PredicateUnit.positive());
+	private static final Config<Integer> risk = new Config<>(EnchantArrow.class, "리스크", 1, PredicateUnit.positive());
+	private static final Config<Integer> max_stack = new Config<>(EnchantArrow.class, "최대스택", 9, PredicateUnit.positive());
+	private static final Config<Integer> max_stack_up = new Config<>(EnchantArrow.class, "최대스택상승치", 3, PredicateUnit.positive());
+	private static final Config<Integer> max_stack_down = new Config<>(EnchantArrow.class, "최대스택감소치", 3, PredicateUnit.positive());
 	private int enchantStack = 0;
 	private final ActionbarChannel ac = newActionbarChannel();
 	private final String notice = "⤐";
@@ -62,7 +42,7 @@ public class EnchantArrow extends CokesAbility {
 
 	public void onUpdate(Update update) {
 		if (update == Update.RESTRICTION_CLEAR) {
-			ac.update("§b".concat(Strings.repeat(notice, enchantStack)).concat("§f").concat(Strings.repeat(notice, max_stack.getValue() - enchantStack)));
+			ac.update(TextMaker.repeatWithTwoColor(notice, 'b', enchantStack, 'f', max_stack.getValue() - enchantStack));
 		}
 	}
 
@@ -80,7 +60,7 @@ public class EnchantArrow extends CokesAbility {
 				}
 			}
 			e.getEntity().remove();
-			ac.update("§b".concat(Strings.repeat(notice, enchantStack)).concat("§f").concat(Strings.repeat(notice, max_stack.getValue() - enchantStack)));
+			ac.update(TextMaker.repeatWithTwoColor(notice, 'b', enchantStack, 'f', max_stack.getValue() - enchantStack));
 		}
 	}
 
@@ -93,7 +73,7 @@ public class EnchantArrow extends CokesAbility {
 				final double length = getPlayer().getLocation().clone().subtract(e.getEntity().getLocation().clone()).length();
 				enchantStack += Math.min(max_stack_up.getValue(), length / 7 + 1);
 				if (enchantStack >= max_stack.getValue()) enchantStack = max_stack.getValue();
-				ac.update("§b".concat(Strings.repeat(notice, enchantStack)).concat("§f").concat(Strings.repeat(notice, max_stack.getValue() - enchantStack)));
+				ac.update(TextMaker.repeatWithTwoColor(notice, 'b', enchantStack, 'f', max_stack.getValue() - enchantStack));
 				arrow.remove();
 			}
 		}
