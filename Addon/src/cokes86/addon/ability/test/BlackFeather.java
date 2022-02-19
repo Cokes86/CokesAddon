@@ -21,7 +21,7 @@ import java.util.List;
         "  이는 $[DURATION] 유지됩니다.",
         "§7플래이어 사망 시 §8- §c검은 잔해§f: 가지고 있던 §7블랙 패더 카운터§f를 전부 제거하고",
         "  그 제거한 수치만큼 자신에게 §7블랙 패더 카운터§f를 상승시킵니다.",
-        "  이는 영구히 증가합니다."
+        "  이는 영구히 유지됩니다."
 })
 public class BlackFeather extends CokesAbility {
     private static final Config<Double> DAMAGE = new Config<>(BlackFeather.class, "damage", 80.0, PredicateUnit.positive(),

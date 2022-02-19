@@ -1,6 +1,7 @@
 package cokes86.addon.synergy.list;
 
 import cokes86.addon.synergy.CokesSynergy;
+import cokes86.addon.util.PredicateUnit;
 import daybreak.abilitywar.ability.AbilityManifest;
 import daybreak.abilitywar.ability.SubscribeEvent;
 import daybreak.abilitywar.ability.decorator.ActiveHandler;
@@ -29,43 +30,14 @@ import org.bukkit.event.entity.ProjectileHitEvent;
 		"1개: $[damage1]%, 2개: $[damage2]%, 3개: $[damage3]%, 4개: $[damage4]%, 5개: $[damage5]%"
 })
 public class ReaperArrow extends CokesSynergy implements ActiveHandler {
-	private static final Config<Integer> duration = new Config<Integer>(ReaperArrow.class, "충전시간", 60, Config.Condition.TIME) {
-		@Override
-		public boolean condition(Integer value) {
-			return value > 0;
-		}
-	}, cool = new Config<Integer>(ReaperArrow.class, "쿨타임", 60, Config.Condition.COOLDOWN) {
-		@Override
-		public boolean condition(Integer value) {
-			return value >= 0;
-		}
-	}, damage1 = new Config<Integer>(ReaperArrow.class, "체력비례대미지.1스택", 10) {
-		@Override
-		public boolean condition(Integer value) {
-			return value >= 0 && value <= 100;
-		}
-	}, damage2 = new Config<Integer>(ReaperArrow.class, "체력비례대미지.2스택", 25) {
-		@Override
-		public boolean condition(Integer value) {
-			return value >= 0 && value <= 100;
-		}
-	}, damage3 = new Config<Integer>(ReaperArrow.class, "체력비례대미지.3스택", 50) {
-		@Override
-		public boolean condition(Integer value) {
-			return value >= 0 && value <= 100;
-		}
-	}, damage4 = new Config<Integer>(ReaperArrow.class, "체력비례대미지.4스택", 75) {
-		@Override
-		public boolean condition(Integer value) {
-			return value >= 0 && value <= 100;
-		}
-	}, damage5 = new Config<Integer>(ReaperArrow.class, "체력비례대미지.5스택", 95) {
-		@Override
-		public boolean condition(Integer value) {
-			return value >= 0 && value <= 100;
-		}
-	};
-	private static final int[] stackDamage;
+	private static final Config<Integer> duration = new Config<>(ReaperArrow.class, "충전시간", 60, Config.Condition.TIME);
+	private static final Config<Integer> cool = new Config<>(ReaperArrow.class, "쿨타임", 60, Config.Condition.COOLDOWN);
+	private static final Config<Double> damage1 = new Config<>(ReaperArrow.class, "체력비례대미지.1스택", 10.0, PredicateUnit.between(0.0, 100.0, true));
+	private static final Config<Double> damage2 = new Config<>(ReaperArrow.class, "체력비례대미지.2스택", 25.0, PredicateUnit.between(0.0, 100.0, true));
+	private static final Config<Double> damage3 = new Config<>(ReaperArrow.class, "체력비례대미지.3스택", 50.0, PredicateUnit.between(0.0, 100.0, true));
+	private static final Config<Double> damage4 = new Config<>(ReaperArrow.class, "체력비례대미지.4스택", 75.0, PredicateUnit.between(0.0, 100.0, true));
+	private static final Config<Double> damage5 = new Config<>(ReaperArrow.class, "체력비례대미지.5스택", 95.0, PredicateUnit.between(0.0, 100.0, true));
+	private static final double[] stackDamage;
 
 	static {
 		if (damage1.getValue() > damage2.getValue() || damage2.getValue() > damage3.getValue() || damage3.getValue() > damage4.getValue() || damage4.getValue() > damage5.getValue()) {
@@ -75,7 +47,7 @@ public class ReaperArrow extends CokesSynergy implements ActiveHandler {
 			damage4.setValue(damage4.getDefaultValue());
 			damage5.setValue(damage5.getDefaultValue());
 		}
-		stackDamage = new int[]{damage1.getValue(), damage2.getValue(), damage3.getValue(), damage4.getValue(), damage5.getValue()};
+		stackDamage = new double[]{damage1.getValue(), damage2.getValue(), damage3.getValue(), damage4.getValue(), damage5.getValue()};
 	}
 
 	private final AbstractGame.Participant.ActionbarNotification.ActionbarChannel ac = newActionbarChannel();

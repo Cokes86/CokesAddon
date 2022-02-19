@@ -1,6 +1,7 @@
 package cokes86.addon.synergy.list;
 
 import cokes86.addon.synergy.CokesSynergy;
+import cokes86.addon.util.PredicateUnit;
 import daybreak.abilitywar.ability.AbilityManifest;
 import daybreak.abilitywar.ability.decorator.ActiveHandler;
 import daybreak.abilitywar.game.AbstractGame;
@@ -33,12 +34,8 @@ import java.util.function.Predicate;
         "번개를 2회 맞을 때 마다 해당 능력으로 받는 고정 대미지가 1씩 상승합니다."
 })
 public class SlicingMaelstrom extends CokesSynergy implements ActiveHandler {
-    public static final Config<Integer> cooldown = new Config<Integer>(SlicingMaelstrom.class, "쿨타임", 60, Config.Condition.COOLDOWN) {
-        @Override
-        public boolean condition(Integer value) {
-            return value > 0;
-        }
-    }, LIGHTNING_COUNT = new Config<>(SlicingMaelstrom.class, "반복횟수", 6, aInt -> aInt>0);
+    public static final Config<Integer> cooldown = new Config<>(SlicingMaelstrom.class, "쿨타임", 60, Config.Condition.COOLDOWN);
+    public static final Config<Integer> LIGHTNING_COUNT = new Config<>(SlicingMaelstrom.class, "반복횟수", 6, PredicateUnit.positive());
     private final Predicate<Entity> predicate = entity -> {
         if (entity.equals(getPlayer())) return false;
         if (entity instanceof Player) {

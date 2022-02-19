@@ -6,7 +6,6 @@ import daybreak.abilitywar.ability.AbilityManifest;
 import daybreak.abilitywar.ability.AbilityManifest.Rank;
 import daybreak.abilitywar.ability.AbilityManifest.Species;
 import daybreak.abilitywar.ability.SubscribeEvent;
-import daybreak.abilitywar.config.ability.AbilitySettings.SettingObject;
 import daybreak.abilitywar.game.AbstractGame.Participant;
 import daybreak.abilitywar.game.module.DeathManager;
 import daybreak.abilitywar.utils.base.concurrent.TimeUnit;
@@ -31,14 +30,8 @@ import java.util.function.Predicate;
 		"  0.5초마다 채력을 1씩 회복합니다. $[cool]"
 })
 public class LureOfRoses extends CokesSynergy {
-	private static final SettingObject<Integer> cool = new Config<Integer>(LureOfRoses.class, "쿨타임", 300, Config.Condition.COOLDOWN) {
+	private static final Config<Integer> cool = new Config<>(LureOfRoses.class, "쿨타임", 300, Config.Condition.COOLDOWN);
 
-		@Override
-		public boolean condition(Integer arg0) {
-			return arg0 >= 0;
-		}
-
-	};
 	private final Predicate<Entity> predicate = entity -> {
 		if (entity.equals(getPlayer())) return false;
 		if (entity instanceof Player) {

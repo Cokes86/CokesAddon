@@ -2,6 +2,7 @@ package cokes86.addon.synergy.list;
 
 import cokes86.addon.synergy.CokesSynergy;
 import cokes86.addon.util.AttributeUtil;
+import cokes86.addon.util.PredicateUnit;
 import daybreak.abilitywar.ability.AbilityManifest;
 import daybreak.abilitywar.ability.SubscribeEvent;
 import daybreak.abilitywar.ability.decorator.ActiveHandler;
@@ -41,15 +42,15 @@ import org.bukkit.event.entity.EntityDamageEvent;
         "  §c이맨서페이션§f 지속시간 도중 발동되었다면, 0.5배 더 회복합니다."
 })
 public class SoulTakerRei extends CokesSynergy implements ActiveHandler {
-    public static final Config<Integer> DAMAGE = new Config<>(SoulTakerRei.class, "추가대미지", 3, a -> a > 0),
-            RANGE = new Config<>(SoulTakerRei.class, "리멤버_흡수_범위", 5, a -> a > 0),
-            DURATION = new Config<>(SoulTakerRei.class, "이맨서페이션_지속시간", 20, Config.Condition.TIME),
-            ADDITIONAL = new Config<>(SoulTakerRei.class, "이맨서페이션_추가대미지", 2, a -> a > 0),
-            EMANCIPATION_COOL = new Config<>(SoulTakerRei.class, "이맨서페이션_쿨타임", 60, Config.Condition.COOLDOWN),
-            AROUSAL_COOL = new Config<>(SoulTakerRei.class, "어아우절_쿨타임", 60, Config.Condition.COOLDOWN),
-            REMEMBER_ABSORPTION = new Config<>(SoulTakerRei.class, "리맴버_흡수체력_증가량", 3, a -> a > 0),
-            DEMAND_ABSORPTION = new Config<>(SoulTakerRei.class, "흡수체력_요구량", 2, a -> a>0);
-    public static final Config<Double> COST = new Config<>(SoulTakerRei.class, "이맨서페이션_코스트", 5.0, a -> a > 0);
+    public static final Config<Integer> DAMAGE = new Config<>(SoulTakerRei.class, "추가대미지", 3, PredicateUnit.positive());
+    public static final Config<Integer> RANGE = new Config<>(SoulTakerRei.class, "리멤버_흡수_범위", 5, PredicateUnit.positive());
+    public static final Config<Integer> DURATION = new Config<>(SoulTakerRei.class, "이맨서페이션_지속시간", 20, Config.Condition.TIME);
+    public static final Config<Integer> ADDITIONAL = new Config<>(SoulTakerRei.class, "이맨서페이션_추가대미지", 2, PredicateUnit.positive());
+    public static final Config<Integer> EMANCIPATION_COOL = new Config<>(SoulTakerRei.class, "이맨서페이션_쿨타임", 60, Config.Condition.COOLDOWN);
+    public static final Config<Integer> AROUSAL_COOL = new Config<>(SoulTakerRei.class, "어아우절_쿨타임", 60, Config.Condition.COOLDOWN);
+    public static final Config<Integer> REMEMBER_ABSORPTION = new Config<>(SoulTakerRei.class, "리맴버_흡수체력_증가량", 3, PredicateUnit.positive());
+    public static final Config<Integer> DEMAND_ABSORPTION = new Config<>(SoulTakerRei.class, "흡수체력_요구량", 2, PredicateUnit.positive());
+    public static final Config<Double> COST = new Config<>(SoulTakerRei.class, "이맨서페이션_코스트", 5.0, PredicateUnit.positive());
     private final AbstractGame.Participant.ActionbarNotification.ActionbarChannel channel = newActionbarChannel();
 
     private int soul = 0;

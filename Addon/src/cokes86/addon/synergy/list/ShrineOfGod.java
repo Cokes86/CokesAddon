@@ -2,6 +2,7 @@ package cokes86.addon.synergy.list;
 
 import cokes86.addon.effect.list.ArmorBroken;
 import cokes86.addon.synergy.CokesSynergy;
+import cokes86.addon.util.PredicateUnit;
 import daybreak.abilitywar.AbilityWar;
 import daybreak.abilitywar.ability.AbilityManifest;
 import daybreak.abilitywar.ability.SubscribeEvent;
@@ -47,9 +48,9 @@ import java.util.function.Predicate;
 
 @AbilityManifest(name = "신궁", rank = AbilityManifest.Rank.S, species = AbilityManifest.Species.HUMAN, explain = {
         "§7활 조준 §8- §c드라그노프§f: 화살 장전 대신 특별한 투사체가 매우 빠르게 날아갑니다.",
-        "  투사체에 맞은 적은 $[DRAGUNOV_DAMAGE]의 대미지를 입고 10초간 장비파괴 효과를 받습니다.",
+        "  투사체에 맞은 적은 $[DRAGUNOV_DAMAGE]의 대미지를 입고 10초간 장비파괴 효과를 부여합니다.",
         "  활을 조준하는 동안 이동속도가 매우 느려지며, 조준하는 시간이 3초가 넘을 시",
-        "  조준 시간에 비례하여 최대 $[DRAGUNOV_MULTIPLY]배의 추가대미지를 줍니다.",
+        "  조준 시간에 비례하여 최대 주는 대미지가 $[DRAGUNOV_MULTIPLY]배 증가합니다.",
         "  드라그노프는 $[DRAGUNOV_RELOAD_TIME]마다 1개씩 준비되며, 최대 $[DRAGUNOV_MAX]개 가질 수 있습니다.",
         "§7철괴 우클릭 §8- §c델타 필드§f: $[DELTA_FIELD_DURATION]간 드라그노프의 대미지가 30% 감소합니다.",
         "  드라그노프 사용 시 범위 $[DELTA_FIELD_RANGE]블럭 이내 랜덤한 5인에게 자동으로 조준되어 발사됩니다.",
@@ -61,13 +62,13 @@ public class ShrineOfGod extends CokesSynergy implements ActiveHandler {
     private final Aiming aiming = new Aiming();
     private final ReloadTimer reloadTimer = new ReloadTimer();
 
-    private static final Config<Double> DRAGUNOV_DAMAGE = new Config<>(ShrineOfGod.class, "드라그노프_대미지", 7.0, a -> a > 0);
-    private static final Config<Double> DRAGUNOV_MULTIPLY = new Config<>(ShrineOfGod.class, "드라그노프_추가대미지_배율", 1.5, a -> a > 1);
+    private static final Config<Double> DRAGUNOV_DAMAGE = new Config<>(ShrineOfGod.class, "드라그노프_대미지", 7.0, PredicateUnit.positive());
+    private static final Config<Double> DRAGUNOV_MULTIPLY = new Config<>(ShrineOfGod.class, "드라그노프_추가대미지_배율(%)", 50.0, PredicateUnit.positive());
     private static final Config<Integer> DRAGUNOV_RELOAD_TIME = new Config<>(ShrineOfGod.class, "드라그노프_장전시간", 10, Config.Condition.TIME);
-    private static final Config<Integer> DRAGUNOV_MAX = new Config<>(ShrineOfGod.class, "드라그노프_최대_개수", 5, a -> a > 0);
+    private static final Config<Integer> DRAGUNOV_MAX = new Config<>(ShrineOfGod.class, "드라그노프_최대_개수", 5, PredicateUnit.positive());
     private static final Config<Integer> DELTA_FIELD_DURATION = new Config<>(ShrineOfGod.class, "델타_필드_지속시간", 15, Config.Condition.TIME);
     private static final Config<Integer> DELTA_FIELD_COOLDOWN = new Config<>(ShrineOfGod.class, "델타_필드_쿨타임", 60, Config.Condition.COOLDOWN);
-    private static final Config<Integer> DELTA_FIELD_RANGE = new Config<>(ShrineOfGod.class, "델타_필드_범위", 30, a -> a > 0);
+    private static final Config<Integer> DELTA_FIELD_RANGE = new Config<>(ShrineOfGod.class, "델타_필드_범위", 30, PredicateUnit.positive());
 
     private int dragunov_count = DRAGUNOV_MAX.getValue();
 
@@ -360,7 +361,7 @@ public class ShrineOfGod extends CokesSynergy implements ActiveHandler {
                 }
                 for (Damageable damageable : LocationUtil.getConflictingEntities(Damageable.class, shooter.getWorld(), entity.getBoundingBox(), predicate)) {
                     if (!shooter.equals(damageable)) {
-                        Damages.damageArrow(damageable, shooter, (delta ? 0.7f : 1f)*(float)Math.max(1, Math.min(DRAGUNOV_MULTIPLY.getValue(), 1 + (aimingTime-60) / 200.0f))* (float)EnchantLib.getDamageWithPowerEnchantment(Math.min((forward.getX() * forward.getX()) + (forward.getY() * forward.getY()) + (forward.getZ() * forward.getZ()) / 10.0, DRAGUNOV_DAMAGE.getValue()), powerEnchant));
+                        Damages.damageArrow(damageable, shooter, (delta ? 0.7f : 1f)*(float)Math.max(1, Math.min(DRAGUNOV_MULTIPLY.getValue()/100.0, 1 + (aimingTime-60) / 200.0f))* (float)EnchantLib.getDamageWithPowerEnchantment(Math.min((forward.getX() * forward.getX()) + (forward.getY() * forward.getY()) + (forward.getZ() * forward.getZ()) / 10.0, DRAGUNOV_DAMAGE.getValue()), powerEnchant));
                         if (getGame().isParticipating(damageable.getUniqueId())) {
                             ArmorBroken.apply(getGame().getParticipant(damageable.getUniqueId()), TimeUnit.SECONDS, 10);
                         }
