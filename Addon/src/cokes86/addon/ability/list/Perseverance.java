@@ -14,7 +14,7 @@ import org.bukkit.entity.Entity;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 
 @AbilityManifest(name = "인내심", rank = Rank.B, species = Species.HUMAN, explain = {
-		"매 $[period]초마다 상대방에게 주는 대미지 증가량이 $[upg]%p씩 상승하며 최대 $[max]%까지 상승합니다.",
+		"매 $[period]초마다 상대방에게 주는 대미지가 $[upg]%p씩 상승하며 최대 $[max]%까지 상승합니다.",
 		"상대방을 공격할 시 이는 0%로 변경됩니다",
 		"[아이디어 제공자 §bRainStar_§f]"}
 )
