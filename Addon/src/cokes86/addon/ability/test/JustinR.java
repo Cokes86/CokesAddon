@@ -49,7 +49,7 @@ public class JustinR extends CokesAbility implements ActiveHandler {
     private static final Config<Integer> MAX_COUNTER = new Config<>(JustinR.class, "슬래시.흑심카운터_최대치", 10, PredicateUnit.upper(1));
     private static final Config<Integer> GET_THIS_COOLDOWN = new Config<>(JustinR.class, "이거나_받아라.2인격_쿨타임", 60, Config.Condition.COOLDOWN);
     private static final Config<Integer> ESCAPE_COOLDOWN = new Config<>(JustinR.class, "탈출_쿨타임", 45, Config.Condition.COOLDOWN);
-    private static final Config<Integer> DAMAGE = new Config<>(JustinR.class, "슬래시.1인격_대미지_감소량(%)", 70, PredicateUnit.positive());
+    private static final Config<Integer> DAMAGE = new Config<>(JustinR.class, "슬래시.1인격_대미지_감소량(%)", 30, PredicateUnit.positive());
     private static final Config<Float> GET_THIS_DAMAGE = new Config<>(JustinR.class, "이거나_받아라.2인격_고정대미지", 2.0f, PredicateUnit.positive());
     private static final Config<Integer> TWO_PERSON_DAMAGE_INCREASE = new Config<>(JustinR.class, "두가지_인격.2인격_받는대미지_증가량(%)", 20, PredicateUnit.positive());
 
@@ -142,8 +142,8 @@ public class JustinR extends CokesAbility implements ActiveHandler {
                 }
                 double damage = e.getDamage();
                 double decrease = DAMAGE.getValue()/100.0;
-                e.setDamage(damage*decrease);
-                normalTimer = new NormalTimer((Damageable) e.getEntity(), damage*(1-decrease));
+                e.setDamage(damage * ( 1 - decrease ));
+                normalTimer = new NormalTimer((Damageable) e.getEntity(), damage*decrease);
                 normalTimer.start();
             } else {
                 if (e.getCause() == EntityDamageEvent.DamageCause.MAGIC) return;
