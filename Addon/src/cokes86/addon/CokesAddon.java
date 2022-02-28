@@ -2,9 +2,9 @@ package cokes86.addon;
 
 import cokes86.addon.ability.AddonAbilityFactory;
 import cokes86.addon.ability.CokesAbility;
+import cokes86.addon.effect.AddonEffectRegistry;
 import cokes86.addon.synergy.AddonSynergyFactory;
 import cokes86.addon.synergy.CokesSynergy;
-import cokes86.addon.effect.AddonEffectFactory;
 import cokes86.addon.gamemode.disguiseparty.DisguiseParty;
 import daybreak.abilitywar.AbilityWar;
 import daybreak.abilitywar.addon.Addon;
@@ -44,7 +44,7 @@ public class CokesAddon extends Addon implements Listener {
 		configLoader.run();
 
 		//Load Effects
-		AddonEffectFactory.load();
+		AddonEffectRegistry.nameValues();
 
 		//Check Other Addon
 		CompletableFuture.runAsync(otherAddonLoader);

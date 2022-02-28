@@ -44,6 +44,14 @@ public class CokesSynergy extends Synergy {
 			this(aClass, name, value, new String[]{}, Condition.NORMAL, predicate);
 		}
 
+		public Config(Class<? extends CokesSynergy> aClass, String name, T value, Predicate<T> predicate, String... description) {
+			this(aClass, name, value, description, Condition.NORMAL, predicate);
+		}
+
+		public Config(Class<? extends CokesSynergy> aClass, String name, T value, Condition arg3, String... description) {
+			this(aClass, name, value, description, arg3, a -> true);
+		}
+
 		public String toString() {
 			if (condition == Config.Condition.COOLDOWN && getValue() instanceof Integer) {
 				return Formatter.formatCooldown((Integer) getValue());

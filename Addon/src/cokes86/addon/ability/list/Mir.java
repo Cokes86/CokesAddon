@@ -38,7 +38,7 @@ import java.util.function.Predicate;
 @AbilityManifest(name = "미르", rank = Rank.B, species = Species.HUMAN, explain = {
 		"철괴 우클릭 시 해당 위치에서 일정 범위 내에 각종 효과를 부여하는 정령을 소환합니다. $[cool]",
 		"정령은 랜덤하게 소환되며 지속 시간 $[duration]가 지난 후 소멸합니다.",
-		"정령은 같은 종류로 2회 이상 소환이 되지 않습니다.",
+		"정령은 같은 종류로 2회 연속 소환이 되지 않습니다.",
 		"§4이프리트 §f: $[range_ifrit]블럭 안의 자신을 제외한 플레이어는 화상효과를 부여합니다.",
 		"§7셰이드 §f: $[range_shade]블럭 안의 자신을 제외한 플레이어는 블라인드효과를 부여합니다.",
 		"§b썬더버드 §f: $[range_thunder]블럭 안에 있는 자신이 상대방을 공격할 시 주는 대미지가 $[damage_increase]% 증가하며, 번개를 내려칩니다.",

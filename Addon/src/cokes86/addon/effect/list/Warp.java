@@ -1,5 +1,6 @@
 package cokes86.addon.effect.list;
 
+import cokes86.addon.effect.AddonEffectRegistry;
 import daybreak.abilitywar.game.AbstractGame;
 import daybreak.abilitywar.game.manager.effect.registry.ApplicationMethod;
 import daybreak.abilitywar.game.manager.effect.registry.EffectManifest;
@@ -25,7 +26,7 @@ import org.bukkit.event.entity.EntityDamageByEntityEvent;
         "멀미 효과를 받으며, 30%의 확률로 자신의 공격에 빗나갑니다."
 })
 public class Warp extends AbstractGame.Effect implements Listener {
-    public static final EffectRegistry.EffectRegistration<Warp> registration = EffectRegistry.registerEffect(Warp.class);
+    public static final EffectRegistry.EffectRegistration<Warp> registration = AddonEffectRegistry.getRegistration(Warp.class);
     private final AbstractGame.Participant participant;
     private final ArmorStand hologram;
 

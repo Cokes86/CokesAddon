@@ -34,6 +34,9 @@ public class AddonSynergyFactory {
 
         //1.5.0
         registerSynergy(Elva.class, Cokes.class, CokesSoldier.class);
+
+        //1.7.0
+        registerSynergy(Aris.class, Magician.class, GravityArrow.class);
     }
 
     public static void registerSynergy(Class<? extends AbilityBase> first, Class<? extends AbilityBase> second, Class<? extends CokesSynergy> synergy) {

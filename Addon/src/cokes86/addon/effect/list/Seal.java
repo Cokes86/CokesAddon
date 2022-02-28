@@ -1,5 +1,6 @@
 package cokes86.addon.effect.list;
 
+import cokes86.addon.effect.AddonEffectRegistry;
 import daybreak.abilitywar.game.AbstractGame;
 import daybreak.abilitywar.game.manager.effect.registry.ApplicationMethod;
 import daybreak.abilitywar.game.manager.effect.registry.EffectManifest;
@@ -17,7 +18,7 @@ import org.bukkit.entity.ArmorStand;
         "자신의 능력이 비활성화됩니다."
 })
 public class Seal extends AbstractGame.Effect {
-    public static final EffectRegistry.EffectRegistration<Seal> registry = EffectRegistry.registerEffect(Seal.class);
+    public static final EffectRegistry.EffectRegistration<Seal> registry = AddonEffectRegistry.getRegistration(Seal.class);
     private final AbstractGame.Participant participant;
     private final ArmorStand hologram;
 

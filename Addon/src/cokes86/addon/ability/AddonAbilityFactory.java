@@ -16,6 +16,8 @@ public class AddonAbilityFactory {
 	protected static final Map<String, Class<? extends CokesAbility>> test_abilities = new HashMap<>();
 
 	static {
+		registerTestAbility(Test.class);
+
 		registerAbility(Seth.class);
 		registerAbility(Ovisni.class);
 		registerAbility(Resurrection.class);
@@ -74,7 +76,6 @@ public class AddonAbilityFactory {
 		registerAbility(Reisen.class);
 
 		//1.7.0
-		registerTestAbility(Test.class);
 		registerTestAbility(JustinR.class);
 		registerTestAbility(BlackFeather.class);
 		registerTestAbility(Ain.class);

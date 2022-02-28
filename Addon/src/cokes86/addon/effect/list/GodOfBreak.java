@@ -1,5 +1,6 @@
 package cokes86.addon.effect.list;
 
+import cokes86.addon.effect.AddonEffectRegistry;
 import daybreak.abilitywar.AbilityWar;
 import daybreak.abilitywar.game.AbstractGame;
 import daybreak.abilitywar.game.manager.effect.registry.ApplicationMethod;
@@ -21,7 +22,7 @@ import org.bukkit.event.entity.PlayerDeathEvent;
         "해당 효과가 종료될 시 해당 효과로 증가한 대미지의 5배에 해당하는 대미지를 받습니다."
 })
 public class GodOfBreak extends AbstractGame.Effect implements Listener {
-    private static final EffectRegistry.EffectRegistration<GodOfBreak> registration = EffectRegistry.registerEffect(GodOfBreak.class);
+    private static final EffectRegistry.EffectRegistration<GodOfBreak> registration = AddonEffectRegistry.getRegistration(GodOfBreak.class);
 
     public static GodOfBreak apply(AbstractGame.Participant participant, TimeUnit timeUnit, int duration) {
         return registration.apply(participant, timeUnit, duration);

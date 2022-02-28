@@ -30,7 +30,7 @@ import org.bukkit.event.entity.EntityDamageEvent;
         "중첩사용 시 기존 효과와 더불어 새로운 효과를 부여받습니다.",
         "지속시간이 끝나거나 6번 중첩 후 쿨타임은 $[COOLDOWN_TWO]로 적용합니다.",
         "* 1회 사용 시: 신속 1단계 부여",
-        "* 2회 사용 시: 5초마다 체력 $[HEALTH] 회복",
+        "* 2회 사용 시: $[RECOVERY_PERIOD]마다 체력 $[RECOVERY] 회복",
         "* 3회 사용 시: 상대 공격 시 출혈 $[BLEEDING] 부여",
         "* 4회 사용 시: 상대 공격 시 주었던 최종 대미지의 $[VAMPIRE]% 회복.",
         "* 5회 사용 시: 상대에게 주는 대미지 $[DAMAGE] 증가",
@@ -46,7 +46,10 @@ public class Whitney extends CokesAbility implements ActiveHandler {
     private static final Config<Integer> COOLDOWN_TWO = new Config<>(Whitney.class, "cooldown-two", 120, Condition.TIME,
             "# 휘트니 추가 쿨타임",
             "# 기본값: 90 (초)");
-    private static final Config<Integer> HEALTH = new Config<>(Whitney.class, "health", 1, PredicateUnit.positive(),
+    private static final Config<Integer> RECOVERY_PERIOD = new Config<>(Whitney.class, "recovery-period", 5, Condition.TIME,
+            "# 휘트니 2중첩 회복 주기",
+            "# 기본값: 5 (초)");
+    private static final Config<Integer> RECOVERY = new Config<>(Whitney.class, "recovery", 1, PredicateUnit.positive(),
             "# 휘트니 2중첩 주기당 회복량",
             "# 기본값: 1");
     private static final Config<Integer> BLEEDING = new Config<>(Whitney.class, "bleeding", 2, Condition.TIME,
@@ -132,8 +135,8 @@ public class Whitney extends CokesAbility implements ActiveHandler {
                 PotionEffects.SPEED.addPotionEffect(getPlayer(), 10, 0, true);
             }
 
-            if (stack >= 2 && count % (20*5) == 0) {
-                Healths.setHealth(getPlayer(), getPlayer().getHealth() + HEALTH.getValue());
+            if (stack >= 2 && count % (20 * RECOVERY_PERIOD.getValue()) == 0) {
+                Healths.setHealth(getPlayer(), getPlayer().getHealth() + RECOVERY.getValue());
             }
         }
 

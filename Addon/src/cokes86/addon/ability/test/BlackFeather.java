@@ -52,8 +52,9 @@ public class BlackFeather extends CokesAbility {
 
         if (damager.equals(getPlayer()) && getGame().isParticipating(e.getEntity().getUniqueId())) {
             int counter = counterList.size();
-
-            e.setDamage(e.getDamage() * (DAMAGE.getValue()/100.0 + counter* DAMAGE_UPGRADE.getValue()));
+            double damage1 = DAMAGE.getValue() / 100.0;
+            double damage2 = counter * DAMAGE_UPGRADE.getValue();
+            e.setDamage(e.getDamage() * (damage1 + damage2));
             AbstractGame.Participant target = getGame().getParticipant(e.getEntity().getUniqueId());
             new BlackFeatherCounter(target);
         }

@@ -1,5 +1,6 @@
 package cokes86.addon.effect.list;
 
+import cokes86.addon.effect.AddonEffectRegistry;
 import daybreak.abilitywar.AbilityWar;
 import daybreak.abilitywar.ability.event.AbilityPreActiveSkillEvent;
 import daybreak.abilitywar.ability.event.AbilityPreTargetEvent;
@@ -28,7 +29,7 @@ import org.bukkit.event.player.PlayerMoveEvent;
         "자신의 액티브, 타겟팅 능력을 사용할 수 없습니다."
 })
 public class Nightmare extends AbstractGame.Effect implements Listener {
-    private static final EffectRegistry.EffectRegistration<Nightmare> registration = EffectRegistry.registerEffect(Nightmare.class);
+    private static final EffectRegistry.EffectRegistration<Nightmare> registration = AddonEffectRegistry.getRegistration(Nightmare.class);
     private final AbstractGame.Participant participant;
     private final ArmorStand hologram;
 

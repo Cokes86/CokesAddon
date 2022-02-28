@@ -1,5 +1,6 @@
 package cokes86.addon.effect.list;
 
+import cokes86.addon.effect.AddonEffectRegistry;
 import daybreak.abilitywar.AbilityWar;
 import daybreak.abilitywar.ability.event.AbilityPreActiveSkillEvent;
 import daybreak.abilitywar.ability.event.AbilityPreTargetEvent;
@@ -32,7 +33,7 @@ import org.bukkit.event.player.PlayerMoveEvent;
         "매 2초마다 1의 고정 마법 대미지를 받는 대신, 그 이외의 공격을 받을 수 없습니다."
 })
 public class Caught extends AbstractGame.Effect implements Listener {
-    private static final EffectRegistry.EffectRegistration<Caught> caught = EffectRegistry.registerEffect(Caught.class);
+    private static final EffectRegistry.EffectRegistration<Caught> caught = AddonEffectRegistry.getRegistration(Caught.class);
 
     public static void apply(AbstractGame.Participant participant, TimeUnit timeUnit, int duration) {
         caught.apply(participant, timeUnit, duration);

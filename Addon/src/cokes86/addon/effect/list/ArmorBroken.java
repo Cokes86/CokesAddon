@@ -1,5 +1,6 @@
 package cokes86.addon.effect.list;
 
+import cokes86.addon.effect.AddonEffectRegistry;
 import cokes86.addon.util.AttributeUtil;
 import daybreak.abilitywar.AbilityWar;
 import daybreak.abilitywar.game.AbstractGame;
@@ -26,7 +27,7 @@ import java.util.UUID;
         "이상 적용될 경우, 먼저 적용된 §b갑옷 파괴 §f효과는 사라집니다."
 })
 public class ArmorBroken extends AbstractGame.Effect implements Listener {
-    private static final EffectRegistry.EffectRegistration<ArmorBroken> broken = EffectRegistry.registerEffect(ArmorBroken.class);
+    private static final EffectRegistry.EffectRegistration<ArmorBroken> broken = AddonEffectRegistry.getRegistration(ArmorBroken.class);
 
     public static void apply(AbstractGame.Participant participant, TimeUnit timeUnit, int duration) {
         broken.apply(participant, timeUnit, duration);

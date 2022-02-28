@@ -1,8 +1,10 @@
 package cokes86.addon.effect.list;
 
+import cokes86.addon.effect.AddonEffectRegistry;
 import daybreak.abilitywar.AbilityWar;
 import daybreak.abilitywar.game.AbstractGame;
 import daybreak.abilitywar.game.manager.effect.registry.*;
+import daybreak.abilitywar.game.manager.effect.registry.EffectRegistry.EffectRegistration;
 import daybreak.abilitywar.utils.base.concurrent.TimeUnit;
 import daybreak.abilitywar.utils.base.minecraft.nms.NMS;
 import daybreak.abilitywar.utils.library.SoundLib;
@@ -27,7 +29,7 @@ public class DamageDown extends AbstractGame.Effect implements Listener {
     private final double damage;
     private final AbstractGame.Participant participant;
     private final ArmorStand hologram;
-    private static final EffectRegistry.EffectRegistration<DamageDown> registration = EffectRegistry.registerEffect(DamageDown.class);
+    private static final EffectRegistration<DamageDown> registration = AddonEffectRegistry.getRegistration(DamageDown.class);
 
     public static void apply(AbstractGame.Participant participant, TimeUnit timeunit, int duration) {
         registration.apply(participant, timeunit, duration);
