@@ -39,13 +39,13 @@ import org.bukkit.event.entity.EntityDamageEvent;
 public class Whitney extends CokesAbility implements ActiveHandler {
     private static final Config<Integer> DURATION = new Config<>(Whitney.class, "duration", 20, Condition.TIME,
             "# 휘트니 버프 지속시간",
-            "# 기본값: 25 (초)");
+            "# 기본값: 20 (초)");
     private static final Config<Integer> COOLDOWN_ONE = new Config<>(Whitney.class, "cooldown-one", 15, Condition.COOLDOWN,
             "# 휘트니 기본 쿨타임",
-            "# 기본값: 30 (초)");
+            "# 기본값: 15 (초)");
     private static final Config<Integer> COOLDOWN_TWO = new Config<>(Whitney.class, "cooldown-two", 120, Condition.TIME,
             "# 휘트니 추가 쿨타임",
-            "# 기본값: 90 (초)");
+            "# 기본값: 120 (초)");
     private static final Config<Integer> RECOVERY_PERIOD = new Config<>(Whitney.class, "recovery-period", 5, Condition.TIME,
             "# 휘트니 2중첩 회복 주기",
             "# 기본값: 5 (초)");

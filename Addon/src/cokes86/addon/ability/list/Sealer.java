@@ -17,6 +17,7 @@ import daybreak.abilitywar.game.list.mix.triplemix.AbstractTripleMix;
 import daybreak.abilitywar.utils.base.concurrent.TimeUnit;
 import daybreak.abilitywar.utils.base.minecraft.entity.health.Healths;
 import daybreak.abilitywar.utils.library.PotionEffects;
+import daybreak.google.common.collect.ImmutableMap;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.entity.Entity;
@@ -27,8 +28,8 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 
-import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
 
 @AbilityManifest(name = "봉인자", rank = Rank.L, species = Species.HUMAN, explain = {
@@ -44,16 +45,7 @@ public class Sealer extends CokesAbility implements TargetHandler {
 	private static final Config<Integer> duration = new Config<>(Sealer.class, "지속시간", 7, Config.Condition.TIME);
 
 	private final Set<Player> synergy = new HashSet<>();
-	private final HashMap<Rank, Integer> rank = new HashMap<Rank, Integer>() {
-		{
-			put(Rank.C, 1);
-			put(Rank.B, 2);
-			put(Rank.A, 3);
-			put(Rank.S, 4);
-			put(Rank.L, 5);
-			put(Rank.SPECIAL, 6);
-		}
-	};
+	private final Map<Rank, Integer> rank = ImmutableMap.<Rank, Integer>builder().put(Rank.C, 1).put(Rank.B, 2).put(Rank.A, 3).put(Rank.S, 4).put(Rank.L, 5).put(Rank.SPECIAL, 6).build();
 
 	private final Cooldown c = new Cooldown(cool.getValue(), CooldownDecrease._50);
 	private final SealTimer t = new SealTimer();
