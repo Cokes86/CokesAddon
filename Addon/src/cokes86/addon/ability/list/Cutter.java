@@ -8,8 +8,6 @@ import daybreak.abilitywar.game.AbstractGame;
 import daybreak.abilitywar.utils.base.minecraft.entity.health.Healths;
 import org.bukkit.Material;
 
-import java.util.function.Predicate;
-
 @AbilityManifest(name = "커터", rank = AbilityManifest.Rank.B, species = AbilityManifest.Species.HUMAN, explain = {
 		"체력이 $[risk]보다 높은 상태에서 철괴 우클릭 시 체력이 $[risk]가 감소합니다. $[cool]",
 		"이후 자연회복을 제외하고 1초당 1씩, 총 $[duration]만큼의 체력을 회복합니다."
@@ -36,8 +34,7 @@ public class Cutter extends CokesAbility implements ActiveHandler {
 		if (material == Material.IRON_INGOT && clickType == ClickType.RIGHT_CLICK && !cooldownTimer.isCooldown() && !durationTimer.isDuration()) {
 			if (getPlayer().getHealth() > risk.getValue()) {
 				Healths.setHealth(getPlayer(), getPlayer().getHealth() - risk.getValue());
-				durationTimer.start();
-				return true;
+				return durationTimer.start();
 			} else {
 				getPlayer().sendMessage("체력이 부족합니다.");
 			}

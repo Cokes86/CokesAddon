@@ -33,7 +33,7 @@ import org.bukkit.event.entity.EntityDamageEvent;
         "§7플레이어 사망 §8- §c리멤버§f: 플레이어가 사망한 자리에 영혼이 남아 돌아다닙니다.",
         "  영혼 근처 $[RANGE]블럭에 다가갈 경우 영혼을 흡수하여",
         "  자신의 §e흡수 체력§f이 $[REMEMBER_ABSORPTION]만큼 증가합니다.",
-        "§7철괴 우클릭 §8- §c이맨서페이션§f: $[DURATION]동안 주는 대미지가 $[ADDITIONAL]만큼 증가합니다.",
+        "§7철괴 우클릭 §8- §c이맨서페이션§f: $[DURATION]동안 주는 대미지가 $[ADDITIONAL] 증가합니다. 이는 §c소울 커팅§f과 중첩됩니다.",
         "  대신, 공격을 시도할 때 마다 자신 최대 체력의 $[COST]%만큼 지불합니다. $[EMANCIPATION_COOL]",
         "  지속동안 철괴 우클릭 시 자동으로 종료되며",
         "  남은 시간에 비례하여 최대 50%까지 쿨타임이 감소합니다.",
@@ -55,8 +55,8 @@ public class SoulTakerRei extends CokesSynergy implements ActiveHandler {
 
     private int soul = 0;
 
-    private final Cooldown emancipation_cool = new Cooldown(EMANCIPATION_COOL.getValue(), "이맨서페이션"),
-            arousal_cool = new Cooldown(AROUSAL_COOL.getValue(), "어아우절");
+    private final Cooldown emancipation_cool = new Cooldown(EMANCIPATION_COOL.getValue(), "이맨서페이션");
+    private final Cooldown arousal_cool = new Cooldown(AROUSAL_COOL.getValue(), "어아우절");
     private final Duration duration = new Duration(DURATION.getValue(), emancipation_cool) {
         @Override
         protected void onDurationProcess(int i) {

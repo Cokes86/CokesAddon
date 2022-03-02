@@ -22,7 +22,7 @@ import java.util.function.Predicate;
 
 @AbilityManifest(name = "장미의 유혹", rank = Rank.S, species = Species.OTHERS, explain = {
 		"§7패시브 §8- §c가시돋움§f: 상대방을 공격할 시 가시 카운터를 1씩 올리고,",
-		"  (가시 카운터*0.1)의 추가대미지를 줍니다. (최대 5대미지)",
+		"  (가시 카운터*0.125)의 추가대미지를 줍니다. (최대 5대미지)",
 		"  또한 모든 받는 대미지가 (가시 카운터)%만큼 증가합니다. (최대 50%)",
 		"§7쿨타임 패시브 §8- §c유혹§f: 쿨타임이 아닐 때 자신이 죽을 위기에 처할 시",
 		"  모든 가시 카운터를 소비하고 반경 10블럭 이내 모든 플레이어에게 (가시 카운터*0.5)초의",
@@ -79,7 +79,7 @@ public class LureOfRoses extends CokesSynergy {
 		}
 		if (attacker.equals(getPlayer()) && e.getEntity() instanceof Player && getGame().getParticipant((Player) e.getEntity()) != null) {
 			counter += 1;
-			e.setDamage(e.getDamage() + Math.min(counter * 0.1, 5));
+			e.setDamage(e.getDamage() + Math.min(counter * 0.125, 5));
 		}
 	}
 

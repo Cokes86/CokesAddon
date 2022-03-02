@@ -143,6 +143,7 @@ public class Whitney extends CokesAbility implements ActiveHandler {
         @Override
         protected void onEnd() {
             if (stack < 6) {
+                SoundLib.ENTITY_VILLAGER_NO.playSound(getPlayer());
                 cooldown_two.start();
             }
             stack = 0;
@@ -151,6 +152,7 @@ public class Whitney extends CokesAbility implements ActiveHandler {
         @Override
         protected void onSilentEnd() {
             if (stack < 6) {
+                SoundLib.ENTITY_VILLAGER_NO.playSound(getPlayer());
                 cooldown_two.start();
             }
             stack = 0;

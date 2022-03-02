@@ -36,6 +36,7 @@ import java.util.function.Predicate;
 public class SlicingMaelstrom extends CokesSynergy implements ActiveHandler {
     public static final Config<Integer> cooldown = new Config<>(SlicingMaelstrom.class, "쿨타임", 60, Config.Condition.COOLDOWN);
     public static final Config<Integer> LIGHTNING_COUNT = new Config<>(SlicingMaelstrom.class, "반복횟수", 6, PredicateUnit.positive());
+    public static final Config<Integer> range = new Config<>(SlicingMaelstrom.class, "범위", 10, PredicateUnit.positive());
     private final Predicate<Entity> predicate = entity -> {
         if (entity.equals(getPlayer())) return false;
         if (entity instanceof Player) {
@@ -54,13 +55,6 @@ public class SlicingMaelstrom extends CokesSynergy implements ActiveHandler {
             return target.attributes().TARGETABLE.getValue();
         }
         return true;
-    };
-
-    public static final Config<Integer> range = new Config<Integer>(SlicingMaelstrom.class, "범위", 10) {
-        @Override
-        public boolean condition(Integer integer) {
-            return integer > 0;
-        }
     };
 
     public final Cooldown cool = new Cooldown(cooldown.getValue());

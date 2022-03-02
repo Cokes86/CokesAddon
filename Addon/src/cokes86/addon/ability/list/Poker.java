@@ -10,6 +10,7 @@ import daybreak.abilitywar.game.AbstractGame.Participant.ActionbarNotification.A
 import daybreak.abilitywar.game.module.DeathManager;
 import daybreak.abilitywar.game.team.interfaces.Teamable;
 import daybreak.abilitywar.utils.base.collect.Pair;
+import daybreak.abilitywar.utils.base.concurrent.TimeUnit;
 import daybreak.abilitywar.utils.base.minecraft.damage.Damages;
 import daybreak.abilitywar.utils.library.PotionEffects;
 import daybreak.abilitywar.utils.library.SoundLib;
@@ -44,7 +45,7 @@ public class Poker extends CokesAbility implements ActiveHandler {
 			if (additional > 0) ac.update("다음 추가대미지: " + additional);
 			else ac.update(null);
 		}
-	};
+	}.setPeriod(TimeUnit.TICKS, 1);
 	private final Predicate<Entity> predicate = entity -> {
 		if (entity.equals(getPlayer())) return false;
 		if (entity instanceof Player) {
@@ -142,8 +143,7 @@ public class Poker extends CokesAbility implements ActiveHandler {
 		int min = num[0], mid = num[1], max = num[2];
 		if (min == mid && mid == max) return Pair.of("Triple", max);
 		else if (mid == max - 1 && min == mid - 1) return Pair.of("Straight", max);
-		else if (min == 1 && mid == 9 && max == 10) return Pair.of("Straight", 10);
-		else if (min == 1 && mid == 2 && max == 10) return Pair.of("Straight", 10);
+		else if (min == 1 && (mid == 9 || mid == 2) && max == 10) return Pair.of("Straight", 10);
 		else if (min == mid || mid == max) return Pair.of("Pair", mid);
 		else if (min == max) return Pair.of("Pair", max);
 		else return Pair.of("Top", max);

@@ -36,7 +36,7 @@ import java.util.concurrent.ConcurrentHashMap;
         "  [§52인격§f] 타 플레이어에게 받는 근거리 대미지가 §c$[TWO_PERSON_DAMAGE_INCREASE]% 증가합니다.",
         "§7검으로 공격 시§8 -§c슬래시§f: 인격에 따라 각기 다른 효과를 가집니다.",
         "  [§b1인격§f] 상대방에게 주는 대미지가 $[DAMAGE]% 감소합니다.",
-        "  [§52인격§f] 상대방에게 §4흑심 카운터§f를 1개씩 남깁니다. (최대 $[MAX_COUNTER]회)",
+        "  [§52인격§f] 상대방에게 §4흑심 카운터§f를 1개 부여합니다. (최대 $[MAX_COUNTER]개)",
         "§7검 우클릭§8 - §c이거나 받아라§f: 인격에 따라 각기 다른 효과를 가집니다.",
         "  [§b1인격§f] §c슬래시§f 이후 §c0.5초 §f이내에 사용 시, 적을 §b밀쳐내고§f 감소했던 대미지를 줍니다.",
         "  [§52인격§f] §4흑심 카운터§f를 가지고 있던 플레이어에게 개당 $[GET_THIS_DAMAGE]의 고정 마법 대미지를 줍니다. $[GET_THIS_COOLDOWN]",
@@ -53,10 +53,12 @@ public class JustinR extends CokesAbility implements ActiveHandler {
     private static final Config<Float> GET_THIS_DAMAGE = new Config<>(JustinR.class, "이거나_받아라.2인격_고정대미지", 2.0f, PredicateUnit.positive());
     private static final Config<Integer> TWO_PERSON_DAMAGE_INCREASE = new Config<>(JustinR.class, "두가지_인격.2인격_받는대미지_증가량(%)", 20, PredicateUnit.positive());
 
-    private static final Set<Material> swords = ImmutableSet.of(MaterialX.WOODEN_SWORD.getMaterial(), Material.STONE_SWORD, Material.IRON_SWORD, MaterialX.GOLDEN_SWORD.getMaterial(), Material.DIAMOND_SWORD);
+    private static final Set<Material> swords;
     static {
         if (MaterialX.NETHERITE_SWORD.isSupported()) {
-            swords.add(MaterialX.NETHERITE_SWORD.getMaterial());
+            swords = ImmutableSet.of(MaterialX.WOODEN_SWORD.getMaterial(), Material.STONE_SWORD, Material.IRON_SWORD, MaterialX.GOLDEN_SWORD.getMaterial(), Material.DIAMOND_SWORD, MaterialX.NETHERITE_SWORD.getMaterial());
+        } else {
+            swords = ImmutableSet.of(MaterialX.WOODEN_SWORD.getMaterial(), Material.STONE_SWORD, Material.IRON_SWORD, MaterialX.GOLDEN_SWORD.getMaterial(), Material.DIAMOND_SWORD);
         }
     }
     private NormalTimer normalTimer = new NormalTimer(getPlayer(), 0);

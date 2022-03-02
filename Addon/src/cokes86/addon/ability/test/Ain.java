@@ -13,7 +13,7 @@ import org.bukkit.entity.Player;
 import java.util.List;
 
 @AbilityManifest(name = "아인", rank = AbilityManifest.Rank.A, species = AbilityManifest.Species.HUMAN, explain = {
-        "철괴 우클릭 - 능력 망각: 주변 $[RANGE]블럭 이내 능력자가 쿨타임이 작동중일 때,",
+        "§7철괴 우클릭 §8- §c능력 망각§f: 주변 $[RANGE]블럭 이내 능력자가 쿨타임이 작동중일 때,",
         "  그 쿨타임을 $[INCREASE] 증가시킵키다. $[COOL]"
 })
 public class Ain extends CokesAbility implements ActiveHandler {

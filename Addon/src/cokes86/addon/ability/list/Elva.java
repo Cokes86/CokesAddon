@@ -18,6 +18,7 @@ import daybreak.abilitywar.utils.base.concurrent.TimeUnit;
 import daybreak.abilitywar.utils.base.math.FastMath;
 import daybreak.abilitywar.utils.base.math.LocationUtil;
 import daybreak.abilitywar.utils.base.math.geometry.Line;
+import daybreak.abilitywar.utils.base.minecraft.nms.NMS;
 import daybreak.abilitywar.utils.library.ParticleLib;
 import daybreak.abilitywar.utils.library.SoundLib;
 import org.bukkit.Location;
@@ -36,6 +37,7 @@ import java.util.function.Predicate;
 		"  이는 $[speed]틱의 간격으로 자동으로 발사되며, $[damage]의 대미지를 줍니다.",
 		"  한번에 최대 $[maxarrow]발까지 발사되며, 다 소비할 경우 자동으로 재장전합니다.",
 		"  마법의 화살은 대미지를 주거나 블럭에 닿을 시 소멸하며, 플렉터가 튕겨낼 수 없습니다.",
+		"  일반 화살은 사용할 수 없습니다.",
 		"[아이디어 제공자 §bSato207§f]"
 })
 public class Elva extends CokesAbility {
@@ -134,7 +136,7 @@ public class Elva extends CokesAbility {
 	@SuppressWarnings("deprecation")
 	@SubscribeEvent
 	public void onProjectileLaunch(EntityShootBowEvent e) {
-		if (getPlayer().equals(e.getEntity()) && e.getProjectile() instanceof Arrow) {
+		if (getPlayer().equals(e.getEntity()) && NMS.isArrow(e.getProjectile())) {
 			e.setCancelled(true);
 			getPlayer().updateInventory();
 		}
