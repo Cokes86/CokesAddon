@@ -19,19 +19,33 @@ import org.bukkit.event.entity.ProjectileHitEvent;
 import java.util.Objects;
 
 @AbilityManifest(name = "인챈트 애로우", rank = Rank.S, species = Species.HUMAN, explain = {
-		"활로 플레이어를 적중할 시 원거리 대미지가 (§b인챈트 스택§f * $[damage])% 증가하며,",
-		"§b인챈트 스택§f이 거리에 비례하여 1에서 $[max_stack_up]만큼 증가합니다. (최대 $[max_stack]회)",
-		"적중에 실패할 시 §b인챈트 스택§f이 거리에 비례하여 1에서 $[max_stack_down]만큼 감소합니다.",
-		"§b인챈트 스택§f이 0인 상태로 적중에 실패할 시 $[risk]의 고정 대미지를 입습니다.",
+		"활로 플레이어를 적중할 시 원거리 대미지가 (§b인챈트 스택§f * $[DAMAGE])% 증가하며,",
+		"§b인챈트 스택§f이 거리에 비례하여 1에서 $[MAX_STACK_UP]만큼 증가합니다. (최대 $[MAX_STACK]회)",
+		"적중에 실패할 시 §b인챈트 스택§f이 거리에 비례하여 1에서 $[MAX_STACK_UP]만큼 감소합니다.",
+		"§b인챈트 스택§f이 0인 상태로 적중에 실패할 시 $[RISK]의 고정 대미지를 입습니다.",
 		"자신이 쏜 화살은 명중 시 바로 사라집니다.",
 		"[아이디어 제공자 §bRainStar_§f]"
 })
 public class EnchantArrow extends CokesAbility {
-	private static final Config<Integer> damage = new Config<>(EnchantArrow.class, "추가대미지(%)", 10, PredicateUnit.positive());
-	private static final Config<Integer> risk = new Config<>(EnchantArrow.class, "리스크", 1, PredicateUnit.positive());
-	private static final Config<Integer> max_stack = new Config<>(EnchantArrow.class, "최대스택", 9, PredicateUnit.positive());
-	private static final Config<Integer> max_stack_up = new Config<>(EnchantArrow.class, "최대스택상승치", 3, PredicateUnit.positive());
-	private static final Config<Integer> max_stack_down = new Config<>(EnchantArrow.class, "최대스택감소치", 3, PredicateUnit.positive());
+	private static final Config<Double> DAMAGE = new Config<>(EnchantArrow.class, "damage", 8.5, PredicateUnit.positive(),
+			"# 인챈트 스택 당 상승할 대미지 증가량",
+			"# 기본값: 8.5 (%)");
+	private static final Config<Integer> RISK = new Config<>(EnchantArrow.class, "risk", 1, PredicateUnit.positive(),
+			"# 인챈트 스택이 없는 상태에서 적중 실패 시 받는 대미지",
+			"# 기본값: 1");
+	private static final Config<Integer> MAX_STACK = new Config<>(EnchantArrow.class, "max-stack", 9, PredicateUnit.positive(),
+			"# 인챈트 스택의 최대치",
+			"# 기본값: 9");
+	private static final Config<Integer> MAX_STACK_UP = new Config<>(EnchantArrow.class, "max-increase-stack", 3, PredicateUnit.positive(),
+			"# 인챈트 스택의 최대 증가량",
+			"# 기본값: 3");
+	private static final Config<Integer> MAX_STACK_DOWN = new Config<>(EnchantArrow.class, "max-decrease-stack", 3, PredicateUnit.positive(),
+			"# 인챈트 스택의 최대 감소량",
+			"# 기본값: 3");
+	private static final Config<Integer> DISTANCE = new Config<>(EnchantArrow.class, "distance", 10, PredicateUnit.positive(),
+			"# 인챈트 스택이 증가하거나 감소할 때 거리의 비례량",
+			"# 가까울 수록 인챈트 스택이 적게 증가, 크게 감소합니다.",
+			"# 기본값: 10 (블럭)");
 	private int enchantStack = 0;
 	private final ActionbarChannel ac = newActionbarChannel();
 	private final String notice = "⤐";
@@ -42,7 +56,7 @@ public class EnchantArrow extends CokesAbility {
 
 	public void onUpdate(Update update) {
 		if (update == Update.RESTRICTION_CLEAR) {
-			ac.update(TextMaker.repeatWithTwoColor(notice, 'b', enchantStack, 'f', max_stack.getValue() - enchantStack));
+			ac.update(TextMaker.repeatWithTwoColor(notice, 'b', enchantStack, 'f', MAX_STACK.getValue() - enchantStack));
 		}
 	}
 
@@ -52,15 +66,15 @@ public class EnchantArrow extends CokesAbility {
 			if (e.getHitEntity() == null) {
 				SoundLib.ENTITY_VILLAGER_NO.playSound(getPlayer());
 				if (enchantStack == 0) {
-					getPlayer().setHealth(Math.max(0.0, getPlayer().getHealth() - risk.getValue()));
+					getPlayer().setHealth(Math.max(0.0, getPlayer().getHealth() - RISK.getValue()));
 				} else {
 					final double length = getPlayer().getLocation().clone().subtract(e.getEntity().getLocation().clone()).length();
-					enchantStack -= Math.min(max_stack_down.getValue(), Math.max(1, 3 - length / 7));
+					enchantStack -= Math.min(MAX_STACK_DOWN.getValue(), Math.max(1, MAX_STACK_DOWN.getValue() - length / DISTANCE.getValue()));
 					if (enchantStack < 0) enchantStack = 0;
 				}
 			}
 			e.getEntity().remove();
-			ac.update(TextMaker.repeatWithTwoColor(notice, 'b', enchantStack, 'f', max_stack.getValue() - enchantStack));
+			ac.update(TextMaker.repeatWithTwoColor(notice, 'b', enchantStack, 'f', MAX_STACK.getValue() - enchantStack));
 		}
 	}
 
@@ -69,11 +83,11 @@ public class EnchantArrow extends CokesAbility {
 		if (e.getEntity() instanceof Player && NMS.isArrow(e.getDamager()) && !e.getEntity().equals(getPlayer())) {
 			Projectile arrow = (Projectile) e.getDamager();
 			if (Objects.equals(arrow.getShooter(), getPlayer())) {
-				e.setDamage(e.getDamage() * (1 + enchantStack * damage.getValue() / 100.0));
+				e.setDamage(e.getDamage() * (1 + enchantStack * DAMAGE.getValue() / 100.0));
 				final double length = getPlayer().getLocation().clone().subtract(e.getEntity().getLocation().clone()).length();
-				enchantStack += Math.min(max_stack_up.getValue(), length / 7 + 1);
-				if (enchantStack >= max_stack.getValue()) enchantStack = max_stack.getValue();
-				ac.update(TextMaker.repeatWithTwoColor(notice, 'b', enchantStack, 'f', max_stack.getValue() - enchantStack));
+				enchantStack += Math.min(MAX_STACK_UP.getValue(), length / DISTANCE.getValue() + 1);
+				if (enchantStack >= MAX_STACK.getValue()) enchantStack = MAX_STACK.getValue();
+				ac.update(TextMaker.repeatWithTwoColor(notice, 'b', enchantStack, 'f', MAX_STACK.getValue() - enchantStack));
 				arrow.remove();
 			}
 		}

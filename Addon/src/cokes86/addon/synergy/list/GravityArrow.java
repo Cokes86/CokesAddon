@@ -31,7 +31,7 @@ import java.util.function.Predicate;
 public class GravityArrow extends CokesSynergy {
     private static final Config<Integer> RANGE = new Config<>(GravityArrow.class, "range", 5, PredicateUnit.positive(),
             "# 범위", "# 기본값: 5 (블럭)");
-    private static final Config<Double> DAMAGE = new Config<>(GravityArrow.class, "damaeg", 15.0, PredicateUnit.between(0.0,100.0,false),
+    private static final Config<Double> DAMAGE = new Config<>(GravityArrow.class, "damage", 15.0, PredicateUnit.between(0.0,100.0,false),
             "# 최대 체력 비례 대미지", "# 기본값: 15.0 (%)");
     private static final Config<Integer> BLOCK = new Config<>(GravityArrow.class, "block", 5, PredicateUnit.positive(),
             "# 위로 올라갈 정도", "# 기본값: 5 (블럭)");

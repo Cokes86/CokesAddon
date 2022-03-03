@@ -11,7 +11,6 @@ import daybreak.abilitywar.game.manager.effect.registry.EffectRegistry;
 import daybreak.abilitywar.game.manager.effect.registry.EffectType;
 import daybreak.abilitywar.utils.base.concurrent.TimeUnit;
 import daybreak.abilitywar.utils.base.minecraft.damage.Damages;
-import daybreak.abilitywar.utils.base.minecraft.entity.health.Healths;
 import daybreak.abilitywar.utils.base.minecraft.nms.NMS;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;

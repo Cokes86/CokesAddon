@@ -38,32 +38,32 @@ import org.bukkit.event.entity.EntityDamageEvent;
 })
 public class Whitney extends CokesAbility implements ActiveHandler {
     private static final Config<Integer> DURATION = new Config<>(Whitney.class, "duration", 20, Condition.TIME,
-            "# 휘트니 버프 지속시간",
+            "# 버프 지속시간",
             "# 기본값: 20 (초)");
     private static final Config<Integer> COOLDOWN_ONE = new Config<>(Whitney.class, "cooldown-one", 15, Condition.COOLDOWN,
-            "# 휘트니 기본 쿨타임",
+            "# 기본 쿨타임",
             "# 기본값: 15 (초)");
     private static final Config<Integer> COOLDOWN_TWO = new Config<>(Whitney.class, "cooldown-two", 120, Condition.TIME,
-            "# 휘트니 추가 쿨타임",
+            "# 지속 종료 시 혹은 6중첩 이후 쿨타임",
             "# 기본값: 120 (초)");
     private static final Config<Integer> RECOVERY_PERIOD = new Config<>(Whitney.class, "recovery-period", 5, Condition.TIME,
-            "# 휘트니 2중첩 회복 주기",
+            "# 2중첩 회복 주기",
             "# 기본값: 5 (초)");
     private static final Config<Integer> RECOVERY = new Config<>(Whitney.class, "recovery", 1, PredicateUnit.positive(),
-            "# 휘트니 2중첩 주기당 회복량",
+            "# 2중첩 주기당 회복량",
             "# 기본값: 1");
     private static final Config<Integer> BLEEDING = new Config<>(Whitney.class, "bleeding", 2, Condition.TIME,
-            "# 휘트니 3중첩 출혈 부여랑",
+            "# 3중첩 출혈 부여랑",
             "# 기본값: 2 (초)");
     private static final Config<Integer> DAMAGE = new Config<>(Whitney.class, "damage", 3, PredicateUnit.positive(),
-            "# 휘트니 5중첩 대미지 증가랑",
+            "# 5중첩 대미지 증가랑",
             "# 기본값: 3");
 
     private static final Config<Double> DEFENCE = new Config<>(Whitney.class, "defence", 20.0, PredicateUnit.between(0.0, 100.0, false),
-            "# 휘트니 6중첩 대미지 감소랑",
+            "# 6중첩 대미지 감소랑",
             "# 기본값: 20.0 (%)");
     private static final Config<Double> VAMPIRE = new Config<>(Whitney.class, "vampire", 15.0, PredicateUnit.between(0.0, 100.0, true),
-            "# 휘트니 4중첩 흡혈량",
+            "# 4중첩 흡혈량",
             "# 기본값: 15.0 (%)");
 
     private final WhitneyBuffTimer timer = new WhitneyBuffTimer();
