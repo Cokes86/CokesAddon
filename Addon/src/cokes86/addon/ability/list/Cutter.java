@@ -15,7 +15,7 @@ import org.bukkit.Material;
 public class Cutter extends CokesAbility implements ActiveHandler {
 	private static final Config<Integer> cool = new Config<>(Cutter.class, "쿨타임", 10, Config.Condition.COOLDOWN);
 	private static final Config<Integer> duration = new Config<>(Cutter.class, "회복량", 7, PredicateUnit.positive());
-	private static final Config<Integer> risk = new Config<>(Cutter.class, "코스트", 4);
+	private static final Config<Integer> risk = new Config<>(Cutter.class, "코스트", 4, PredicateUnit.positive());
 
 	private final Cooldown cooldownTimer = new Cooldown(cool.getValue());
 	private final Duration durationTimer = new Duration(duration.getValue(), cooldownTimer) {

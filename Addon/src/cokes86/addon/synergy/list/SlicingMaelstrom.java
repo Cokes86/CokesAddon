@@ -28,15 +28,17 @@ import java.util.function.Predicate;
 
 @AbilityManifest(name="날카로운 소용돌이", rank = AbilityManifest.Rank.A, species = AbilityManifest.Species.HUMAN, explain = {
         "철괴 우클릭 시 강력한 소용돌이를 생성해 자기 주변을 휩쓸어버립니다.",
-        "$[range]블럭 내에 0.5초마다 1의 고정 대미지를 주는 번개를 만들어",
+        "$[range]블럭 내에 0.5초마다 $[DAMAGE]의 고정 대미지를 주는 번개를 만들어",
         "범위 내 모든 플레이어에게 총 $[LIGHTNING_COUNT]번 내리꽂아버립니다. $[cooldown]",
         "번개를 3회 맞을 시 스턴이 1초 부여됩니다.",
-        "번개를 2회 맞을 때 마다 해당 능력으로 받는 고정 대미지가 1씩 상승합니다."
+        "번개를 2회 맞을 때 마다 해당 능력으로 받는 고정 대미지가 $[ADDITIONAL] 상승합니다."
 })
 public class SlicingMaelstrom extends CokesSynergy implements ActiveHandler {
     public static final Config<Integer> cooldown = new Config<>(SlicingMaelstrom.class, "쿨타임", 60, Config.Condition.COOLDOWN);
     public static final Config<Integer> LIGHTNING_COUNT = new Config<>(SlicingMaelstrom.class, "반복횟수", 6, PredicateUnit.positive());
     public static final Config<Integer> range = new Config<>(SlicingMaelstrom.class, "범위", 10, PredicateUnit.positive());
+    public static final Config<Integer> DAMAGE = new Config<>(SlicingMaelstrom.class, "대미지", 1, PredicateUnit.positive());
+    public static final Config<Integer> ADDITIONAL = new Config<>(SlicingMaelstrom.class, "추가대미지", 1, PredicateUnit.positive());
     private final Predicate<Entity> predicate = entity -> {
         if (entity.equals(getPlayer())) return false;
         if (entity instanceof Player) {
@@ -95,7 +97,7 @@ public class SlicingMaelstrom extends CokesSynergy implements ActiveHandler {
             List<Player> ps = LocationUtil.getNearbyEntities(Player.class, getPlayer().getLocation(), range.getValue(), range.getValue(), predicate);
             for (Player player : ps) {
                 int hitted = hit.getOrDefault(player, 0);
-                int damage = (hitted / 2) +1;
+                int damage = (hitted/2)*ADDITIONAL.getValue() + DAMAGE.getValue();
                 Damages.damageFixed(player, getPlayer(), damage);
                 hit.put(player, hitted+1);
                 hitted+=1;

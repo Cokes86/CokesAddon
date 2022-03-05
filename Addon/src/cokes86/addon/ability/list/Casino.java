@@ -20,6 +20,7 @@ import daybreak.abilitywar.utils.base.minecraft.nms.IHologram;
 import daybreak.abilitywar.utils.base.minecraft.nms.NMS;
 import daybreak.abilitywar.utils.base.random.Random;
 import daybreak.abilitywar.utils.library.SoundLib;
+import daybreak.google.common.collect.ImmutableMap;
 import org.bukkit.*;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.entity.Arrow;
@@ -44,23 +45,20 @@ public class Casino extends CokesAbility implements ActiveHandler {
 
     private final double defaultMaxHealth = Objects.requireNonNull(getPlayer().getAttribute(Attribute.GENERIC_MAX_HEALTH)).getBaseValue();
     private Cooldown cooldown = new Cooldown(COOLDOWN.getValue(), CooldownDecrease._75);
-    private final Map<Effects, Boolean> effects = new HashMap<Effects, Boolean>() {
-        {
-            put(Effects.DAMAGE_UP, false);
-            put(Effects.WITHER, false);
-            put(Effects.RESISTANCE, false);
-            put(Effects.HEAL, false);
-            put(Effects.TWIST, false);
-            put(Effects.REGAIN, false);
-            put(Effects.HEALTH, false);
-            put(Effects.BLEED, false);
-            put(Effects.COOLDOWN_UP, false);
-            put(Effects.FALL, false);
-            put(Effects.STUN, false);
-            put(Effects.FIRE_RESISTANCE, false);
-            put(Effects.PROJECTILE, false);
-        }
-    };
+    private final Map<Effects, Boolean> effects = new HashMap<>(ImmutableMap.<Effects, Boolean>builder()
+            .put(Effects.DAMAGE_UP, false)
+            .put(Effects.WITHER, false)
+            .put(Effects.RESISTANCE, false)
+            .put(Effects.HEAL, false)
+            .put(Effects.TWIST, false)
+            .put(Effects.REGAIN, false)
+            .put(Effects.HEALTH, false)
+            .put(Effects.BLEED, false)
+            .put(Effects.COOLDOWN_UP, false)
+            .put(Effects.FALL, false)
+            .put(Effects.STUN, false)
+            .put(Effects.FIRE_RESISTANCE, false)
+            .put(Effects.PROJECTILE, false).build());
     private final Map<AbstractGame.Participant, HitBleedTimer> hit = new HashMap<>();
 
     private final AbilityTimer wither = new AbilityTimer() {
@@ -68,8 +66,8 @@ public class Casino extends CokesAbility implements ActiveHandler {
         protected void run(int count) {
             Damages.damageMagic(getPlayer(), null, true, 1);
         }
-    }.setInitialDelay(TimeUnit.SECONDS, 4).setPeriod(TimeUnit.SECONDS, 4).register(),
-    aim = new AbilityTimer() {
+    }.setInitialDelay(TimeUnit.SECONDS, 4).setPeriod(TimeUnit.SECONDS, 4).register();
+    private final AbilityTimer aim = new AbilityTimer() {
         @Override
         protected void run(int count) {
             Player target = getFarthestEntity(getPlayer().getLocation(), predicate);

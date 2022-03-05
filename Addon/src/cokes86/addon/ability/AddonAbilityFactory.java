@@ -2,6 +2,7 @@ package cokes86.addon.ability;
 
 import cokes86.addon.ability.list.*;
 import cokes86.addon.ability.test.*;
+import cokes86.addon.ability.list.Justin;
 import daybreak.abilitywar.ability.AbilityFactory;
 import daybreak.abilitywar.ability.AbilityManifest;
 import daybreak.abilitywar.game.manager.AbilityList;
@@ -56,7 +57,6 @@ public class AddonAbilityFactory {
 		registerAbility(Boxer.class);
 
 		//1.1.4
-		registerAbility(Justin.class);
 		registerAbility(Casino.class);
 
 		//1.3.0
@@ -76,11 +76,11 @@ public class AddonAbilityFactory {
 		registerAbility(Reisen.class);
 
 		//1.7.0
-		registerTestAbility(JustinR.class);
-		registerTestAbility(BlackFeather.class);
-		registerTestAbility(Ain.class);
-		registerTestAbility(Sheep.class);
-		registerTestAbility(Whitney.class);
+		registerAbility(Justin.class);
+		registerAbility(BlackFeather.class);
+		registerAbility(Ain.class);
+		registerAbility(Sheep.class);
+		registerAbility(Whitney.class);
 	}
 
 	public static void registerAbility(Class<? extends CokesAbility> clazz) {

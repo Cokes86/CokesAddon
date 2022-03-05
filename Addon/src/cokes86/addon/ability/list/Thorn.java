@@ -25,7 +25,7 @@ import org.bukkit.event.entity.EntityDamageByEntityEvent;
 public class Thorn extends CokesAbility implements ActiveHandler {
 	private static final Config<Integer> COOL = new Config<>(Thorn.class, "쿨타임", 20, Config.Condition.COOLDOWN);
 	private static final Config<Integer> DURATION = new Config<>(Thorn.class, "지속시간", 5, Config.Condition.TIME);
-	private static final Config<Integer> DAMAGE = new Config<>(Thorn.class, "반사대미지(%)", 40, PredicateUnit.positive());
+	private static final Config<Double> DAMAGE = new Config<>(Thorn.class, "반사대미지(%)", 60.0, PredicateUnit.positive());
 	private final Cooldown cooldown = new Cooldown(COOL.getValue());
 	private final Duration duration = new Duration(DURATION.getValue(), cooldown) {
 		@Override
@@ -53,7 +53,7 @@ public class Thorn extends CokesAbility implements ActiveHandler {
 				if (a.getShooter() instanceof Player && !a.getShooter().equals(getPlayer())) {
 					Player shooter = (Player) a.getShooter();
 					double dam = e.getDamage();
-					Damages.damageArrow(shooter, getPlayer(), (float) (dam * DAMAGE.getValue() / 100));
+					Damages.damageArrow(shooter, getPlayer(), (float) (dam * DAMAGE.getValue() / 100.0));
 					SoundLib.PIANO.playInstrument(shooter, new Note(1, Tone.F, false));
 					e.setDamage(0);
 				}

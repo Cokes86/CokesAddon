@@ -37,8 +37,13 @@ public class Disguise extends CokesAbility implements ActiveHandler {
 	private static final Config<Integer> count = new Config<>(Disguise.class, "변장_후_공격받는_횟수", 3, PredicateUnit.positive());
 	private static final Config<Integer> cool = new Config<>(Disguise.class, "쿨타임", 180, Config.Condition.COOLDOWN);
 	private static final Config<Integer> reflect = new Config<>(Disguise.class, "반사(%)", 50, PredicateUnit.positive());
-	private static final Config<Boolean> changeSkin = new Config<>(Disguise.class, "스킨변경", true);
-	private static final Config<Boolean> changeNameTag = new Config<>(Disguise.class, "이름표변경", true);
+	private static final Config<Boolean> changeSkin = new Config<>(Disguise.class, "스킨변경", true,
+			"# 변장술 사용할 시 변장술의 대상으로 스킨 변경 여부",
+			"# 기본값: true");
+	private static final Config<Boolean> changeNameTag = new Config<>(Disguise.class, "이름표변경", true,
+			"# 변장술 사용할 시 변장술의 대상으로 닉네임 변경 여부",
+			"# 팀전에선 작동하지 않음",
+			"# 기본값: true");
 	private final Cooldown cooldown = new Cooldown(cool.getValue());
 	private final Predicate<Entity> predicate = entity -> {
 		if (entity == null || entity.equals(getPlayer())) return false;

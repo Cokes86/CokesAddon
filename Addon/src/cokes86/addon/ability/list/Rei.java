@@ -27,7 +27,7 @@ import org.bukkit.event.entity.EntityDamageEvent;
 
 @AbilityManifest(name = "레이", rank = Rank.L, species = Species.HUMAN, explain = {
 		"쿨타임이 아닐 때 상대방을 공격할 시 최대 체력의 $[cost]%를 코스트로",
-		"상대에게 주는 대미지가 $[damage] 증가합니다.",
+		"상대에게 주는 대미지가 $[damage]% 증가합니다.",
 		"자신의 체력이 0이 되었을 시 그 공격을 무효로 하고 체력이 $[respawn] 됩니다. $[cool]",
 		"코스트로 지불할 체력이 부족한 경우 코스트를 소비하지 않습니다."
 })
@@ -42,7 +42,7 @@ import org.bukkit.event.entity.EntityDamageEvent;
 },
 stats = @Stats(offense = Level.NINE, survival = Level.FIVE, crowdControl = Level.ZERO, mobility = Level.ZERO, utility = Level.THREE), difficulty = Difficulty.NORMAL)
 public class Rei extends CokesAbility {
-	private static final Config<Double> damage = new Config<>(Rei.class, "추가대미지", 4.0, PredicateUnit.positive());
+	private static final Config<Double> damage = new Config<>(Rei.class, "추가대미지", 30.0, PredicateUnit.positive());
 	private static final Config<Double> cost = new Config<>(Rei.class, "코스트(%)", 4.5, PredicateUnit.positive());
 	private static final Config<Integer> cool = new Config<>(Rei.class, "쿨타임", 100, Config.Condition.COOLDOWN);
 	private static final Config<Integer> respawn = new Config<>(Rei.class, "부활체력", 4, Config.Condition.NUMBER);
@@ -66,7 +66,7 @@ public class Rei extends CokesAbility {
 		}
 
 		if (e.getEntity() instanceof Player && !e.getEntity().equals(getPlayer()) && damager.equals(getPlayer()) && !cooldown.isRunning() && !e.isCancelled()) {
-			e.setDamage(e.getDamage() + damage.getValue());
+			e.setDamage(e.getDamage() * (1 + damage.getValue() / 100.0));
 			final double maxHealth = AttributeUtil.getMaxHealth(getPlayer()), health = getPlayer().getHealth();
 			final float absorption = NMS.getAbsorptionHearts(getPlayer());
 			final double damage = maxHealth * cost.getValue() / 100.0f;

@@ -1,4 +1,4 @@
-package cokes86.addon.ability.test;
+package cokes86.addon.ability.list;
 
 import cokes86.addon.ability.CokesAbility;
 import cokes86.addon.ability.CokesAbility.Config.Condition;

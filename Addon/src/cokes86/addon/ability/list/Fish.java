@@ -99,7 +99,6 @@ public class Fish extends CokesAbility implements ActiveHandler {
 				}
 			}
 		}
-
 	};
 
 	public Fish(Participant arg0) {
