@@ -1,7 +1,6 @@
 package cokes86.addon.util;
 
 import daybreak.google.common.base.Strings;
-import org.bukkit.ChatColor;
 
 public class TextMaker {
 

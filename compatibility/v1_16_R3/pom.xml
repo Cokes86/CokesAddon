@@ -13,22 +13,24 @@
     <artifactId>v1_16_R3</artifactId>
 
     <dependencies>
-    <dependency>
-        <groupId>dayBreak.abilitywar</groupId>
-        <artifactId>AbilityWar</artifactId>
-        <version>${abilitywar-version}</version>
-        <scope>provided</scope>
-    </dependency>
-    <dependency>
-        <groupId>org.bukkit</groupId>
-        <artifactId>craftbukkit</artifactId>
-        <version>1.16.5-R0.1-SNAPSHOT</version>
-        <scope>provided</scope>
-    </dependency>
-    <dependency>
-        <groupId>Cokes_86.plugins</groupId>
-        <artifactId>Addon</artifactId>
-        <version>${revision}</version>
-    </dependency>
-</dependencies>
+        <dependency>
+            <groupId>org.bukkit</groupId>
+            <artifactId>craftbukkit</artifactId>
+            <version>1.16.5-R0.1-SNAPSHOT</version>
+            <scope>system</scope>
+            <systemPath>${basedir}/../../lib/craftbukkit-1.16.5-R0.1-SNAPSHOT.jar</systemPath>
+        </dependency>
+        <dependency>
+            <groupId>daybreak.abilitywar</groupId>
+            <artifactId>AbilityWar</artifactId>
+            <version>${abilitywar-version}</version>
+            <scope>system</scope>
+            <systemPath>${basedir}/../../lib/AbilityWar-${abilitywar-version}.jar</systemPath>
+        </dependency>
+        <dependency>
+            <groupId>Cokes_86.plugins</groupId>
+            <artifactId>Addon</artifactId>
+            <version>${revision}</version>
+        </dependency>
+    </dependencies>
 </project>

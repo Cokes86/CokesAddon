@@ -9,9 +9,11 @@ import daybreak.abilitywar.ability.SubscribeEvent;
 import daybreak.abilitywar.config.enums.CooldownDecrease;
 import daybreak.abilitywar.game.AbstractGame.Participant;
 import daybreak.abilitywar.game.module.DeathManager;
+import daybreak.abilitywar.utils.base.color.RGB;
 import daybreak.abilitywar.utils.base.math.LocationUtil;
 import daybreak.abilitywar.utils.base.math.geometry.Circle;
 import daybreak.abilitywar.utils.base.minecraft.nms.NMS;
+import daybreak.abilitywar.utils.library.ParticleLib;
 import daybreak.abilitywar.utils.library.SoundLib;
 import org.bukkit.Location;
 import org.bukkit.attribute.Attributable;
@@ -20,6 +22,7 @@ import org.bukkit.entity.Damageable;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.entity.ProjectileHitEvent;
+import org.bukkit.util.Vector;
 
 import java.util.List;
 import java.util.function.Predicate;
@@ -59,7 +62,7 @@ public class GravityArrow extends CokesSynergy {
                     final List<Damageable> damageables = LocationUtil.getNearbyEntities(Damageable.class, center, 5, 5, ONLY_PARTICIPANTS);
                     for (Damageable damageable : damageables) {
                         if (!damageable.equals(getPlayer())) {
-                            if (LocationUtil.isInCircle(center, damageable.getLocation(), 5)) {
+                            if (LocationUtil.isInCircle(center, damageable.getLocation(), RANGE.getValue())) {
                                 damageable.damage((damageable instanceof Attributable ? ((Attributable) damageable).getAttribute(Attribute.GENERIC_MAX_HEALTH).getValue() : 0) * (DAMAGE.getValue()/100.0), getPlayer());
                                 if (damageable instanceof Player) {
                                     SoundLib.ENTITY_ILLUSIONER_CAST_SPELL.playSound((Player) damageable);
@@ -67,7 +70,9 @@ public class GravityArrow extends CokesSynergy {
                             }
                         }
                     }
-
+                    for (Vector vector : circle) {
+                        ParticleLib.REDSTONE.spawnParticle(center.add(vector), RGB.BLUE);
+                    }
                     for (Damageable damageable : damageables) {
                         Location teleport = damageable.getLocation().clone().add(0, BLOCK.getValue(), 0);
                         damageable.teleport(teleport);

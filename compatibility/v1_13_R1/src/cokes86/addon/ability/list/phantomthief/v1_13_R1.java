@@ -2,7 +2,6 @@ package cokes86.addon.ability.list.phantomthief;
 
 import cokes86.addon.ability.list.PhantomThief;
 import daybreak.abilitywar.AbilityWar;
-import daybreak.abilitywar.ability.AbilityBase;
 import daybreak.abilitywar.ability.SubscribeEvent;
 import daybreak.abilitywar.game.AbstractGame;
 import daybreak.abilitywar.utils.base.collect.Pair;
@@ -23,6 +22,7 @@ import org.bukkit.scheduler.BukkitRunnable;
 
 import java.util.*;
 
+@SuppressWarnings("unchecked")
 public class v1_13_R1 extends PhantomThief {
     private final Map<UUID, Pair<CraftPlayer, ChannelOutboundHandlerAdapter>> channelHandlers = new HashMap<>();
     private static final DataWatcherObject<Byte> BYTE_DATA_WATCHER_OBJECT;

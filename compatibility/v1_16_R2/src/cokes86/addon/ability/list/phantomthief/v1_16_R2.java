@@ -22,6 +22,7 @@ import org.bukkit.scheduler.BukkitRunnable;
 
 import java.util.*;
 
+@SuppressWarnings("unchecked")
 public class v1_16_R2 extends PhantomThief {
     private final Map<UUID, Pair<CraftPlayer, ChannelOutboundHandlerAdapter>> channelHandlers = new HashMap<>();
     private static final DataWatcherObject<Byte> BYTE_DATA_WATCHER_OBJECT;

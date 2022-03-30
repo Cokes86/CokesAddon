@@ -13,6 +13,7 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.*;
 
+@SuppressWarnings("unused")
 public class AddonSynergyFactory {
     protected static final Map<String, Class<? extends CokesSynergy>> synergies = new HashMap<>();
 

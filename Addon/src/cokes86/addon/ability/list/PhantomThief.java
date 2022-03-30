@@ -45,6 +45,7 @@ import java.util.function.Predicate;
 		"$(Explain)" })
 @NotAvailable(AbstractTripleMix.class)
 @SupportNMS
+@SuppressWarnings("unused")
 public abstract class PhantomThief extends CokesAbility implements ActiveHandler, TargetHandler {
 	static {
 		if (!AbilityFactory.isRegistered(NullAbility.class)) {

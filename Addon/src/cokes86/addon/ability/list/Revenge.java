@@ -53,7 +53,6 @@ public class Revenge extends CokesAbility {
 			}
 			if (e.getCause() == EntityDamageEvent.DamageCause.MAGIC) return;
 			if (damager.equals(getPlayer()) && e.getEntity() instanceof Player && !e.getEntity().equals(getPlayer())) {
-				float plus = (float) (finalDamage * PERCENTAGE.getValue() / 100.0f);
 				new AbilityTimer(1) {
 					public void run(int arg0) {
 						Player target = (Player) e.getEntity();
