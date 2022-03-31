@@ -45,6 +45,11 @@ import java.util.function.Predicate;
         "  §9마인드 쉐이커§f의 수치가 $[EYES_ENHANCE_PREDICATE] 이상일 경우 쿨타임이 $[EYES_ENHANCE_COOLDOWN_DECREASE]% 감소합니다.",
         "§7상태이상 §8- §8뒤틀림§f: 멀미 효과를 부여합니다. 멀미 효과가 있는 동안",
         "  상대방을 공격할 시 30%의 확률로 해당 공격이 무효화됩니다."
+}, summarize = {
+    "일정시간마다 주변 플레이어의 시야가 뒤틀어집니다.",
+    "시야가 뒤튼 플레이어의 수만큼, 또는 3회 공격 시, 스킬 사용 시 스택이 증가합니다.",
+    "스택에 따라 스킬이 강화됩니다.",
+    "상대방을 보고 우클릭 시 상대방의 액티브, 타겟팅 능력을 봉인합니다."
 })
 public class Reisen extends CokesAbility implements ActiveHandler {
     private static final Config<Integer> MADNESS_ENHANCE_PREDICATE = new Config<>(Reisen.class, "광기를_다루는_자.강화_조건", 25, PredicateUnit.positive());

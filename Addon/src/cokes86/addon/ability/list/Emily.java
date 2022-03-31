@@ -62,8 +62,12 @@ import java.util.function.Predicate;
         "  §a폭발§f: 1초마다 $[ALCHEMY_AREA_EXPLOSION_DAMAGE]의 대미지를 주는 폭발을 일으킵니다.",
         "§7철괴 우클릭 §8-§c 알케미 체인지§f: 자신의§c 알케미 마스터리§f 상태를 바꿉니다. §c쿨타임 §7: §f0.25초"
 }, summarize = {
-        "철괴 우클릭으로 적절히 자신의 §c 알케미 마스터리§f를 조절해",
-        "검 들고 F키를 통해 §c 알케미 캡슐§f을 날려 상대방을 견제하자."
+        "철괴 우클릭으로 §c알케미 마스터리§f를 변경합니다.",
+        "검 들고 F키를 누르면 §c알케미 캡슐§f이 날라가 플레이어, 땅에 맞으면",
+        "주변 반경에 대미지를 주고 §c알케미 마스터리§f에 맞는 §a알케미 에리어§f를 만듭니다.",
+        "  §4화상§f: 불장판, 영역 내 에밀리 화상대미지 무시",
+        "  §7둔화§f: 0.5초마다 쿨타임 증가, 1.5초마다 빙결 효과 (최대 $[ALCHEMY_AREA_FROST_MAX_COUNT]번)",
+        "  §a폭발§f: 1초마다 영역 내 폭발 대미지"
 })
 public class Emily extends CokesAbility implements ActiveHandler {
     private static final Set<Material> swords;

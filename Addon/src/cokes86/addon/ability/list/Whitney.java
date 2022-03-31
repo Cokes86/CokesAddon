@@ -6,12 +6,18 @@ import cokes86.addon.util.PredicateUnit;
 import daybreak.abilitywar.ability.AbilityManifest;
 import daybreak.abilitywar.ability.AbilityManifest.Rank;
 import daybreak.abilitywar.ability.AbilityManifest.Species;
+import daybreak.abilitywar.ability.Tips.Difficulty;
+import daybreak.abilitywar.ability.Tips.Level;
+import daybreak.abilitywar.ability.Tips.Stats;
 import daybreak.abilitywar.ability.SubscribeEvent;
+import daybreak.abilitywar.ability.Tips;
 import daybreak.abilitywar.ability.decorator.ActiveHandler;
+import daybreak.abilitywar.config.Configuration.Settings;
 import daybreak.abilitywar.config.enums.CooldownDecrease;
 import daybreak.abilitywar.game.AbstractGame.Participant;
 import daybreak.abilitywar.game.AbstractGame.Participant.ActionbarNotification.ActionbarChannel;
 import daybreak.abilitywar.game.manager.effect.Bleed;
+import daybreak.abilitywar.game.module.Wreck;
 import daybreak.abilitywar.utils.base.TimeUtil;
 import daybreak.abilitywar.utils.base.concurrent.TimeUnit;
 import daybreak.abilitywar.utils.base.minecraft.entity.health.Healths;
@@ -35,6 +41,17 @@ import org.bukkit.event.entity.EntityDamageEvent;
         "* 4회 사용 시: 상대 공격 시 주었던 최종 대미지의 $[VAMPIRE]% 회복.",
         "* 5회 사용 시: 상대에게 주는 대미지 $[DAMAGE] 증가",
         "* 6회 사용 시: 상대에게 받는 대미지 $[DEFENCE]% 감소",
+})
+@Tips(difficulty = Difficulty.EASY, stats = @Stats(
+    crowdControl = Level.ONE,
+    survival = Level.SEVEN,
+    offense = Level.FIVE,
+    utility = Level.THREE,
+    mobility = Level.SIX
+), tip = {
+    "해당 능력은 버프의 지속시간과 쿨타임이 같이 돌아갑니다.",
+    "쿨타임이 끝나면 지속시간이 끝나기 전에 능력을 재사용해야합니다.",
+    "항상 쿨타임과 지속시간을 꾸준히 확인하세요!"
 })
 public class Whitney extends CokesAbility implements ActiveHandler {
     private static final Config<Integer> DURATION = new Config<>(Whitney.class, "duration", 20, Condition.TIME,
@@ -116,20 +133,25 @@ public class Whitney extends CokesAbility implements ActiveHandler {
 
     private class WhitneyBuffTimer extends AbilityTimer {
         private int stack = 0;
-        private final Cooldown cooldown_one = new Cooldown(COOLDOWN_ONE.getValue(), CooldownDecrease._25);
-        private final Cooldown cooldown_two = new Cooldown(COOLDOWN_TWO.getValue(), CooldownDecrease._25);
+        private final Cooldown cooldown_one = new Cooldown(COOLDOWN_ONE.getValue(), 75);
+        private final Cooldown cooldown_two = new Cooldown(COOLDOWN_TWO.getValue(), 75);
         private final int duration;
         private final ActionbarChannel channel = newActionbarChannel();
 
         public WhitneyBuffTimer() {
-            super(DURATION.getValue() * 20);
+            super((int) (DURATION.getValue() * 20 * (Wreck.isEnabled(Whitney.this.getGame()) ? Wreck.calculateDecreasedAmount(75) : 1)));
             this.duration = DURATION.getValue() * 20;
             register();
+            if (Settings.getCooldownDecrease() == CooldownDecrease._100) {
+                cooldown_one.setCooldown((int) (COOLDOWN_ONE.getValue() * 0.25));
+                cooldown_two.setCooldown((int) (COOLDOWN_TWO.getValue() * 0.25));
+                this.setMaximumCount((int) (DURATION.getValue() * 20 * 0.25));
+            }
         }
 
         @Override
         protected void run(int count) {
-            channel.update(ChatColor.GOLD + "지속 시간 " + ChatColor.WHITE + ": " + ChatColor.YELLOW + TimeUtil.parseTimeAsString(getFixedCount()));
+            channel.update(ChatColor.GOLD.toString() + stack + "단계 버프 지속 시간 " + ChatColor.WHITE + ": " + ChatColor.YELLOW + TimeUtil.parseTimeAsString(getFixedCount()));
 
             if (stack >= 1) {
                 PotionEffects.SPEED.addPotionEffect(getPlayer(), 10, 0, true);
@@ -166,7 +188,7 @@ public class Whitney extends CokesAbility implements ActiveHandler {
             boolean isStart = false;
             if (!isCooldown()) {
                 stack += 1;
-                SoundLib.ENTITY_ENDERMAN_TELEPORT.playSound(getPlayer());
+                SoundLib.ENTITY_ENDERMAN_TELEPORT.playSound(getPlayer(), 1.0f, 2.0f);
                 if (stack == 1) {
                     isStart = cooldown_one.start() && super.start();
                 } else if (stack == 6) {

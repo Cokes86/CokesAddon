@@ -27,7 +27,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
-@AbilityManifest(name = "져스틴R", rank = AbilityManifest.Rank.L, species = AbilityManifest.Species.HUMAN, explain = {
+@AbilityManifest(name = "져스틴", rank = AbilityManifest.Rank.L, species = AbilityManifest.Species.HUMAN, explain = {
         "§7패시브§8 -§c 두가지 인격§f: 약 $[PERIOD] 간격으로 자신의 인격이 뒤바뀝니다.",
         "  이 주기는 불안정한 인격을 다루기에 최대 50%까지 오차가 발생합니다.",
         "  인격에 따라 각기 다른 효과를 부여받습니다.",
@@ -41,15 +41,36 @@ import java.util.concurrent.ConcurrentHashMap;
         "  [§52인격§f] §4흑심 카운터§f를 가지고 있던 플레이어에게 개당 $[GET_THIS_DAMAGE]의 고정 마법 대미지를 줍니다. $[GET_THIS_COOLDOWN]",
         "§7철괴 우클릭§8 - §c탈출§f: 자신의 인격을 강제로 변경합니다. $[ESCAPE_COOLDOWN]",
         "  이때, 바뀐 인격은 더욱 불안정해 주기가 §c반으로 감소합니다."
+}, summarize = {
+    "져스틴은 2개의 인격을 가집니다. 인격은 약 45초의 주기로 바뀝니다.",
+    "1인격 상태에서는 §7검으로 공격 시 §c대미지가 $[DAMAGE]% 감소§f하지만",
+    "0.5초 이내 §7검을 들고 우클릭§f 하면 적을 밀쳐내면서 §b감소했던 대미지를 입힙니다.",
+    "2인격 상태에서는 §7검으로 공격 시§f 상대에게 §4흑심 카운터§f를 1개씩, 최대 $[MAX_COUNT]개 남깁니다.",
+    "이후 §7검을 들고 우클릭§f 하면 흑심 카운터 개당 $[GET_THIS_DAMAGE]의 §b고정 마법 대미지§f를 줍니다.",
+    "공통적으로 §7철괴를 우클릭§f하면 인격이 바뀌지만, 다음 주기가 반으로 감소합니다."
 })
 public class Justin extends CokesAbility implements ActiveHandler {
-    private static final Config<Integer> PERIOD = new Config<>(Justin.class, "두가지_인격.인격변경주기", 45, Config.Condition.TIME);
-    private static final Config<Integer> MAX_COUNTER = new Config<>(Justin.class, "슬래시.흑심카운터_최대치", 10, PredicateUnit.upper(1));
-    private static final Config<Integer> GET_THIS_COOLDOWN = new Config<>(Justin.class, "이거나_받아라.2인격_쿨타임", 60, Config.Condition.COOLDOWN);
-    private static final Config<Integer> ESCAPE_COOLDOWN = new Config<>(Justin.class, "탈출_쿨타임", 45, Config.Condition.COOLDOWN);
-    private static final Config<Integer> DAMAGE = new Config<>(Justin.class, "슬래시.1인격_대미지_감소량(%)", 30, PredicateUnit.positive());
-    private static final Config<Float> GET_THIS_DAMAGE = new Config<>(Justin.class, "이거나_받아라.2인격_고정대미지", 2.0f, PredicateUnit.positive());
-    private static final Config<Integer> TWO_PERSON_DAMAGE_INCREASE = new Config<>(Justin.class, "두가지_인격.2인격_받는대미지_증가량(%)", 20, PredicateUnit.positive());
+    private static final Config<Integer> PERIOD = new Config<>(Justin.class, "period", 45, Config.Condition.TIME,
+        "# 인격 변경 주기",
+        "# 기본값 : 45 (초)");
+    private static final Config<Integer> MAX_COUNTER = new Config<>(Justin.class, "max-count", 10, PredicateUnit.upper(1),
+        "# 흑심카운터 최대치",
+        "# 기본값 : 10");
+    private static final Config<Integer> GET_THIS_COOLDOWN = new Config<>(Justin.class, "get-this-cooldown", 60, Config.Condition.COOLDOWN,
+        "# 이거나 받아라 2인격 쿨타임",
+        "# 기본값 : 60 (초)");
+    private static final Config<Integer> ESCAPE_COOLDOWN = new Config<>(Justin.class, "escape-cooldown", 45, Config.Condition.COOLDOWN,
+        "# 탈출 쿨타임",
+        "# 기본값 : 45 (초)");
+    private static final Config<Double> DAMAGE = new Config<>(Justin.class, "giving-damage-decrement", 30.0, PredicateUnit.positive(),
+        "# 슬래시 1인격 주는 대미지 감소량",
+        "# 기본값 : 30.0 (%)");
+    private static final Config<Float> GET_THIS_DAMAGE = new Config<>(Justin.class, "fix-damage", 2.0f, PredicateUnit.positive(),
+        "# 이거나 받아라 2인격 고정 대미지량",
+        "# 기본값 : 2.0");
+    private static final Config<Double> TWO_PERSON_DAMAGE_INCREASE = new Config<>(Justin.class, "receive-damage-increment", 20.0, PredicateUnit.positive(),
+        "# 두가지 인격 2인격 받는 대미지 증가량",
+        "# 기본값 : 20.0 (%)");
 
     private static final Set<Material> swords;
     static {
