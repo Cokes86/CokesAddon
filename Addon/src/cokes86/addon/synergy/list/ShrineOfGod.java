@@ -119,21 +119,11 @@ public class ShrineOfGod extends CokesSynergy implements ActiveHandler {
         }
     }
 
-    @SubscribeEvent
+    @SubscribeEvent(childs = {EntityDamageByBlockEvent.class, EntityDamageByEntityEvent.class})
     public void onEntityDamage(EntityDamageEvent e) {
         if (e.getEntity().equals(getPlayer()) && duration.isRunning()) {
             e.setDamage(e.getDamage() * 1.25);
         }
-    }
-
-    @SubscribeEvent
-    public void onEntityDamageByEntity(EntityDamageByEntityEvent e) {
-        onEntityDamage(e);
-    }
-
-    @SubscribeEvent
-    public void onEntityDamageByBlock(EntityDamageByBlockEvent e) {
-        onEntityDamage(e);
     }
 
     @Override

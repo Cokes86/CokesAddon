@@ -94,12 +94,7 @@ public class Rei extends CokesAbility {
 		}
 	}
 
-	@SubscribeEvent(priority = 5)
-	private void onEntityDamageByBlock(EntityDamageByBlockEvent e) {
-		onEntityDamage(e);
-	}
-
-	@SubscribeEvent(priority = 5)
+	@SubscribeEvent(priority = 5, childs = {EntityDamageByBlockEvent.class})
 	private void onEntityDamage(EntityDamageEvent e) {
 		if (e.getEntity().equals(getPlayer()) && !cooldown.isRunning() && !e.isCancelled()) {
 			double damage = e.getFinalDamage();

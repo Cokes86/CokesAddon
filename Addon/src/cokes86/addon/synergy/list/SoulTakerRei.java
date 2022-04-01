@@ -96,7 +96,7 @@ public class SoulTakerRei extends CokesSynergy implements ActiveHandler {
         }
     }
 
-    @SubscribeEvent
+    @SubscribeEvent(childs = {EntityDamageByBlockEvent.class})
     public void onEntityDamage(EntityDamageEvent e) {
         if (e.getEntity().equals(getPlayer())) {
             if (getPlayer().getHealth() - e.getFinalDamage() <= 0 && !arousal_cool.isRunning() && soul > 0) {
@@ -108,11 +108,6 @@ public class SoulTakerRei extends CokesSynergy implements ActiveHandler {
                 channel.update(null);
             }
         }
-    }
-
-    @SubscribeEvent
-    public void onEntityDamageByEntity(EntityDamageByBlockEvent e) {
-        onEntityDamage(e);
     }
 
     @SubscribeEvent

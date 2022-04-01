@@ -98,12 +98,7 @@ public class Gambler extends CokesAbility implements ActiveHandler {
 		}
 	}
 
-	@SubscribeEvent
-	public void onEntityDamageByBlock(EntityDamageByBlockEvent e) {
-		onEntityDamage(e);
-	}
-
-	@SubscribeEvent
+	@SubscribeEvent(childs = {EntityDamageByBlockEvent.class})
 	public void onEntityDamage(EntityDamageEvent e) {
 		if (e.getEntity().equals(getPlayer())) {
 			e.setDamage(e.getDamage() * ((double) receive / 100));

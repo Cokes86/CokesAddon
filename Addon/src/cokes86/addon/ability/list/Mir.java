@@ -26,6 +26,7 @@ import org.bukkit.entity.ArmorStand;
 import org.bukkit.entity.Arrow;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
+import org.bukkit.event.entity.EntityDamageByBlockEvent;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.player.PlayerArmorStandManipulateEvent;
@@ -161,7 +162,7 @@ public class Mir extends CokesAbility implements ActiveHandler {
 		return false;
 	}
 
-	@SubscribeEvent
+	@SubscribeEvent(childs = {EntityDamageByBlockEvent.class})
 	public void onEntityDamage(EntityDamageEvent e) {
 		if (element == Element.GNOME && armorStand != null && e.getEntity().equals(getPlayer()) && getPlayer().getLocation().subtract(armorStand.getLocation().clone().add(0, -5, 0)).length() <= element.range) {
 			e.setDamage(e.getDamage() * (1 - damage_decrease.getValue() / 100.0));

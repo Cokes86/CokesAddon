@@ -108,7 +108,7 @@ public class Reincarnation extends CokesAbility {
 		}
 	}
 
-	@SubscribeEvent(priority = 6)
+	@SubscribeEvent(priority = 6, childs = {EntityDamageByBlockEvent.class})
 	public void onEntityDamage(EntityDamageEvent e) {
 		if (e.getEntity().equals(getPlayer())) {
 			if (reincarnation.isRunning())
@@ -166,10 +166,5 @@ public class Reincarnation extends CokesAbility {
 				e.setDamage(e.getDamage() * (damage.getValue() / 100.0D));
 			}
 		}
-	}
-
-	@SubscribeEvent(priority = 6)
-	public void onEntityDamageByBlock(EntityDamageByBlockEvent e) {
-		onEntityDamage(e);
 	}
 }

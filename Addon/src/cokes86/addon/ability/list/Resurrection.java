@@ -35,7 +35,7 @@ public class Resurrection extends CokesAbility {
 		}
 	}
 
-	@SubscribeEvent(priority = 6)
+	@SubscribeEvent(priority = 6, childs = {EntityDamageByBlockEvent.class})
 	public void onEntityDamage(EntityDamageEvent e) {
 		if (!resurrection) {
 			if (e.getEntity().equals(getPlayer())) {
@@ -69,10 +69,5 @@ public class Resurrection extends CokesAbility {
 				e.setDamage(e.getDamage() + BONUS_DAMAGE.getValue());
 			}
 		}
-	}
-
-	@SubscribeEvent(priority = 6)
-	public void onEntityDamageByBlock(EntityDamageByBlockEvent e) {
-		onEntityDamage(e);
 	}
 }

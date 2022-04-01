@@ -26,10 +26,7 @@ import org.bukkit.attribute.Attribute;
 import org.bukkit.entity.Arrow;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
-import org.bukkit.event.entity.EntityDamageByEntityEvent;
-import org.bukkit.event.entity.EntityDamageEvent;
-import org.bukkit.event.entity.EntityRegainHealthEvent;
-import org.bukkit.event.entity.EntityShootBowEvent;
+import org.bukkit.event.entity.*;
 import org.bukkit.util.Vector;
 
 import java.util.*;
@@ -131,7 +128,7 @@ public class Casino extends CokesAbility implements ActiveHandler {
         return false;
     }
 
-    @SubscribeEvent
+    @SubscribeEvent(childs = {EntityDamageByBlockEvent.class})
     public void onEntityDamage(EntityDamageEvent e) {
         if (e.getEntity().equals(getPlayer()) && e.getCause().equals(EntityDamageEvent.DamageCause.FALL) && effects.get(Effects.FALL)) {
             e.setCancelled(true);

@@ -167,7 +167,7 @@ public class Blocks extends CokesAbility implements ActiveHandler {
 		return false;
 	}
 
-	@SubscribeEvent
+	@SubscribeEvent(childs = {EntityDamageByBlockEvent.class})
 	public void onEntityDamage(EntityDamageEvent e) {
 		if (e.getEntity().equals(armorStand)) {
 			e.setCancelled(true);
@@ -232,11 +232,6 @@ public class Blocks extends CokesAbility implements ActiveHandler {
 				onEntityDamage(e);
 			}
 		}
-	}
-
-	@SubscribeEvent
-	public void onEntityDamageByBlock(EntityDamageByBlockEvent e) {
-		onEntityDamage(e);
 	}
 
 	public enum Condition {

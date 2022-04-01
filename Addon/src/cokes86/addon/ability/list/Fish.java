@@ -183,21 +183,11 @@ public class Fish extends CokesAbility implements ActiveHandler {
 		}
 	}
 
-	@SubscribeEvent
+	@SubscribeEvent(childs = {EntityDamageByEntityEvent.class, EntityDamageByBlockEvent.class})
 	private void onEntityDamage(EntityDamageEvent e) {
 		if (e.getEntity().equals(getPlayer()) && isWater(getPlayer().getLocation().getBlock())) {
 			e.setDamage(e.getDamage() - 1);
 		}
-	}
-
-	@SubscribeEvent
-	private void onEntityDamageByEntity(EntityDamageByEntityEvent e) {
-		onEntityDamage(e);
-	}
-
-	@SubscribeEvent
-	private void onEntityDamageByBlock(EntityDamageByBlockEvent e) {
-		onEntityDamage(e);
 	}
 
 	private long lastBoost = 0;

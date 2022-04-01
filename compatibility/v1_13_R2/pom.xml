@@ -18,15 +18,13 @@
             <groupId>org.bukkit</groupId>
             <artifactId>craftbukkit</artifactId>
             <version>1.13.2-R0.1-SNAPSHOT</version>
-            <scope>system</scope>
-            <systemPath>${basedir}/../../lib/craftbukkit-1.13.2-R0.1-SNAPSHOT.jar</systemPath>
+            <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>daybreak.abilitywar</groupId>
             <artifactId>AbilityWar</artifactId>
             <version>${abilitywar-version}</version>
-            <scope>system</scope>
-            <systemPath>${basedir}/../../lib/AbilityWar-${abilitywar-version}.jar</systemPath>
+            <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>Cokes_86.plugins</groupId>

@@ -28,6 +28,7 @@ import org.bukkit.Material;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Projectile;
+import org.bukkit.event.entity.EntityDamageByBlockEvent;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
 
@@ -97,7 +98,7 @@ public class Whitney extends CokesAbility implements ActiveHandler {
         return false;
     }
 
-    @SubscribeEvent
+    @SubscribeEvent(childs = {EntityDamageByBlockEvent.class})
     public void onEntityDamage(EntityDamageEvent e) {
         if (e.getEntity().equals(getPlayer()) && timer.getStack() == 6) {
             e.setDamage(e.getDamage() * (1 - DEFENCE.getValue()/100.0));
@@ -133,19 +134,19 @@ public class Whitney extends CokesAbility implements ActiveHandler {
 
     private class WhitneyBuffTimer extends AbilityTimer {
         private int stack = 0;
-        private final Cooldown cooldown_one = new Cooldown(COOLDOWN_ONE.getValue(), 75);
-        private final Cooldown cooldown_two = new Cooldown(COOLDOWN_TWO.getValue(), 75);
+        private final Cooldown cooldown_one = new Cooldown(COOLDOWN_ONE.getValue(), 50);
+        private final Cooldown cooldown_two = new Cooldown(COOLDOWN_TWO.getValue(), 50);
         private final int duration;
         private final ActionbarChannel channel = newActionbarChannel();
 
         public WhitneyBuffTimer() {
-            super((int) (DURATION.getValue() * 20 * (Wreck.isEnabled(Whitney.this.getGame()) ? Wreck.calculateDecreasedAmount(75) : 1)));
+            super((int) (DURATION.getValue() * 20 * (Wreck.isEnabled(Whitney.this.getGame()) ? Wreck.calculateDecreasedAmount(50) : 1)));
             this.duration = DURATION.getValue() * 20;
             register();
             if (Settings.getCooldownDecrease() == CooldownDecrease._100) {
-                cooldown_one.setCooldown((int) (COOLDOWN_ONE.getValue() * 0.25));
-                cooldown_two.setCooldown((int) (COOLDOWN_TWO.getValue() * 0.25));
-                this.setMaximumCount((int) (DURATION.getValue() * 20 * 0.25));
+                cooldown_one.setCooldown((int) (COOLDOWN_ONE.getValue() * 0.5));
+                cooldown_two.setCooldown((int) (COOLDOWN_TWO.getValue() * 0.5));
+                this.setMaximumCount((int) (DURATION.getValue() * 20 * 0.5));
             }
         }
 

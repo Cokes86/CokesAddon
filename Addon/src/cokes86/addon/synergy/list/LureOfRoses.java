@@ -51,7 +51,7 @@ public class LureOfRoses extends CokesSynergy {
 		super(participant);
 	}
 
-	@SubscribeEvent
+	@SubscribeEvent(childs = {EntityDamageByBlockEvent.class})
 	public void onEntityDamage(EntityDamageEvent e) {
 		if (e.getEntity().equals(getPlayer())) {
 			e.setDamage(e.getDamage() * (1 + Math.min(counter, 50.0) / 100));
@@ -81,11 +81,6 @@ public class LureOfRoses extends CokesSynergy {
 			counter += 1;
 			e.setDamage(e.getDamage() + Math.min(counter * 0.125, 5));
 		}
-	}
-
-	@SubscribeEvent
-	public void onEntityDamageByBlock(EntityDamageByBlockEvent e) {
-		onEntityDamage(e);
 	}
 
 	class InvTimer {

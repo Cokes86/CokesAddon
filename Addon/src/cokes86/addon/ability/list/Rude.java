@@ -16,6 +16,8 @@ import daybreak.abilitywar.utils.library.SoundLib;
 import org.bukkit.Material;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
+import org.bukkit.event.entity.EntityDamageByBlockEvent;
+import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.inventory.ItemStack;
 
@@ -78,7 +80,7 @@ public class Rude extends CokesAbility implements ActiveHandler {
         return false;
     }
 
-    @SubscribeEvent
+    @SubscribeEvent(childs = {EntityDamageByBlockEvent.class, EntityDamageByEntityEvent.class})
     public void onEntityDamage(EntityDamageEvent e) {
         if (e.getEntity().equals(getPlayer()) && duration.isRunning()) {
             e.setDamage(e.getDamage() * (1 - DAMAGE.getValue() / 100.0));
