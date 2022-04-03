@@ -40,8 +40,9 @@ import java.util.List;
 })
 @Category(GameCategory.GAME)
 @GameAliases(value = {"꼬잡", "꼬리"})
-public class TailCatch extends Game implements DefaultKitHandler, Winnable {
+public class TailCatch extends Game implements DefaultKitHandler, Winnable, NoticeTail.Handler {
     private final List<Participant> tail = new ArrayList<>();
+    private final NoticeTail noticeTail = addModule(getNoticeTail());
 
     public TailCatch() throws IllegalArgumentException {
         super(PlayerCollector.EVERY_PLAYER_EXCLUDING_SPECTATORS());
@@ -193,13 +194,27 @@ public class TailCatch extends Game implements DefaultKitHandler, Winnable {
         return new TCDeathManager(this);
     }
 
-    private @NotNull Participant getNextTail(Participant participant) {
+    protected @NotNull Participant getNextTail(Participant participant) {
         int index = tail.indexOf(participant);
         if (index < 0) {
             throw new IndexOutOfBoundsException();
         }
         int nextIndex = index == tail.size()-1 ? 0 : index + 1;
         return tail.get(nextIndex);
+    }
+
+    protected @NotNull Participant getHunter(Participant participant) {
+        int index = tail.indexOf(participant);
+        if (index < 0) {
+            throw new IndexOutOfBoundsException();
+        }
+        int beforeIndex = index ==  0 ? tail.size() - 1 : index - 1;
+        return tail.get(beforeIndex);
+    }
+
+    @Override
+    public NoticeTail getNoticeTail() {
+        return noticeTail;
     }
 
     private class TCDeathManager extends DeathManager {
