@@ -3,14 +3,12 @@ package cokes86.addon.gamemode.tailcatch;
 import daybreak.abilitywar.game.AbstractGame.GameUpdate;
 import daybreak.abilitywar.game.AbstractGame.Observer;
 import daybreak.abilitywar.game.AbstractGame.Participant;
-import daybreak.abilitywar.game.event.participant.ParticipantDeathEvent;
 import daybreak.abilitywar.game.module.ListenerModule;
 import daybreak.abilitywar.game.module.ModuleBase;
 import org.bukkit.Bukkit;
 import org.bukkit.boss.BarColor;
 import org.bukkit.boss.BarStyle;
 import org.bukkit.boss.BossBar;
-import org.bukkit.event.EventHandler;
 
 import java.util.HashMap;
 
@@ -42,9 +40,12 @@ public class NoticeTail implements ListenerModule, Observer {
         }
     }
 
-    @EventHandler
-    public void onParticipantDeath(ParticipantDeathEvent e) {
-
+    protected void updateBossBar() {
+        for (Participant participant : noticeBarMap.keySet()) {
+            Participant tail = tailCatch.getNextTail(participant);
+            BossBar bar = noticeBarMap.get(participant);
+            bar.setTitle("당신의 타겟 : "+ tail.getPlayer().getDisplayName());
+        }
     }
 
     public interface Handler {

@@ -1,9 +1,8 @@
 package cokes86.addon.gamemode.tailcatch;
 
 import cokes86.addon.CokesAddon;
-import daybreak.abilitywar.AbilityWar;
+import cokes86.addon.util.AttributeUtil;
 import daybreak.abilitywar.config.Configuration.Settings;
-import daybreak.abilitywar.config.Configuration.Settings.DeathSettings;
 import daybreak.abilitywar.game.Category;
 import daybreak.abilitywar.game.Category.GameCategory;
 import daybreak.abilitywar.game.Game;
@@ -19,14 +18,16 @@ import daybreak.abilitywar.game.script.manager.ScriptManager;
 import daybreak.abilitywar.utils.base.Messager;
 import daybreak.abilitywar.utils.base.Seasons;
 import daybreak.abilitywar.utils.base.minecraft.PlayerCollector;
-import daybreak.abilitywar.utils.base.minecraft.nms.NMS;
 import daybreak.abilitywar.utils.library.SoundLib;
 import daybreak.google.common.base.Strings;
 import org.bukkit.Bukkit;
-import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.World;
-import org.bukkit.scheduler.BukkitRunnable;
+import org.bukkit.entity.Entity;
+import org.bukkit.entity.Player;
+import org.bukkit.entity.Projectile;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.jetbrains.annotations.NotNull;
 
 import javax.naming.OperationNotSupportedException;
@@ -191,7 +192,7 @@ public class TailCatch extends Game implements DefaultKitHandler, Winnable, Noti
 
     @Override
     protected @NotNull DeathManager newDeathManager() {
-        return new TCDeathManager(this);
+        return new TailCatchDeathManager(this);
     }
 
     protected @NotNull Participant getNextTail(Participant participant) {
@@ -203,13 +204,8 @@ public class TailCatch extends Game implements DefaultKitHandler, Winnable, Noti
         return tail.get(nextIndex);
     }
 
-    protected @NotNull Participant getHunter(Participant participant) {
-        int index = tail.indexOf(participant);
-        if (index < 0) {
-            throw new IndexOutOfBoundsException();
-        }
-        int beforeIndex = index ==  0 ? tail.size() - 1 : index - 1;
-        return tail.get(beforeIndex);
+    protected boolean removeTail(Participant participant) {
+        return tail.remove(participant);
     }
 
     @Override
@@ -217,34 +213,24 @@ public class TailCatch extends Game implements DefaultKitHandler, Winnable, Noti
         return noticeTail;
     }
 
-    private class TCDeathManager extends DeathManager {
-        private final boolean autoRespawn = DeathSettings.getAutoRespawn();
-
-        public TCDeathManager(TailCatch game) {
-            super(game);
+    @EventHandler
+    public void onEntityDamageByEntity(EntityDamageByEntityEvent e) {
+        Entity damager = e.getDamager();
+        if (damager instanceof Projectile) {
+            Projectile projectile = (Projectile) damager;
+            if (projectile.getShooter() instanceof Entity) {
+                damager = (Entity) projectile.getShooter();
+            }
         }
 
-        @Override
-        public void Operation(Participant victim) {
-            switch (DeathSettings.getOperation()) {
-                case 탈락: {
-                    eliminate(victim);
-                    excludedPlayers.add(victim.getPlayer().getUniqueId());
-                    break;
-                }
-                case 관전모드: case 없음: {
-                    victim.getPlayer().setGameMode(GameMode.SPECTATOR);
-                    excludedPlayers.add(victim.getPlayer().getUniqueId());
-                    if (autoRespawn) {
-                        new BukkitRunnable() {
-                            @Override
-                            public void run() {
-                                NMS.respawn(victim.getPlayer());
-                            }
-                        }.runTaskLater(AbilityWar.getPlugin(), 2L);
-                    }
-                    break;
-                }
+        if (damager instanceof Player && e.getEntity() instanceof Player) {
+            Participant entityParticipant = getParticipant(e.getEntity().getUniqueId());
+            Participant damagerParticipant = getParticipant(damager.getUniqueId());
+
+            int beforeIndex = tail.indexOf(entityParticipant) == 0 ? tail.size()-1 : tail.indexOf(entityParticipant) - 1;
+            if (tail.get(beforeIndex).equals(damagerParticipant)) {
+                e.setDamage(0);
+                AttributeUtil.setMaxHealth(damagerParticipant.getPlayer(), AttributeUtil.getMaxHealth(damagerParticipant.getPlayer()) * 2 / 3);
             }
         }
     }

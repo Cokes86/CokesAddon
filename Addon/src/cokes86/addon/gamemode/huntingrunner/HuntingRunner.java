@@ -13,7 +13,9 @@ import daybreak.abilitywar.utils.base.minecraft.PlayerCollector;
 
 @GameManifest(name = "러너 잡기", description = {
         "한 명의 스피드러너와 헌터들!",
-        "엔더드래곤을 잡기 전까지 얼른 러너를 방해하세요!"
+        "엔더드래곤을 잡기 전까지 얼른 러너를 방해하세요!",
+        "● 러너 : 헌터들의 방해를 피해 마인크래프트의 엔딩을 봐주세요!",
+        "● 헌터 : 야생 러너를 잡기만 하면 이깁니다. 모두 분발합시다!"
 })
 @Category(GameCategory.MINIGAME)
 public class HuntingRunner extends AbstractGame {
@@ -24,7 +26,14 @@ public class HuntingRunner extends AbstractGame {
 
     @Override
     protected void run(int count) {
+        switch(count) {
+            case 1 : {
 
+            }
+            case 3 : {
+
+            }
+        }
     }
 
     @Override
