@@ -81,6 +81,9 @@ public class AddonAbilityFactory {
 		registerAbility(Ain.class);
 		registerAbility(Sheep.class);
 		registerAbility(Whitney.class);
+
+		//1.8.0
+		registerTestAbility(Kevin.class);
 	}
 
 	public static void registerAbility(Class<? extends CokesAbility> clazz) {

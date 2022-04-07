@@ -1,9 +1,8 @@
 package cokes86.addon.gamemode.huntingrunner.effects;
 
 import daybreak.abilitywar.ability.AbilityBase;
-import daybreak.abilitywar.ability.AbilityBase.Update;
+import daybreak.abilitywar.ability.AbilityManifest;
 import daybreak.abilitywar.game.AbstractGame.Participant;
-import org.jetbrains.annotations.NotNull;
 
 import java.util.StringJoiner;
 
@@ -17,7 +16,7 @@ public class RunnerEffect extends AbilityBase {
     }
 
     public String toString() {
-        EffectManifest manifest = getClass().getAnnotation(EffectManifest.class);
+        AbilityManifest manifest = getClass().getAnnotation(AbilityManifest.class);
         StringJoiner joiner = new StringJoiner("\n");
         joiner.add("특수 효과 | §b" + manifest.name());
         for (String explain : manifest.explain()) {

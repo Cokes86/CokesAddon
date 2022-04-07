@@ -5,11 +5,14 @@ import java.util.Collection;
 import daybreak.abilitywar.game.Category;
 import daybreak.abilitywar.game.Category.GameCategory;
 import daybreak.abilitywar.game.GameManifest;
+import daybreak.abilitywar.game.manager.object.AbilitySelect;
 import org.bukkit.entity.Player;
 
 import daybreak.abilitywar.game.AbstractGame;
 import daybreak.abilitywar.game.ParticipantStrategy;
 import daybreak.abilitywar.utils.base.minecraft.PlayerCollector;
+
+import javax.naming.OperationNotSupportedException;
 
 @GameManifest(name = "러너 잡기", description = {
         "한 명의 스피드러너와 헌터들!",
@@ -18,7 +21,7 @@ import daybreak.abilitywar.utils.base.minecraft.PlayerCollector;
         "● 헌터 : 야생 러너를 잡기만 하면 이깁니다. 모두 분발합시다!"
 })
 @Category(GameCategory.MINIGAME)
-public class HuntingRunner extends AbstractGame {
+public class HuntingRunner extends AbstractGame implements AbilitySelect.Handler {
 
     public HuntingRunner() throws IllegalArgumentException {
         super(PlayerCollector.EVERY_PLAYER_EXCLUDING_SPECTATORS());
@@ -40,6 +43,19 @@ public class HuntingRunner extends AbstractGame {
     protected ParticipantStrategy newParticipantStrategy(Collection<Player> arg0) {
         return new HRStrategy(this, arg0);
     }
-    
-    
+
+    @Override
+    public AbilitySelect getAbilitySelect() {
+        return null;
+    }
+
+    @Override
+    public AbilitySelect newAbilitySelect() {
+        return null;
+    }
+
+    @Override
+    public void startAbilitySelect() throws OperationNotSupportedException {
+
+    }
 }
