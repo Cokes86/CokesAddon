@@ -63,7 +63,7 @@ public class Rude extends CokesAbility implements ActiveHandler {
                         || (!teamGame.getTeam(entityParticipant).equals(teamGame.getTeam(participant)));
             }
         }
-        return true;
+        return false;
     };
 
     public Rude(AbstractGame.Participant arg0) {

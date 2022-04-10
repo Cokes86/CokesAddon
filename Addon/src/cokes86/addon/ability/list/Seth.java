@@ -15,9 +15,11 @@ import daybreak.abilitywar.game.module.DeathManager;
 import daybreak.abilitywar.game.team.interfaces.Teamable;
 import daybreak.abilitywar.utils.base.concurrent.TimeUnit;
 import daybreak.abilitywar.utils.base.math.LocationUtil;
+import daybreak.abilitywar.utils.base.minecraft.nms.NMS;
 import org.bukkit.Material;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
+import org.bukkit.entity.Projectile;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.PlayerDeathEvent;
@@ -112,7 +114,15 @@ public class Seth extends CokesAbility implements ActiveHandler {
 
 	@SubscribeEvent
 	private void onEntityDamageByEntity(EntityDamageByEntityEvent e) {
-		if (e.getDamager().equals(getPlayer())) {
+		Entity damager = e.getDamager();
+		if (NMS.isArrow(damager)) {
+			Projectile arrow = (Projectile) e.getDamager();
+			if (arrow.getShooter() instanceof Entity) {
+				damager = (Entity) arrow.getShooter();
+			}
+		}
+
+		if (damager.equals(getPlayer())) {
 			final double damage = Math.min(MAX_DAMAGE.getValue(), kill * 3 / participants.size());
 			e.setDamage(e.getDamage() + damage);
 		}

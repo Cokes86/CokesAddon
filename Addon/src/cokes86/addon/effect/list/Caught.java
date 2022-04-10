@@ -131,11 +131,6 @@ public class Caught extends AbstractGame.Effect implements Listener {
     }
 
     @EventHandler
-    public void onEntityDamageByBlock(EntityDamageByBlockEvent e) {
-        onEntityDamage(e);
-    }
-
-    @EventHandler
     public void onEntityDamage(EntityDamageEvent e) {
         if (e.getEntity().getUniqueId().equals(participant.getPlayer().getUniqueId())) {
             if (e.getCause() == EntityDamageEvent.DamageCause.MAGIC && e.getFinalDamage() == 1.0) return;

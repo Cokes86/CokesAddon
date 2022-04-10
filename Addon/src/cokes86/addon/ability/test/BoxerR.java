@@ -27,6 +27,7 @@ import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
+import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
 import org.bukkit.event.player.PlayerDropItemEvent;
 import org.bukkit.event.player.PlayerSwapHandItemsEvent;
 import org.bukkit.event.player.PlayerToggleSneakEvent;
@@ -156,13 +157,14 @@ public class BoxerR extends CokesAbility implements TargetHandler {
     @SubscribeEvent  // 잽, 더킹 댐감
     public void onEntityDamageByEntity(EntityDamageByEntityEvent e) {
         if (e.getDamager().equals(getPlayer()) && getGame().isParticipating(e.getEntity().getUniqueId())) {
+            if (e.getCause() == DamageCause.MAGIC) return;
             e.setDamage(e.getDamage() * (1 - JAP_DAMAGE_DECREMENT_PERCENTAGE.getValue() / 100.0));
             skillTimer.setParticipant(getGame().getParticipant(e.getEntity().getUniqueId())).addCombination('L').start();
         }
 
         if (e.getEntity().equals(getPlayer()) && getGame().isParticipating(e.getDamager().getUniqueId())) {
             thorn = (float) e.getFinalDamage();
-            if (skillTimer.ducking) {
+            if (skillTimer.isRunning() && skillTimer.ducking) {
                 e.setDamage(e.getDamage() * (1 - DUCKING_DEFENCE_PERCENTAGE.getValue() / 100.0));
             }
         }
@@ -170,7 +172,7 @@ public class BoxerR extends CokesAbility implements TargetHandler {
 
     @Override  //스트레이트
     public void TargetSkill(Material material, LivingEntity livingEntity) {
-        if (swords.contains(material) && skillTimer.isRunning() && livingEntity.equals(skillTimer.participant.getPlayer()) && straight_cooldown.isCooldown()) {
+        if (swords.contains(material) && skillTimer.isAbleSkill() && livingEntity.equals(skillTimer.participant.getPlayer()) && straight_cooldown.isCooldown()) {
             float sword = SwordDamage.valueOf(material.name()).getDamage();
             int sharpness = getPlayer().getInventory().getItemInMainHand().getEnchantmentLevel(Enchantment.DAMAGE_ALL);
             skillTimer.addCombination('R').start();
@@ -199,7 +201,7 @@ public class BoxerR extends CokesAbility implements TargetHandler {
             e.setCancelled(true);
             LivingEntity entity = LocationUtil.getEntityLookingAt(LivingEntity.class, getPlayer(), 4, predicate);
 
-            if (skillTimer.isRunning() && counter_cooldown.isCooldown() && entity.equals(skillTimer.participant.getPlayer())) {
+            if (skillTimer.isAbleSkill() && counter_cooldown.isCooldown() && entity.equals(skillTimer.participant.getPlayer())) {
                 float sword = SwordDamage.valueOf(sword_material.name()).getDamage();
                 int sharpness = sword_itemstack.getEnchantmentLevel(Enchantment.DAMAGE_ALL);
                 skillTimer.addCombination('F').start();
@@ -233,7 +235,7 @@ public class BoxerR extends CokesAbility implements TargetHandler {
             e.setCancelled(true);
             LivingEntity entity = LocationUtil.getEntityLookingAt(LivingEntity.class, getPlayer(), 4, predicate);
 
-            if (skillTimer.isRunning() && upper_cooldown.isCooldown() && entity.equals(skillTimer.participant.getPlayer())) {
+            if (skillTimer.isAbleSkill() && upper_cooldown.isCooldown() && entity.equals(skillTimer.participant.getPlayer())) {
                 float sword = SwordDamage.valueOf(sword_material.name()).getDamage();
                 int sharpness = sword_itemstack.getEnchantmentLevel(Enchantment.DAMAGE_ALL);
                 skillTimer.addCombination('Q').start();
@@ -276,7 +278,7 @@ public class BoxerR extends CokesAbility implements TargetHandler {
     @SubscribeEvent  //더킹
     public void onPlayerToggleSneak(PlayerToggleSneakEvent e) {
         if (e.getPlayer().equals(getPlayer()) && e.isSneaking()) {
-            if (skillTimer.isRunning() && ducking_cooldown.isCooldown()) {
+            if (skillTimer.isAbleSkill() && ducking_cooldown.isCooldown()) {
                 skillTimer.addCombination('S').setDucking(true).start();
                 ducking_cooldown.start();
             }
@@ -347,12 +349,11 @@ public class BoxerR extends CokesAbility implements TargetHandler {
             super.onEnd();
         }
 
-        @Override
-        public boolean isRunning() {
-            if (!super.isRunning()) {
+        public boolean isAbleSkill() {
+            if (!isRunning()) {
                 getPlayer().sendMessage(ChatColor.RED + "아직 스킬을 사용할 수 없습니다.");
             }
-            return super.isRunning();
+            return isRunning();
         }
     }
 

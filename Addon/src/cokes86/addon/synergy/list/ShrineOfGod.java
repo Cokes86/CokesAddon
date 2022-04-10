@@ -27,6 +27,7 @@ import daybreak.abilitywar.utils.library.SoundLib;
 import daybreak.abilitywar.utils.library.item.EnchantLib;
 import daybreak.abilitywar.utils.library.item.ItemLib;
 import org.bukkit.*;
+import org.bukkit.Note.Tone;
 import org.bukkit.block.Block;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.*;
@@ -199,6 +200,7 @@ public class ShrineOfGod extends CokesSynergy implements ActiveHandler {
         public void onProjectileLaunch(ProjectileLaunchEvent e) {
             if (NMS.isArrow(e.getEntity()) && e.getEntity().getShooter() != null && e.getEntity().getShooter().equals(getPlayer())) {
                 e.setCancelled(true);
+                SoundLib.ENTITY_ARROW_SHOOT.playSound(getPlayer());
                 if (dragunov_count > 0) {
                     this.stop(true);
                     if (getPlayer().getGameMode() != GameMode.CREATIVE) {
@@ -355,6 +357,8 @@ public class ShrineOfGod extends CokesSynergy implements ActiveHandler {
                         if (getGame().isParticipating(damageable.getUniqueId())) {
                             ArmorBroken.apply(getGame().getParticipant(damageable.getUniqueId()), TimeUnit.SECONDS, 10);
                         }
+                        SoundLib.PIANO.playInstrument(getPlayer(), Note.natural(2, Tone.E));
+                        SoundLib.PIANO.playInstrument(damageable.getLocation(), Note.natural(2, Tone.E));
                         stop(false);
                         return;
                     }
