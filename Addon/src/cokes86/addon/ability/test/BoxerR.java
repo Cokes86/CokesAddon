@@ -2,6 +2,7 @@ package cokes86.addon.ability.test;
 
 import cokes86.addon.ability.CokesAbility;
 import cokes86.addon.ability.CokesAbility.Config.Condition;
+import cokes86.addon.util.EncodingUtil;
 import cokes86.addon.util.PredicateUnit;
 import daybreak.abilitywar.ability.AbilityManifest;
 import daybreak.abilitywar.ability.AbilityManifest.Rank;
@@ -105,19 +106,19 @@ public class BoxerR extends CokesAbility implements TargetHandler {
             "# 더킹 이후 스킬 대미지 감소량", "# 기본값: 2");
 
     //콤비네이션 추가 컨피그
-    private static final Config<Double> COMBINATION_LSR_DAMAGE_INCREMENT = new Config<>(BoxerR.class, "combination.straight.damage-increment", 15.0, PredicateUnit.positive(),
+    private static final Config<Double> COMBINATION_STRAIGHT_DAMAGE_INCREMENT = new Config<>(BoxerR.class, "combination.straight.damage-increment", 15.0, PredicateUnit.positive(),
             "# 스트레이트 콤비네이션 대미지 증가량", "# 기본값: 15.0 (%p)");
-    private static final Config<Double> COMBINATION_LSF_DAMAGE_INCREMENT = new Config<>(BoxerR.class, "combination.counter.damage-increment", 15.0, PredicateUnit.positive(),
+    private static final Config<Double> COMBINATION_COUNTER_DAMAGE_INCREMENT = new Config<>(BoxerR.class, "combination.counter.damage-increment", 15.0, PredicateUnit.positive(),
             "# 카운터 콤비네이션 대미지 증가량", "# 기본값: 15.0 (%p)");
-    private static final Config<Double> COMBINATION_LSF_THORN_INCREMENT = new Config<>(BoxerR.class, "combination.counter.thorn-increment", 5.0, PredicateUnit.positive(),
+    private static final Config<Double> COMBINATION_COUNTER_THORN_INCREMENT = new Config<>(BoxerR.class, "combination.counter.thorn-increment", 5.0, PredicateUnit.positive(),
             "# 카운터 콤비네이션 반사 대미지 증가량", "# 기본값: 5.0 (%p)");
-    private static final Config<Double> COMBINATION_LSQ_DAMAGE_INCREMENT = new Config<>(BoxerR.class, "combination.upper.damage-increment", 15.0, PredicateUnit.positive(),
+    private static final Config<Double> COMBINATION_UPPER_DAMAGE_INCREMENT = new Config<>(BoxerR.class, "combination.upper.damage-increment", 15.0, PredicateUnit.positive(),
             "# 어퍼 콤비네이션 대미지 증가량", "# 기본값: 15.0 (%p)");
-    private static final Config<Double> COMBINATION_LSQ_STUN_INCREMENT = new Config<>(BoxerR.class, "combination.upper.stun-increment", 10.0, PredicateUnit.positive(),
+    private static final Config<Double> COMBINATION_UPPER_STUN_INCREMENT = new Config<>(BoxerR.class, "combination.upper.stun-increment", 10.0, PredicateUnit.positive(),
             "# 어퍼 콤비네이션 기절 확률 증가량", "# 기본값: 10.0 (%p)");
-    private static final Config<Double> COMBINATION_LRQ_STUN_INCREMENT = new Config<>(BoxerR.class, "combination.jap-punch-hook.stun-increment", 15.0, PredicateUnit.positive(),
+    private static final Config<Double> COMBINATION_JPH_STUN_INCREMENT = new Config<>(BoxerR.class, "combination.jap-punch-hook.stun-increment", 15.0, PredicateUnit.positive(),
             "# 잽, 펀치, 훅! 콤비네이션 기절 확률 증가량", "# 기본값: 15.0 (%p)");
-    private static final Config<Double> COMBINATION_LRSQ_STUN_INCREMENT = new Config<>(BoxerR.class, "combination.find-gap.stun-increment", 20.0, PredicateUnit.positive(),
+    private static final Config<Double> COMBINATION_FIND_GAP_STUN_INCREMENT = new Config<>(BoxerR.class, "combination.find-gap.stun-increment", 20.0, PredicateUnit.positive(),
             "# 빈틈 발견! 콤비네이션 기절 확률 증가량", "# 기본값: 20.0 (%p)");
 
     private final Cooldown straight_cooldown = new Cooldown(STRAIGHT_COOLDOWN.getValue(), "스트레이트");
@@ -178,10 +179,10 @@ public class BoxerR extends CokesAbility implements TargetHandler {
             skillTimer.addCombination('R').start();
 
             double percentage = STRAIGHT_DAMAGE_PERCENTAGE.getValue();
-            if (skillTimer.combination.size() >= 3 && skillTimer.getRecentCombination(3).equals("LSR")) {
-                percentage += COMBINATION_LSR_DAMAGE_INCREMENT.getValue();
+            if (skillTimer.combination.size() >= 3 && EncodingUtil.encoding(skillTimer.getRecentCombination(3), 0x415701).equals("坍坒坓")) {
+                percentage += COMBINATION_STRAIGHT_DAMAGE_INCREMENT.getValue();
                 getPlayer().sendMessage(prefix + "스트레이트 콤비네이션!");
-                getPlayer().sendMessage(prefix + "대미지 + "+COMBINATION_LSR_DAMAGE_INCREMENT.getValue()+"%p");
+                getPlayer().sendMessage(prefix + "대미지 + "+ COMBINATION_STRAIGHT_DAMAGE_INCREMENT.getValue()+"%p");
             }
             float damage = (float) (EnchantLib.getDamageWithSharpnessEnchantment(sword, sharpness) * percentage / 100.0);
             skillTimer.participant.getPlayer().setNoDamageTicks(0);
@@ -208,11 +209,11 @@ public class BoxerR extends CokesAbility implements TargetHandler {
 
                 double damage_percentage = COUNTER_DAMAGE_PERCENTAGE.getValue();
                 double thorn_percentage = COUNTER_THORN_PERCENTAGE.getValue();
-                if (skillTimer.combination.size() >= 3 && skillTimer.getRecentCombination(3).equals("LSF")) {
-                    damage_percentage += COMBINATION_LSF_DAMAGE_INCREMENT.getValue();
-                    thorn_percentage += COMBINATION_LSF_THORN_INCREMENT.getValue();
+                if (skillTimer.combination.size() >= 3 && EncodingUtil.encoding(skillTimer.getRecentCombination(3), 0x27f9a5).equals("里臨泥")) {
+                    damage_percentage += COMBINATION_COUNTER_DAMAGE_INCREMENT.getValue();
+                    thorn_percentage += COMBINATION_COUNTER_THORN_INCREMENT.getValue();
                     getPlayer().sendMessage(prefix + "카운터 콤비네이션!");
-                    getPlayer().sendMessage(prefix + "대미지 + "+COMBINATION_LSF_DAMAGE_INCREMENT.getValue()+"%p, 반사대미지 + "+COMBINATION_LSF_THORN_INCREMENT.getValue()+"%p");
+                    getPlayer().sendMessage(prefix + "대미지 + "+ COMBINATION_COUNTER_DAMAGE_INCREMENT.getValue()+"%p, 반사대미지 + "+ COMBINATION_COUNTER_THORN_INCREMENT.getValue()+"%p");
                 }
 
                 skillTimer.participant.getPlayer().setNoDamageTicks(0);
@@ -242,22 +243,22 @@ public class BoxerR extends CokesAbility implements TargetHandler {
 
                 double damage_percentage = UPPER_DAMAGE_PERCENTAGE.getValue();
                 double stun_percentage = UPPER_STUN_PERCENTAGE.getValue();
-                if (skillTimer.combination.size() >= 3 && skillTimer.getRecentCombination(3).equals("LSQ")) {
-                    damage_percentage += COMBINATION_LSQ_DAMAGE_INCREMENT.getValue();
-                    stun_percentage += COMBINATION_LSQ_STUN_INCREMENT.getValue();
+                if (skillTimer.combination.size() >= 3 && EncodingUtil.encoding(skillTimer.getRecentCombination(3), 0x565673).equals("嘿嘠嘢")) {
+                    damage_percentage += COMBINATION_UPPER_DAMAGE_INCREMENT.getValue();
+                    stun_percentage += COMBINATION_UPPER_STUN_INCREMENT.getValue();
                     getPlayer().sendMessage(prefix + "어퍼 콤비네이션!");
-                    getPlayer().sendMessage(prefix + "대미지 + "+COMBINATION_LSQ_DAMAGE_INCREMENT.getValue()+"%p, 기절 확률 + "+COMBINATION_LSQ_STUN_INCREMENT.getValue()+"%p");
+                    getPlayer().sendMessage(prefix + "대미지 + "+ COMBINATION_UPPER_DAMAGE_INCREMENT.getValue()+"%p, 기절 확률 + "+ COMBINATION_UPPER_STUN_INCREMENT.getValue()+"%p");
                 }
-                if (skillTimer.combination.size() >= 3 && skillTimer.getRecentCombination(3).equals("LRQ")) {
-                    stun_percentage += COMBINATION_LRQ_STUN_INCREMENT.getValue();
+                if (skillTimer.combination.size() >= 3 && EncodingUtil.encoding(skillTimer.getRecentCombination(3), 0xb1117e).equals("ᄲᄬᄯ")) {
+                    stun_percentage += COMBINATION_JPH_STUN_INCREMENT.getValue();
                     getPlayer().sendMessage(prefix + "잽, 펀치, 훅!");
-                    getPlayer().sendMessage(prefix + "기절 확률 + "+COMBINATION_LSQ_STUN_INCREMENT.getValue()+"%p");
+                    getPlayer().sendMessage(prefix + "기절 확률 + "+ COMBINATION_UPPER_STUN_INCREMENT.getValue()+"%p");
                 }
 
-                if (skillTimer.combination.size() >= 4 && skillTimer.getRecentCombination(4).equals("LRSQ")) {
-                    stun_percentage += COMBINATION_LRSQ_STUN_INCREMENT.getValue();
+                if (skillTimer.combination.size() >= 4 && EncodingUtil.encoding(skillTimer.getRecentCombination(4), 0xceb510).equals("땜땂땃땁")) {
+                    stun_percentage += COMBINATION_FIND_GAP_STUN_INCREMENT.getValue();
                     getPlayer().sendMessage(prefix + "빈틈 발견!");
-                    getPlayer().sendMessage(prefix + "기절 확률 + "+COMBINATION_LRSQ_STUN_INCREMENT.getValue()+"%p");
+                    getPlayer().sendMessage(prefix + "기절 확률 + "+ COMBINATION_FIND_GAP_STUN_INCREMENT.getValue()+"%p");
                 }
 
                 skillTimer.participant.getPlayer().setNoDamageTicks(0);
