@@ -2,8 +2,8 @@ package cokes86.addon.ability.list;
 
 import cokes86.addon.ability.CokesAbility;
 import cokes86.addon.util.PredicateUnit;
-import daybreak.abilitywar.ability.*;
 import daybreak.abilitywar.ability.AbilityFactory.AbilityRegistration;
+import daybreak.abilitywar.ability.*;
 import daybreak.abilitywar.ability.Tips.Description;
 import daybreak.abilitywar.ability.Tips.Difficulty;
 import daybreak.abilitywar.ability.Tips.Level;

@@ -13,6 +13,7 @@ import daybreak.abilitywar.utils.base.TimeUtil;
 import daybreak.abilitywar.utils.base.color.RGB;
 import daybreak.abilitywar.utils.base.concurrent.TimeUnit;
 import daybreak.abilitywar.utils.base.language.korean.KoreanUtil;
+import daybreak.abilitywar.utils.base.language.korean.KoreanUtil.Josa;
 import daybreak.abilitywar.utils.base.math.LocationUtil;
 import daybreak.abilitywar.utils.base.math.geometry.Circle;
 import daybreak.abilitywar.utils.base.minecraft.entity.health.event.PlayerSetHealthEvent;
@@ -44,11 +45,8 @@ public class Reincarnation extends CokesAbility {
 	public static final Config<Integer> damage = new Config<>(Reincarnation.class, "감소대미지(%)", 50, PredicateUnit.positive());
 	public static final Config<Integer> hit = new Config<>(Reincarnation.class, "타격횟수", 5, PredicateUnit.positive());
 	public static final Config<Integer> heal = new Config<>(Reincarnation.class, "회복수치량(%)", 5, PredicateUnit.positive());
-	public static final Config<Integer> respawn = new Config<Integer>(Reincarnation.class, "회복량", 2, PredicateUnit.positive()) {
-		public String toString() {
-			return getValue().toString() + KoreanUtil.getJosa(getValue().toString(), KoreanUtil.Josa.이가);
-		}
-	};
+	public static final Config<Integer> respawn = new Config<>(Reincarnation.class, "회복량", 2, PredicateUnit.positive(),
+			t -> t + KoreanUtil.getJosa(t.toString(), Josa.이가));
 	private final ActionbarChannel ac = newActionbarChannel();
 	private int hitted = 0;
 	private final Cooldown cool = new Cooldown(cooldown.getValue());

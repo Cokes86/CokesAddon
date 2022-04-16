@@ -1,18 +1,16 @@
 package cokes86.addon.gamemode.huntingrunner;
 
-import java.util.Collection;
-
+import daybreak.abilitywar.game.AbstractGame;
 import daybreak.abilitywar.game.Category;
 import daybreak.abilitywar.game.Category.GameCategory;
 import daybreak.abilitywar.game.GameManifest;
+import daybreak.abilitywar.game.ParticipantStrategy;
 import daybreak.abilitywar.game.manager.object.AbilitySelect;
+import daybreak.abilitywar.utils.base.minecraft.PlayerCollector;
 import org.bukkit.entity.Player;
 
-import daybreak.abilitywar.game.AbstractGame;
-import daybreak.abilitywar.game.ParticipantStrategy;
-import daybreak.abilitywar.utils.base.minecraft.PlayerCollector;
-
 import javax.naming.OperationNotSupportedException;
+import java.util.Collection;
 
 @GameManifest(name = "러너 잡기", description = {
         "한 명의 스피드러너와 헌터들!",
@@ -55,7 +53,7 @@ public class HuntingRunner extends AbstractGame implements AbilitySelect.Handler
     }
 
     @Override
-    public void startAbilitySelect() throws OperationNotSupportedException {
+    public void startAbilitySelect() {
 
     }
 }

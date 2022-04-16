@@ -20,11 +20,13 @@ import org.bukkit.Material;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 
-import static org.bukkit.ChatColor.*;
-import static cokes86.addon.ability.CokesAbility.Config.Condition.*;
-
 import java.util.HashMap;
 import java.util.Map;
+
+import static cokes86.addon.ability.CokesAbility.Config.Condition.COOLDOWN;
+import static cokes86.addon.ability.CokesAbility.Config.Condition.TIME;
+import static org.bukkit.ChatColor.DARK_GRAY;
+import static org.bukkit.ChatColor.GRAY;
 
 @AbilityManifest(name = "아이리스", rank = AbilityManifest.Rank.A, species = AbilityManifest.Species.HUMAN, explain = {
         "§7철괴 우클릭 §8- §c레인보우§r: $[RAINBOW_RANGE]블럭 이내 상대방을 보고 우클릭 시",

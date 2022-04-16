@@ -3,7 +3,9 @@ package cokes86.addon.gamemode.huntingrunner.effects;
 import daybreak.abilitywar.ability.AbilityFactory;
 import daybreak.abilitywar.ability.AbilityManifest;
 
-import java.util.*;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
 
 public class RunnerEffectFactory {
     private static final Map<String, Class<? extends RunnerEffect>> effectMap = new HashMap<>();

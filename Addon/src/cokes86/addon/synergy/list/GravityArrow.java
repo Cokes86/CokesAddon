@@ -1,6 +1,7 @@
 package cokes86.addon.synergy.list;
 
 import cokes86.addon.synergy.CokesSynergy;
+import cokes86.addon.synergy.CokesSynergy.Config.Condition;
 import cokes86.addon.util.PredicateUnit;
 import daybreak.abilitywar.ability.AbilityManifest;
 import daybreak.abilitywar.ability.AbilityManifest.Rank;
@@ -38,7 +39,7 @@ public class GravityArrow extends CokesSynergy {
             "# 최대 체력 비례 대미지", "# 기본값: 15.0 (%)");
     private static final Config<Integer> BLOCK = new Config<>(GravityArrow.class, "block", 5, PredicateUnit.positive(),
             "# 위로 올라갈 정도", "# 기본값: 5 (블럭)");
-    private static final Config<Integer> COOLDOWN = new Config<>(GravityArrow.class, "cooldown", 8, PredicateUnit.positive(),
+    private static final Config<Integer> COOLDOWN = new Config<>(GravityArrow.class, "cooldown", 8, Condition.COOLDOWN,
             "# 쿨타임", "# 기본값: 8 (초)");
 
     private final Predicate<Entity> ONLY_PARTICIPANTS = entity -> !(entity instanceof Player) || (getGame().isParticipating(entity.getUniqueId())

@@ -38,7 +38,8 @@ import java.util.List;
 @AbilityManifest(name = "케빈", rank = Rank.A, species = Species.HUMAN, explain = {
         "철괴 우클릭 현재 위치에 매설형 위치추적기를 최대 $[MAX_GPS]개까지 설치합니다. $[COOLDOWN]",
         "자신을 제외한 다른 플레이어가 이 위치추적기를 밟을 시 $[DURATION]간 모두에게 위치가 노출됩니다.",
-        "또한, 영구적으로 상대방에게 주는 대미지가 $[DAMAGE_INCREMENT] 증가합니다."
+        "또한, 영구적으로 상대방에게 주는 대미지가 $[DAMAGE_INCREMENT] 증가합니다.",
+        "이미 설치한 위치추적기의 10블럭 이내에 다른 위치추적기를 설치할 수 없습니다."
 })
 @Beta
 public class Kevin extends CokesAbility implements ActiveHandler {
@@ -60,7 +61,15 @@ public class Kevin extends CokesAbility implements ActiveHandler {
     public boolean ActiveSkill(Material material, ClickType clickType) {
         if (material == Material.IRON_INGOT && clickType == ClickType.RIGHT_CLICK) {
             if (gpsList.size() < MAX_GPS.getValue()) {
-                gpsList.add(new GPS(getPlayer().getLocation().clone()));
+                Location location = getPlayer().getLocation().clone();
+                for (GPS gps : gpsList) {
+                    double distance = gps.center.distance(location);
+                    if (distance <= 10) {
+                        getPlayer().sendMessage("[케빈] 설치한 GPS의 10블럭 이내 위치에 설치할 수 없습니다.");
+                        return false;
+                    }
+                }
+                gpsList.add(new GPS(location));
                 return cooldown.start();
             } else {
                 getPlayer().sendMessage("[케빈] 이미 GPS를 3개 설치하였습니다.");

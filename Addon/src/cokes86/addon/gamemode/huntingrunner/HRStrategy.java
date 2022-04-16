@@ -1,14 +1,9 @@
 package cokes86.addon.gamemode.huntingrunner;
 
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.UUID;
-
+import daybreak.abilitywar.game.ParticipantStrategy;
 import org.bukkit.entity.Player;
 
-import daybreak.abilitywar.game.ParticipantStrategy;
+import java.util.*;
 
 public class HRStrategy implements ParticipantStrategy {
     private final Map<String, HRParticipant> HuntingRunnerParticipants = new HashMap<>();
