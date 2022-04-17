@@ -14,6 +14,8 @@ import daybreak.abilitywar.ability.Tips.Level;
 import daybreak.abilitywar.ability.Tips.Stats;
 import daybreak.abilitywar.config.enums.CooldownDecrease;
 import daybreak.abilitywar.game.AbstractGame.Participant;
+import daybreak.abilitywar.utils.base.language.korean.KoreanUtil;
+import daybreak.abilitywar.utils.base.language.korean.KoreanUtil.Josa;
 import daybreak.abilitywar.utils.base.minecraft.entity.health.event.PlayerSetHealthEvent;
 import daybreak.abilitywar.utils.base.minecraft.nms.NMS;
 import daybreak.abilitywar.utils.library.SoundLib;
@@ -42,10 +44,11 @@ import org.bukkit.event.entity.EntityDamageEvent;
 },
 stats = @Stats(offense = Level.NINE, survival = Level.FIVE, crowdControl = Level.ZERO, mobility = Level.ZERO, utility = Level.THREE), difficulty = Difficulty.NORMAL)
 public class Rei extends CokesAbility {
-	private static final Config<Double> damage = new Config<>(Rei.class, "추가대미지", 30.0, PredicateUnit.positive());
-	private static final Config<Double> cost = new Config<>(Rei.class, "코스트(%)", 4.5, PredicateUnit.positive());
-	private static final Config<Integer> cool = new Config<>(Rei.class, "쿨타임", 100, Config.Condition.COOLDOWN);
-	private static final Config<Integer> respawn = new Config<>(Rei.class, "부활체력", 4, Config.Condition.NUMBER);
+	private static final Config<Double> damage = Config.of(Rei.class, "추가대미지", 30.0, PredicateUnit.positive());
+	private static final Config<Double> cost = Config.of(Rei.class, "코스트(%)", 4.5, PredicateUnit.positive());
+	private static final Config<Integer> cool = Config.of(Rei.class, "쿨타임", 100, Config.Condition.COOLDOWN);
+	private static final Config<Integer> respawn = Config.of(Rei.class, "부활체력", 4, PredicateUnit.positive(),
+			a -> a + KoreanUtil.getJosa(a.toString(), Josa.이가));
 
 	private final Cooldown cooldown = new Cooldown(cool.getValue(), CooldownDecrease._75);
 

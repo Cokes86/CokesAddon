@@ -22,9 +22,9 @@ import org.bukkit.event.entity.EntityDamageEvent;
 		"[아이디어 제공자 §bRainStar_§f]"
 })
 public class Gambler extends CokesAbility implements ActiveHandler {
-	private static final Config<Integer> du = new Config<>(Gambler.class, "주기", 15, Config.Condition.TIME);
-	private static final Config<Integer> min = new Config<>(Gambler.class, "최소치(%)", 75, PredicateUnit.positive());
-	private static final Config<Integer> max = new Config<>(Gambler.class, "최대치(%)", 150, PredicateUnit.positive());
+	private static final Config<Integer> du = Config.of(Gambler.class, "주기", 15, Config.Condition.TIME);
+	private static final Config<Integer> min = Config.of(Gambler.class, "최소치(%)", 75, PredicateUnit.positive());
+	private static final Config<Integer> max = Config.of(Gambler.class, "최대치(%)", 150, PredicateUnit.positive());
 
 	static {
 		if (min.getValue() > max.getValue()) {

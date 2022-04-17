@@ -62,32 +62,20 @@ import java.util.UUID;
 		"    §a폭발§f: $[damage_explosion]의 고정 대미지를 주고 $[fuse]의 위력으로 폭발. $[mana_explosion]"
 })
 public class Freud extends CokesAbility implements ActiveHandler {
-	private static final Config<Integer> mana_burn = new Config<Integer>(Freud.class, "마나소모량.화상", 30, PredicateUnit.positive()) {
-		@Override
-		public String toString() {
-			return "§c소모 §7: §b"+getValue();
-		}
-	};
-	private static final Config<Integer> mana_weakness = new Config<Integer>(Freud.class, "마나소모량.나약함", 45, PredicateUnit.positive()){
-		@Override
-		public String toString() {
-			return "§c소모 §7: §b"+getValue();
-		}
-	};
-	private static final Config<Integer> mana_explosion = new Config<Integer>(Freud.class, "마나소모량.폭발", 80, PredicateUnit.positive()){
-		@Override
-		public String toString() {
-			return "§c소모 §7: §b"+getValue();
-		}
-	};
-	private static final Config<Integer> damage_burn = new Config<>(Freud.class, "고정대미지.화상", 2, PredicateUnit.positive());
-	private static final Config<Integer> damage_weakness = new Config<>(Freud.class, "고정대미지.나약함", 3, PredicateUnit.positive());
-	private static final Config<Integer> damage_explosion = new Config<>(Freud.class, "고정대미지.폭발", 2, PredicateUnit.positive());
-	private static final Config<Integer> fireTick = new Config<>(Freud.class, "화상시간(틱)", 50, PredicateUnit.positive());
-	private static final Config<Integer> weakness_duration = new Config<>(Freud.class, "나약함_지속시간(초)", 3, PredicateUnit.positive());
-	private static final Config<Float> fuse = new Config<>(Freud.class, "폭발위력", 0.4f, PredicateUnit.positive());
-	private static final Config<Integer> MANA_REGAIN_TIME = new Config<>(Freud.class, "마나회복시간(틱)", 5, PredicateUnit.positive());
-	private static final Config<Integer> ELEMENTAL_CIRCLE_DURATION = new Config<>(Freud.class, "엘리멘탈_서클_지속시간", 2, Config.Condition.TIME);
+	private static final Config<Integer> mana_burn = Config.of(Freud.class, "마나소모량.화상", 30, PredicateUnit.positive(),
+			a -> "§c소모 §7: §b"+a.toString());
+	private static final Config<Integer> mana_weakness = Config.of(Freud.class, "마나소모량.나약함", 45, PredicateUnit.positive(),
+			a -> "§c소모 §7: §b"+a.toString());
+	private static final Config<Integer> mana_explosion = Config.of(Freud.class, "마나소모량.폭발", 80, PredicateUnit.positive(),
+			a -> "§c소모 §7: §b"+a.toString());
+	private static final Config<Integer> damage_burn = Config.of(Freud.class, "고정대미지.화상", 2, PredicateUnit.positive());
+	private static final Config<Integer> damage_weakness = Config.of(Freud.class, "고정대미지.나약함", 3, PredicateUnit.positive());
+	private static final Config<Integer> damage_explosion = Config.of(Freud.class, "고정대미지.폭발", 2, PredicateUnit.positive());
+	private static final Config<Integer> fireTick = Config.of(Freud.class, "화상시간(틱)", 50, PredicateUnit.positive());
+	private static final Config<Integer> weakness_duration = Config.of(Freud.class, "나약함_지속시간(초)", 3, PredicateUnit.positive());
+	private static final Config<Float> fuse = Config.of(Freud.class, "폭발위력", 0.4f, PredicateUnit.positive());
+	private static final Config<Integer> MANA_REGAIN_TIME = Config.of(Freud.class, "마나회복시간(틱)", 5, PredicateUnit.positive());
+	private static final Config<Integer> ELEMENTAL_CIRCLE_DURATION = Config.of(Freud.class, "엘리멘탈_서클_지속시간", 2, Config.Condition.TIME);
 
 	private final Set<UUID> explosion = new HashSet<>();
 

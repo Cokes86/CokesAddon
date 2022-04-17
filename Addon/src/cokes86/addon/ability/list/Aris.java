@@ -46,11 +46,11 @@ import java.util.function.Predicate;
 		"그 동안은 공격할 수도, 받을 수도 없기 때문에 도망치기 딱 좋은 능력"
 }, stats = @Stats(offense = Level.SIX, survival = Level.EIGHT, crowdControl = Level.TWO, mobility = Level.ZERO, utility = Level.ZERO), difficulty = Difficulty.EASY)
 public class Aris extends CokesAbility implements ActiveHandler {
-	private static final Config<Integer> RANGE = new Config<>(Aris.class, "range", 7, PredicateUnit.positive(),
+	private static final Config<Integer> RANGE = Config.of(Aris.class, "range", 7, PredicateUnit.positive(),
 			"# 사슬무덤 범위", "# 기본값: 7 (블럭)");
-	private static final Config<Integer> COOLDOWN = new Config<>(Aris.class, "cooldown", 45, Config.Condition.COOLDOWN,
+	private static final Config<Integer> COOLDOWN = Config.of(Aris.class, "cooldown", 45, Config.Condition.COOLDOWN,
 			"# 사슬무덤 쿨타임", "# 기본값: 45 (초)");
-	private static final Config<Integer> MAX_CHAIN_COUNTER = new Config<>(Aris.class, "max-chain-counter", 10, PredicateUnit.positive(),
+	private static final Config<Integer> MAX_CHAIN_COUNTER = Config.of(Aris.class, "max-chain-counter", 10, PredicateUnit.positive(),
 			"# 체인 사슬 카운터의 최대 보유량", "# 기본값: 10 (개)");
 
 	private final Predicate<Entity> predicate = entity -> {

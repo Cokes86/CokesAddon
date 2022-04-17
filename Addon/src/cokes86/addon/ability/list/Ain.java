@@ -17,11 +17,11 @@ import java.util.List;
         "  그 쿨타임을 $[INCREASE] 증가시킵키다. $[COOL]"
 })
 public class Ain extends CokesAbility implements ActiveHandler {
-    private static final Config<Integer> RANGE = new Config<>(Ain.class, "range", 5, PredicateUnit.positive(),
+    private static final Config<Integer> RANGE = Config.of(Ain.class, "range", 5, PredicateUnit.positive(),
             "# 능력 망각 범위", "# 기본값: 5 (블럭)");
-    private static final Config<Integer> INCREASE = new Config<>(Ain.class, "increase", 30, Config.Condition.TIME,
+    private static final Config<Integer> INCREASE = Config.of(Ain.class, "increase", 30, Config.Condition.TIME,
             "# 능력 망각 상대방 쿨타임 증가량", "# 기본값: 30 (초)");
-    private static final Config<Integer> COOL = new Config<>(Ain.class, "cooldown", 60, Config.Condition.COOLDOWN,
+    private static final Config<Integer> COOL = Config.of(Ain.class, "cooldown", 60, Config.Condition.COOLDOWN,
             "# 능력 망각 쿨타임", "# 기본값: 60 (초)");
 
     private final Cooldown cooldown = new Cooldown(COOL.getValue());

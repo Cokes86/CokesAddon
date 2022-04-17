@@ -44,9 +44,9 @@ import java.util.function.Predicate;
 		"[아이디어 제공자 §bSato207§f]"
 })
 public class Elva extends CokesAbility {
-	private static final Config<Integer> maxarrow = new Config<>(Elva.class, "마법화살수", 200, PredicateUnit.positive());
-	private static final Config<Integer> speed = new Config<>(Elva.class, "발사속도(틱)", 4, PredicateUnit.positive());
-	private static final Config<Double> damage = new Config<>(Elva.class, "마법화살대미지", 2.5, PredicateUnit.positive());
+	private static final Config<Integer> maxarrow = Config.of(Elva.class, "마법화살수", 200, PredicateUnit.positive());
+	private static final Config<Integer> speed = Config.of(Elva.class, "발사속도(틱)", 4, PredicateUnit.positive());
+	private static final Config<Double> damage = Config.of(Elva.class, "마법화살대미지", 2.5, PredicateUnit.positive());
 
 	private final Predicate<Entity> predicate = entity -> {
 		if (entity.equals(getPlayer())) return false;

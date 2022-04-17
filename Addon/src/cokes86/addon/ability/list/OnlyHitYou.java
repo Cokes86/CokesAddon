@@ -28,12 +28,12 @@ import org.bukkit.event.entity.EntityDamageByEntityEvent;
         "  대상이 사망하거나 다시 사용할 경우 취소됩니다."
 })
 public class OnlyHitYou extends CokesAbility implements ActiveHandler {
-    private static final Config<Integer> COOLDOWN = new Config<>(OnlyHitYou.class, "쿨타임", 60, Config.Condition.COOLDOWN);
-    private static final Config<Integer> FIRST_HIT = new Config<>(OnlyHitYou.class, "첫번째_타격_배율(%)", 75, PredicateUnit.positive());
-    private static final Config<Integer> SECOND_HIT = new Config<>(OnlyHitYou.class, "두번째_타격_배율(%)", 100, PredicateUnit.positive());
-    private static final Config<Integer> THIRD_HIT = new Config<>(OnlyHitYou.class, "세번째_타격_배율(%)", 125, PredicateUnit.positive());
-    private static final Config<Integer> LOCK_ON = new Config<>(OnlyHitYou.class, "록_온_추가_배율(%)", 75, PredicateUnit.positive());
-    private static final Config<Integer> COOLDOWN_DECREASE = new Config<>(OnlyHitYou.class, "쿨타임_감소_배율(%)", 25, PredicateUnit.positive());
+    private static final Config<Integer> COOLDOWN = Config.of(OnlyHitYou.class, "쿨타임", 60, Config.Condition.COOLDOWN);
+    private static final Config<Integer> FIRST_HIT = Config.of(OnlyHitYou.class, "첫번째_타격_배율(%)", 75, PredicateUnit.positive());
+    private static final Config<Integer> SECOND_HIT = Config.of(OnlyHitYou.class, "두번째_타격_배율(%)", 100, PredicateUnit.positive());
+    private static final Config<Integer> THIRD_HIT = Config.of(OnlyHitYou.class, "세번째_타격_배율(%)", 125, PredicateUnit.positive());
+    private static final Config<Integer> LOCK_ON = Config.of(OnlyHitYou.class, "록_온_추가_배율(%)", 75, PredicateUnit.positive());
+    private static final Config<Integer> COOLDOWN_DECREASE = Config.of(OnlyHitYou.class, "쿨타임_감소_배율(%)", 25, PredicateUnit.positive());
 
     private final HitTimer passive = new HitTimer();
     private final Cooldown cool = new Cooldown(COOLDOWN.getValue());

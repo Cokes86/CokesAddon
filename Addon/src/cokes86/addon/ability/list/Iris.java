@@ -43,12 +43,12 @@ import static org.bukkit.ChatColor.GRAY;
         "  액티브, 타겟팅 능력을 사용할 수 없습니다."
 })
 public class Iris extends CokesAbility implements ActiveHandler {
-    private static final Config<Integer> RAINBOW_COOLDOWN = new Config<>(Iris.class, "레인보우_쿨타임", 10, COOLDOWN);
-    private static final Config<Integer> RAINBOW_RANGE = new Config<>(Iris.class, "레인보우_범위", 7, PredicateUnit.positive());
-    private static final Config<Double> RAINBOW_DAMAGE = new Config<>(Iris.class, "레인보우_대미지", 3.0, PredicateUnit.positive());
-    private static final Config<Integer> NIGHTMARE_DURATION = new Config<>(Iris.class, "악몽_지속시간", 7, TIME);
-    private static final Config<Integer> NIGHTMARE_COOLDOWN = new Config<>(Iris.class, "나이트메어_쿨타임", 50, COOLDOWN);
-    private static final Config<Integer> STACK_PREDICATE = new Config<>(Iris.class, "나이트메어_스택조건", 5, PredicateUnit.positive());
+    private static final Config<Integer> RAINBOW_COOLDOWN = Config.of(Iris.class, "레인보우_쿨타임", 10, COOLDOWN);
+    private static final Config<Integer> RAINBOW_RANGE = Config.of(Iris.class, "레인보우_범위", 7, PredicateUnit.positive());
+    private static final Config<Double> RAINBOW_DAMAGE = Config.of(Iris.class, "레인보우_대미지", 3.0, PredicateUnit.positive());
+    private static final Config<Integer> NIGHTMARE_DURATION = Config.of(Iris.class, "악몽_지속시간", 7, TIME);
+    private static final Config<Integer> NIGHTMARE_COOLDOWN = Config.of(Iris.class, "나이트메어_쿨타임", 50, COOLDOWN);
+    private static final Config<Integer> STACK_PREDICATE = Config.of(Iris.class, "나이트메어_스택조건", 5, PredicateUnit.positive());
 
     private final Cooldown rainbow = new Cooldown(RAINBOW_COOLDOWN.getValue(), "레인보우", CooldownDecrease._90);
     private final Cooldown nightmare = new Cooldown(NIGHTMARE_COOLDOWN.getValue(), "나이트메어", CooldownDecrease._90);

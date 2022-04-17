@@ -27,22 +27,22 @@ import java.util.Objects;
 		"[아이디어 제공자 §bRainStar_§f]"
 })
 public class EnchantArrow extends CokesAbility {
-	private static final Config<Double> DAMAGE = new Config<>(EnchantArrow.class, "damage", 8.5, PredicateUnit.positive(),
+	private static final Config<Double> DAMAGE = Config.of(EnchantArrow.class, "damage", 8.5, PredicateUnit.positive(),
 			"# 인챈트 스택 당 상승할 대미지 증가량",
 			"# 기본값: 8.5 (%)");
-	private static final Config<Integer> RISK = new Config<>(EnchantArrow.class, "risk", 1, PredicateUnit.positive(),
+	private static final Config<Integer> RISK = Config.of(EnchantArrow.class, "risk", 1, PredicateUnit.positive(),
 			"# 인챈트 스택이 없는 상태에서 적중 실패 시 받는 대미지",
 			"# 기본값: 1");
-	private static final Config<Integer> MAX_STACK = new Config<>(EnchantArrow.class, "max-stack", 9, PredicateUnit.positive(),
+	private static final Config<Integer> MAX_STACK = Config.of(EnchantArrow.class, "max-stack", 9, PredicateUnit.positive(),
 			"# 인챈트 스택의 최대치",
 			"# 기본값: 9");
-	private static final Config<Integer> MAX_STACK_UP = new Config<>(EnchantArrow.class, "max-increase-stack", 3, PredicateUnit.positive(),
+	private static final Config<Integer> MAX_STACK_UP = Config.of(EnchantArrow.class, "max-increase-stack", 3, PredicateUnit.positive(),
 			"# 인챈트 스택의 최대 증가량",
 			"# 기본값: 3");
-	private static final Config<Integer> MAX_STACK_DOWN = new Config<>(EnchantArrow.class, "max-decrease-stack", 3, PredicateUnit.positive(),
+	private static final Config<Integer> MAX_STACK_DOWN = Config.of(EnchantArrow.class, "max-decrease-stack", 3, PredicateUnit.positive(),
 			"# 인챈트 스택의 최대 감소량",
 			"# 기본값: 3");
-	private static final Config<Integer> DISTANCE = new Config<>(EnchantArrow.class, "distance", 10, PredicateUnit.positive(),
+	private static final Config<Integer> DISTANCE = Config.of(EnchantArrow.class, "distance", 10, PredicateUnit.positive(),
 			"# 인챈트 스택이 증가하거나 감소할 때 거리의 비례량",
 			"# 가까울 수록 인챈트 스택이 적게 증가, 크게 감소합니다.",
 			"# 기본값: 10 (블럭)");

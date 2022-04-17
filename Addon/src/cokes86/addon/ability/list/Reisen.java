@@ -52,19 +52,19 @@ import java.util.function.Predicate;
     "상대방을 보고 우클릭 시 상대방의 액티브, 타겟팅 능력을 봉인합니다."
 })
 public class Reisen extends CokesAbility implements ActiveHandler {
-    private static final Config<Integer> MADNESS_ENHANCE_PREDICATE = new Config<>(Reisen.class, "광기를_다루는_자.강화_조건", 25, PredicateUnit.positive());
-    private static final Config<Integer> MADNESS_ENHANCE_PERIOD_DECREASE = new Config<>(Reisen.class, "광기를_다루는_자.강화_주기_감소치(%)", 50, PredicateUnit.between(0, 100, false));
-    private static final Config<Integer> MADNESS_PERIOD = new Config<>(Reisen.class, "광기를_다루는_자.주기", 20, Config.Condition.TIME);
-    private static final Config<Integer> MADNESS_RANGE = new Config<>(Reisen.class, "광기를_다루는_자.범위", 5, PredicateUnit.positive());
+    private static final Config<Integer> MADNESS_ENHANCE_PREDICATE = Config.of(Reisen.class, "광기를_다루는_자.강화_조건", 25, PredicateUnit.positive());
+    private static final Config<Integer> MADNESS_ENHANCE_PERIOD_DECREASE = Config.of(Reisen.class, "광기를_다루는_자.강화_주기_감소치(%)", 50, PredicateUnit.between(0, 100, false));
+    private static final Config<Integer> MADNESS_PERIOD = Config.of(Reisen.class, "광기를_다루는_자.주기", 20, Config.Condition.TIME);
+    private static final Config<Integer> MADNESS_RANGE = Config.of(Reisen.class, "광기를_다루는_자.범위", 5, PredicateUnit.positive());
 
-    private static final Config<Integer> MIND_SHAKER_ENHANCE_PREDICATE = new Config<>(Reisen.class, "마인드_쉐이커.강화_조건", 50, PredicateUnit.positive());
-    private static final Config<Integer> MIND_SHAKER_ENHANCE_DURATION = new Config<>(Reisen.class, "마인드_쉐이커.강화_뒤틀림_지속시간", 7, Config.Condition.TIME);
+    private static final Config<Integer> MIND_SHAKER_ENHANCE_PREDICATE = Config.of(Reisen.class, "마인드_쉐이커.강화_조건", 50, PredicateUnit.positive());
+    private static final Config<Integer> MIND_SHAKER_ENHANCE_DURATION = Config.of(Reisen.class, "마인드_쉐이커.강화_뒤틀림_지속시간", 7, Config.Condition.TIME);
 
-    private static final Config<Integer> EYES_RANGE = new Config<>(Reisen.class, "광기의_눈동자.범위", 10, PredicateUnit.positive());
-    private static final Config<Integer> EYES_DURATION = new Config<>(Reisen.class, "광기의_눈동자.지속시간", 10, Config.Condition.TIME);
-    private static final Config<Integer> EYES_COOLDOWN = new Config<>(Reisen.class, "광기의_눈동자.쿨타임", 10, Config.Condition.COOLDOWN);
-    private static final Config<Integer> EYES_ENHANCE_PREDICATE = new Config<>(Reisen.class, "광기의_눈동자.강화_조건", 35, PredicateUnit.positive());
-    private static final Config<Integer> EYES_ENHANCE_COOLDOWN_DECREASE = new Config<>(Reisen.class, "광기의_눈동자.강화_쿨타임_감소치(%)", 50, PredicateUnit.between(0, 100, false));
+    private static final Config<Integer> EYES_RANGE = Config.of(Reisen.class, "광기의_눈동자.범위", 10, PredicateUnit.positive());
+    private static final Config<Integer> EYES_DURATION = Config.of(Reisen.class, "광기의_눈동자.지속시간", 10, Config.Condition.TIME);
+    private static final Config<Integer> EYES_COOLDOWN = Config.of(Reisen.class, "광기의_눈동자.쿨타임", 10, Config.Condition.COOLDOWN);
+    private static final Config<Integer> EYES_ENHANCE_PREDICATE = Config.of(Reisen.class, "광기의_눈동자.강화_조건", 35, PredicateUnit.positive());
+    private static final Config<Integer> EYES_ENHANCE_COOLDOWN_DECREASE = Config.of(Reisen.class, "광기의_눈동자.강화_쿨타임_감소치(%)", 50, PredicateUnit.between(0, 100, false));
 
     public Reisen(AbstractGame.Participant arg0) {
         super(arg0);

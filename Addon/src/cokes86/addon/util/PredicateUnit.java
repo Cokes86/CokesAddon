@@ -34,4 +34,8 @@ public class PredicateUnit {
         Predicate<T> three = equals((T)n).and(t -> equals);
         return one.or(two).or(three);
     }
+
+    public static <T> Predicate<T> always() {
+        return a -> true;
+    }
 }

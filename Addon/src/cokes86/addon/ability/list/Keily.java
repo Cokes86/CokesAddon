@@ -28,11 +28,11 @@ import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
 		"또한 능력 사용 직후 1회에 한해 낙하데미지를 받지 않습니다."
 })
 public class Keily extends CokesAbility implements ActiveHandler {
-	private static final Config<Integer> dura = new Config<>(Keily.class, "카운터생성주기", 45, Config.Condition.TIME);
-	private static final Config<Integer> cool = new Config<>(Keily.class, "쿨타임", 45, Config.Condition.COOLDOWN);
-	private static final Config<Integer> duration = new Config<>(Keily.class, "비행지속시간", 2, Config.Condition.TIME);
-	private static final Config<Integer> max_switch = new Config<>(Keily.class, "최대_스위치", 3, PredicateUnit.positive());
-	private static final Config<Float> fuse = new Config<>(Keily.class, "폭발_위력", 1.3f, PredicateUnit.positive());
+	private static final Config<Integer> dura = Config.of(Keily.class, "카운터생성주기", 45, Config.Condition.TIME);
+	private static final Config<Integer> cool = Config.of(Keily.class, "쿨타임", 45, Config.Condition.COOLDOWN);
+	private static final Config<Integer> duration = Config.of(Keily.class, "비행지속시간", 2, Config.Condition.TIME);
+	private static final Config<Integer> max_switch = Config.of(Keily.class, "최대_스위치", 3, PredicateUnit.positive());
+	private static final Config<Float> fuse = Config.of(Keily.class, "폭발_위력", 1.3f, PredicateUnit.positive());
 	private final int count = Wreck.isEnabled(GameManager.getGame()) ? (int) ((100 - Configuration.Settings.getCooldownDecrease().getPercentage()) / 100.0 * dura.getValue()) : dura.getValue();
 	private boolean falling = false;
 	private final Cooldown c = new Cooldown(cool.getValue());

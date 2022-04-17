@@ -23,9 +23,9 @@ import org.bukkit.event.entity.EntityDamageByEntityEvent;
 		"상대방에게 무시한 대미지의 $[DAMAGE]%를 입힙니다. $[COOL]"
 })
 public class Thorn extends CokesAbility implements ActiveHandler {
-	private static final Config<Integer> COOL = new Config<>(Thorn.class, "쿨타임", 20, Config.Condition.COOLDOWN);
-	private static final Config<Integer> DURATION = new Config<>(Thorn.class, "지속시간", 5, Config.Condition.TIME);
-	private static final Config<Double> DAMAGE = new Config<>(Thorn.class, "반사대미지(%)", 60.0, PredicateUnit.positive());
+	private static final Config<Integer> COOL = Config.of(Thorn.class, "쿨타임", 20, Config.Condition.COOLDOWN);
+	private static final Config<Integer> DURATION = Config.of(Thorn.class, "지속시간", 5, Config.Condition.TIME);
+	private static final Config<Double> DAMAGE = Config.of(Thorn.class, "반사대미지(%)", 60.0, PredicateUnit.positive());
 	private final Cooldown cooldown = new Cooldown(COOL.getValue());
 	private final Duration duration = new Duration(DURATION.getValue(), cooldown) {
 		@Override

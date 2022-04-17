@@ -62,10 +62,10 @@ public abstract class PhantomThief extends CokesAbility implements ActiveHandler
 		}
 	};
 
-	private static final Config<Integer> cooldown = new Config<>(PhantomThief.class, "쿨타임", 120, Config.Condition.COOLDOWN);
-	private static final Config<Integer> duration = new Config<>(PhantomThief.class, "팬텀모드_지속시간", 15, Config.Condition.TIME);
-	private static final Config<Integer> glowing = new Config<>(PhantomThief.class, "발광모드_지속시간", 10, Config.Condition.TIME);
-	private static final Config<Integer> change = new Config<>(PhantomThief.class, "능력변환_대기시간", 30, Config.Condition.TIME);
+	private static final Config<Integer> cooldown = Config.of(PhantomThief.class, "쿨타임", 120, Config.Condition.COOLDOWN);
+	private static final Config<Integer> duration = Config.of(PhantomThief.class, "팬텀모드_지속시간", 15, Config.Condition.TIME);
+	private static final Config<Integer> glowing = Config.of(PhantomThief.class, "발광모드_지속시간", 10, Config.Condition.TIME);
+	private static final Config<Integer> change = Config.of(PhantomThief.class, "능력변환_대기시간", 30, Config.Condition.TIME);
 
 	private final Cooldown c = new Cooldown(cooldown.getValue());
 	private final PhantomThiefTimer timer = new PhantomThiefTimer();

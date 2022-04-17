@@ -36,17 +36,17 @@ import java.util.ArrayList;
 import java.util.List;
 
 @AbilityManifest(name = "케빈", rank = Rank.A, species = Species.HUMAN, explain = {
-        "철괴 우클릭 현재 위치에 매설형 위치추적기를 최대 $[MAX_GPS]개까지 설치합니다. $[COOLDOWN]",
-        "자신을 제외한 다른 플레이어가 이 위치추적기를 밟을 시 $[DURATION]간 모두에게 위치가 노출됩니다.",
-        "또한, 영구적으로 상대방에게 주는 대미지가 $[DAMAGE_INCREMENT] 증가합니다.",
-        "이미 설치한 위치추적기의 10블럭 이내에 다른 위치추적기를 설치할 수 없습니다."
+        "철괴 우클릭 시, 반경이 5블럭이 되는 매설형 위치추적기를 설치합니다. (최대 $[MAX_GPS]개)",
+        "자신을 제외하고 위치추적기를 밟을 시 해당 플레이어의 위치가 $[duration]간 노출됩니다.",
+        "영구적으로 위치추적기를 밟은 플레이어 수 × $[DAMAGE_INCREMENT]의 대미지가 증가합니다.",
+        "위치추적기간의 거리는 10블럭을 넘어야만 합니다."
 })
 @Beta
 public class Kevin extends CokesAbility implements ActiveHandler {
-    private final Config<Integer> MAX_GPS = new Config<>(Kevin.class, "max-gps", 3, PredicateUnit.positive());
-    private final Config<Integer> COOLDOWN = new Config<>(Kevin.class, "cooldown", 60, Condition.COOLDOWN);
-    private final Config<Integer> DURATION = new Config<>(Kevin.class, "duration", 60, Condition.TIME);
-    private final Config<Double> DAMAGE_INCREMENT = new Config<>(Kevin.class, "damage-increment", 2.0, PredicateUnit.positive());
+    private final Config<Integer> MAX_GPS = Config.of(Kevin.class, "max-gps", 3, PredicateUnit.positive());
+    private final Config<Integer> COOLDOWN = Config.of(Kevin.class, "cooldown", 60, Condition.COOLDOWN);
+    private final Config<Integer> DURATION = Config.of(Kevin.class, "duration", 60, Condition.TIME);
+    private final Config<Double> DAMAGE_INCREMENT = Config.of(Kevin.class, "damage-increment", 2.0, PredicateUnit.positive());
 
     private int playerDetected = 0;
     private final List<GPS> gpsList = new ArrayList<>();
@@ -112,6 +112,10 @@ public class Kevin extends CokesAbility implements ActiveHandler {
             if (participant == null) {
                 for (Vector vector : Circle.of(5, 100)) {
                     ParticleLib.REDSTONE.spawnParticle(center.clone().add(vector), RGB.WHITE);
+                }
+                if (!center.getWorld().getWorldBorder().isInside(center)) {
+                    getPlayer().sendMessage("[케빈] GPS가 이상한 영향으로 인해 망가졌습니다.");
+                    stop(true);
                 }
             } else {
                 Player player = participant.getPlayer();

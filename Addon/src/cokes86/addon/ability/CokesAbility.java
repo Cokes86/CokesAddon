@@ -1,6 +1,8 @@
 package cokes86.addon.ability;
 
 import cokes86.addon.CokesAddon;
+import cokes86.addon.ability.list.Disguise;
+import cokes86.addon.util.PredicateUnit;
 import daybreak.abilitywar.ability.AbilityBase;
 import daybreak.abilitywar.config.ability.AbilitySettings;
 import daybreak.abilitywar.config.ability.AbilitySettings.SettingObject;
@@ -9,6 +11,7 @@ import daybreak.abilitywar.utils.base.Formatter;
 import daybreak.abilitywar.utils.base.TimeUtil;
 import daybreak.abilitywar.utils.base.language.korean.KoreanUtil;
 
+import java.util.Objects;
 import java.util.function.Function;
 import java.util.function.Predicate;
 
@@ -31,45 +34,39 @@ public class CokesAbility extends AbilityBase {
 			this.function = function;
 		}
 
-		public Config(Class<? extends CokesAbility> aClass, String name, T value, String[] description, Condition condition, Predicate<T> predicate) {
-			this(aClass, name, value, description, condition, predicate, Object::toString);
+		public static <T> Config<T> of(Class<? extends CokesAbility> aClass, String name, T value, String[] description, Condition condition, Predicate<T> predicate, Function<T, String> function) {
+			return new Config<>(aClass, name, value, description, condition, predicate, function);
 		}
 
-		public Config(Class<? extends CokesAbility> aClass, String name, T value, String... description) {
-			this(aClass, name, value, description, Condition.NORMAL, a -> true, Object::toString);
+		public static <T> Config<T> of(Class<? extends CokesAbility> aClass, String name, T value, String[] description, Condition condition, Predicate<T> predicate) {
+			return of(aClass, name, value, description, condition, predicate, Object::toString);
 		}
 
-		public Config(Class<? extends CokesAbility> aClass, String name, T value, Condition arg3) {
-			this(aClass, name, value, new String[]{}, arg3, a -> true, Object::toString);
+		public static <T> Config<T> of(Class<? extends CokesAbility> aClass, String name, T value, String[] description, Condition condition, Function<T, String> function) {
+			return of(aClass, name, value, description, condition, PredicateUnit.always(), function);
 		}
 
-		public Config(Class<? extends CokesAbility> aClass, String name, T value) {
-			this(aClass, name, value, new String[]{}, Condition.NORMAL, a -> true, Object::toString);
+		public static <T> Config<T> of(Class<? extends CokesAbility> aClass, String name, T value, Condition condition, String... description) {
+			return of(aClass, name, value, description, condition, PredicateUnit.always(), Object::toString);
 		}
 
-		public Config(Class<? extends CokesAbility> aClass, String name, T value, Predicate<T> predicate) {
-			this(aClass, name, value, new String[]{}, Condition.NORMAL, predicate, Object::toString);
+		public static <T> Config<T> of(Class<? extends CokesAbility> aClass, String name, T value, Predicate<T> predicate, String... description) {
+			return of(aClass, name, value, description, Condition.NORMAL, predicate, Object::toString);
 		}
 
-		public Config(Class<? extends CokesAbility> aClass, String name, T value, Predicate<T> predicate, Function<T, String> function) {
-			this(aClass, name, value, new String[]{}, Condition.NORMAL, predicate, function);
+		public static <T> Config<T> of(Class<? extends CokesAbility> aClass, String name, T value, Predicate<T> predicate, Function<T, String> function, String... description) {
+			return of(aClass, name, value, description, Condition.NORMAL, predicate, function);
 		}
 
-		public Config(Class<? extends CokesAbility> aClass, String name, T value, Predicate<T> predicate, String... description) {
-			this(aClass, name, value, description, Condition.NORMAL, predicate, Object::toString);
-		}
+        public static <T> Config<T> of(Class<? extends CokesAbility> aClass, String name, T value, String... description) {
+			return of(aClass, name, value, description, Condition.NORMAL, PredicateUnit.always(), Objects::toString);
+        }
 
-		public Config(Class<? extends CokesAbility> aClass, String name, T value, Condition arg3, String... description) {
-			this(aClass, name, value, description, arg3, a -> true, Object::toString);
-		}
-
-		public String toString() {
+        public String toString() {
 			if (condition == Condition.COOLDOWN && getValue() instanceof Integer) {
 				return Formatter.formatCooldown((Integer) getValue());
 			} else if (condition == Condition.TIME && getValue() instanceof Integer) {
 				return TimeUtil.parseTimeAsString((Integer) getValue());
-			} else if (condition == Condition.NUMBER && getValue() instanceof Double) {
-				return getValue() + KoreanUtil.getJosa(getValue().toString(), KoreanUtil.Josa.을를);
 			} else {
 				return function.apply(getValue());
 			}
@@ -85,7 +82,6 @@ public class CokesAbility extends AbilityBase {
 		public enum Condition {
 			COOLDOWN,
 			TIME,
-			NUMBER,
 			NORMAL
 		}
 	}

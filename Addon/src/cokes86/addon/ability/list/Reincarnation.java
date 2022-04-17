@@ -40,12 +40,12 @@ import java.util.List;
 		"[아이디어 제공자 §bSato207§f]"
 })
 public class Reincarnation extends CokesAbility {
-	public static final Config<Integer> duration = new Config<>(Reincarnation.class, "지속시간", 25, Config.Condition.TIME);
-	public static final Config<Integer> cooldown = new Config<>(Reincarnation.class, "쿨타임", 600, Config.Condition.COOLDOWN);
-	public static final Config<Integer> damage = new Config<>(Reincarnation.class, "감소대미지(%)", 50, PredicateUnit.positive());
-	public static final Config<Integer> hit = new Config<>(Reincarnation.class, "타격횟수", 5, PredicateUnit.positive());
-	public static final Config<Integer> heal = new Config<>(Reincarnation.class, "회복수치량(%)", 5, PredicateUnit.positive());
-	public static final Config<Integer> respawn = new Config<>(Reincarnation.class, "회복량", 2, PredicateUnit.positive(),
+	public static final Config<Integer> duration = Config.of(Reincarnation.class, "지속시간", 25, Config.Condition.TIME);
+	public static final Config<Integer> cooldown = Config.of(Reincarnation.class, "쿨타임", 600, Config.Condition.COOLDOWN);
+	public static final Config<Integer> damage = Config.of(Reincarnation.class, "감소대미지(%)", 50, PredicateUnit.positive());
+	public static final Config<Integer> hit = Config.of(Reincarnation.class, "타격횟수", 5, PredicateUnit.positive());
+	public static final Config<Integer> heal = Config.of(Reincarnation.class, "회복수치량(%)", 5, PredicateUnit.positive());
+	public static final Config<Integer> respawn = Config.of(Reincarnation.class, "회복량", 2, PredicateUnit.positive(),
 			t -> t + KoreanUtil.getJosa(t.toString(), Josa.이가));
 	private final ActionbarChannel ac = newActionbarChannel();
 	private int hitted = 0;

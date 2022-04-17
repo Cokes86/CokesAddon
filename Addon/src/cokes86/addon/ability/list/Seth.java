@@ -45,11 +45,11 @@ public class Seth extends CokesAbility implements ActiveHandler {
 	private final List<Participant> participants = new ArrayList<>(getGame().getParticipants());
 	private int kill = 0;
 	private final DecimalFormat df = new DecimalFormat("0.##");
-	public static final Config<Integer> MAX_DAMAGE = new Config<>(Seth.class, "추가대미지", 9, PredicateUnit.greaterThanOrEqual(0));
-	public static final Config<Integer> COOL = new Config<>(Seth.class, "쿨타임", 60, Config.Condition.COOLDOWN);
-	public static final Config<Integer> DEBUFF = new Config<>(Seth.class, "디버프시간", 5, Config.Condition.TIME);
-	public static final Config<Integer> RANGE = new Config<>(Seth.class, "범위", 7, PredicateUnit.positive());
-	public static final Config<Integer> DEBUFF_MAX = new Config<>(Seth.class, "감소_최대치", 4, PredicateUnit.positive());
+	public static final Config<Integer> MAX_DAMAGE = Config.of(Seth.class, "추가대미지", 9, PredicateUnit.greaterThanOrEqual(0));
+	public static final Config<Integer> COOL = Config.of(Seth.class, "쿨타임", 60, Config.Condition.COOLDOWN);
+	public static final Config<Integer> DEBUFF = Config.of(Seth.class, "디버프시간", 5, Config.Condition.TIME);
+	public static final Config<Integer> RANGE = Config.of(Seth.class, "범위", 7, PredicateUnit.positive());
+	public static final Config<Integer> DEBUFF_MAX = Config.of(Seth.class, "감소_최대치", 4, PredicateUnit.positive());
 
 	private final Predicate<Entity> predicate = entity -> {
 		if (entity.equals(getPlayer())) return false;

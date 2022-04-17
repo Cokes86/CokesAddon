@@ -46,12 +46,12 @@ import java.util.function.Predicate;
         "  <S>: 저항 버프"
 })
 public class Cokes extends CokesAbility implements ActiveHandler {
-    private static final Config<Integer> RIGHT_COOL = new Config<>(Cokes.class, "이펙트_쿨타임", 60, Config.Condition.COOLDOWN);
-    private static final Config<Integer> LEFT_COOL = new Config<>(Cokes.class, "슬롯머신_쿨타임", 60, Config.Condition.COOLDOWN);
-    private static final Config<Integer> LEFT_DURATION = new Config<>(Cokes.class, "슬롯머신_지속시간", 10, Config.Condition.TIME);
+    private static final Config<Integer> RIGHT_COOL = Config.of(Cokes.class, "이펙트_쿨타임", 60, Config.Condition.COOLDOWN);
+    private static final Config<Integer> LEFT_COOL = Config.of(Cokes.class, "슬롯머신_쿨타임", 60, Config.Condition.COOLDOWN);
+    private static final Config<Integer> LEFT_DURATION = Config.of(Cokes.class, "슬롯머신_지속시간", 10, Config.Condition.TIME);
 
-    private static final Config<Integer> EFFECT_DURATION = new Config<>(Cokes.class, "이펙트_일반상태이상_지속시간", 15, PredicateUnit.upper(1));
-    private static final Config<Integer> MOVEMENT_DURATION = new Config<>(Cokes.class, "이펙트_이동상태이상_지속시간", 5, PredicateUnit.upper(1));
+    private static final Config<Integer> EFFECT_DURATION = Config.of(Cokes.class, "이펙트_일반상태이상_지속시간", 15, PredicateUnit.upper(1));
+    private static final Config<Integer> MOVEMENT_DURATION = Config.of(Cokes.class, "이펙트_이동상태이상_지속시간", 5, PredicateUnit.upper(1));
 
     private final Cooldown rightCool = new Cooldown(RIGHT_COOL.getValue(), "이펙트");
     private final Cooldown leftCool = new Cooldown(LEFT_COOL.getValue(), "슬롯머신");

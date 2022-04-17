@@ -69,56 +69,56 @@ public class BoxerR extends CokesAbility implements TargetHandler {
     private static final String prefix = "[§b권투선수§f] ";
 
     //공격, 확률 컨피그
-    private static final Config<Double> JAP_DAMAGE_DECREMENT_PERCENTAGE = new Config<>(BoxerR.class, "jap-damage-decrement-percentage", 15.0,
+    private static final Config<Double> JAP_DAMAGE_DECREMENT_PERCENTAGE = Config.of(BoxerR.class, "jap-damage-decrement-percentage", 15.0,
             PredicateUnit.between(0.0,100.0,false),
             "# 잽 근거리 대미지 감소량", "# 기본값: 15.0 (%)");
-    private static final Config<Double> STRAIGHT_DAMAGE_PERCENTAGE = new Config<>(BoxerR.class, "straight-damage-percentage", 110.0,
+    private static final Config<Double> STRAIGHT_DAMAGE_PERCENTAGE = Config.of(BoxerR.class, "straight-damage-percentage", 110.0,
             PredicateUnit.positive(),
             "# 스트레이트 검 비례 대미지", "# 기본값: 110.0 (%)");
-    private static final Config<Double> COUNTER_DAMAGE_PERCENTAGE = new Config<>(BoxerR.class, "counter-damage-percentage", 80.0,
+    private static final Config<Double> COUNTER_DAMAGE_PERCENTAGE = Config.of(BoxerR.class, "counter-damage-percentage", 80.0,
             PredicateUnit.positive(),
             "# 카운터 검 비례 대미지", "# 기본값: 80.0 (%)");
-    private static final Config<Double> COUNTER_THORN_PERCENTAGE = new Config<>(BoxerR.class, "counter-thorn-percentage", 50.0,
+    private static final Config<Double> COUNTER_THORN_PERCENTAGE = Config.of(BoxerR.class, "counter-thorn-percentage", 50.0,
             PredicateUnit.between(0.0,100.0,true),
             "# 카운터 반사 대미지", "# 기본값: 50.0 (%)");
-    private static final Config<Double> UPPER_DAMAGE_PERCENTAGE = new Config<>(BoxerR.class, "upper-damage-percentage", 90.0,
+    private static final Config<Double> UPPER_DAMAGE_PERCENTAGE = Config.of(BoxerR.class, "upper-damage-percentage", 90.0,
             PredicateUnit.positive(),
             "# 어퍼 검 비례 대미지", "# 기본값: 90.0 (%)");
-    private static final Config<Double> UPPER_STUN_PERCENTAGE = new Config<>(BoxerR.class, "upper-stun-percentage", 30.0,
+    private static final Config<Double> UPPER_STUN_PERCENTAGE = Config.of(BoxerR.class, "upper-stun-percentage", 30.0,
             PredicateUnit.between(0.0,100.0,true),
             "# 어퍼 기절 확률", "# 기본값: 30.0 (%)");
-    private static final Config<Double> DUCKING_DEFENCE_PERCENTAGE = new Config<>(BoxerR.class, "ducking-defence-percentage", 50.0,
+    private static final Config<Double> DUCKING_DEFENCE_PERCENTAGE = Config.of(BoxerR.class, "ducking-defence-percentage", 50.0,
             PredicateUnit.positive(),
             "# 더킹 대미지 감소량", "# 기본값: 50.0 (%)");
 
     //쿨타임 컨피그
-    private static final Config<Integer> STRAIGHT_COOLDOWN = new Config<>(BoxerR.class, "straight-cooldown", 5, Condition.COOLDOWN,
+    private static final Config<Integer> STRAIGHT_COOLDOWN = Config.of(BoxerR.class, "straight-cooldown", 5, Condition.COOLDOWN,
             "# 스트레이트 쿨타임", "# 기본값: 5 (초)");
-    private static final Config<Integer> COUNTER_COOLDOWN = new Config<>(BoxerR.class, "counter-cooldown", 7, Condition.COOLDOWN,
+    private static final Config<Integer> COUNTER_COOLDOWN = Config.of(BoxerR.class, "counter-cooldown", 7, Condition.COOLDOWN,
             "# 카운터 쿨타임", "# 기본값: 7 (초)");
-    private static final Config<Integer> UPPER_COOLDOWN = new Config<>(BoxerR.class, "upper-cooldown", 10, Condition.COOLDOWN,
+    private static final Config<Integer> UPPER_COOLDOWN = Config.of(BoxerR.class, "upper-cooldown", 10, Condition.COOLDOWN,
             "# 어퍼 쿨타임", "# 기본값: 10 (초)");
-    private static final Config<Integer> DUCKING_COOLDOWN = new Config<>(BoxerR.class, "ducking-cooldown", 20, Condition.COOLDOWN,
+    private static final Config<Integer> DUCKING_COOLDOWN = Config.of(BoxerR.class, "ducking-cooldown", 20, Condition.COOLDOWN,
             "# 더킹 쿨타임", "# 기본값: 20 (초)");
 
     //더킹 댐감 컨피그
-    private static final Config<Integer> DUCKING_DAMAGE_DECREMENT = new Config<>(BoxerR.class, "ducking-damage-decrement", 2, Condition.COOLDOWN,
+    private static final Config<Integer> DUCKING_DAMAGE_DECREMENT = Config.of(BoxerR.class, "ducking-damage-decrement", 2, Condition.COOLDOWN,
             "# 더킹 이후 스킬 대미지 감소량", "# 기본값: 2");
 
     //콤비네이션 추가 컨피그
-    private static final Config<Double> COMBINATION_STRAIGHT_DAMAGE_INCREMENT = new Config<>(BoxerR.class, "combination.straight.damage-increment", 15.0, PredicateUnit.positive(),
+    private static final Config<Double> COMBINATION_STRAIGHT_DAMAGE_INCREMENT = Config.of(BoxerR.class, "combination.straight.damage-increment", 15.0, PredicateUnit.positive(),
             "# 스트레이트 콤비네이션 대미지 증가량", "# 기본값: 15.0 (%p)");
-    private static final Config<Double> COMBINATION_COUNTER_DAMAGE_INCREMENT = new Config<>(BoxerR.class, "combination.counter.damage-increment", 15.0, PredicateUnit.positive(),
+    private static final Config<Double> COMBINATION_COUNTER_DAMAGE_INCREMENT = Config.of(BoxerR.class, "combination.counter.damage-increment", 15.0, PredicateUnit.positive(),
             "# 카운터 콤비네이션 대미지 증가량", "# 기본값: 15.0 (%p)");
-    private static final Config<Double> COMBINATION_COUNTER_THORN_INCREMENT = new Config<>(BoxerR.class, "combination.counter.thorn-increment", 5.0, PredicateUnit.positive(),
+    private static final Config<Double> COMBINATION_COUNTER_THORN_INCREMENT = Config.of(BoxerR.class, "combination.counter.thorn-increment", 5.0, PredicateUnit.positive(),
             "# 카운터 콤비네이션 반사 대미지 증가량", "# 기본값: 5.0 (%p)");
-    private static final Config<Double> COMBINATION_UPPER_DAMAGE_INCREMENT = new Config<>(BoxerR.class, "combination.upper.damage-increment", 15.0, PredicateUnit.positive(),
+    private static final Config<Double> COMBINATION_UPPER_DAMAGE_INCREMENT = Config.of(BoxerR.class, "combination.upper.damage-increment", 15.0, PredicateUnit.positive(),
             "# 어퍼 콤비네이션 대미지 증가량", "# 기본값: 15.0 (%p)");
-    private static final Config<Double> COMBINATION_UPPER_STUN_INCREMENT = new Config<>(BoxerR.class, "combination.upper.stun-increment", 10.0, PredicateUnit.positive(),
+    private static final Config<Double> COMBINATION_UPPER_STUN_INCREMENT = Config.of(BoxerR.class, "combination.upper.stun-increment", 10.0, PredicateUnit.positive(),
             "# 어퍼 콤비네이션 기절 확률 증가량", "# 기본값: 10.0 (%p)");
-    private static final Config<Double> COMBINATION_JPH_STUN_INCREMENT = new Config<>(BoxerR.class, "combination.jap-punch-hook.stun-increment", 15.0, PredicateUnit.positive(),
+    private static final Config<Double> COMBINATION_JPH_STUN_INCREMENT = Config.of(BoxerR.class, "combination.jap-punch-hook.stun-increment", 15.0, PredicateUnit.positive(),
             "# 잽, 펀치, 훅! 콤비네이션 기절 확률 증가량", "# 기본값: 15.0 (%p)");
-    private static final Config<Double> COMBINATION_FIND_GAP_STUN_INCREMENT = new Config<>(BoxerR.class, "combination.find-gap.stun-increment", 20.0, PredicateUnit.positive(),
+    private static final Config<Double> COMBINATION_FIND_GAP_STUN_INCREMENT = Config.of(BoxerR.class, "combination.find-gap.stun-increment", 20.0, PredicateUnit.positive(),
             "# 빈틈 발견! 콤비네이션 기절 확률 증가량", "# 기본값: 20.0 (%p)");
 
     private final Cooldown straight_cooldown = new Cooldown(STRAIGHT_COOLDOWN.getValue(), "스트레이트");

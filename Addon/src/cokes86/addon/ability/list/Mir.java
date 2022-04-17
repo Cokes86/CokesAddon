@@ -50,14 +50,14 @@ import java.util.function.Predicate;
 		"썬더버드: 자신이 영역 내 공격 시 대미지 증가, 노움: 대미지 감소"
 })
 public class Mir extends CokesAbility implements ActiveHandler {
-	private static final Config<Integer> COOLDOWN = new Config<>(Mir.class, "쿨타임", 20, Config.Condition.COOLDOWN);
-	private static final Config<Integer> DURATION = new Config<>(Mir.class, "지속시간", 10, Config.Condition.TIME);
-	private static final Config<Integer> RANGE_IFRIT = new Config<>(Mir.class, "범위.이프리트", 8, PredicateUnit.positive());
-	private static final Config<Integer> RANGE_SHADE = new Config<>(Mir.class, "범위.셰이드", 12, PredicateUnit.positive());
-	private static final Config<Integer> RANGE_THUNDER = new Config<>(Mir.class, "범위.썬더버드", 12, PredicateUnit.positive());
-	private static final Config<Integer> RANGE_GNOME = new Config<>(Mir.class, "범위.노움", 15, PredicateUnit.positive());
-	private static final Config<Double> DAMAGE_DECREMENT = new Config<>(Mir.class, "노움_대미지감소율(%)", 25d, PredicateUnit.positive());
-	private static final Config<Double> DAMAGE_INCREMENT = new Config<>(Mir.class, "썬더버드_딜증가배율(%)", 20d, PredicateUnit.positive());
+	private static final Config<Integer> COOLDOWN = Config.of(Mir.class, "쿨타임", 20, Config.Condition.COOLDOWN);
+	private static final Config<Integer> DURATION = Config.of(Mir.class, "지속시간", 10, Config.Condition.TIME);
+	private static final Config<Integer> RANGE_IFRIT = Config.of(Mir.class, "범위.이프리트", 8, PredicateUnit.positive());
+	private static final Config<Integer> RANGE_SHADE = Config.of(Mir.class, "범위.셰이드", 12, PredicateUnit.positive());
+	private static final Config<Integer> RANGE_THUNDER = Config.of(Mir.class, "범위.썬더버드", 12, PredicateUnit.positive());
+	private static final Config<Integer> RANGE_GNOME = Config.of(Mir.class, "범위.노움", 15, PredicateUnit.positive());
+	private static final Config<Double> DAMAGE_DECREMENT = Config.of(Mir.class, "노움_대미지감소율(%)", 25d, PredicateUnit.positive());
+	private static final Config<Double> DAMAGE_INCREMENT = Config.of(Mir.class, "썬더버드_딜증가배율(%)", 20d, PredicateUnit.positive());
 
 	private final Predicate<Entity> predicate = entity -> {
 		if (entity.equals(getPlayer())) return false;

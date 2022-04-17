@@ -55,32 +55,32 @@ import org.bukkit.event.entity.EntityDamageEvent;
     "항상 쿨타임과 지속시간을 꾸준히 확인하세요!"
 })
 public class Whitney extends CokesAbility implements ActiveHandler {
-    private static final Config<Integer> DURATION = new Config<>(Whitney.class, "duration", 20, Condition.TIME,
+    private static final Config<Integer> DURATION = Config.of(Whitney.class, "duration", 20, Condition.TIME,
             "# 버프 지속시간",
             "# 기본값: 20 (초)");
-    private static final Config<Integer> COOLDOWN_ONE = new Config<>(Whitney.class, "cooldown-one", 15, Condition.COOLDOWN,
+    private static final Config<Integer> COOLDOWN_ONE = Config.of(Whitney.class, "cooldown-one", 15, Condition.COOLDOWN,
             "# 기본 쿨타임",
             "# 기본값: 15 (초)");
-    private static final Config<Integer> COOLDOWN_TWO = new Config<>(Whitney.class, "cooldown-two", 120, Condition.TIME,
+    private static final Config<Integer> COOLDOWN_TWO = Config.of(Whitney.class, "cooldown-two", 120, Condition.TIME,
             "# 지속 종료 시 혹은 6중첩 이후 쿨타임",
             "# 기본값: 120 (초)");
-    private static final Config<Integer> RECOVERY_PERIOD = new Config<>(Whitney.class, "recovery-period", 5, Condition.TIME,
+    private static final Config<Integer> RECOVERY_PERIOD = Config.of(Whitney.class, "recovery-period", 5, Condition.TIME,
             "# 2중첩 회복 주기",
             "# 기본값: 5 (초)");
-    private static final Config<Integer> RECOVERY = new Config<>(Whitney.class, "recovery", 1, PredicateUnit.positive(),
+    private static final Config<Integer> RECOVERY = Config.of(Whitney.class, "recovery", 1, PredicateUnit.positive(),
             "# 2중첩 주기당 회복량",
             "# 기본값: 1");
-    private static final Config<Integer> BLEEDING = new Config<>(Whitney.class, "bleeding", 2, Condition.TIME,
+    private static final Config<Integer> BLEEDING = Config.of(Whitney.class, "bleeding", 2, Condition.TIME,
             "# 3중첩 출혈 부여랑",
             "# 기본값: 2 (초)");
-    private static final Config<Integer> DAMAGE = new Config<>(Whitney.class, "damage", 3, PredicateUnit.positive(),
+    private static final Config<Integer> DAMAGE = Config.of(Whitney.class, "damage", 3, PredicateUnit.positive(),
             "# 5중첩 대미지 증가랑",
             "# 기본값: 3");
 
-    private static final Config<Double> DEFENCE = new Config<>(Whitney.class, "defence", 20.0, PredicateUnit.between(0.0, 100.0, false),
+    private static final Config<Double> DEFENCE = Config.of(Whitney.class, "defence", 20.0, PredicateUnit.between(0.0, 100.0, false),
             "# 6중첩 대미지 감소랑",
             "# 기본값: 20.0 (%)");
-    private static final Config<Double> VAMPIRE = new Config<>(Whitney.class, "vampire", 15.0, PredicateUnit.between(0.0, 100.0, true),
+    private static final Config<Double> VAMPIRE = Config.of(Whitney.class, "vampire", 15.0, PredicateUnit.between(0.0, 100.0, true),
             "# 4중첩 흡혈량",
             "# 기본값: 15.0 (%)");
 

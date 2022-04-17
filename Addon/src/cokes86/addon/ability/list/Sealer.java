@@ -41,8 +41,8 @@ import java.util.Set;
 })
 @NotAvailable({AbstractTripleMix.class})
 public class Sealer extends CokesAbility implements TargetHandler {
-	private static final Config<Integer> cool = new Config<>(Sealer.class, "쿨타임", 60, Config.Condition.COOLDOWN);
-	private static final Config<Integer> duration = new Config<>(Sealer.class, "지속시간", 7, Config.Condition.TIME);
+	private static final Config<Integer> cool = Config.of(Sealer.class, "쿨타임", 60, Config.Condition.COOLDOWN);
+	private static final Config<Integer> duration = Config.of(Sealer.class, "지속시간", 7, Config.Condition.TIME);
 
 	private final Set<Player> synergy = new HashSet<>();
 	private final Map<Rank, Integer> rank = ImmutableMap.<Rank, Integer>builder().put(Rank.C, 1).put(Rank.B, 2).put(Rank.A, 3).put(Rank.S, 4).put(Rank.L, 5).put(Rank.SPECIAL, 6).build();

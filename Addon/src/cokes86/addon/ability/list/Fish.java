@@ -43,9 +43,9 @@ import org.bukkit.inventory.ItemStack;
 		"§7사망 시 §8- §c꼬로록§f: 자신이 사망할 시 자신 주변 10칸의 물을 삭제합니다."
 })
 public class Fish extends CokesAbility implements ActiveHandler {
-	private static final Config<Integer> SPRINKLE_COOLDOWN = new Config<>(Fish.class, "촤아악_쿨타임", 30, Config.Condition.COOLDOWN);
-	private static final Config<Integer> QUEAK_MAX_DRATION = new Config<>(Fish.class, "뻐끔뻐끔_최대_지속시간", 20, Config.Condition.TIME);
-	private static final Config<Integer> QUEAK_COOLDOWN = new Config<>(Fish.class, "뻐끔뻐끔_쿨타임", 60, Config.Condition.COOLDOWN);
+	private static final Config<Integer> SPRINKLE_COOLDOWN = Config.of(Fish.class, "촤아악_쿨타임", 30, Config.Condition.COOLDOWN);
+	private static final Config<Integer> QUEAK_MAX_DRATION = Config.of(Fish.class, "뻐끔뻐끔_최대_지속시간", 20, Config.Condition.TIME);
+	private static final Config<Integer> QUEAK_COOLDOWN = Config.of(Fish.class, "뻐끔뻐끔_쿨타임", 60, Config.Condition.COOLDOWN);
 
 	private static boolean isWater(final Block block) {
 		return block.getType().name().endsWith("WATER");

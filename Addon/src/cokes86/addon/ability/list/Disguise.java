@@ -33,14 +33,14 @@ import org.bukkit.event.player.PlayerQuitEvent;
 		"§8팀전에서 이름표가 바뀌는 기능은 작동하지 않습니다."
 })
 public class Disguise extends CokesAbility implements ActiveHandler {
-	private static final Config<Integer> range = new Config<>(Disguise.class, "범위", 7, PredicateUnit.positive());
-	private static final Config<Integer> count = new Config<>(Disguise.class, "변장_후_공격받는_횟수", 3, PredicateUnit.positive());
-	private static final Config<Integer> cool = new Config<>(Disguise.class, "쿨타임", 180, Config.Condition.COOLDOWN);
-	private static final Config<Integer> reflect = new Config<>(Disguise.class, "반사(%)", 50, PredicateUnit.positive());
-	private static final Config<Boolean> changeSkin = new Config<>(Disguise.class, "스킨변경", true,
+	private static final Config<Integer> range = Config.of(Disguise.class, "범위", 7, PredicateUnit.positive());
+	private static final Config<Integer> count = Config.of(Disguise.class, "변장_후_공격받는_횟수", 3, PredicateUnit.positive());
+	private static final Config<Integer> cool = Config.of(Disguise.class, "쿨타임", 180, Config.Condition.COOLDOWN);
+	private static final Config<Integer> reflect = Config.of(Disguise.class, "반사(%)", 50, PredicateUnit.positive());
+	private static final Config<Boolean> changeSkin = Config.of(Disguise.class, "스킨변경", true,
 			"# 변장술 사용할 시 변장술의 대상으로 스킨 변경 여부",
 			"# 기본값: true");
-	private static final Config<Boolean> changeNameTag = new Config<>(Disguise.class, "이름표변경", true,
+	private static final Config<Boolean> changeNameTag = Config.of(Disguise.class, "이름표변경", true,
 			"# 변장술 사용할 시 변장술의 대상으로 닉네임 변경 여부",
 			"# 팀전에선 작동하지 않음",
 			"# 기본값: true");

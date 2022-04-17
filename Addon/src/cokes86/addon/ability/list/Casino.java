@@ -38,7 +38,7 @@ import java.util.function.Predicate;
         "철괴 좌클릭으로 자신에게 부여된 효과를 알 수 있습니다."
 })
 public class Casino extends CokesAbility implements ActiveHandler {
-    private static final Config<Integer> COOLDOWN = new Config<>(Casino.class, "쿨타임", 60, Config.Condition.COOLDOWN);
+    private static final Config<Integer> COOLDOWN = Config.of(Casino.class, "쿨타임", 60, Config.Condition.COOLDOWN);
 
     private final double defaultMaxHealth = Objects.requireNonNull(getPlayer().getAttribute(Attribute.GENERIC_MAX_HEALTH)).getBaseValue();
     private Cooldown cooldown = new Cooldown(COOLDOWN.getValue(), CooldownDecrease._75);

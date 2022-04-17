@@ -9,7 +9,6 @@ import daybreak.abilitywar.game.manager.object.AbilitySelect;
 import daybreak.abilitywar.utils.base.minecraft.PlayerCollector;
 import org.bukkit.entity.Player;
 
-import javax.naming.OperationNotSupportedException;
 import java.util.Collection;
 
 @GameManifest(name = "러너 잡기", description = {

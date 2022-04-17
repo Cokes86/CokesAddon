@@ -43,8 +43,8 @@ import java.util.Map.Entry;
 		"신속2, 힘1 버프가 상시로 주어집니다."
 })
 public class Xyz extends CokesAbility implements ActiveHandler {
-	private static final Config<Integer> range = new Config<>(Xyz.class, "범위", 10, PredicateUnit.positive());
-	private static final Config<Integer> duration = new Config<>(Xyz.class, "지속시간", 40, Config.Condition.TIME);
+	private static final Config<Integer> range = Config.of(Xyz.class, "범위", 10, PredicateUnit.positive());
+	private static final Config<Integer> duration = Config.of(Xyz.class, "지속시간", 40, Config.Condition.TIME);
 	private final Predicate<Entity> predicate = entity -> {
 		if (entity == null || entity.equals(getPlayer())) return false;
 		if (entity instanceof Player) {
