@@ -152,14 +152,17 @@ public class Whitney extends CokesAbility implements ActiveHandler {
 
         @Override
         protected void run(int count) {
+            int k = 0;
             channel.update(ChatColor.GOLD.toString() + stack + "단계 버프 지속 시간 " + ChatColor.WHITE + ": " + ChatColor.YELLOW + TimeUtil.parseTimeAsString(getFixedCount()));
 
             if (stack >= 1) {
                 PotionEffects.SPEED.addPotionEffect(getPlayer(), 10, 0, true);
             }
 
-            if (stack >= 2 && count % (20 * RECOVERY_PERIOD.getValue()) == 0) {
-                Healths.setHealth(getPlayer(), getPlayer().getHealth() + RECOVERY.getValue());
+            if (stack >= 2) {
+                if (++k % (20 * RECOVERY_PERIOD.getValue()) == 0) {
+                    Healths.setHealth(getPlayer(), getPlayer().getHealth() + RECOVERY.getValue());
+                }
             }
         }
 
@@ -189,7 +192,7 @@ public class Whitney extends CokesAbility implements ActiveHandler {
             boolean isStart = false;
             if (!isCooldown()) {
                 stack += 1;
-                SoundLib.ENTITY_ENDERMAN_TELEPORT.playSound(getPlayer(), 1.0f, 2.0f);
+                SoundLib.ENTITY_FOX_TELEPORT.playSound(getPlayer(), 1.0f, 2.0f);
                 if (stack == 1) {
                     isStart = cooldown_one.start() && super.start();
                 } else if (stack == 6) {
