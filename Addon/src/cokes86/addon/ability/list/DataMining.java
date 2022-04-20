@@ -82,19 +82,20 @@ public class DataMining extends CokesAbility implements ActiveHandler {
 	}
 
 	public void Active() {
-		if (damage_count == max_count/2) {
+		int count_max = max_count/2;
+		if (damage_count == count_max) {
 			defense_count++;
 			return;
 		}
-		else if (defense_count == max_count/2) {
+		else if (defense_count == count_max) {
 			damage_count++;
 			return;
 		}
 		final Random random = new Random();
 		final double randomDouble = random.nextDouble() * 99;
-		final double weight = (damage_count - defense_count)*Math.E;
+		final int weight = (damage_count - defense_count)/count_max;
 
-		if (randomDouble > 50.0 - weight) {
+		if (randomDouble > 50.0 - weight/2.0) {
 			defense_count++;
 		} else {
 			damage_count++;

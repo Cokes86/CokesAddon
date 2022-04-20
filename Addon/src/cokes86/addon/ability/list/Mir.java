@@ -106,7 +106,7 @@ public class Mir extends CokesAbility implements ActiveHandler {
 			equipment.setHelmet(new ItemStack(element.helmet));
 			equipment.setChestplate(chestplate);
 
-			getPlayer().sendMessage(element.name() + KoreanUtil.getJosa(element.name(), KoreanUtil.Josa.을를) + " 소환합니다.");
+			getPlayer().sendMessage(element.display +"§f"+ KoreanUtil.getJosa(element.display, KoreanUtil.Josa.을를) + " 소환합니다.");
 		}
 
 		@Override
@@ -198,16 +198,18 @@ public class Mir extends CokesAbility implements ActiveHandler {
 	}
 
 	enum Element {
-		IFRIT(MaterialX.REDSTONE_BLOCK.getMaterial(), RGB.of(255, 1, 1), RANGE_IFRIT.getValue()),
-		SHADE(MaterialX.COAL_BLOCK.getMaterial(), RGB.of(1, 1, 1), RANGE_SHADE.getValue()),
-		THUNDERBIRD(MaterialX.LAPIS_BLOCK.getMaterial(), RGB.of(1, 1, 255), RANGE_THUNDER.getValue()),
-		GNOME(MaterialX.DIRT.getMaterial(), RGB.of(179, 109, 65), RANGE_GNOME.getValue());
+		IFRIT("§c이프리트",MaterialX.REDSTONE_BLOCK.getMaterial(), RGB.of(255, 1, 1), RANGE_IFRIT.getValue()),
+		SHADE("§7셰이드",MaterialX.COAL_BLOCK.getMaterial(), RGB.of(1, 1, 1), RANGE_SHADE.getValue()),
+		THUNDERBIRD("§b썬더버드",MaterialX.LAPIS_BLOCK.getMaterial(), RGB.of(1, 1, 255), RANGE_THUNDER.getValue()),
+		GNOME("§6노움",MaterialX.DIRT.getMaterial(), RGB.of(179, 109, 65), RANGE_GNOME.getValue());
 
+		private final String display;
 		private final Material helmet;
 		private final RGB rgb;
 		private final int range;
 
-		Element(Material helmet, RGB rgb, int range) {
+		Element(String display, Material helmet, RGB rgb, int range) {
+			this.display = display;
 			this.helmet = helmet;
 			this.rgb = rgb;
 			this.range = range;

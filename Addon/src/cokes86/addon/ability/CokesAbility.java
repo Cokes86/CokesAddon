@@ -4,9 +4,11 @@ import cokes86.addon.CokesAddon;
 import cokes86.addon.ability.list.Disguise;
 import cokes86.addon.util.PredicateUnit;
 import daybreak.abilitywar.ability.AbilityBase;
+import daybreak.abilitywar.ability.NotAvailable;
 import daybreak.abilitywar.config.ability.AbilitySettings;
 import daybreak.abilitywar.config.ability.AbilitySettings.SettingObject;
 import daybreak.abilitywar.game.AbstractGame.Participant;
+import daybreak.abilitywar.game.list.mix.triplemix.AbstractTripleMix;
 import daybreak.abilitywar.utils.base.Formatter;
 import daybreak.abilitywar.utils.base.TimeUtil;
 import daybreak.abilitywar.utils.base.language.korean.KoreanUtil;
@@ -15,6 +17,7 @@ import java.util.Objects;
 import java.util.function.Function;
 import java.util.function.Predicate;
 
+@NotAvailable(AbstractTripleMix.class)
 public class CokesAbility extends AbilityBase {
 	public final static AbilitySettings config = new AbilitySettings(CokesAddon.getAddonFile("CokesAbility.yml"));
 

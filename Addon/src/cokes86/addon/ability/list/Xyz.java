@@ -114,10 +114,10 @@ public class Xyz extends CokesAbility implements ActiveHandler {
 
 		@Override
 		protected void onDurationEnd() {
-			onDurationSilentEnd();
 			for (Player p : map.keySet()) {
 				p.setHealth(0.0);
 			}
+			onDurationSilentEnd();
 		}
 
 		@Override

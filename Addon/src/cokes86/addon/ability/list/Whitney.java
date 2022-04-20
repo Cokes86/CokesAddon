@@ -38,10 +38,10 @@ import org.bukkit.event.entity.EntityDamageEvent;
         "지속시간이 끝나거나 6번 중첩 후 쿨타임은 $[COOLDOWN_TWO]로 적용합니다.",
         "* 1회 사용 시: 신속 1단계 부여",
         "* 2회 사용 시: $[RECOVERY_PERIOD]마다 체력 $[RECOVERY] 회복",
-        "* 3회 사용 시: 상대 공격 시 출혈 $[BLEEDING] 부여",
-        "* 4회 사용 시: 상대 공격 시 주었던 최종 대미지의 $[VAMPIRE]% 회복.",
-        "* 5회 사용 시: 상대에게 주는 대미지 $[DAMAGE] 증가",
-        "* 6회 사용 시: 상대에게 받는 대미지 $[DEFENCE]% 감소",
+        "* 3회 사용 시: 상대방 공격 시 출혈 $[BLEEDING] 부여",
+        "* 4회 사용 시: 상대방 공격 시 주었던 최종 대미지의 $[VAMPIRE]% 회복.",
+        "* 5회 사용 시: 상대방에게 주는 대미지 $[DAMAGE] 증가",
+        "* 6회 사용 시: 상대방에게 받는 대미지 $[DEFENCE]% 감소",
 })
 @Tips(difficulty = Difficulty.EASY, stats = @Stats(
     crowdControl = Level.ONE,
