@@ -47,7 +47,7 @@ import java.util.function.Predicate;
 })
 public class Cokes extends CokesAbility implements ActiveHandler {
     private static final Config<Integer> RIGHT_COOL = Config.of(Cokes.class, "이펙트_쿨타임", 60, Config.Condition.COOLDOWN);
-    private static final Config<Integer> LEFT_COOL = Config.of(Cokes.class, "슬롯머신_쿨타임", 60, Config.Condition.COOLDOWN);
+    private static final Config<Integer> LEFT_COOL = Config.of(Cokes.class, "슬롯머신_쿨타임", 90, Config.Condition.COOLDOWN);
     private static final Config<Integer> LEFT_DURATION = Config.of(Cokes.class, "슬롯머신_지속시간", 10, Config.Condition.TIME);
 
     private static final Config<Integer> EFFECT_DURATION = Config.of(Cokes.class, "이펙트_일반상태이상_지속시간", 15, PredicateUnit.upper(1));
@@ -156,8 +156,8 @@ public class Cokes extends CokesAbility implements ActiveHandler {
                 results.put("C", 3);
                 results.put("O", 3);
                 results.put("K", 3);
-                results.put("E", 3);
-                results.put("S", 3);
+                results.put("E", 2);
+                results.put("S", 2);
 
                 new AbilityTimer(TaskType.NORMAL,5) {
                     public void run(int count) {
@@ -204,13 +204,13 @@ public class Cokes extends CokesAbility implements ActiveHandler {
             if (Math.min(results.get("K"),3) != 0) {
                 getPlayer().sendMessage("회복량 "+ Math.min(results.get("K"),3)*0.125 +"배 증가");
             }
-            if (Math.min(results.get("E"),3) != 0) {
+            if (Math.min(results.get("E"),2) != 0) {
                 getPlayer().sendMessage("재생 "+ Math.min(results.get("E"),2) +" 부여");
-                PotionEffects.REGENERATION.addPotionEffect(getPlayer(), 20*15, Math.min(results.get("E"),3) -1, true);
+                PotionEffects.REGENERATION.addPotionEffect(getPlayer(), 20*15, Math.min(results.get("E"),2) -1, true);
             }
-            if (Math.min(results.get("S"),3) != 0) {
+            if (Math.min(results.get("S"),2) != 0) {
                 getPlayer().sendMessage("저항 "+ Math.min(results.get("S"),2) +" 부여");
-                PotionEffects.DAMAGE_RESISTANCE.addPotionEffect(getPlayer(), 20*15, Math.min(results.get("S"),3) -1, true);
+                PotionEffects.DAMAGE_RESISTANCE.addPotionEffect(getPlayer(), 20*15, Math.min(results.get("S"),2) -1, true);
             }
 
             SoundLib.ENTITY_PLAYER_LEVELUP.playSound(getPlayer());

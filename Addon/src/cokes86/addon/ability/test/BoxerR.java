@@ -42,18 +42,18 @@ import java.util.Set;
 import java.util.function.Predicate;
 
 @AbilityManifest(name = "권투선수R", rank = Rank.A, species = Species.HUMAN, explain = {
-        "패시브 - 잽: 검으로 공격 시 대미지가 $[JAP_DAMAGE_DECREMENT_PERCENTAGE]% 감소합니다.",
+        "§7패시브 §8- §c잽§f: 검으로 공격 시 대미지가 $[JAP_DAMAGE_DECREMENT_PERCENTAGE]% 감소합니다.",
         "  잽을 포함한 모든 스킬 사용 이후, 2초간 다른 스킬을 사용할 수 있습니다.",
         "  이때, 잽을 제외한 스킬을 사용 시, 모든 스킬의 쿨타임이 1초 감소하며, 무적틱을 무시합니다.",
-        "  잽과 더킹을 제외한 스킬을 사용할 시, 최근에 공격한 상대방을 바라보고 있어야 합니다.",
-        "검 우클릭 - 스트레이트: 들고 있는 검의 $[STRAIGHT_DAMAGE_PERCENTAGE]%의 마법 대미지를 준 후 강하게 밀쳐냅니다. $[STRAIGHT_COOLDOWN]",
-        "검 들고 F키 - 카운터: 들고 있는 검의 $[COUNTER_DAMAGE_PERCENTAGE]%의 마법 대미지를 준 후",
+        "  §c잽§f과 §e더킹을 제외한 스킬을 사용할 시, 최근에 공격한 상대방을 바라보고 있어야 합니다.",
+        "§7검 우클릭 §8- §e스트레이트§f: 들고 있는 검의 $[STRAIGHT_DAMAGE_PERCENTAGE]%의 마법 대미지를 준 후 강하게 밀쳐냅니다. $[STRAIGHT_COOLDOWN]",
+        "§7검 들고 F키 §8- §e카운터§f: 들고 있는 검의 $[COUNTER_DAMAGE_PERCENTAGE]%의 마법 대미지를 준 후",
         "  최근에 받은 근거리 대미지의 $[COUNTER_THORN_PERCENTAGE]%의 고정 마법 대미지를 줍니다. $[COUNTER_COOLDOWN]",
-        "검 들고 Q키 - 어퍼: 들고 있는 검의 $[UPPER_DAMAGE_PERCENTAGE]%의 마법 대미지를 준 후,",
+        "§7검 들고 Q키 §8- §e어퍼§f: 들고 있는 검의 $[UPPER_DAMAGE_PERCENTAGE]%의 마법 대미지를 준 후,",
         "  $[UPPER_STUN_PERCENTAGE]%의 확률로 기절을 1초 부여합니다. $[UPPER_COOLDOWN]",
-        "웅크리기 - 더킹: 최대 1초간 받는 근거리 대미지가 $[DUCKING_DEFENCE_PERCENTAGE]% 감소합니다.",
-        "  이후 잽을 제외한 연계되는 스킬의 대미지가 $[DUCKING_DAMAGE_DECREMENT] 감소합니다. $[DUCKING_COOLDOWN]",
-        "[HIDDEN] 콤비네이션: 특정 순서로 스킬을 연계할 경우, 스킬의 효과가 강화됩니다."
+        "§7웅크리기 §8- §e더킹§f: 최대 1초간 받는 근거리 대미지가 $[DUCKING_DEFENCE_PERCENTAGE]% 감소합니다.",
+        "  이후 §c잽§f을 제외한 연계되는 스킬의 대미지가 $[DUCKING_DAMAGE_DECREMENT] 감소합니다. $[DUCKING_COOLDOWN]",
+        "§8[§7HIDDEN§8] §b콤비네이션§f: 특정 순서로 스킬을 연계할 경우, 스킬의 효과가 강화됩니다."
 })
 @Beta
 public class BoxerR extends CokesAbility implements TargetHandler {

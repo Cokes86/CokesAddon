@@ -55,7 +55,7 @@ public class Casino extends CokesAbility implements ActiveHandler {
             .put(Effects.FALL, false)
             .put(Effects.STUN, false)
             .put(Effects.FIRE_RESISTANCE, false)
-            .put(Effects.PROJECTILE, false).build());
+            .put(Effects.NO_CRITICAL, false).build());
     private final Map<AbstractGame.Participant, HitBleedTimer> hit = new HashMap<>();
 
     private final AbilityTimer wither = new AbilityTimer() {
@@ -177,8 +177,8 @@ public class Casino extends CokesAbility implements ActiveHandler {
 
     @SubscribeEvent
     public void onEntityShootBow(EntityShootBowEvent event) {
-        if (event.getEntity().equals(getPlayer()) && effects.get(Effects.PROJECTILE)) {
-            event.getProjectile().setVelocity(event.getProjectile().getVelocity().multiply(.75));
+        if (event.getEntity().equals(getPlayer()) && effects.get(Effects.NO_CRITICAL) && NMS.isArrow(event.getProjectile())) {
+            ((Arrow) event.getProjectile()).setCritical(false);
         }
     }
 
@@ -216,7 +216,7 @@ public class Casino extends CokesAbility implements ActiveHandler {
         FALL("낙하대미지 무시"),
         STUN("스턴 2초 부여"),
         FIRE_RESISTANCE("화염저항 영구히 부여"),
-        PROJECTILE("발사체 초기속도 25% 감소");
+        NO_CRITICAL("활 크리티컬 삭제");
 
         private final String name;
         Effects(String name) {

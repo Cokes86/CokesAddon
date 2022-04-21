@@ -1,7 +1,5 @@
 package cokes86.addon.util;
 
-import daybreak.abilitywar.utils.base.collect.Pair;
-
 public class EncodingUtil {
 
     public static String xor_encoding(String value, int key) {
