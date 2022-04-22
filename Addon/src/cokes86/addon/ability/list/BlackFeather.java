@@ -28,10 +28,10 @@ public class BlackFeather extends CokesAbility {
             "# 검은 날개 주는 대미지 변경값",
             "# 기본값: 80.0 (%)");
     private static final Config<Double> DAMAGE_UPGRADE = Config.of(BlackFeather.class, "damage-upgrade", 5.0, PredicateUnit.positive(),
-            "# 검은 날개 카운터 당 추가되는 주는 대미지 변경값",
+            "# 블랙 패더 카운터 당 추가되는 주는 대미지 변경값",
             "# 기본값: 5.0 (%p)");
     private static final Config<Integer> DURATION =Config.of(BlackFeather.class, "duration", 15, Config.Condition.TIME,
-            "# 검은 비수 카운터 유지 시간",
+            "# 블랙 패더 카운터 유지 시간",
             "# 기본값: 15 (초)");
 
     private final List<BlackFeatherCounter> counterList = new ArrayList<>();

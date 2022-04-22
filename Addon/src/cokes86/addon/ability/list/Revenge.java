@@ -10,10 +10,11 @@ import daybreak.abilitywar.game.AbstractGame.Participant;
 import daybreak.abilitywar.game.AbstractGame.Participant.ActionbarNotification.ActionbarChannel;
 import daybreak.abilitywar.utils.base.concurrent.TimeUnit;
 import daybreak.abilitywar.utils.base.minecraft.damage.Damages;
+import daybreak.abilitywar.utils.base.minecraft.nms.NMS;
 import org.bukkit.ChatColor;
-import org.bukkit.entity.Arrow;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
+import org.bukkit.entity.Projectile;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
 
@@ -40,13 +41,13 @@ public class Revenge extends CokesAbility {
 
 	@SubscribeEvent
 	public void onEntityDamageByEntity(EntityDamageByEntityEvent e) {
-		if (e.getEntity().equals(getPlayer()) && (e.getDamager() instanceof Player || e.getDamager() instanceof Arrow)) {
+		if (e.getEntity().equals(getPlayer()) && (e.getDamager() instanceof Player || NMS.isArrow(e.getDamager()))) {
 			finalDamage = e.getFinalDamage();
 			ac.update(ChatColor.BLUE + "반사고정대미지 : " + df.format(finalDamage * PERCENTAGE.getValue() / 100.00));
 		} else {
 			Entity damager = e.getDamager();
-			if (damager instanceof Arrow) {
-				Arrow arrow = (Arrow) damager;
+			if (NMS.isArrow(damager)) {
+				Projectile arrow = (Projectile) damager;
 				if (arrow.getShooter() instanceof Entity) {
 					damager = (Entity) arrow.getShooter();
 				}

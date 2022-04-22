@@ -2,6 +2,7 @@ package cokes86.addon.ability.list;
 
 import cokes86.addon.ability.CokesAbility;
 import cokes86.addon.util.AttributeUtil;
+import cokes86.addon.util.arrow.ArrowUtil;
 import com.google.common.base.Strings;
 import daybreak.abilitywar.ability.AbilityManifest;
 import daybreak.abilitywar.ability.SubscribeEvent;
@@ -43,16 +44,16 @@ public class Casino extends CokesAbility implements ActiveHandler {
     private final double defaultMaxHealth = Objects.requireNonNull(getPlayer().getAttribute(Attribute.GENERIC_MAX_HEALTH)).getBaseValue();
     private Cooldown cooldown = new Cooldown(COOLDOWN.getValue(), CooldownDecrease._75);
     private final Map<Effects, Boolean> effects = new HashMap<>(ImmutableMap.<Effects, Boolean>builder()
-            .put(Effects.DAMAGE_UP, false)
+            .put(Effects.DAMAGE_INCREMENT, false)
             .put(Effects.WITHER, false)
             .put(Effects.RESISTANCE, false)
             .put(Effects.HEAL, false)
             .put(Effects.TWIST, false)
             .put(Effects.REGAIN, false)
-            .put(Effects.HEALTH, false)
+            .put(Effects.MAX_HEALTH_DOWN, false)
             .put(Effects.BLEED, false)
             .put(Effects.COOLDOWN_UP, false)
-            .put(Effects.FALL, false)
+            .put(Effects.IGNORE_FALL, false)
             .put(Effects.STUN, false)
             .put(Effects.FIRE_RESISTANCE, false)
             .put(Effects.NO_CRITICAL, false).build());
@@ -104,7 +105,7 @@ public class Casino extends CokesAbility implements ActiveHandler {
         if (update == Update.ABILITY_DESTROY || update == Update.RESTRICTION_SET) {
             AttributeUtil.setMaxHealth(getPlayer(), defaultMaxHealth);
         } else {
-            if (effects.get(Effects.HEALTH)) {
+            if (effects.get(Effects.MAX_HEALTH_DOWN)) {
                 AttributeUtil.setMaxHealth(getPlayer(), defaultMaxHealth - 2);
             }
         }
@@ -130,7 +131,7 @@ public class Casino extends CokesAbility implements ActiveHandler {
 
     @SubscribeEvent(childs = {EntityDamageByBlockEvent.class})
     public void onEntityDamage(EntityDamageEvent e) {
-        if (e.getEntity().equals(getPlayer()) && e.getCause().equals(EntityDamageEvent.DamageCause.FALL) && effects.get(Effects.FALL)) {
+        if (e.getEntity().equals(getPlayer()) && e.getCause().equals(EntityDamageEvent.DamageCause.FALL) && effects.get(Effects.IGNORE_FALL)) {
             e.setCancelled(true);
             getPlayer().sendMessage("§a낙하 대미지를 받지 않습니다.");
             SoundLib.ENTITY_EXPERIENCE_ORB_PICKUP.playSound(getPlayer());
@@ -155,7 +156,7 @@ public class Casino extends CokesAbility implements ActiveHandler {
             e.setDamage(e.getDamage()-1);
         }
         if (attacker.equals(getPlayer())) {
-            if (effects.get(Effects.DAMAGE_UP)) {
+            if (effects.get(Effects.DAMAGE_INCREMENT)) {
                 e.setDamage(e.getDamage()+1);
             }
             if (effects.get(Effects.BLEED)) {
@@ -176,9 +177,9 @@ public class Casino extends CokesAbility implements ActiveHandler {
     }
 
     @SubscribeEvent
-    public void onEntityShootBow(EntityShootBowEvent event) {
-        if (event.getEntity().equals(getPlayer()) && effects.get(Effects.NO_CRITICAL) && NMS.isArrow(event.getProjectile())) {
-            ((Arrow) event.getProjectile()).setCritical(false);
+    public void onProjectileLaunch(ProjectileLaunchEvent event) {
+        if (event.getEntity().getShooter().equals(getPlayer()) && effects.get(Effects.NO_CRITICAL) && NMS.isArrow(event.getEntity())) {
+            ArrowUtil.of(event.getEntity()).setCritical(false);
         }
     }
 
@@ -204,19 +205,19 @@ public class Casino extends CokesAbility implements ActiveHandler {
     }
 
     private enum Effects {
-        DAMAGE_UP("주는 대미지 1 증가"),
+        DAMAGE_INCREMENT("주는 대미지 1 증가"),
         WITHER("4초마다 1의 고정 마법 대미지 부여"),
         RESISTANCE("받는 대미지 1 감소"),
         HEAL("체력 2 즉시 회복"),
         TWIST("10초마다 시야 뒤틀림"),
         REGAIN("회복량 0.2배 증가"),
-        HEALTH("최대 체력 2 감소"),
+        MAX_HEALTH_DOWN("최대 체력 2 감소"),
         BLEED("4회 타격 시 출혈 부여"),
         COOLDOWN_UP("쿨타임 50% 증가"),
-        FALL("낙하대미지 무시"),
+        IGNORE_FALL("낙하대미지 무시"),
         STUN("스턴 2초 부여"),
         FIRE_RESISTANCE("화염저항 영구히 부여"),
-        NO_CRITICAL("활 크리티컬 삭제");
+        NO_CRITICAL("화살 크리티컬 삭제");
 
         private final String name;
         Effects(String name) {
@@ -300,8 +301,8 @@ public class Casino extends CokesAbility implements ActiveHandler {
                         case TWIST:
                             aim.start();
                             break;
-                        case HEALTH:
-                            Objects.requireNonNull(getPlayer().getAttribute(Attribute.GENERIC_MAX_HEALTH)).setBaseValue(defaultMaxHealth - 2);
+                        case MAX_HEALTH_DOWN:
+                            AttributeUtil.setMaxHealth(getPlayer(), defaultMaxHealth - 2);
                             break;
                         case COOLDOWN_UP:
                             cooldown = new Cooldown((int)(COOLDOWN.getValue() * 1.5), CooldownDecrease._75);
