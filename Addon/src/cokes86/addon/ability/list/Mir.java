@@ -1,7 +1,7 @@
 package cokes86.addon.ability.list;
 
 import cokes86.addon.ability.CokesAbility;
-import cokes86.addon.util.PredicateUnit;
+import cokes86.addon.util.FunctionalInterfaceUnit;
 import daybreak.abilitywar.ability.AbilityManifest;
 import daybreak.abilitywar.ability.AbilityManifest.Rank;
 import daybreak.abilitywar.ability.AbilityManifest.Species;
@@ -52,12 +52,12 @@ import java.util.function.Predicate;
 public class Mir extends CokesAbility implements ActiveHandler {
 	private static final Config<Integer> COOLDOWN = Config.of(Mir.class, "쿨타임", 20, Config.Condition.COOLDOWN);
 	private static final Config<Integer> DURATION = Config.of(Mir.class, "지속시간", 10, Config.Condition.TIME);
-	private static final Config<Integer> RANGE_IFRIT = Config.of(Mir.class, "범위.이프리트", 8, PredicateUnit.positive());
-	private static final Config<Integer> RANGE_SHADE = Config.of(Mir.class, "범위.셰이드", 12, PredicateUnit.positive());
-	private static final Config<Integer> RANGE_THUNDER = Config.of(Mir.class, "범위.썬더버드", 12, PredicateUnit.positive());
-	private static final Config<Integer> RANGE_GNOME = Config.of(Mir.class, "범위.노움", 15, PredicateUnit.positive());
-	private static final Config<Double> DAMAGE_DECREMENT = Config.of(Mir.class, "노움_대미지감소율(%)", 25d, PredicateUnit.positive());
-	private static final Config<Double> DAMAGE_INCREMENT = Config.of(Mir.class, "썬더버드_딜증가배율(%)", 20d, PredicateUnit.positive());
+	private static final Config<Integer> RANGE_IFRIT = Config.of(Mir.class, "범위.이프리트", 8, FunctionalInterfaceUnit.positive());
+	private static final Config<Integer> RANGE_SHADE = Config.of(Mir.class, "범위.셰이드", 12, FunctionalInterfaceUnit.positive());
+	private static final Config<Integer> RANGE_THUNDER = Config.of(Mir.class, "범위.썬더버드", 12, FunctionalInterfaceUnit.positive());
+	private static final Config<Integer> RANGE_GNOME = Config.of(Mir.class, "범위.노움", 15, FunctionalInterfaceUnit.positive());
+	private static final Config<Double> DAMAGE_DECREMENT = Config.of(Mir.class, "노움_대미지감소율(%)", 25d, FunctionalInterfaceUnit.positive());
+	private static final Config<Double> DAMAGE_INCREMENT = Config.of(Mir.class, "썬더버드_딜증가배율(%)", 20d, FunctionalInterfaceUnit.positive());
 
 	private final Predicate<Entity> predicate = entity -> {
 		if (entity.equals(getPlayer())) return false;

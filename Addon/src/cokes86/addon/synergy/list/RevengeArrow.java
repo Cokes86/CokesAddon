@@ -1,7 +1,7 @@
 package cokes86.addon.synergy.list;
 
 import cokes86.addon.synergy.CokesSynergy;
-import cokes86.addon.util.PredicateUnit;
+import cokes86.addon.util.FunctionalInterfaceUnit;
 import daybreak.abilitywar.ability.AbilityManifest;
 import daybreak.abilitywar.ability.AbilityManifest.Rank;
 import daybreak.abilitywar.ability.AbilityManifest.Species;
@@ -39,7 +39,7 @@ import java.util.function.Predicate;
 		"해당 추가화살은 인벤토리의 화살 1개를 소비하여 발사합니다.",
 		"추가 화살은 블럭에 닿거나 플레이어가 공격을 받을 시 사라집니다."})
 public class RevengeArrow extends CokesSynergy {
-	private static final Config<Double> multiply = new Config<>(RevengeArrow.class, "배율", 1.0, PredicateUnit.positive());
+	private static final Config<Double> multiply = Config.of(RevengeArrow.class, "배율", 1.0, FunctionalInterfaceUnit.positive());
 	private final Predicate<Entity> predicate = entity -> {
 		if (entity.equals(getPlayer())) return false;
 		if (entity instanceof Player) {

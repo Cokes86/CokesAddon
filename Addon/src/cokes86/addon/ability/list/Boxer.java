@@ -1,7 +1,7 @@
 package cokes86.addon.ability.list;
 
 import cokes86.addon.ability.CokesAbility;
-import cokes86.addon.util.PredicateUnit;
+import cokes86.addon.util.FunctionalInterfaceUnit;
 import daybreak.abilitywar.ability.AbilityManifest;
 import daybreak.abilitywar.ability.SubscribeEvent;
 import daybreak.abilitywar.ability.decorator.ActiveHandler;
@@ -34,8 +34,8 @@ import org.bukkit.event.entity.EntityDamageByEntityEvent;
         "  공격을 회피하였을 경우, 이 효과는 취소되지 않습니다."
 })
 public class Boxer extends CokesAbility implements ActiveHandler, TargetHandler {
-    private static final Config<Integer> percentage = Config.of(Boxer.class, "회피확률(%)", 20, PredicateUnit.between(0, 100, false));
-    private static final Config<Integer> damage = Config.of(Boxer.class, "스트레이트.대미지", 7, PredicateUnit.positive());
+    private static final Config<Integer> percentage = Config.of(Boxer.class, "회피확률(%)", 20, FunctionalInterfaceUnit.between(0, 100, false));
+    private static final Config<Integer> damage = Config.of(Boxer.class, "스트레이트.대미지", 7, FunctionalInterfaceUnit.positive());
     private static final Config<Integer> right_cool = Config.of(Boxer.class, "스트레이트.쿨타임", 30, Config.Condition.COOLDOWN);
     private static final Config<Integer> left_cool = Config.of(Boxer.class, "휴식.쿨타임", 90, Config.Condition.COOLDOWN);
     private static final Config<Integer> duration = Config.of(Boxer.class, "휴식.회복주기", 2, Config.Condition.TIME);

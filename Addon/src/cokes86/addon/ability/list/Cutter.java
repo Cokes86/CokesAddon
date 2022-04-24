@@ -1,7 +1,7 @@
 package cokes86.addon.ability.list;
 
 import cokes86.addon.ability.CokesAbility;
-import cokes86.addon.util.PredicateUnit;
+import cokes86.addon.util.FunctionalInterfaceUnit;
 import daybreak.abilitywar.ability.AbilityManifest;
 import daybreak.abilitywar.ability.decorator.ActiveHandler;
 import daybreak.abilitywar.game.AbstractGame;
@@ -14,8 +14,8 @@ import org.bukkit.Material;
 })
 public class Cutter extends CokesAbility implements ActiveHandler {
 	private static final Config<Integer> cool = Config.of(Cutter.class, "쿨타임", 10, Config.Condition.COOLDOWN);
-	private static final Config<Integer> duration = Config.of(Cutter.class, "회복량", 7, PredicateUnit.positive());
-	private static final Config<Integer> risk = Config.of(Cutter.class, "코스트", 4, PredicateUnit.positive());
+	private static final Config<Integer> duration = Config.of(Cutter.class, "회복량", 7, FunctionalInterfaceUnit.positive());
+	private static final Config<Integer> risk = Config.of(Cutter.class, "코스트", 4, FunctionalInterfaceUnit.positive());
 
 	private final Cooldown cooldownTimer = new Cooldown(cool.getValue());
 	private final Duration durationTimer = new Duration(duration.getValue(), cooldownTimer) {

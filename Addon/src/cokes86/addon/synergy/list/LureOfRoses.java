@@ -30,7 +30,7 @@ import java.util.function.Predicate;
 		"  0.5초마다 채력을 1씩 회복합니다. $[cool]"
 })
 public class LureOfRoses extends CokesSynergy {
-	private static final Config<Integer> cool = new Config<>(LureOfRoses.class, "쿨타임", 300, Config.Condition.COOLDOWN);
+	private static final Config<Integer> cool = Config.of(LureOfRoses.class, "쿨타임", 300, Config.Condition.COOLDOWN);
 
 	private final Predicate<Entity> predicate = entity -> {
 		if (entity.equals(getPlayer())) return false;

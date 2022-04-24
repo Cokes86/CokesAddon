@@ -2,7 +2,7 @@ package cokes86.addon.ability.list;
 
 import cokes86.addon.ability.CokesAbility;
 import cokes86.addon.util.AttributeUtil;
-import cokes86.addon.util.PredicateUnit;
+import cokes86.addon.util.FunctionalInterfaceUnit;
 import daybreak.abilitywar.ability.AbilityManifest;
 import daybreak.abilitywar.ability.AbilityManifest.Rank;
 import daybreak.abilitywar.ability.AbilityManifest.Species;
@@ -42,11 +42,11 @@ import java.util.List;
 public class Reincarnation extends CokesAbility {
 	public static final Config<Integer> duration = Config.of(Reincarnation.class, "지속시간", 25, Config.Condition.TIME);
 	public static final Config<Integer> cooldown = Config.of(Reincarnation.class, "쿨타임", 600, Config.Condition.COOLDOWN);
-	public static final Config<Integer> damage = Config.of(Reincarnation.class, "감소대미지(%)", 50, PredicateUnit.positive());
-	public static final Config<Integer> hit = Config.of(Reincarnation.class, "타격횟수", 5, PredicateUnit.positive());
-	public static final Config<Integer> heal = Config.of(Reincarnation.class, "회복수치량(%)", 5, PredicateUnit.positive());
-	public static final Config<Integer> respawn = Config.of(Reincarnation.class, "회복량", 2, PredicateUnit.positive(),
-			t -> t + KoreanUtil.getJosa(t.toString(), Josa.이가));
+	public static final Config<Integer> damage = Config.of(Reincarnation.class, "감소대미지(%)", 50, FunctionalInterfaceUnit.positive());
+	public static final Config<Integer> hit = Config.of(Reincarnation.class, "타격횟수", 5, FunctionalInterfaceUnit.positive());
+	public static final Config<Integer> heal = Config.of(Reincarnation.class, "회복수치량(%)", 5, FunctionalInterfaceUnit.positive());
+	public static final Config<Integer> respawn = Config.of(Reincarnation.class, "회복량", 2, FunctionalInterfaceUnit.positive(),
+			FunctionalInterfaceUnit.addJosa(Josa.이가));
 	private final ActionbarChannel ac = newActionbarChannel();
 	private int hitted = 0;
 	private final Cooldown cool = new Cooldown(cooldown.getValue());

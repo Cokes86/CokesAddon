@@ -4,7 +4,7 @@ import org.bukkit.entity.Player;
 
 import java.util.UUID;
 
-public interface IDisguise {
+public interface DisguiseImpl {
     void changeSkin(Player player, UUID uuid);
     void reloadPlayer(Player p);
     void setPlayerNameTag(Player player, UUID uuid);

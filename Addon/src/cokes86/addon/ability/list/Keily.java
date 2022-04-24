@@ -1,7 +1,7 @@
 package cokes86.addon.ability.list;
 
 import cokes86.addon.ability.CokesAbility;
-import cokes86.addon.util.PredicateUnit;
+import cokes86.addon.util.FunctionalInterfaceUnit;
 import daybreak.abilitywar.ability.AbilityManifest;
 import daybreak.abilitywar.ability.SubscribeEvent;
 import daybreak.abilitywar.ability.decorator.ActiveHandler;
@@ -31,8 +31,8 @@ public class Keily extends CokesAbility implements ActiveHandler {
 	private static final Config<Integer> dura = Config.of(Keily.class, "카운터생성주기", 45, Config.Condition.TIME);
 	private static final Config<Integer> cool = Config.of(Keily.class, "쿨타임", 45, Config.Condition.COOLDOWN);
 	private static final Config<Integer> duration = Config.of(Keily.class, "비행지속시간", 2, Config.Condition.TIME);
-	private static final Config<Integer> max_switch = Config.of(Keily.class, "최대_스위치", 3, PredicateUnit.positive());
-	private static final Config<Float> fuse = Config.of(Keily.class, "폭발_위력", 1.3f, PredicateUnit.positive());
+	private static final Config<Integer> max_switch = Config.of(Keily.class, "최대_스위치", 3, FunctionalInterfaceUnit.positive());
+	private static final Config<Float> fuse = Config.of(Keily.class, "폭발_위력", 1.3f, FunctionalInterfaceUnit.positive());
 	private final int count = Wreck.isEnabled(GameManager.getGame()) ? (int) ((100 - Configuration.Settings.getCooldownDecrease().getPercentage()) / 100.0 * dura.getValue()) : dura.getValue();
 	private boolean falling = false;
 	private final Cooldown c = new Cooldown(cool.getValue());

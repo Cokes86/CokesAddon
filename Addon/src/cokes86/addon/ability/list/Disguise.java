@@ -1,7 +1,7 @@
 package cokes86.addon.ability.list;
 
 import cokes86.addon.ability.CokesAbility;
-import cokes86.addon.util.PredicateUnit;
+import cokes86.addon.util.FunctionalInterfaceUnit;
 import cokes86.addon.util.disguise.DisguiseUtil;
 import daybreak.abilitywar.ability.AbilityManifest;
 import daybreak.abilitywar.ability.AbilityManifest.Rank;
@@ -33,10 +33,10 @@ import org.bukkit.event.player.PlayerQuitEvent;
 		"§8팀전에서 이름표가 바뀌는 기능은 작동하지 않습니다."
 })
 public class Disguise extends CokesAbility implements ActiveHandler {
-	private static final Config<Integer> range = Config.of(Disguise.class, "범위", 7, PredicateUnit.positive());
-	private static final Config<Integer> count = Config.of(Disguise.class, "변장_후_공격받는_횟수", 3, PredicateUnit.positive());
+	private static final Config<Integer> range = Config.of(Disguise.class, "범위", 7, FunctionalInterfaceUnit.positive());
+	private static final Config<Integer> count = Config.of(Disguise.class, "변장_후_공격받는_횟수", 3, FunctionalInterfaceUnit.positive());
 	private static final Config<Integer> cool = Config.of(Disguise.class, "쿨타임", 180, Config.Condition.COOLDOWN);
-	private static final Config<Integer> reflect = Config.of(Disguise.class, "반사(%)", 50, PredicateUnit.positive());
+	private static final Config<Integer> reflect = Config.of(Disguise.class, "반사(%)", 50, FunctionalInterfaceUnit.positive());
 	private static final Config<Boolean> changeSkin = Config.of(Disguise.class, "스킨변경", true,
 			"# 변장술 사용할 시 변장술의 대상으로 스킨 변경 여부",
 			"# 기본값: true");

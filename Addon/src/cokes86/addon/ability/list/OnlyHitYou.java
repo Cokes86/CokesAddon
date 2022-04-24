@@ -1,7 +1,7 @@
 package cokes86.addon.ability.list;
 
 import cokes86.addon.ability.CokesAbility;
-import cokes86.addon.util.PredicateUnit;
+import cokes86.addon.util.FunctionalInterfaceUnit;
 import daybreak.abilitywar.ability.AbilityManifest;
 import daybreak.abilitywar.ability.SubscribeEvent;
 import daybreak.abilitywar.ability.decorator.ActiveHandler;
@@ -29,11 +29,11 @@ import org.bukkit.event.entity.EntityDamageByEntityEvent;
 })
 public class OnlyHitYou extends CokesAbility implements ActiveHandler {
     private static final Config<Integer> COOLDOWN = Config.of(OnlyHitYou.class, "쿨타임", 60, Config.Condition.COOLDOWN);
-    private static final Config<Integer> FIRST_HIT = Config.of(OnlyHitYou.class, "첫번째_타격_배율(%)", 75, PredicateUnit.positive());
-    private static final Config<Integer> SECOND_HIT = Config.of(OnlyHitYou.class, "두번째_타격_배율(%)", 100, PredicateUnit.positive());
-    private static final Config<Integer> THIRD_HIT = Config.of(OnlyHitYou.class, "세번째_타격_배율(%)", 125, PredicateUnit.positive());
-    private static final Config<Integer> LOCK_ON = Config.of(OnlyHitYou.class, "록_온_추가_배율(%)", 75, PredicateUnit.positive());
-    private static final Config<Integer> COOLDOWN_DECREASE = Config.of(OnlyHitYou.class, "쿨타임_감소_배율(%)", 25, PredicateUnit.positive());
+    private static final Config<Integer> FIRST_HIT = Config.of(OnlyHitYou.class, "첫번째_타격_배율(%)", 75, FunctionalInterfaceUnit.positive());
+    private static final Config<Integer> SECOND_HIT = Config.of(OnlyHitYou.class, "두번째_타격_배율(%)", 100, FunctionalInterfaceUnit.positive());
+    private static final Config<Integer> THIRD_HIT = Config.of(OnlyHitYou.class, "세번째_타격_배율(%)", 125, FunctionalInterfaceUnit.positive());
+    private static final Config<Integer> LOCK_ON = Config.of(OnlyHitYou.class, "록_온_추가_배율(%)", 75, FunctionalInterfaceUnit.positive());
+    private static final Config<Integer> COOLDOWN_DECREASE = Config.of(OnlyHitYou.class, "쿨타임_감소_배율(%)", 25, FunctionalInterfaceUnit.positive());
 
     private final HitTimer passive = new HitTimer();
     private final Cooldown cool = new Cooldown(COOLDOWN.getValue());

@@ -1,7 +1,7 @@
 package cokes86.addon.ability.list;
 
 import cokes86.addon.ability.CokesAbility;
-import cokes86.addon.util.PredicateUnit;
+import cokes86.addon.util.FunctionalInterfaceUnit;
 import daybreak.abilitywar.ability.AbilityManifest;
 import daybreak.abilitywar.ability.AbilityManifest.Rank;
 import daybreak.abilitywar.ability.AbilityManifest.Species;
@@ -19,9 +19,9 @@ import org.bukkit.event.entity.EntityDamageByEntityEvent;
 		"[아이디어 제공자 §bRainStar_§f]"
 })
 public class Perseverance extends CokesAbility {
-	private static final Config<Integer> max = Config.of(Perseverance.class, "최대치(%)", 100, PredicateUnit.positive());
-	private static final Config<Integer> upg = Config.of(Perseverance.class, "성장치(%p)", 20, PredicateUnit.positive());
-	private static final Config<Double> period = Config.of(Perseverance.class, "주기", 3.5, PredicateUnit.positive());
+	private static final Config<Integer> max = Config.of(Perseverance.class, "최대치(%)", 100, FunctionalInterfaceUnit.positive());
+	private static final Config<Integer> upg = Config.of(Perseverance.class, "성장치(%p)", 20, FunctionalInterfaceUnit.positive());
+	private static final Config<Double> period = Config.of(Perseverance.class, "주기", 3.5, FunctionalInterfaceUnit.positive());
 
 	private double give = 0;
 	private final ActionbarChannel ac = newActionbarChannel();

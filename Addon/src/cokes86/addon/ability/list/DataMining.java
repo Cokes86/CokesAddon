@@ -1,7 +1,7 @@
 package cokes86.addon.ability.list;
 
 import cokes86.addon.ability.CokesAbility;
-import cokes86.addon.util.PredicateUnit;
+import cokes86.addon.util.FunctionalInterfaceUnit;
 import daybreak.abilitywar.ability.*;
 import daybreak.abilitywar.ability.Tips.*;
 import daybreak.abilitywar.ability.decorator.ActiveHandler;
@@ -15,9 +15,10 @@ import daybreak.abilitywar.utils.base.minecraft.nms.NMS;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.entity.ArmorStand;
-import org.bukkit.event.Listener;
 
 import java.text.DecimalFormat;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Random;
 
 @AbilityManifest(name = "데이터마이닝", rank = AbilityManifest.Rank.S, species = AbilityManifest.Species.HUMAN, explain = {
@@ -51,15 +52,16 @@ import java.util.Random;
 @NotAvailable(AbstractTripleMix.class)
 @Materials(materials = Material.GOLD_INGOT)
 public class DataMining extends CokesAbility implements ActiveHandler {
-	private static final Config<Double> damageUp = Config.of(DataMining.class, "최대주는대미지성장치", 2.5, PredicateUnit.positive());
-	private static final Config<Double> defenseUp = Config.of(DataMining.class, "최대받는대미지감소성장치", 25.00, PredicateUnit.positive(), "#단위: %");
-	private static final Config<Integer> player_value = Config.of(DataMining.class, "인원별_스택치", 4, PredicateUnit.positive());
+	private static final Config<Double> damageUp = Config.of(DataMining.class, "최대주는대미지성장치", 2.5, FunctionalInterfaceUnit.positive());
+	private static final Config<Double> defenseUp = Config.of(DataMining.class, "최대받는대미지감소성장치", 25.00, FunctionalInterfaceUnit.positive(), "#단위: %");
+	private static final Config<Integer> player_value = Config.of(DataMining.class, "인원별_스택치", 4, FunctionalInterfaceUnit.positive());
 	private static final Config<Integer> duration = Config.of(DataMining.class, "자동스택추가주기", 60, Config.Condition.TIME);
 	private final DecimalFormat df = new DecimalFormat("0.##");
 	private int damage_count = 0;
 	private int defense_count = 0;
 	private final ActionbarChannel ac = newActionbarChannel();
 	private final int max_count = (getGame().getParticipants().size() - 1) * player_value.getValue();
+	private final List<Scanning> scanningList = new ArrayList<>();
 
 	private final AbilityTimer passive = new AbilityTimer() {
 		@Override
@@ -108,6 +110,14 @@ public class DataMining extends CokesAbility implements ActiveHandler {
 			final double defense_value = defenseUp.getValue()*2 / max_count * defense_count;
 			ac.update("§e마이닝 스택§f: " + (damage_count + defense_count) + " (추가대미지: " + df.format(damage_value) + "  피해감소: " + df.format(defense_value) + "%)");
 			passive.start();
+			for (Participant participant : getGame().getParticipants()) {
+				scanningList.add(new Scanning(participant));
+			}
+		} else {
+			for (Scanning scanning : scanningList) {
+				scanning.stop(true);
+			}
+			scanningList.clear();
 		}
 	}
 
@@ -151,7 +161,7 @@ public class DataMining extends CokesAbility implements ActiveHandler {
 		return result;
 	}
 
-	private class Scanning extends AbilityTimer implements Listener {
+	private class Scanning extends AbilityTimer {
 		private final ArmorStand hologram;
 		private final Participant participant;
 
@@ -181,6 +191,7 @@ public class DataMining extends CokesAbility implements ActiveHandler {
 			}
 			hologram.setCustomName(abilityName + "  §c♥"+(int)participant.getPlayer().getHealth());
 			setPeriod(TimeUnit.TICKS, 1);
+			start();
 		}
 
 		@Override
@@ -203,6 +214,16 @@ public class DataMining extends CokesAbility implements ActiveHandler {
 			}
 
 			super.run(count);
+		}
+
+		@Override
+		protected void onEnd() {
+			hologram.remove();
+		}
+
+		@Override
+		protected void onSilentEnd() {
+			hologram.remove();
 		}
 	}
 }

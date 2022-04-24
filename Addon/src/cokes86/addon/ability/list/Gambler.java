@@ -1,7 +1,7 @@
 package cokes86.addon.ability.list;
 
 import cokes86.addon.ability.CokesAbility;
-import cokes86.addon.util.PredicateUnit;
+import cokes86.addon.util.FunctionalInterfaceUnit;
 import daybreak.abilitywar.ability.AbilityManifest;
 import daybreak.abilitywar.ability.AbilityManifest.Rank;
 import daybreak.abilitywar.ability.AbilityManifest.Species;
@@ -23,8 +23,8 @@ import org.bukkit.event.entity.EntityDamageEvent;
 })
 public class Gambler extends CokesAbility implements ActiveHandler {
 	private static final Config<Integer> du = Config.of(Gambler.class, "주기", 15, Config.Condition.TIME);
-	private static final Config<Integer> min = Config.of(Gambler.class, "최소치(%)", 75, PredicateUnit.positive());
-	private static final Config<Integer> max = Config.of(Gambler.class, "최대치(%)", 150, PredicateUnit.positive());
+	private static final Config<Integer> min = Config.of(Gambler.class, "최소치(%)", 75, FunctionalInterfaceUnit.positive());
+	private static final Config<Integer> max = Config.of(Gambler.class, "최대치(%)", 150, FunctionalInterfaceUnit.positive());
 
 	static {
 		if (min.getValue() > max.getValue()) {

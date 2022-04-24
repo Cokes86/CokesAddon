@@ -1,7 +1,7 @@
 package cokes86.addon.ability.list;
 
 import cokes86.addon.ability.CokesAbility;
-import cokes86.addon.util.PredicateUnit;
+import cokes86.addon.util.FunctionalInterfaceUnit;
 import daybreak.abilitywar.ability.AbilityManifest;
 import daybreak.abilitywar.ability.AbilityManifest.Rank;
 import daybreak.abilitywar.ability.AbilityManifest.Species;
@@ -31,9 +31,9 @@ import java.util.function.Predicate;
 		"[아이디어 제공자 §bRainStar_§f]"
 })
 public class Unbelief extends CokesAbility implements ActiveHandler {
-	private static final Config<Integer> hit = Config.of(Unbelief.class, "공격횟수", 5, PredicateUnit.positive());
-	private static final Config<Integer> damage = Config.of(Unbelief.class, "추가대미지", 2, PredicateUnit.positive());
-	private static final Config<Integer> range = Config.of(Unbelief.class, "우클릭범위", 10, PredicateUnit.positive());
+	private static final Config<Integer> hit = Config.of(Unbelief.class, "공격횟수", 5, FunctionalInterfaceUnit.positive());
+	private static final Config<Integer> damage = Config.of(Unbelief.class, "추가대미지", 2, FunctionalInterfaceUnit.positive());
+	private static final Config<Integer> range = Config.of(Unbelief.class, "우클릭범위", 10, FunctionalInterfaceUnit.positive());
 	private final Predicate<Entity> predicate = entity -> {
 		if (entity.equals(getPlayer())) return false;
 		if (entity instanceof Player) {

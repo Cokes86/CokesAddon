@@ -1,7 +1,7 @@
 package cokes86.addon.ability.list;
 
 import cokes86.addon.ability.CokesAbility;
-import cokes86.addon.util.PredicateUnit;
+import cokes86.addon.util.FunctionalInterfaceUnit;
 import daybreak.abilitywar.AbilityWar;
 import daybreak.abilitywar.ability.AbilityManifest;
 import daybreak.abilitywar.ability.decorator.ActiveHandler;
@@ -50,8 +50,8 @@ public class Cokes extends CokesAbility implements ActiveHandler {
     private static final Config<Integer> LEFT_COOL = Config.of(Cokes.class, "슬롯머신_쿨타임", 90, Config.Condition.COOLDOWN);
     private static final Config<Integer> LEFT_DURATION = Config.of(Cokes.class, "슬롯머신_지속시간", 10, Config.Condition.TIME);
 
-    private static final Config<Integer> EFFECT_DURATION = Config.of(Cokes.class, "이펙트_일반상태이상_지속시간", 15, PredicateUnit.upper(1));
-    private static final Config<Integer> MOVEMENT_DURATION = Config.of(Cokes.class, "이펙트_이동상태이상_지속시간", 5, PredicateUnit.upper(1));
+    private static final Config<Integer> EFFECT_DURATION = Config.of(Cokes.class, "이펙트_일반상태이상_지속시간", 15, FunctionalInterfaceUnit.upper(1));
+    private static final Config<Integer> MOVEMENT_DURATION = Config.of(Cokes.class, "이펙트_이동상태이상_지속시간", 5, FunctionalInterfaceUnit.upper(1));
 
     private final Cooldown rightCool = new Cooldown(RIGHT_COOL.getValue(), "이펙트");
     private final Cooldown leftCool = new Cooldown(LEFT_COOL.getValue(), "슬롯머신");

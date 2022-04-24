@@ -2,7 +2,7 @@ package cokes86.addon.ability.list;
 
 import cokes86.addon.ability.CokesAbility;
 import cokes86.addon.effect.list.Nightmare;
-import cokes86.addon.util.PredicateUnit;
+import cokes86.addon.util.FunctionalInterfaceUnit;
 import daybreak.abilitywar.ability.AbilityManifest;
 import daybreak.abilitywar.ability.decorator.ActiveHandler;
 import daybreak.abilitywar.config.enums.CooldownDecrease;
@@ -44,11 +44,11 @@ import static org.bukkit.ChatColor.GRAY;
 })
 public class Iris extends CokesAbility implements ActiveHandler {
     private static final Config<Integer> RAINBOW_COOLDOWN = Config.of(Iris.class, "레인보우_쿨타임", 10, COOLDOWN);
-    private static final Config<Integer> RAINBOW_RANGE = Config.of(Iris.class, "레인보우_범위", 7, PredicateUnit.positive());
-    private static final Config<Double> RAINBOW_DAMAGE = Config.of(Iris.class, "레인보우_대미지", 3.0, PredicateUnit.positive());
+    private static final Config<Integer> RAINBOW_RANGE = Config.of(Iris.class, "레인보우_범위", 7, FunctionalInterfaceUnit.positive());
+    private static final Config<Double> RAINBOW_DAMAGE = Config.of(Iris.class, "레인보우_대미지", 3.0, FunctionalInterfaceUnit.positive());
     private static final Config<Integer> NIGHTMARE_DURATION = Config.of(Iris.class, "악몽_지속시간", 7, TIME);
     private static final Config<Integer> NIGHTMARE_COOLDOWN = Config.of(Iris.class, "나이트메어_쿨타임", 50, COOLDOWN);
-    private static final Config<Integer> STACK_PREDICATE = Config.of(Iris.class, "나이트메어_스택조건", 5, PredicateUnit.positive());
+    private static final Config<Integer> STACK_PREDICATE = Config.of(Iris.class, "나이트메어_스택조건", 5, FunctionalInterfaceUnit.positive());
 
     private final Cooldown rainbow = new Cooldown(RAINBOW_COOLDOWN.getValue(), "레인보우", CooldownDecrease._90);
     private final Cooldown nightmare = new Cooldown(NIGHTMARE_COOLDOWN.getValue(), "나이트메어", CooldownDecrease._90);

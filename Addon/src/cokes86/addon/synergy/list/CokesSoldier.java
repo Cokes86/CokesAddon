@@ -1,7 +1,7 @@
 package cokes86.addon.synergy.list;
 
 import cokes86.addon.synergy.CokesSynergy;
-import cokes86.addon.util.PredicateUnit;
+import cokes86.addon.util.FunctionalInterfaceUnit;
 import daybreak.abilitywar.AbilityWar;
 import daybreak.abilitywar.ability.AbilityManifest;
 import daybreak.abilitywar.ability.Materials;
@@ -47,10 +47,10 @@ import java.util.function.Predicate;
 })
 @Materials(materials = {Material.GOLD_INGOT, Material.IRON_INGOT})
 public class CokesSoldier extends CokesSynergy implements ActiveHandler {
-    private static final Config<Integer> SALUTE_COOLDOWN = new Config<>(CokesSoldier.class, "사단장_쿨타임", 60, Config.Condition.COOLDOWN);
+    private static final Config<Integer> SALUTE_COOLDOWN = Config.of(CokesSoldier.class, "사단장_쿨타임", 60, Config.Condition.COOLDOWN);
 
-    private static final Config<Integer> K2_COOLDOWN = new Config<>(CokesSoldier.class, "K2_쿨타임", 10, Config.Condition.COOLDOWN);
-    private static final Config<Double> K2_DAMAGE = new Config<>(CokesSoldier.class, "K2_대미지", 5.0, PredicateUnit.positive());
+    private static final Config<Integer> K2_COOLDOWN = Config.of(CokesSoldier.class, "K2_쿨타임", 10, Config.Condition.COOLDOWN);
+    private static final Config<Double> K2_DAMAGE = Config.of(CokesSoldier.class, "K2_대미지", 5.0, FunctionalInterfaceUnit.positive());
 
     public CokesSoldier(AbstractGame.Participant participant) {
         super(participant);

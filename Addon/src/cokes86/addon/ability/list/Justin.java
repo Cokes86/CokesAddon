@@ -1,7 +1,8 @@
 package cokes86.addon.ability.list;
 
 import cokes86.addon.ability.CokesAbility;
-import cokes86.addon.util.PredicateUnit;
+import cokes86.addon.util.CokesUtil;
+import cokes86.addon.util.FunctionalInterfaceUnit;
 import daybreak.abilitywar.ability.AbilityManifest;
 import daybreak.abilitywar.ability.SubscribeEvent;
 import daybreak.abilitywar.ability.decorator.ActiveHandler;
@@ -11,10 +12,8 @@ import daybreak.abilitywar.utils.base.minecraft.damage.Damages;
 import daybreak.abilitywar.utils.base.minecraft.nms.IHologram;
 import daybreak.abilitywar.utils.base.minecraft.nms.NMS;
 import daybreak.abilitywar.utils.base.random.Random;
-import daybreak.abilitywar.utils.library.MaterialX;
 import daybreak.abilitywar.utils.library.SoundLib;
 import daybreak.google.common.base.Strings;
-import daybreak.google.common.collect.ImmutableSet;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.Note;
@@ -53,7 +52,7 @@ public class Justin extends CokesAbility implements ActiveHandler {
     private static final Config<Integer> PERIOD = Config.of(Justin.class, "period", 45, Config.Condition.TIME,
         "# 인격 변경 주기",
         "# 기본값 : 45 (초)");
-    private static final Config<Integer> MAX_COUNTER = Config.of(Justin.class, "max-count", 10, PredicateUnit.upper(1),
+    private static final Config<Integer> MAX_COUNTER = Config.of(Justin.class, "max-count", 10, FunctionalInterfaceUnit.upper(1),
         "# 흑심카운터 최대치",
         "# 기본값 : 10");
     private static final Config<Integer> GET_THIS_COOLDOWN = Config.of(Justin.class, "get-this-cooldown", 60, Config.Condition.COOLDOWN,
@@ -62,24 +61,17 @@ public class Justin extends CokesAbility implements ActiveHandler {
     private static final Config<Integer> ESCAPE_COOLDOWN = Config.of(Justin.class, "escape-cooldown", 45, Config.Condition.COOLDOWN,
         "# 탈출 쿨타임",
         "# 기본값 : 45 (초)");
-    private static final Config<Double> DAMAGE = Config.of(Justin.class, "giving-damage-decrement", 30.0, PredicateUnit.positive(),
+    private static final Config<Double> DAMAGE = Config.of(Justin.class, "giving-damage-decrement", 30.0, FunctionalInterfaceUnit.positive(),
         "# 슬래시 1인격 주는 대미지 감소량",
         "# 기본값 : 30.0 (%)");
-    private static final Config<Float> GET_THIS_DAMAGE = Config.of(Justin.class, "fix-damage", 2.0f, PredicateUnit.positive(),
+    private static final Config<Float> GET_THIS_DAMAGE = Config.of(Justin.class, "fix-damage", 2.0f, FunctionalInterfaceUnit.positive(),
         "# 이거나 받아라 2인격 고정 대미지량",
         "# 기본값 : 2.0");
-    private static final Config<Double> TWO_PERSON_DAMAGE_INCREASE = Config.of(Justin.class, "receive-damage-increment", 20.0, PredicateUnit.positive(),
+    private static final Config<Double> TWO_PERSON_DAMAGE_INCREASE = Config.of(Justin.class, "receive-damage-increment", 20.0, FunctionalInterfaceUnit.positive(),
         "# 두가지 인격 2인격 받는 대미지 증가량",
         "# 기본값 : 20.0 (%)");
 
-    private static final Set<Material> swords;
-    static {
-        if (MaterialX.NETHERITE_SWORD.isSupported()) {
-            swords = ImmutableSet.of(MaterialX.WOODEN_SWORD.getMaterial(), Material.STONE_SWORD, Material.IRON_SWORD, MaterialX.GOLDEN_SWORD.getMaterial(), Material.DIAMOND_SWORD, MaterialX.NETHERITE_SWORD.getMaterial());
-        } else {
-            swords = ImmutableSet.of(MaterialX.WOODEN_SWORD.getMaterial(), Material.STONE_SWORD, Material.IRON_SWORD, MaterialX.GOLDEN_SWORD.getMaterial(), Material.DIAMOND_SWORD);
-        }
-    }
+    private static final Set<Material> swords = CokesUtil.getSwords();
     private NormalTimer normalTimer = new NormalTimer(getPlayer(), 0);
     private boolean madness = false;
     private final Random r = new Random();

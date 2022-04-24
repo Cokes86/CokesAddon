@@ -1,7 +1,7 @@
 package cokes86.addon.ability.list;
 
 import cokes86.addon.ability.CokesAbility;
-import cokes86.addon.util.PredicateUnit;
+import cokes86.addon.util.FunctionalInterfaceUnit;
 import daybreak.abilitywar.ability.AbilityManifest;
 import daybreak.abilitywar.ability.SubscribeEvent;
 import daybreak.abilitywar.game.AbstractGame;
@@ -24,10 +24,10 @@ import java.util.List;
         "  이는 영구히 유지됩니다."
 })
 public class BlackFeather extends CokesAbility {
-    private static final Config<Double> DAMAGE = Config.of(BlackFeather.class, "damage", 80.0, PredicateUnit.positive(),
+    private static final Config<Double> DAMAGE = Config.of(BlackFeather.class, "damage", 80.0, FunctionalInterfaceUnit.positive(),
             "# 검은 날개 주는 대미지 변경값",
             "# 기본값: 80.0 (%)");
-    private static final Config<Double> DAMAGE_UPGRADE = Config.of(BlackFeather.class, "damage-upgrade", 5.0, PredicateUnit.positive(),
+    private static final Config<Double> DAMAGE_UPGRADE = Config.of(BlackFeather.class, "damage-upgrade", 5.0, FunctionalInterfaceUnit.positive(),
             "# 블랙 패더 카운터 당 추가되는 주는 대미지 변경값",
             "# 기본값: 5.0 (%p)");
     private static final Config<Integer> DURATION =Config.of(BlackFeather.class, "duration", 15, Config.Condition.TIME,

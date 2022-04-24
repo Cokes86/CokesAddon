@@ -7,12 +7,12 @@ import org.bukkit.entity.Player;
 import java.util.UUID;
 
 public class DisguiseUtil {
-    private static final IDisguise instance;
+    private static final DisguiseImpl instance;
 
     static {
         try {
             instance = Class.forName("cokes86.addon.util.disguise." + ServerVersion.getName())
-                    .asSubclass(IDisguise.class).getConstructor().newInstance();
+                    .asSubclass(DisguiseImpl.class).getConstructor().newInstance();
         } catch (Exception e) {
             throw new VersionNotSupportedException();
         }
@@ -44,7 +44,7 @@ public class DisguiseUtil {
         return instance.isChanged(player);
     }
 
-    public static IDisguise getInstance() {
+    public static DisguiseImpl getInstance() {
         return instance;
     }
 

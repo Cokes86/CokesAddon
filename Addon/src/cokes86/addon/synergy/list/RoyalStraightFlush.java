@@ -1,7 +1,7 @@
 package cokes86.addon.synergy.list;
 
 import cokes86.addon.synergy.CokesSynergy;
-import cokes86.addon.util.PredicateUnit;
+import cokes86.addon.util.FunctionalInterfaceUnit;
 import daybreak.abilitywar.ability.AbilityManifest;
 import daybreak.abilitywar.ability.AbilityManifest.Rank;
 import daybreak.abilitywar.ability.AbilityManifest.Species;
@@ -26,8 +26,8 @@ import java.util.function.Predicate;
 		"뽑은 두 숫자의 합을 3으로 나눈 값에 해당하는 고정 대미지를 줍니다. $[cool]"
 })
 public class RoyalStraightFlush extends CokesSynergy implements ActiveHandler {
-	public static Config<Integer> range = new Config<>(RoyalStraightFlush.class, "범위", 15, PredicateUnit.positive());
-	public static Config<Integer> cool = new Config<>(RoyalStraightFlush.class, "쿨타임", 60, Config.Condition.COOLDOWN);
+	public static Config<Integer> range = Config.of(RoyalStraightFlush.class, "범위", 15, FunctionalInterfaceUnit.positive());
+	public static Config<Integer> cool = Config.of(RoyalStraightFlush.class, "쿨타임", 60, Config.Condition.COOLDOWN);
 	private final Predicate<Entity> predicate = entity -> {
 		if (entity.equals(getPlayer())) return false;
 		if (entity instanceof Player) {

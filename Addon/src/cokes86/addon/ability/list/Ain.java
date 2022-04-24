@@ -1,7 +1,7 @@
 package cokes86.addon.ability.list;
 
 import cokes86.addon.ability.CokesAbility;
-import cokes86.addon.util.PredicateUnit;
+import cokes86.addon.util.FunctionalInterfaceUnit;
 import daybreak.abilitywar.ability.AbilityManifest;
 import daybreak.abilitywar.ability.decorator.ActiveHandler;
 import daybreak.abilitywar.game.AbstractGame;
@@ -17,7 +17,7 @@ import java.util.List;
         "  그 쿨타임을 $[INCREASE] 증가시킵키다. $[COOL]"
 })
 public class Ain extends CokesAbility implements ActiveHandler {
-    private static final Config<Integer> RANGE = Config.of(Ain.class, "range", 5, PredicateUnit.positive(),
+    private static final Config<Integer> RANGE = Config.of(Ain.class, "range", 5, FunctionalInterfaceUnit.positive(),
             "# 능력 망각 범위", "# 기본값: 5 (블럭)");
     private static final Config<Integer> INCREASE = Config.of(Ain.class, "increase", 30, Config.Condition.TIME,
             "# 능력 망각 상대방 쿨타임 증가량", "# 기본값: 30 (초)");

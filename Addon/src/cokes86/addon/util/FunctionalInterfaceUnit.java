@@ -1,11 +1,14 @@
 package cokes86.addon.util;
 
+import daybreak.abilitywar.utils.base.language.korean.KoreanUtil;
+import daybreak.abilitywar.utils.base.language.korean.KoreanUtil.Josa;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.function.Function;
 import java.util.function.Predicate;
 
 @SuppressWarnings("unchecked")
-public class PredicateUnit {
+public class FunctionalInterfaceUnit {
     private static final Number n = 0.0;
 
     public static @NotNull <T extends Number> Predicate<T> positive(){
@@ -37,5 +40,13 @@ public class PredicateUnit {
 
     public static <T> Predicate<T> always() {
         return a -> true;
+    }
+
+    public static <T> Function<T, String> addJosa(Josa josa) {
+        return a -> KoreanUtil.addJosa(a.toString(), josa);
+    }
+
+    public static <T> Function<T, String> Formatter(String prefix) {
+        return a -> prefix + a;
     }
 }

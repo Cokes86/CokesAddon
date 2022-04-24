@@ -1,7 +1,7 @@
 package cokes86.addon.synergy.list;
 
 import cokes86.addon.synergy.CokesSynergy;
-import cokes86.addon.util.PredicateUnit;
+import cokes86.addon.util.FunctionalInterfaceUnit;
 import daybreak.abilitywar.ability.AbilityManifest;
 import daybreak.abilitywar.ability.AbilityManifest.Rank;
 import daybreak.abilitywar.ability.AbilityManifest.Species;
@@ -43,8 +43,8 @@ import java.util.function.Predicate;
 		"해당 능력은 사망하거나 지속시간 종료시 비활성화됩니다."
 })
 public class TheEnd extends CokesSynergy implements ActiveHandler {
-	public static final Config<Integer> du = new Config<>(TheEnd.class, "지속시간", 40, Config.Condition.TIME);
-	public static final Config<Double> reduce = new Config<>(TheEnd.class, "감소대미지(%)", 50.0, PredicateUnit.between(0.0, 100.0, false));
+	public static final Config<Integer> du = Config.of(TheEnd.class, "지속시간", 40, Config.Condition.TIME);
+	public static final Config<Double> reduce = Config.of(TheEnd.class, "감소대미지(%)", 50.0, FunctionalInterfaceUnit.between(0.0, 100.0, false));
 	private final Map<Participant, ActionbarChannel> acs = new HashMap<>();
 	private final Predicate<Entity> predicate = entity -> {
 		if (entity.equals(getPlayer())) return false;

@@ -2,7 +2,7 @@ package cokes86.addon.ability.test;
 
 import cokes86.addon.ability.CokesAbility;
 import cokes86.addon.ability.CokesAbility.Config.Condition;
-import cokes86.addon.util.PredicateUnit;
+import cokes86.addon.util.FunctionalInterfaceUnit;
 import daybreak.abilitywar.AbilityWar;
 import daybreak.abilitywar.ability.AbilityManifest;
 import daybreak.abilitywar.ability.AbilityManifest.Rank;
@@ -43,10 +43,10 @@ import java.util.List;
 })
 @Beta
 public class Kevin extends CokesAbility implements ActiveHandler {
-    private final Config<Integer> MAX_GPS = Config.of(Kevin.class, "max-gps", 3, PredicateUnit.positive());
+    private final Config<Integer> MAX_GPS = Config.of(Kevin.class, "max-gps", 3, FunctionalInterfaceUnit.positive());
     private final Config<Integer> COOLDOWN = Config.of(Kevin.class, "cooldown", 60, Condition.COOLDOWN);
     private final Config<Integer> DURATION = Config.of(Kevin.class, "duration", 60, Condition.TIME);
-    private final Config<Double> DAMAGE_INCREMENT = Config.of(Kevin.class, "damage-increment", 2.0, PredicateUnit.positive());
+    private final Config<Double> DAMAGE_INCREMENT = Config.of(Kevin.class, "damage-increment", 2.0, FunctionalInterfaceUnit.positive());
 
     private int playerDetected = 0;
     private final List<GPS> gpsList = new ArrayList<>();

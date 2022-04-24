@@ -1,7 +1,7 @@
 package cokes86.addon.ability.list;
 
 import cokes86.addon.ability.CokesAbility;
-import cokes86.addon.util.PredicateUnit;
+import cokes86.addon.util.FunctionalInterfaceUnit;
 import daybreak.abilitywar.ability.AbilityManifest;
 import daybreak.abilitywar.ability.AbilityManifest.Rank;
 import daybreak.abilitywar.ability.AbilityManifest.Species;
@@ -25,7 +25,7 @@ import org.bukkit.event.entity.EntityDamageByEntityEvent;
 public class Thorn extends CokesAbility implements ActiveHandler {
 	private static final Config<Integer> COOL = Config.of(Thorn.class, "쿨타임", 20, Config.Condition.COOLDOWN);
 	private static final Config<Integer> DURATION = Config.of(Thorn.class, "지속시간", 5, Config.Condition.TIME);
-	private static final Config<Double> DAMAGE = Config.of(Thorn.class, "반사대미지(%)", 60.0, PredicateUnit.positive());
+	private static final Config<Double> DAMAGE = Config.of(Thorn.class, "반사대미지(%)", 60.0, FunctionalInterfaceUnit.positive());
 	private final Cooldown cooldown = new Cooldown(COOL.getValue());
 	private final Duration duration = new Duration(DURATION.getValue(), cooldown) {
 		@Override

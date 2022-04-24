@@ -1,8 +1,8 @@
 package cokes86.addon.ability.list;
 
 import cokes86.addon.ability.CokesAbility;
-import cokes86.addon.util.PredicateUnit;
-import cokes86.addon.util.TextMaker;
+import cokes86.addon.util.CokesUtil;
+import cokes86.addon.util.FunctionalInterfaceUnit;
 import daybreak.abilitywar.ability.AbilityManifest;
 import daybreak.abilitywar.ability.AbilityManifest.Rank;
 import daybreak.abilitywar.ability.AbilityManifest.Species;
@@ -37,9 +37,9 @@ import java.util.concurrent.ConcurrentHashMap;
 public class Ovisni extends CokesAbility implements ActiveHandler {
 
 	public static final Config<Integer> COOLDOWN_CONFIG = Config.of(Ovisni.class, "쿨타임", 30, Config.Condition.COOLDOWN);
-	public static final Config<Integer> MAX_COUNTER_CONFIG = Config.of(Ovisni.class, "최대카운터", 7, PredicateUnit.positive());
+	public static final Config<Integer> MAX_COUNTER_CONFIG = Config.of(Ovisni.class, "최대카운터", 7, FunctionalInterfaceUnit.positive());
 	public static final Config<Integer> DELAY = Config.of(Ovisni.class, "지속딜레이", 10, Config.Condition.TIME);
-	public static final Config<Integer> MAX_DAMAGE_HIT = Config.of(Ovisni.class, "최대_맹독_타격_횟수", 12, PredicateUnit.positive());
+	public static final Config<Integer> MAX_DAMAGE_HIT = Config.of(Ovisni.class, "최대_맹독_타격_횟수", 12, FunctionalInterfaceUnit.positive());
 
 	private final Map<Participant, OvisniStack> stackMap = new ConcurrentHashMap<>();
 
@@ -135,7 +135,7 @@ public class Ovisni extends CokesAbility implements ActiveHandler {
 			this.target = target;
 			final Player targetPlayer = target.getPlayer();
 			this.hologram = NMS.newHologram(targetPlayer.getWorld(), targetPlayer.getLocation().getX(), targetPlayer.getLocation().getY() + targetPlayer.getEyeHeight() + 0.6, targetPlayer.getLocation().getZ());
-			this.hologram.setText(TextMaker.repeatWithTwoColor(icon, '2', stack, 'f', maxCounter-stack));
+			this.hologram.setText(CokesUtil.repeatWithTwoColor(icon, '2', stack, 'f', maxCounter-stack));
 			this.hologram.display(getPlayer());
 			this.stack = 1;
 			this.start();
@@ -143,7 +143,7 @@ public class Ovisni extends CokesAbility implements ActiveHandler {
 
 		@Override
 		protected void run(int arg0) {
-			this.hologram.setText(TextMaker.repeatWithTwoColor(icon, '2', stack, 'f', maxCounter-stack));
+			this.hologram.setText(CokesUtil.repeatWithTwoColor(icon, '2', stack, 'f', maxCounter-stack));
 			final Player targetPlayer = target.getPlayer();
 			hologram.teleport(targetPlayer.getWorld(), targetPlayer.getLocation().getX(), targetPlayer.getLocation().getY() + targetPlayer.getEyeHeight() + 0.6, targetPlayer.getLocation().getZ(), targetPlayer.getLocation().getYaw(), 0);
 			if (arg0 % (20 * DELAY.getValue()) == 0 && damageCount <= MAX_DAMAGE_HIT.getValue()) {

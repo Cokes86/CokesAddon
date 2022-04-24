@@ -2,7 +2,7 @@ package cokes86.addon.synergy.list;
 
 import cokes86.addon.synergy.CokesSynergy;
 import cokes86.addon.synergy.CokesSynergy.Config.Condition;
-import cokes86.addon.util.PredicateUnit;
+import cokes86.addon.util.FunctionalInterfaceUnit;
 import daybreak.abilitywar.ability.AbilityManifest;
 import daybreak.abilitywar.ability.AbilityManifest.Rank;
 import daybreak.abilitywar.ability.AbilityManifest.Species;
@@ -33,13 +33,13 @@ import java.util.function.Predicate;
         "최대 체력의 $[DAMAGE]%의 대미지를 주고 공중에 $[BLOCK]블럭 위로 옮깁니다. $[COOLDOWN]"
 })
 public class GravityArrow extends CokesSynergy {
-    private static final Config<Integer> RANGE = new Config<>(GravityArrow.class, "range", 5, PredicateUnit.positive(),
+    private static final Config<Integer> RANGE = Config.of(GravityArrow.class, "range", 5, FunctionalInterfaceUnit.positive(),
             "# 범위", "# 기본값: 5 (블럭)");
-    private static final Config<Double> DAMAGE = new Config<>(GravityArrow.class, "damage", 15.0, PredicateUnit.between(0.0,100.0,false),
+    private static final Config<Double> DAMAGE = Config.of(GravityArrow.class, "damage", 15.0, FunctionalInterfaceUnit.between(0.0,100.0,false),
             "# 최대 체력 비례 대미지", "# 기본값: 15.0 (%)");
-    private static final Config<Integer> BLOCK = new Config<>(GravityArrow.class, "block", 5, PredicateUnit.positive(),
+    private static final Config<Integer> BLOCK = Config.of(GravityArrow.class, "block", 5, FunctionalInterfaceUnit.positive(),
             "# 위로 올라갈 정도", "# 기본값: 5 (블럭)");
-    private static final Config<Integer> COOLDOWN = new Config<>(GravityArrow.class, "cooldown", 8, Condition.COOLDOWN,
+    private static final Config<Integer> COOLDOWN = Config.of(GravityArrow.class, "cooldown", 8, Condition.COOLDOWN,
             "# 쿨타임", "# 기본값: 8 (초)");
 
     private final Predicate<Entity> ONLY_PARTICIPANTS = entity -> !(entity instanceof Player) || (getGame().isParticipating(entity.getUniqueId())

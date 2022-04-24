@@ -15,7 +15,7 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.UUID;
 
-public class v1_16_R1 implements IDisguise {
+public class v1_16_R1 implements DisguiseImpl {
     private static final Map<UUID, Pair<String, Property>> origin = new HashMap<>();
 
     @Override

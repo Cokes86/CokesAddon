@@ -1,7 +1,7 @@
 package cokes86.addon.ability.list;
 
 import cokes86.addon.ability.CokesAbility;
-import cokes86.addon.util.PredicateUnit;
+import cokes86.addon.util.FunctionalInterfaceUnit;
 import daybreak.abilitywar.ability.AbilityBase;
 import daybreak.abilitywar.ability.AbilityManifest;
 import daybreak.abilitywar.ability.AbilityManifest.Rank;
@@ -36,7 +36,7 @@ import java.util.function.Predicate;
 })
 public class Harmony extends CokesAbility {
 	private static final Config<Integer> duration = Config.of(Harmony.class, "주기", 5, Config.Condition.TIME);
-	private static final Config<Integer> range = Config.of(Harmony.class, "범위", 10, PredicateUnit.positive());
+	private static final Config<Integer> range = Config.of(Harmony.class, "범위", 10, FunctionalInterfaceUnit.positive());
 	private boolean hidden = false;
 
 	private final Predicate<Entity> predicate = entity -> {

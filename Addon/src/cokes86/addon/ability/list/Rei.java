@@ -2,7 +2,7 @@ package cokes86.addon.ability.list;
 
 import cokes86.addon.ability.CokesAbility;
 import cokes86.addon.util.AttributeUtil;
-import cokes86.addon.util.PredicateUnit;
+import cokes86.addon.util.FunctionalInterfaceUnit;
 import daybreak.abilitywar.ability.AbilityManifest;
 import daybreak.abilitywar.ability.AbilityManifest.Rank;
 import daybreak.abilitywar.ability.AbilityManifest.Species;
@@ -44,11 +44,11 @@ import org.bukkit.event.entity.EntityDamageEvent;
 },
 stats = @Stats(offense = Level.NINE, survival = Level.FIVE, crowdControl = Level.ZERO, mobility = Level.ZERO, utility = Level.THREE), difficulty = Difficulty.NORMAL)
 public class Rei extends CokesAbility {
-	private static final Config<Double> damage = Config.of(Rei.class, "추가대미지", 30.0, PredicateUnit.positive());
-	private static final Config<Double> cost = Config.of(Rei.class, "코스트(%)", 4.5, PredicateUnit.positive());
+	private static final Config<Double> damage = Config.of(Rei.class, "추가대미지", 30.0, FunctionalInterfaceUnit.positive());
+	private static final Config<Double> cost = Config.of(Rei.class, "코스트(%)", 4.5, FunctionalInterfaceUnit.positive());
 	private static final Config<Integer> cool = Config.of(Rei.class, "쿨타임", 100, Config.Condition.COOLDOWN);
-	private static final Config<Integer> respawn = Config.of(Rei.class, "부활체력", 4, PredicateUnit.positive(),
-			a -> a + KoreanUtil.getJosa(a.toString(), Josa.이가));
+	private static final Config<Integer> respawn = Config.of(Rei.class, "부활체력", 4, FunctionalInterfaceUnit.positive(),
+			FunctionalInterfaceUnit.addJosa(Josa.이가));
 
 	private final Cooldown cooldown = new Cooldown(cool.getValue(), CooldownDecrease._75);
 

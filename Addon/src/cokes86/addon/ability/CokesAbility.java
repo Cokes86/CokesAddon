@@ -1,8 +1,7 @@
 package cokes86.addon.ability;
 
 import cokes86.addon.CokesAddon;
-import cokes86.addon.ability.list.Disguise;
-import cokes86.addon.util.PredicateUnit;
+import cokes86.addon.util.FunctionalInterfaceUnit;
 import daybreak.abilitywar.ability.AbilityBase;
 import daybreak.abilitywar.ability.NotAvailable;
 import daybreak.abilitywar.config.ability.AbilitySettings;
@@ -11,7 +10,6 @@ import daybreak.abilitywar.game.AbstractGame.Participant;
 import daybreak.abilitywar.game.list.mix.triplemix.AbstractTripleMix;
 import daybreak.abilitywar.utils.base.Formatter;
 import daybreak.abilitywar.utils.base.TimeUtil;
-import daybreak.abilitywar.utils.base.language.korean.KoreanUtil;
 
 import java.util.Objects;
 import java.util.function.Function;
@@ -46,11 +44,11 @@ public class CokesAbility extends AbilityBase {
 		}
 
 		public static <T> Config<T> of(Class<? extends CokesAbility> aClass, String name, T value, String[] description, Condition condition, Function<T, String> function) {
-			return of(aClass, name, value, description, condition, PredicateUnit.always(), function);
+			return of(aClass, name, value, description, condition, FunctionalInterfaceUnit.always(), function);
 		}
 
 		public static <T> Config<T> of(Class<? extends CokesAbility> aClass, String name, T value, Condition condition, String... description) {
-			return of(aClass, name, value, description, condition, PredicateUnit.always(), Object::toString);
+			return of(aClass, name, value, description, condition, FunctionalInterfaceUnit.always(), Object::toString);
 		}
 
 		public static <T> Config<T> of(Class<? extends CokesAbility> aClass, String name, T value, Predicate<T> predicate, String... description) {
@@ -62,7 +60,7 @@ public class CokesAbility extends AbilityBase {
 		}
 
         public static <T> Config<T> of(Class<? extends CokesAbility> aClass, String name, T value, String... description) {
-			return of(aClass, name, value, description, Condition.NORMAL, PredicateUnit.always(), Objects::toString);
+			return of(aClass, name, value, description, Condition.NORMAL, FunctionalInterfaceUnit.always(), Objects::toString);
         }
 
         public String toString() {

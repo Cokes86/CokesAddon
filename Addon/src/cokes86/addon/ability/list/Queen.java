@@ -2,7 +2,7 @@ package cokes86.addon.ability.list;
 
 import cokes86.addon.ability.CokesAbility;
 import cokes86.addon.util.AttributeUtil;
-import cokes86.addon.util.PredicateUnit;
+import cokes86.addon.util.FunctionalInterfaceUnit;
 import daybreak.abilitywar.ability.AbilityBase;
 import daybreak.abilitywar.ability.AbilityManifest;
 import daybreak.abilitywar.ability.SubscribeEvent;
@@ -25,7 +25,7 @@ import java.text.DecimalFormat;
 })
 public class Queen extends CokesAbility implements ActiveHandler, TargetHandler {
 	private static final Config<Integer> cool = Config.of(Queen.class, "쿨타임", 120, Config.Condition.COOLDOWN);
-	private static final Config<Double> multiply = Config.of(Queen.class, "회복배율", 1.0, PredicateUnit.greaterThanOrEqual(0.0));
+	private static final Config<Double> multiply = Config.of(Queen.class, "회복배율", 1.0, FunctionalInterfaceUnit.greaterThanOrEqual(0.0));
 	private final DecimalFormat df = new DecimalFormat("0.##");
 	private final double defaultHealth = AttributeUtil.getMaxHealth(getPlayer());
 	private final Cooldown cooldown = new Cooldown(cool.getValue());
