@@ -1,4 +1,4 @@
 name: CokesAddon
 version: ${project.version}
-main: cokes86.addon.CokesAddon
+main: com.cokes86.cokesaddon.CokesAddon
 displayName: §c코크스 애드온

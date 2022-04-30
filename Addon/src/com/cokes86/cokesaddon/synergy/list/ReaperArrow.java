@@ -1,0 +1,136 @@
+package com.cokes86.cokesaddon.synergy.list;
+
+import com.cokes86.cokesaddon.synergy.CokesSynergy;
+import com.cokes86.cokesaddon.util.FunctionalInterfaceUnit;
+import daybreak.abilitywar.ability.AbilityManifest;
+import daybreak.abilitywar.ability.SubscribeEvent;
+import daybreak.abilitywar.ability.decorator.ActiveHandler;
+import daybreak.abilitywar.game.AbstractGame;
+import daybreak.abilitywar.game.GameManager;
+import daybreak.abilitywar.game.module.Wreck;
+import daybreak.abilitywar.utils.base.color.RGB;
+import daybreak.abilitywar.utils.base.concurrent.TimeUnit;
+import daybreak.abilitywar.utils.base.minecraft.damage.Damages;
+import daybreak.abilitywar.utils.base.minecraft.nms.NMS;
+import daybreak.abilitywar.utils.library.ParticleLib;
+import daybreak.abilitywar.utils.library.SoundLib;
+import org.bukkit.Material;
+import org.bukkit.attribute.Attribute;
+import org.bukkit.attribute.AttributeInstance;
+import org.bukkit.entity.LivingEntity;
+import org.bukkit.entity.Projectile;
+import org.bukkit.event.entity.EntityDamageByEntityEvent;
+import org.bukkit.event.entity.EntityShootBowEvent;
+import org.bukkit.event.entity.ProjectileHitEvent;
+
+@AbilityManifest(name = "사신의 화살", rank = AbilityManifest.Rank.S, species = AbilityManifest.Species.GOD, explain = {
+		"매 $[duration]마다 사신의 낫이 1개씩 충전됩니다. (최대 5회)",
+		"철괴 우클릭 시 죽음의 화살을 장전하며, 발사할 수 있습니다. $[cool]",
+		"죽음의 화살을 맞은 엔티티는 사신의 낫의 개수에 따라 최대체력에 비례한 고정 대미지를 줍니다.",
+		"1개: $[damage1]%, 2개: $[damage2]%, 3개: $[damage3]%, 4개: $[damage4]%, 5개: $[damage5]%"
+})
+public class ReaperArrow extends CokesSynergy implements ActiveHandler {
+	private static final Config<Integer> duration = Config.of(ReaperArrow.class, "충전시간", 60, Config.Condition.TIME);
+	private static final Config<Integer> cool = Config.of(ReaperArrow.class, "쿨타임", 60, Config.Condition.COOLDOWN);
+	private static final Config<Double> damage1 = Config.of(ReaperArrow.class, "체력비례대미지.1스택", 10.0, FunctionalInterfaceUnit.between(0.0, 100.0, true));
+	private static final Config<Double> damage2 = Config.of(ReaperArrow.class, "체력비례대미지.2스택", 25.0, FunctionalInterfaceUnit.between(0.0, 100.0, true));
+	private static final Config<Double> damage3 = Config.of(ReaperArrow.class, "체력비례대미지.3스택", 50.0, FunctionalInterfaceUnit.between(0.0, 100.0, true));
+	private static final Config<Double> damage4 = Config.of(ReaperArrow.class, "체력비례대미지.4스택", 75.0, FunctionalInterfaceUnit.between(0.0, 100.0, true));
+	private static final Config<Double> damage5 = Config.of(ReaperArrow.class, "체력비례대미지.5스택", 95.0, FunctionalInterfaceUnit.between(0.0, 100.0, true));
+	private static final double[] stackDamage;
+
+	static {
+		if (damage1.getValue() > damage2.getValue() || damage2.getValue() > damage3.getValue() || damage3.getValue() > damage4.getValue() || damage4.getValue() > damage5.getValue()) {
+			damage1.setValue(damage1.getDefaultValue());
+			damage2.setValue(damage2.getDefaultValue());
+			damage3.setValue(damage3.getDefaultValue());
+			damage4.setValue(damage4.getDefaultValue());
+			damage5.setValue(damage5.getDefaultValue());
+		}
+		stackDamage = new double[]{damage1.getValue(), damage2.getValue(), damage3.getValue(), damage4.getValue(), damage5.getValue()};
+	}
+
+	private final AbstractGame.Participant.ActionbarNotification.ActionbarChannel ac = newActionbarChannel();
+	private final RGB rgb = RGB.of(1, 1, 1);
+	private final Cooldown cooldown = new Cooldown(cool.getValue());
+	private boolean ready = false;
+	private Projectile reaperArrow = null;
+	private final AbilityTimer effect = new AbilityTimer() {
+		protected void run(int arg) {
+			ParticleLib.REDSTONE.spawnParticle(reaperArrow.getLocation(), rgb);
+		}
+	}.setPeriod(TimeUnit.TICKS, 1);
+	private int stack = 0;
+	private final AbilityTimer chargeTimer = new AbilityTimer() {
+		protected void run(int arg) {
+			if (cooldown.isRunning()) {
+				ac.update("");
+				return;
+			}
+
+			int reloadCount = Wreck.isEnabled(GameManager.getGame()) ? (int) (Wreck.calculateDecreasedAmount(20) * duration.getValue()) : duration.getValue();
+			if (reloadCount == 0) reloadCount = (int) (0.2 * duration.getValue());
+			if (arg % reloadCount == 0) {
+				if (stack >= 5) return;
+				stack++;
+			}
+			ac.update("사신의 낫: " + stack);
+		}
+	}.register();
+
+	public ReaperArrow(AbstractGame.Participant participant) {
+		super(participant);
+		effect.register();
+		chargeTimer.register();
+	}
+
+	public void onUpdate(Update update) {
+		if (update == Update.RESTRICTION_CLEAR) {
+			chargeTimer.start();
+		}
+	}
+
+	@Override
+	public boolean ActiveSkill(Material material, ClickType clickType) {
+		if (material == Material.IRON_INGOT && clickType == ClickType.RIGHT_CLICK && !ready && stack > 0 && !cooldown.isCooldown()) {
+			getPlayer().sendMessage("사신의 화살을 장전하였습니다.");
+			ready = true;
+			return true;
+		}
+		return false;
+	}
+
+	@SubscribeEvent
+	public void onEntityShootBow(EntityShootBowEvent e) {
+		if (ready && NMS.isArrow(e.getProjectile()) && e.getEntity().equals(getPlayer())) {
+			SoundLib.BLOCK_GRASS_BREAK.playSound(getPlayer());
+			this.reaperArrow = (Projectile) e.getProjectile();
+			this.ready = false;
+			effect.start();
+			cooldown.start();
+		}
+	}
+
+	@SubscribeEvent
+	public void onEntityDamageByEntity(EntityDamageByEntityEvent e) {
+		if (e.getDamager().equals(reaperArrow) && e.getEntity() instanceof LivingEntity) {
+			LivingEntity entity = (LivingEntity) e.getEntity();
+			e.setCancelled(true);
+			AttributeInstance attribute = entity.getAttribute(Attribute.GENERIC_MAX_HEALTH);
+			if (attribute != null) {
+				double max_Health = attribute.getValue();
+				Damages.damageFixed(entity, getPlayer(), (float) (max_Health * stackDamage[stack - 1]));
+				stack = 0;
+			}
+		}
+	}
+
+	@SubscribeEvent
+	public void onProjectileHit(ProjectileHitEvent e) {
+		if (e.getEntity().equals(reaperArrow)) {
+			effect.stop(false);
+			reaperArrow = null;
+			stack = 0;
+		}
+	}
+}

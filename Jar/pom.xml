@@ -3,8 +3,8 @@
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <parent>
+        <groupId>com.cokes86</groupId>
         <artifactId>CokesAddon</artifactId>
-        <groupId>Cokes_86.plugins</groupId>
         <version>${revision}</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
@@ -14,47 +14,47 @@
 
     <dependencies>
         <dependency>
-            <groupId>Cokes_86.plugins</groupId>
+            <groupId>com.cokes86</groupId>
             <artifactId>Addon</artifactId>
             <version>${revision}</version>
         </dependency>
         <dependency>
-            <groupId>Cokes_86.plugins</groupId>
+            <groupId>com.cokes86</groupId>
             <artifactId>v1_12_R1</artifactId>
             <version>${revision}</version>
         </dependency>
         <dependency>
-            <groupId>Cokes_86.plugins</groupId>
+            <groupId>com.cokes86</groupId>
             <artifactId>v1_13_R1</artifactId>
             <version>${revision}</version>
         </dependency>
         <dependency>
-            <groupId>Cokes_86.plugins</groupId>
+            <groupId>com.cokes86</groupId>
             <artifactId>v1_13_R2</artifactId>
             <version>${revision}</version>
         </dependency>
         <dependency>
-            <groupId>Cokes_86.plugins</groupId>
+            <groupId>com.cokes86</groupId>
             <artifactId>v1_14_R1</artifactId>
             <version>${revision}</version>
         </dependency>
         <dependency>
-            <groupId>Cokes_86.plugins</groupId>
+            <groupId>com.cokes86</groupId>
             <artifactId>v1_15_R1</artifactId>
             <version>${revision}</version>
         </dependency>
         <dependency>
-            <groupId>Cokes_86.plugins</groupId>
+            <groupId>com.cokes86</groupId>
             <artifactId>v1_16_R1</artifactId>
             <version>${revision}</version>
         </dependency>
         <dependency>
-            <groupId>Cokes_86.plugins</groupId>
+            <groupId>com.cokes86</groupId>
             <artifactId>v1_16_R2</artifactId>
             <version>${revision}</version>
         </dependency>
         <dependency>
-            <groupId>Cokes_86.plugins</groupId>
+            <groupId>com.cokes86</groupId>
             <artifactId>v1_16_R3</artifactId>
             <version>${revision}</version>
         </dependency>
