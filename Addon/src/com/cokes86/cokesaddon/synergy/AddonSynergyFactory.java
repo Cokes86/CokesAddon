@@ -3,7 +3,6 @@ package com.cokes86.cokesaddon.synergy;
 import com.cokes86.cokesaddon.CokesAddon;
 import com.cokes86.cokesaddon.ability.list.*;
 import com.cokes86.cokesaddon.synergy.list.*;
-import com.cokes86.cokesaddon.synergy.list.collaboration.ReiBurningSoul;
 import daybreak.abilitywar.ability.AbilityBase;
 import daybreak.abilitywar.ability.AbilityFactory;
 import daybreak.abilitywar.ability.AbilityManifest;
@@ -32,7 +31,7 @@ public class AddonSynergyFactory {
         registerSynergy(Rune.class, Zeus.class, SlicingMaelstrom.class);
 
         //1.3.0
-        registerSynergy(Rei.class, Rei.class, SoulTakerRei.class);
+        registerSynergy(Rei.class, Rei.class, ReiSoulTaker.class);
 
         //1.4.0
         registerSynergy(Sniper.class, Perseverance.class, ShrineOfGod.class);
@@ -64,6 +63,7 @@ public class AddonSynergyFactory {
     public static void loadAddonSynergies() {
         if (CokesAddon.isLoadAddon("RainStarAddon")){
             registerSynergy(Rei.class, getAddonAbilityClass("RainStarAbility.Inferno"), ReiBurningSoul.class);
+            //registerSynergy(Rude.class, getAddonAbilityClass("RainStarAbility.LittleDevil"), NaughtyDevil.class);
         }
     }
 

@@ -42,16 +42,16 @@ import org.bukkit.event.entity.EntityDamageEvent;
         "  영혼의 수를 모두 소모해 체력이 영혼당 1씩 회복됩니다. $[AROUSAL_COOL]",
         "  §c이맨서페이션§f 지속시간 도중 발동되었다면, 0.5배 더 회복합니다."
 })
-public class SoulTakerRei extends CokesSynergy implements ActiveHandler {
-    public static final Config<Double> DAMAGE = Config.of(SoulTakerRei.class, "추가대미지", 15.0, FunctionalInterfaceUnit.positive());
-    public static final Config<Integer> RANGE = Config.of(SoulTakerRei.class, "리멤버_흡수_범위", 5, FunctionalInterfaceUnit.positive());
-    public static final Config<Integer> DURATION = Config.of(SoulTakerRei.class, "이맨서페이션_지속시간", 20, Config.Condition.TIME);
-    public static final Config<Double> ADDITIONAL = Config.of(SoulTakerRei.class, "이맨서페이션_추가대미지", 25.0, FunctionalInterfaceUnit.positive());
-    public static final Config<Integer> EMANCIPATION_COOL = Config.of(SoulTakerRei.class, "이맨서페이션_쿨타임", 60, Config.Condition.COOLDOWN);
-    public static final Config<Integer> AROUSAL_COOL = Config.of(SoulTakerRei.class, "어아우절_쿨타임", 60, Config.Condition.COOLDOWN);
-    public static final Config<Integer> REMEMBER_ABSORPTION = Config.of(SoulTakerRei.class, "리맴버_흡수체력_증가량", 3, FunctionalInterfaceUnit.positive());
-    public static final Config<Integer> DEMAND_ABSORPTION = Config.of(SoulTakerRei.class, "흡수체력_요구량", 2, FunctionalInterfaceUnit.positive());
-    public static final Config<Double> COST = Config.of(SoulTakerRei.class, "이맨서페이션_코스트", 5.0, FunctionalInterfaceUnit.positive());
+public class ReiSoulTaker extends CokesSynergy implements ActiveHandler {
+    public static final Config<Double> DAMAGE = Config.of(ReiSoulTaker.class, "추가대미지", 15.0, FunctionalInterfaceUnit.positive());
+    public static final Config<Integer> RANGE = Config.of(ReiSoulTaker.class, "리멤버_흡수_범위", 5, FunctionalInterfaceUnit.positive());
+    public static final Config<Integer> DURATION = Config.of(ReiSoulTaker.class, "이맨서페이션_지속시간", 20, Config.Condition.TIME);
+    public static final Config<Double> ADDITIONAL = Config.of(ReiSoulTaker.class, "이맨서페이션_추가대미지", 25.0, FunctionalInterfaceUnit.positive());
+    public static final Config<Integer> EMANCIPATION_COOL = Config.of(ReiSoulTaker.class, "이맨서페이션_쿨타임", 60, Config.Condition.COOLDOWN);
+    public static final Config<Integer> AROUSAL_COOL = Config.of(ReiSoulTaker.class, "어아우절_쿨타임", 60, Config.Condition.COOLDOWN);
+    public static final Config<Integer> REMEMBER_ABSORPTION = Config.of(ReiSoulTaker.class, "리맴버_흡수체력_증가량", 3, FunctionalInterfaceUnit.positive());
+    public static final Config<Integer> DEMAND_ABSORPTION = Config.of(ReiSoulTaker.class, "흡수체력_요구량", 2, FunctionalInterfaceUnit.positive());
+    public static final Config<Double> COST = Config.of(ReiSoulTaker.class, "이맨서페이션_코스트", 5.0, FunctionalInterfaceUnit.positive());
     private final AbstractGame.Participant.ActionbarNotification.ActionbarChannel channel = newActionbarChannel();
 
     private int soul = 0;
@@ -65,7 +65,7 @@ public class SoulTakerRei extends CokesSynergy implements ActiveHandler {
         }
     };
 
-    public SoulTakerRei(AbstractGame.Participant participant) {
+    public ReiSoulTaker(AbstractGame.Participant participant) {
         super(participant);
     }
 
