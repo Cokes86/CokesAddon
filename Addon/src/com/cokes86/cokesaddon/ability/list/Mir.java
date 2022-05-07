@@ -106,7 +106,7 @@ public class Mir extends CokesAbility implements ActiveHandler {
 			equipment.setHelmet(new ItemStack(element.helmet));
 			equipment.setChestplate(chestplate);
 
-			getPlayer().sendMessage(element.display +"§f"+ KoreanUtil.getJosa(element.display, KoreanUtil.Josa.을를) + " 소환합니다.");
+			getPlayer().sendMessage(element.displayName +"§f"+ KoreanUtil.getJosa(element.displayName, KoreanUtil.Josa.을를) + " 소환합니다.");
 		}
 
 		@Override
@@ -203,13 +203,13 @@ public class Mir extends CokesAbility implements ActiveHandler {
 		THUNDERBIRD("§b썬더버드",MaterialX.LAPIS_BLOCK.getMaterial(), RGB.of(1, 1, 255), RANGE_THUNDER.getValue()),
 		GNOME("§6노움",MaterialX.DIRT.getMaterial(), RGB.of(179, 109, 65), RANGE_GNOME.getValue());
 
-		private final String display;
+		private final String displayName;
 		private final Material helmet;
 		private final RGB rgb;
 		private final int range;
 
 		Element(String display, Material helmet, RGB rgb, int range) {
-			this.display = display;
+			this.displayName = display;
 			this.helmet = helmet;
 			this.rgb = rgb;
 			this.range = range;

@@ -83,7 +83,7 @@ public class Xyz extends CokesAbility implements ActiveHandler {
 		return false;
 	}
 
-	class XyzTimer extends Duration implements Listener {
+	private class XyzTimer extends Duration implements Listener {
 		Location location = Settings.getSpawnLocation().toBukkitLocation();
 		Map<Player, ActionbarChannel> map = new HashMap<>();
 		public XyzTimer() {
@@ -114,10 +114,12 @@ public class Xyz extends CokesAbility implements ActiveHandler {
 
 		@Override
 		protected void onDurationEnd() {
+			HandlerList.unregisterAll(this);
 			for (Player p : map.keySet()) {
 				p.setHealth(0.0);
+				map.get(p).unregister();
 			}
-			onDurationSilentEnd();
+			map.clear();
 		}
 
 		@Override

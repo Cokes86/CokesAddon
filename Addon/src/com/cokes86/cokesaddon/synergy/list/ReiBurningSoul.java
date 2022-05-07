@@ -57,12 +57,19 @@ import java.util.function.Predicate;
         "  영혼 해방으로 얻은 §c버닝 소울§f은 수거의 §c버닝 소울§f의 제약에 속하지 않습니다.",
         "치명적 공격을 받을 시 - 라스트 버닝: §c버닝 소울§f이 1개 이상 존재하면",
         "  §c버닝 소울§f 1개가 해방하여 $[LAST_BURNING_RANGE]블럭 이내 플레이어를",
-        "  $[LAST_BURNING_FIRE_DURATION]간 추가로 불태운 다음 자신의 체력이 1로 변경됩니다."
+        "  $[LAST_BURNING_FIRE_DURATION]간 추가로 불태운 다음 자신의 체력이 1로 변경됩니다.",
+        "  사용되는 §c버닝 소울§f은 수거로 얻은 것부터 우선시되어 사용됩니다."
 }, summarize = {
-        "항상 불타고 화염 피해가 증가하는 대신, 체력 회복 속도가 빠릅니다."
+        "항상 불타고 화염 피해 (§c버닝 소울§f × $[FIRE_DAMAGE_INCREMENT])% 증가하는 대신, 회복량이 2배가 됩니다.",
+        "자신이 적을 처치하면 최대 $[MAX_SOUL]개 보유 가능한 §c버닝 소울§f을 얻습니다.",
+        "근거리 공격 시 적을 불태우고, 이미 적이 5초 이상 불탄다면 불을 끄고 추가대미지를 줍니다.",
+        "철괴 우클릭 시 최대 체력의 $[SOUL_LIBERATION_COST]%을 지불하고,",
+        "  $[TEMPORARY_SOUL_DURATION]간 유지되는 임시 §c버닝 소울§f을 하나 얻습니다.",
+        "  이후 근처 적을 추격해 대미지와 추가발화를 주고 돌아옵니다.",
+        "죽을 위기에 처하면 §c버닝 소울§f을 1개 해방하여 근처 적에게 추가발화를 주고 살아납니다."
 })
 public class ReiBurningSoul extends CokesSynergy implements ActiveHandler {
-    //Config
+    //컨피그
     private static final Config<Double> FIRE_DAMAGE_INCREMENT = Config.of(ReiBurningSoul.class, "fire-damage-increment", 10d, FunctionalInterfaceUnit.positive(),
             "# 버닝 소울 개당 증가할 화염피해 증가량", "# 기본값: 10.0(%)");
     private static final Config<Integer> MAX_SOUL = Config.of(ReiBurningSoul.class, "max-soul", 5, FunctionalInterfaceUnit.positive(),
@@ -252,7 +259,7 @@ public class ReiBurningSoul extends CokesSynergy implements ActiveHandler {
             Location newLocation;
             tick++;
             if (count < 30) {
-                newLocation = lastLocation.add(target.getEyeLocation().clone().toVector().subtract(entity.getLocation().toVector()).multiply(30));
+                newLocation = lastLocation.add(target.getEyeLocation().clone().toVector().subtract(entity.getLocation().toVector()).multiply(1/30));
                 for (Iterator<Location> iterator = new Iterator<Location>() {
                     private final Vector vectorBetween = newLocation.toVector().subtract(lastLocation.toVector()), unit = vectorBetween.clone().normalize().multiply(.35);
                     private final int amount = (int) (vectorBetween.length() / .35);
@@ -290,7 +297,7 @@ public class ReiBurningSoul extends CokesSynergy implements ActiveHandler {
                     ParticleLib.REDSTONE.spawnParticle(location, RGB.RED);
                 }
             } else {
-                newLocation = lastLocation.add(getPlayer().getEyeLocation().clone().toVector().subtract(entity.getLocation().toVector()).multiply(60));
+                newLocation = lastLocation.add(getPlayer().getEyeLocation().clone().toVector().subtract(entity.getLocation().toVector()).multiply(1/30));
                 for (Iterator<Location> iterator = new Iterator<Location>() {
                     private final Vector vectorBetween = newLocation.toVector().subtract(lastLocation.toVector()), unit = vectorBetween.clone().normalize().multiply(.35);
                     private final int amount = (int) (vectorBetween.length() / .35);

@@ -9,10 +9,10 @@ import java.util.function.Predicate;
 
 @SuppressWarnings("unchecked")
 public class FunctionalInterfaceUnit {
-    private static final Number n = 0.0;
+    private static final Number ZERO = 0.0;
 
     public static @NotNull <T extends Number> Predicate<T> positive(){
-        return upper((T)n);
+        return upper((T) ZERO);
     }
 
     public static @NotNull <T extends Number> Predicate<T> upper(T than) {
@@ -20,7 +20,7 @@ public class FunctionalInterfaceUnit {
     }
 
     public static @NotNull <T extends Number> Predicate<T> greaterThanOrEqual(T than) {
-        return upper(than).or(equals(n));
+        return upper(than).or(equals(ZERO));
     }
 
     public static @NotNull <T extends Number> Predicate<T> lower(T than) {
@@ -34,7 +34,7 @@ public class FunctionalInterfaceUnit {
     public static @NotNull <T extends Number> Predicate<T> between(T a, T b, boolean equals) {
         Predicate<T> one = upper(a).and(lower(b));
         Predicate<T> two = upper(b).and(lower(a));
-        Predicate<T> three = equals((T)n).and(t -> equals);
+        Predicate<T> three = equals((T) ZERO).and(t -> equals);
         return one.or(two).or(three);
     }
 
@@ -46,7 +46,11 @@ public class FunctionalInterfaceUnit {
         return a -> KoreanUtil.addJosa(a.toString(), josa);
     }
 
-    public static <T> Function<T, String> Formatter(String prefix) {
+    public static <T> Function<T, String> formatter(String prefix) {
         return a -> prefix + a;
+    }
+
+    public static Function<Boolean, String> onoff() {
+        return a -> a ? "켜짐" : "꺼짐";
     }
 }

@@ -13,6 +13,8 @@ import daybreak.abilitywar.game.AbstractGame.Participant;
 import daybreak.abilitywar.game.event.participant.ParticipantDeathEvent;
 import daybreak.abilitywar.game.module.DeathManager;
 import daybreak.abilitywar.game.team.interfaces.Teamable;
+import daybreak.abilitywar.utils.base.language.korean.KoreanUtil;
+import daybreak.abilitywar.utils.base.language.korean.KoreanUtil.Josa;
 import daybreak.abilitywar.utils.base.math.LocationUtil;
 import daybreak.abilitywar.utils.library.SoundLib;
 import daybreak.google.common.base.Predicate;
@@ -30,17 +32,18 @@ import org.bukkit.event.player.PlayerQuitEvent;
 		"변장하고 있는 동안 다른 참가자에게 받는 대미지의 $[reflect]%는 대상에게 돌아갑니다.",
 		"대미지를 3회 받으면 변장이 풀립니다. $[cool]",
 		"변장하는 동안 자신의 스킨과 이름표가 그 대상의 것으로 바뀝니다.",
-		"§8팀전에서 이름표가 바뀌는 기능은 작동하지 않습니다."
+		"§8팀전에서 이름표가 바뀌는 기능은 작동하지 않습니다.",
+		"※ 스킨변경: $[changeSkin], 이름변경: $[changeNameTag]"
 })
 public class Disguise extends CokesAbility implements ActiveHandler {
 	private static final Config<Integer> range = Config.of(Disguise.class, "범위", 7, FunctionalInterfaceUnit.positive());
 	private static final Config<Integer> count = Config.of(Disguise.class, "변장_후_공격받는_횟수", 3, FunctionalInterfaceUnit.positive());
 	private static final Config<Integer> cool = Config.of(Disguise.class, "쿨타임", 180, Config.Condition.COOLDOWN);
 	private static final Config<Integer> reflect = Config.of(Disguise.class, "반사(%)", 50, FunctionalInterfaceUnit.positive());
-	private static final Config<Boolean> changeSkin = Config.of(Disguise.class, "스킨변경", true,
+	private static final Config<Boolean> changeSkin = Config.of(Disguise.class, "스킨변경", true, FunctionalInterfaceUnit.onoff(),
 			"# 변장술 사용할 시 변장술의 대상으로 스킨 변경 여부",
 			"# 기본값: true");
-	private static final Config<Boolean> changeNameTag = Config.of(Disguise.class, "이름표변경", true,
+	private static final Config<Boolean> changeNameTag = Config.of(Disguise.class, "이름표변경", true, FunctionalInterfaceUnit.onoff(),
 			"# 변장술 사용할 시 변장술의 대상으로 닉네임 변경 여부",
 			"# 팀전에선 작동하지 않음",
 			"# 기본값: true");
@@ -95,7 +98,7 @@ public class Disguise extends CokesAbility implements ActiveHandler {
 				target = getGame().getParticipant(player.getUniqueId());
 
 				DisguiseUtil.saveData();
-				getPlayer().sendMessage(player.getName()+"님으로 변장합니다.");
+				getPlayer().sendMessage(KoreanUtil.addJosa(player.getName(), Josa.으로로) + " 변장합니다.");
 				if (changeSkin.getValue()) {
 					DisguiseUtil.changeSkin(getPlayer(), player.getUniqueId());
 				}

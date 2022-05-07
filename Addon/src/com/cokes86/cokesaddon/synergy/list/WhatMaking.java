@@ -6,11 +6,12 @@ import daybreak.abilitywar.ability.AbilityManifest.Rank;
 import daybreak.abilitywar.ability.AbilityManifest.Species;
 import daybreak.abilitywar.game.AbstractGame.Participant;
 
-
-@AbilityManifest(name = "장난꾸러기 악마", rank = Rank.A, species = Species.UNDEAD, explain = {
+//레스님꺼랑 또 조합하고 싶은디
+@AbilityManifest(name = "因話饈", rank = Rank.A, species = Species.UNDEAD, explain = {
+        ""
 })
-public class NaughtyDevil extends CokesSynergy {
-    public NaughtyDevil(Participant participant) {
+public class WhatMaking extends CokesSynergy {
+    public WhatMaking(Participant participant) {
         super(participant);
     }
 }

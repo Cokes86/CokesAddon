@@ -55,6 +55,10 @@ public class CokesAbility extends AbilityBase {
 			return of(aClass, name, value, description, Condition.NORMAL, predicate, Object::toString);
 		}
 
+		public static <T> Config<T> of(Class<? extends CokesAbility> aClass, String name, T value, Function<T, String> function, String... description) {
+			return of(aClass, name, value, description, Condition.NORMAL, FunctionalInterfaceUnit.always(), function);
+		}
+
 		public static <T> Config<T> of(Class<? extends CokesAbility> aClass, String name, T value, Predicate<T> predicate, Function<T, String> function, String... description) {
 			return of(aClass, name, value, description, Condition.NORMAL, predicate, function);
 		}
