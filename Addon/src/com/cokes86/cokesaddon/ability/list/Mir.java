@@ -85,7 +85,7 @@ public class Mir extends CokesAbility implements ActiveHandler {
 			element = getRandomElement();
 
 			armorStand = getPlayer().getWorld().spawn(getPlayer().getLocation().clone().add(0, 3, 0), ArmorStand.class);
-			armorStand.setCustomName(element.name());
+			armorStand.setCustomName(element.displayName);
 			armorStand.setCustomNameVisible(true);
 			armorStand.setBasePlate(false);
 			armorStand.setArms(true);

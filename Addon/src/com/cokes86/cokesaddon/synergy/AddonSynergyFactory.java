@@ -63,7 +63,7 @@ public class AddonSynergyFactory {
     public static void loadAddonSynergies() {
         if (CokesAddon.isLoadAddon("RainStarAddon")){
             registerSynergy(Rei.class, getAddonAbilityClass("RainStarAbility.Inferno"), ReiBurningSoul.class);
-            //registerSynergy(Rude.class, getAddonAbilityClass("RainStarAbility.LittleDevil"), NaughtyDevil.class);
+            registerSynergy(Revenge.class, getAddonAbilityClass("RainStarAbility.Revenger"), Wasinsangdam.class);
         }
     }
 
