@@ -1,4 +1,4 @@
-package com.cokes86.cokesaddon.ability.test;
+package com.cokes86.cokesaddon.ability.list;
 
 import com.cokes86.cokesaddon.ability.CokesAbility;
 import com.cokes86.cokesaddon.ability.CokesAbility.Config.Condition;

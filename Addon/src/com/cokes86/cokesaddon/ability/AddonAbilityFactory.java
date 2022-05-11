@@ -1,7 +1,7 @@
 package com.cokes86.cokesaddon.ability;
 
-import com.cokes86.cokesaddon.ability.test.BoxerR;
-import com.cokes86.cokesaddon.ability.test.Kevin;
+import com.cokes86.cokesaddon.ability.list.Boxer;
+import com.cokes86.cokesaddon.ability.list.Kevin;
 import com.cokes86.cokesaddon.ability.test.Test;
 import com.cokes86.cokesaddon.ability.list.*;
 import daybreak.abilitywar.ability.AbilityFactory;
@@ -54,9 +54,6 @@ public class AddonAbilityFactory {
 		registerAbility(Fish.class);
 		registerAbility(Disguise.class);
 
-		//1.1.3
-		registerAbility(Boxer.class);
-
 		//1.1.4
 		registerAbility(Casino.class);
 
@@ -84,8 +81,8 @@ public class AddonAbilityFactory {
 		registerAbility(Whitney.class);
 
 		//1.8.0
-		registerTestAbility(Kevin.class);
-		registerTestAbility(BoxerR.class);
+		registerAbility(Kevin.class);
+		registerAbility(Boxer.class);
 	}
 
 	public static void registerAbility(Class<? extends CokesAbility> clazz) {

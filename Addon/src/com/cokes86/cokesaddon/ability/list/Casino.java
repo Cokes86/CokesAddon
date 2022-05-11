@@ -9,6 +9,7 @@ import daybreak.abilitywar.ability.SubscribeEvent;
 import daybreak.abilitywar.ability.decorator.ActiveHandler;
 import daybreak.abilitywar.config.enums.CooldownDecrease;
 import daybreak.abilitywar.game.AbstractGame;
+import daybreak.abilitywar.game.AbstractGame.Participant;
 import daybreak.abilitywar.game.manager.effect.Bleed;
 import daybreak.abilitywar.game.manager.effect.Stun;
 import daybreak.abilitywar.game.module.DeathManager;
@@ -68,12 +69,12 @@ public class Casino extends CokesAbility implements ActiveHandler {
     private final AbilityTimer aim = new AbilityTimer() {
         @Override
         protected void run(int count) {
-            Player target = getFarthestEntity(getPlayer().getLocation(), predicate);
-            if (target != null) {
-                for (Player player : Bukkit.getOnlinePlayers()) {
-                    Vector direction = target.getEyeLocation().toVector().subtract(getPlayer().getEyeLocation().toVector());
-                    NMS.rotateHead(player, getPlayer(), LocationUtil.getYaw(direction), LocationUtil.getPitch(direction));
-                }
+            ArrayList<Participant> participants = new ArrayList<>(getGame().getParticipants());
+            participants.remove(getParticipant());
+            Player target = new Random().pick(participants).getPlayer();
+            for (Player player : Bukkit.getOnlinePlayers()) {
+                Vector direction = target.getEyeLocation().toVector().subtract(getPlayer().getEyeLocation().toVector());
+                NMS.rotateHead(player, getPlayer(), LocationUtil.getYaw(direction), LocationUtil.getPitch(direction));
             }
         }
     }.setInitialDelay(TimeUnit.SECONDS, 10).setPeriod(TimeUnit.SECONDS, 10).register();
