@@ -41,7 +41,6 @@ import java.util.List;
         "영구적으로 위치추적기를 밟은 플레이어 수 × $[DAMAGE_INCREMENT]의 대미지가 증가합니다.",
         "위치추적기간의 거리는 10블럭을 넘어야만 합니다."
 })
-@Beta
 public class Kevin extends CokesAbility implements ActiveHandler {
     private final Config<Integer> MAX_GPS = Config.of(Kevin.class, "max-gps", 3, FunctionalInterfaceUnit.positive());
     private final Config<Integer> COOLDOWN = Config.of(Kevin.class, "cooldown", 60, Condition.COOLDOWN);

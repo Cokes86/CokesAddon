@@ -53,7 +53,6 @@ import java.util.function.Predicate;
         "  이후 §c잽§f을 제외한 연계되는 스킬의 대미지가 $[DUCKING_DAMAGE_DECREMENT] 감소합니다. $[DUCKING_COOLDOWN]",
         "§8[§7HIDDEN§8] §b콤비네이션§f: 말그대로 조합. 무엇을 조합해볼까요?"
 })
-@Beta
 public class Boxer extends CokesAbility implements TargetHandler {
     private static final Set<Material> swords = CokesUtil.getSwords();
 
