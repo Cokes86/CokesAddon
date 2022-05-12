@@ -43,10 +43,10 @@ import org.bukkit.event.entity.EntityDamageEvent;
         "  §c이맨서페이션§f 지속시간 도중 발동되었다면, 0.5배 더 회복합니다."
 })
 public class ReiSoulTaker extends CokesSynergy implements ActiveHandler {
-    public static final Config<Double> DAMAGE = Config.of(ReiSoulTaker.class, "추가대미지", 15.0, FunctionalInterfaceUnit.positive());
+    public static final Config<Double> DAMAGE = Config.of(ReiSoulTaker.class, "추가대미지", 60.0, FunctionalInterfaceUnit.positive());
     public static final Config<Integer> RANGE = Config.of(ReiSoulTaker.class, "리멤버_흡수_범위", 5, FunctionalInterfaceUnit.positive());
     public static final Config<Integer> DURATION = Config.of(ReiSoulTaker.class, "이맨서페이션_지속시간", 20, Config.Condition.TIME);
-    public static final Config<Double> ADDITIONAL = Config.of(ReiSoulTaker.class, "이맨서페이션_추가대미지", 25.0, FunctionalInterfaceUnit.positive());
+    public static final Config<Double> ADDITIONAL = Config.of(ReiSoulTaker.class, "이맨서페이션_추가대미지", 35.0, FunctionalInterfaceUnit.positive());
     public static final Config<Integer> EMANCIPATION_COOL = Config.of(ReiSoulTaker.class, "이맨서페이션_쿨타임", 60, Config.Condition.COOLDOWN);
     public static final Config<Integer> AROUSAL_COOL = Config.of(ReiSoulTaker.class, "어아우절_쿨타임", 60, Config.Condition.COOLDOWN);
     public static final Config<Integer> REMEMBER_ABSORPTION = Config.of(ReiSoulTaker.class, "리맴버_흡수체력_증가량", 3, FunctionalInterfaceUnit.positive());

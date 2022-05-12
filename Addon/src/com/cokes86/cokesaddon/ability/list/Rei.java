@@ -43,7 +43,7 @@ import org.bukkit.event.entity.EntityDamageEvent;
 },
 stats = @Stats(offense = Level.NINE, survival = Level.FIVE, crowdControl = Level.ZERO, mobility = Level.ZERO, utility = Level.THREE), difficulty = Difficulty.NORMAL)
 public class Rei extends CokesAbility {
-	private static final Config<Double> damage = Config.of(Rei.class, "추가대미지", 30.0, FunctionalInterfaceUnit.positive());
+	private static final Config<Double> damage = Config.of(Rei.class, "추가대미지", 85.0, FunctionalInterfaceUnit.positive());
 	private static final Config<Double> cost = Config.of(Rei.class, "코스트(%)", 4.5, FunctionalInterfaceUnit.positive());
 	private static final Config<Integer> cool = Config.of(Rei.class, "쿨타임", 100, Config.Condition.COOLDOWN);
 	private static final Config<Integer> respawn = Config.of(Rei.class, "부활체력", 4, FunctionalInterfaceUnit.positive(),

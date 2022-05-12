@@ -52,7 +52,7 @@ import java.util.Random;
 @NotAvailable(AbstractTripleMix.class)
 @Materials(materials = Material.GOLD_INGOT)
 public class DataMining extends CokesAbility implements ActiveHandler {
-	private static final Config<Double> damageUp = Config.of(DataMining.class, "최대주는대미지성장치", 2.5, FunctionalInterfaceUnit.positive());
+	private static final Config<Double> damageUp = Config.of(DataMining.class, "최대주는대미지성장치", 1.1, FunctionalInterfaceUnit.positive());
 	private static final Config<Double> defenseUp = Config.of(DataMining.class, "최대받는대미지감소성장치", 25.00, FunctionalInterfaceUnit.positive(), "#단위: %");
 	private static final Config<Integer> player_value = Config.of(DataMining.class, "인원별_스택치", 4, FunctionalInterfaceUnit.positive());
 	private static final Config<Integer> duration = Config.of(DataMining.class, "자동스택추가주기", 60, Config.Condition.TIME);
