@@ -21,6 +21,7 @@ import daybreak.abilitywar.utils.base.concurrent.TimeUnit;
 import daybreak.abilitywar.utils.base.math.LocationUtil;
 import daybreak.abilitywar.utils.base.minecraft.damage.Damages;
 import daybreak.abilitywar.utils.base.minecraft.entity.health.Healths;
+import daybreak.abilitywar.utils.base.minecraft.entity.health.event.PlayerSetHealthEvent;
 import daybreak.abilitywar.utils.base.random.Random;
 import daybreak.abilitywar.utils.library.ParticleLib;
 import org.bukkit.Location;
@@ -162,6 +163,18 @@ public class ReiBurningSoul extends CokesSynergy implements ActiveHandler {
         if (e.getEntity().equals(getPlayer()) && getPlayer().getHealth() - e.getFinalDamage() <= 0 && burningSoul.getTotalBurningSoul() > 0) {
             e.setDamage(0);
             getPlayer().setHealth(1);
+            burningSoul.removeBurningSoul();
+            List<Player> nearby = LocationUtil.getNearbyEntities(Player.class, getPlayer().getLocation(), LAST_BURNING_RANGE.getValue(), LAST_BURNING_RANGE.getValue(), predicate);
+            for (Player player : nearby) {
+                player.setFireTicks(player.getFireTicks() + LAST_BURNING_FIRE_DURATION.getValue()*20);
+            }
+        }
+    }
+
+    @SubscribeEvent
+    public void onPlayerSetHealth(PlayerSetHealthEvent e) {
+        if (e.getPlayer().equals(getPlayer()) && e.getHealth() <= 0 && !e.isCancelled()) {
+            e.setHealth(1);
             burningSoul.removeBurningSoul();
             List<Player> nearby = LocationUtil.getNearbyEntities(Player.class, getPlayer().getLocation(), LAST_BURNING_RANGE.getValue(), LAST_BURNING_RANGE.getValue(), predicate);
             for (Player player : nearby) {

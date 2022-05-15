@@ -12,6 +12,7 @@ import daybreak.abilitywar.utils.base.color.RGB;
 import daybreak.abilitywar.utils.base.concurrent.TimeUnit;
 import daybreak.abilitywar.utils.base.math.LocationUtil;
 import daybreak.abilitywar.utils.base.minecraft.entity.health.Healths;
+import daybreak.abilitywar.utils.base.minecraft.entity.health.event.PlayerSetHealthEvent;
 import daybreak.abilitywar.utils.base.minecraft.nms.NMS;
 import daybreak.abilitywar.utils.library.MaterialX;
 import daybreak.abilitywar.utils.library.ParticleLib;
@@ -107,6 +108,17 @@ public class ReiSoulTaker extends CokesSynergy implements ActiveHandler {
                 soul = 0;
                 channel.update(null);
             }
+        }
+    }
+
+    @SubscribeEvent
+    public void onPlayerSetHealth(PlayerSetHealthEvent e) {
+        if (e.getPlayer().equals(getPlayer()) && e.getHealth() <= 0 && !arousal_cool.isRunning() && soul > 0 && !e.isCancelled()) {
+            Healths.setHealth(getPlayer(), soul * (1+ (duration.isRunning() ? 0.5 : 0)));
+            arousal_cool.start();
+
+            soul = 0;
+            channel.update(null);
         }
     }
 
