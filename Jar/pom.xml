@@ -75,7 +75,7 @@
                         <configuration>
                             <artifactSet>
                                 <includes>
-                                    <include>Cokes_86.plugins:**</include>
+                                    <include>com.cokes86:**</include>
                                 </includes>
                             </artifactSet>
                             <filters>
