@@ -31,7 +31,7 @@ import java.util.Random;
 import java.util.function.Predicate;
 
 @AbilityManifest(name = "룬", rank = Rank.A, species = Species.HUMAN, explain = {
-		"철괴 우클릭시 자신 주위 $[range]블럭 이내 랜덤한 1명에게 1의 고정 데미지를 줍니다.",
+		"철괴 우클릭시 자신 주위 $[range]블럭 이내 랜덤한 1명에게 1의 관통 데미지를 줍니다.",
 		"이 행위는 0.25초 간격으로 $[damage]번 반복합니다. $[cool]"})
 public class Rune extends CokesAbility implements ActiveHandler {
 	public static Config<Integer> damage = Config.of(Rune.class, "반복횟수", 7, FunctionalInterfaceUnit.positive());

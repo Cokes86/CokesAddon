@@ -31,7 +31,7 @@ import java.util.function.Predicate;
 		"§a페어§f : 2개의 숫자가 같은 경우입니다. (페어의 수 * 2)초 만큼 재생2 버프를 부여합니다.",
 		"§b스트레이트§f : 3개의 숫자가 연달아 나오는 경우입니다. 다음 공격 시 주는 대미지가 (가장 높은 수)만큼 증가합니다.",
 		"§e트리플§f : 3개의 숫자가 모두 같은 경우입니다.",
-		"자신과 팀을 제외한 모든 플레이어에게 (트리플의 수 * 1.5)의 고정 대미지를 줍니다."
+		"자신과 팀을 제외한 모든 플레이어에게 (트리플의 수 * 1.5)의 관통 대미지를 줍니다."
 })
 public class Poker extends CokesAbility implements ActiveHandler {
 	private static final Config<Integer> cool = Config.of(Poker.class, "쿨타임", 30, Config.Condition.COOLDOWN);

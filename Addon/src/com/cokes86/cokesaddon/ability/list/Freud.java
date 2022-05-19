@@ -57,25 +57,25 @@ import java.util.UUID;
 		"§7철괴 우클릭 §8- §c엘리멘탈 서클§f: 특수한 효과를 가진 유도 발사체를",
 		"  가장 가까운 플레이어에게 $[ELEMENTAL_CIRCLE_DURATION]간 발사됩니다.",
 		"  대미지와 효과는 발사 후 무작위로 바뀝니다.",
-		"    §c화상§f: $[damage_burn]의 고정 대미지를 주고 $[fireTick]틱의 화상효과 부여. $[mana_burn]",
-		"    §8나약함§f: $[damage_weakness]의 고정 대미지를 주고 상대방의 나약함 디버프를 $[weakness_duration]초 부여. $[mana_weakness]",
-		"    §a폭발§f: $[damage_explosion]의 고정 대미지를 주고 $[fuse]의 위력으로 폭발. $[mana_explosion]"
+		"    §c화상§f: $[damage_burn]의 관통 대미지를 주고 $[fireTick]틱의 화상효과 부여. $[mana_burn]",
+		"    §8나약함§f: $[damage_weakness]의 관통 대미지를 주고 상대방의 나약함 디버프를 $[weakness_duration]초 부여. $[mana_weakness]",
+		"    §a폭발§f: $[damage_explosion]의 관통 대미지를 주고 $[fuse]의 위력으로 폭발. $[mana_explosion]"
 })
 public class Freud extends CokesAbility implements ActiveHandler {
-	private static final Config<Integer> mana_burn = Config.of(Freud.class, "마나소모량.화상", 30, FunctionalInterfaceUnit.positive(),
+	private static final Config<Integer> mana_burn = Config.of(Freud.class, "fire-magic-cost", 30, FunctionalInterfaceUnit.positive(),
 			FunctionalInterfaceUnit.formatter("§c소모 §7: §b"));
-	private static final Config<Integer> mana_weakness = Config.of(Freud.class, "마나소모량.나약함", 45, FunctionalInterfaceUnit.positive(),
+	private static final Config<Integer> mana_weakness = Config.of(Freud.class, "weakness-magic-cost", 45, FunctionalInterfaceUnit.positive(),
 			FunctionalInterfaceUnit.formatter("§c소모 §7: §b"));
-	private static final Config<Integer> mana_explosion = Config.of(Freud.class, "마나소모량.폭발", 80, FunctionalInterfaceUnit.positive(),
+	private static final Config<Integer> mana_explosion = Config.of(Freud.class, "explosion-magic-cost", 80, FunctionalInterfaceUnit.positive(),
 			FunctionalInterfaceUnit.formatter("§c소모 §7: §b"));
-	private static final Config<Integer> damage_burn = Config.of(Freud.class, "고정대미지.화상", 2, FunctionalInterfaceUnit.positive());
-	private static final Config<Integer> damage_weakness = Config.of(Freud.class, "고정대미지.나약함", 3, FunctionalInterfaceUnit.positive());
-	private static final Config<Integer> damage_explosion = Config.of(Freud.class, "고정대미지.폭발", 2, FunctionalInterfaceUnit.positive());
-	private static final Config<Integer> fireTick = Config.of(Freud.class, "화상시간(틱)", 50, FunctionalInterfaceUnit.positive());
-	private static final Config<Integer> weakness_duration = Config.of(Freud.class, "나약함_지속시간(초)", 3, FunctionalInterfaceUnit.positive());
-	private static final Config<Float> fuse = Config.of(Freud.class, "폭발위력", 0.4f, FunctionalInterfaceUnit.positive());
-	private static final Config<Integer> MANA_REGAIN_TIME = Config.of(Freud.class, "마나회복시간(틱)", 5, FunctionalInterfaceUnit.positive());
-	private static final Config<Integer> ELEMENTAL_CIRCLE_DURATION = Config.of(Freud.class, "엘리멘탈_서클_지속시간", 2, Config.Condition.TIME);
+	private static final Config<Integer> damage_burn = Config.of(Freud.class, "fire-damage", 2, FunctionalInterfaceUnit.positive());
+	private static final Config<Integer> damage_weakness = Config.of(Freud.class, "weakness-damage", 3, FunctionalInterfaceUnit.positive());
+	private static final Config<Integer> damage_explosion = Config.of(Freud.class, "explosion-damage", 2, FunctionalInterfaceUnit.positive());
+	private static final Config<Integer> fireTick = Config.of(Freud.class, "fire-duration", 50, FunctionalInterfaceUnit.positive());
+	private static final Config<Integer> weakness_duration = Config.of(Freud.class, "weakness-duration", 3, FunctionalInterfaceUnit.positive());
+	private static final Config<Float> fuse = Config.of(Freud.class, "explosion-fuse", 0.4f, FunctionalInterfaceUnit.positive());
+	private static final Config<Integer> MANA_REGAIN_TIME = Config.of(Freud.class, "mana-regain-period", 5, FunctionalInterfaceUnit.positive());
+	private static final Config<Integer> ELEMENTAL_CIRCLE_DURATION = Config.of(Freud.class, "elemental-circle-duration", 2, Config.Condition.TIME);
 
 	private final Set<UUID> explosion = new HashSet<>();
 

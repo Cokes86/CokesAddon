@@ -37,7 +37,7 @@ import java.util.concurrent.ConcurrentHashMap;
         "  [§52인격§f] 상대방에게 §4흑심 카운터§f를 1개 부여합니다. (최대 $[MAX_COUNTER]개)",
         "§7검 우클릭§8 - §c이거나 받아라§f: 인격에 따라 각기 다른 효과를 가집니다.",
         "  [§b1인격§f] §c슬래시§f 이후 §c0.5초 §f이내에 사용 시, 적을 §b밀쳐내고§f 감소했던 대미지를 줍니다.",
-        "  [§52인격§f] §4흑심 카운터§f를 가지고 있던 플레이어에게 개당 $[GET_THIS_DAMAGE]의 고정 마법 대미지를 줍니다. $[GET_THIS_COOLDOWN]",
+        "  [§52인격§f] §4흑심 카운터§f를 가지고 있던 플레이어에게 개당 $[GET_THIS_DAMAGE]의 §b관통 마법 대미지§f를 줍니다. $[GET_THIS_COOLDOWN]",
         "§7철괴 우클릭§8 - §c탈출§f: 자신의 인격을 강제로 변경합니다. $[ESCAPE_COOLDOWN]",
         "  이때, 바뀐 인격은 더욱 불안정해 주기가 §c반으로 감소합니다."
 }, summarize = {
@@ -45,7 +45,7 @@ import java.util.concurrent.ConcurrentHashMap;
     "1인격 상태에서는 §7검으로 공격 시 §c대미지가 $[DAMAGE]% 감소§f하지만",
     "0.5초 이내 §7검을 들고 우클릭§f 하면 적을 밀쳐내면서 §b감소했던 대미지를 입힙니다.",
     "2인격 상태에서는 §7검으로 공격 시§f 상대에게 §4흑심 카운터§f를 1개씩, 최대 $[MAX_COUNT]개 남깁니다.",
-    "이후 §7검을 들고 우클릭§f 하면 흑심 카운터 개당 $[GET_THIS_DAMAGE]의 §b고정 마법 대미지§f를 줍니다.",
+    "이후 §7검을 들고 우클릭§f 하면 흑심 카운터 개당 $[GET_THIS_DAMAGE]의 §b관통 마법 대미지§f를 줍니다.",
     "공통적으로 §7철괴를 우클릭§f하면 인격이 바뀌지만, 다음 주기가 반으로 감소합니다."
 })
 public class Justin extends CokesAbility implements ActiveHandler {

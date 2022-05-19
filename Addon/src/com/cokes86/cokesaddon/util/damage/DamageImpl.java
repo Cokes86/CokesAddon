@@ -8,4 +8,5 @@ import org.jetbrains.annotations.Nullable;
 public interface DamageImpl {
 
     boolean damageMagicFixed(@NotNull Entity entity, @Nullable Player damager, float damage);
+    boolean damageWither(@NotNull Entity entity, float damage);
 }

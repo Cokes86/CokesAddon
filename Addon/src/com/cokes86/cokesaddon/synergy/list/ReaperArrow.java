@@ -26,7 +26,7 @@ import org.bukkit.event.entity.ProjectileHitEvent;
 @AbilityManifest(name = "사신의 화살", rank = AbilityManifest.Rank.S, species = AbilityManifest.Species.GOD, explain = {
 		"매 $[duration]마다 사신의 낫이 1개씩 충전됩니다. (최대 5회)",
 		"철괴 우클릭 시 죽음의 화살을 장전하며, 발사할 수 있습니다. $[cool]",
-		"죽음의 화살을 맞은 엔티티는 사신의 낫의 개수에 따라 최대체력에 비례한 고정 대미지를 줍니다.",
+		"죽음의 화살을 맞은 엔티티는 사신의 낫의 개수에 따라 최대체력에 비례한 관통 대미지를 줍니다.",
 		"1개: $[damage1]%, 2개: $[damage2]%, 3개: $[damage3]%, 4개: $[damage4]%, 5개: $[damage5]%"
 })
 public class ReaperArrow extends CokesSynergy implements ActiveHandler {

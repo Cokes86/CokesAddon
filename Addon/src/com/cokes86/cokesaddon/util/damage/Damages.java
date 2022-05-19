@@ -26,6 +26,10 @@ public class Damages {
         return instance.damageMagicFixed(entity, damager, damage);
     }
 
+    public static boolean damageWither(@NotNull Entity entity, float damage) {
+        return instance.damageWither(entity, damage);
+    }
+
     public static boolean damageTrue(@NotNull Player entity, @Nullable Player damager, float damage) {
         if (!originDamages().canDamage(entity, DamageCause.ENTITY_ATTACK, damage)) {
             return false;

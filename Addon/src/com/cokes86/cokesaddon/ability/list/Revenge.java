@@ -21,12 +21,12 @@ import org.bukkit.event.entity.EntityDamageEvent;
 import java.text.DecimalFormat;
 
 @AbilityManifest(name = "복수", rank = Rank.A, species = Species.HUMAN, explain = {
-		"상대방을 공격할 시 최근에 플레이어에게 받았던 대미지의 $[PERCENTAGE]% 만큼의 마법 관통 대미지를 상대방에게 추가적으로 입힙니다."
+		"상대방을 공격할 시 최근에 플레이어에게 받았던 대미지의 $[PERCENTAGE]% 만큼의 §b마법 관통 대미지§f를 상대방에게 추가적으로 입힙니다."
 })
 public class Revenge extends CokesAbility {
 	public static final Config<Double> PERCENTAGE = Config.of(Revenge.class, "반사대미지(%)", 40d, FunctionalInterfaceUnit.positive());
 	private final DecimalFormat df = new DecimalFormat("0.##");
-	private double finalDamage = 0;
+	private double magicfixed_damage = 0;
 	private final ActionbarChannel ac = newActionbarChannel();
 
 	public Revenge(Participant participant) {
@@ -35,15 +35,15 @@ public class Revenge extends CokesAbility {
 
 	public void onUpdate(Update update) {
 		if (update == Update.RESTRICTION_CLEAR) {
-			ac.update(ChatColor.BLUE + "반사관통대미지 : " + df.format(finalDamage * PERCENTAGE.getValue() / 100));
+			ac.update(ChatColor.BLUE + "마법관통대미지 : " + df.format(magicfixed_damage));
 		}
 	}
 
 	@SubscribeEvent
 	public void onEntityDamageByEntity(EntityDamageByEntityEvent e) {
 		if (e.getEntity().equals(getPlayer()) && (e.getDamager() instanceof Player || NMS.isArrow(e.getDamager()))) {
-			finalDamage = e.getFinalDamage();
-			ac.update(ChatColor.BLUE + "반사관통대미지 : " + df.format(finalDamage * PERCENTAGE.getValue() / 100.00));
+			magicfixed_damage = e.getFinalDamage() * PERCENTAGE.getValue() / 100;
+			ac.update(ChatColor.BLUE + "마법관통대미지 : " + df.format(magicfixed_damage));
 		} else {
 			Entity damager = e.getDamager();
 			if (NMS.isArrow(damager)) {
@@ -59,7 +59,7 @@ public class Revenge extends CokesAbility {
 						Player target = (Player) e.getEntity();
 						if (!target.isDead()) {
 							target.setNoDamageTicks(0);
-							Damages.damageMagicFixed(target, getPlayer(), (float) finalDamage);
+							Damages.damageMagicFixed(target, getPlayer(), (float) magicfixed_damage);
 						}
 					}
 				}.setInitialDelay(TimeUnit.TICKS, 1).setPeriod(TimeUnit.TICKS, 1).start();

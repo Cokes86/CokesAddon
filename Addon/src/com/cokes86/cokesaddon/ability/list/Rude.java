@@ -30,7 +30,7 @@ import java.util.function.Predicate;
 
 @AbilityManifest(name = "진상", rank = AbilityManifest.Rank.A, species = AbilityManifest.Species.HUMAN, explain = {
         "철괴 우클릭 시 1초마다 $[RUDE_RANGE]블럭 내 모든 플레이어의",
-        "인벤토리를 뒤엎어버린 후, 1의 고정 대미지를 줍니다.",
+        "인벤토리를 뒤엎어버린 후, 1의 관통 대미지를 줍니다.",
         "이는 $[RUDE_DURATION]간 반복되며, 이미 한 번 뒤엎은 플레이어가 있다면",
         "더이상 뒤엎지 않습니다.",
         "지속시간동안 이동속도가 매우 느려지지만, 받는 대미지가 $[DAMAGE]% 감소합니다 $[RUDE_COOLDOWN]",

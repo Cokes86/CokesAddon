@@ -3,6 +3,7 @@ package com.cokes86.cokesaddon.ability.list;
 import com.cokes86.cokesaddon.ability.CokesAbility;
 import com.cokes86.cokesaddon.util.AttributeUtil;
 import com.cokes86.cokesaddon.util.arrow.ArrowUtil;
+import com.cokes86.cokesaddon.util.damage.Damages;
 import com.google.common.base.Strings;
 import daybreak.abilitywar.ability.AbilityManifest;
 import daybreak.abilitywar.ability.SubscribeEvent;
@@ -16,7 +17,6 @@ import daybreak.abilitywar.game.module.DeathManager;
 import daybreak.abilitywar.game.team.interfaces.Teamable;
 import daybreak.abilitywar.utils.base.concurrent.TimeUnit;
 import daybreak.abilitywar.utils.base.math.LocationUtil;
-import daybreak.abilitywar.utils.base.minecraft.damage.Damages;
 import daybreak.abilitywar.utils.base.minecraft.entity.health.Healths;
 import daybreak.abilitywar.utils.base.minecraft.nms.IHologram;
 import daybreak.abilitywar.utils.base.minecraft.nms.NMS;
@@ -63,7 +63,7 @@ public class Casino extends CokesAbility implements ActiveHandler {
     private final AbilityTimer wither = new AbilityTimer() {
         @Override
         protected void run(int count) {
-            Damages.damageMagic(getPlayer(), null, true, 1);
+            Damages.damageWither(getPlayer(), 1);
         }
     }.setInitialDelay(TimeUnit.SECONDS, 4).setPeriod(TimeUnit.SECONDS, 4).register();
     private final AbilityTimer aim = new AbilityTimer() {
@@ -207,7 +207,7 @@ public class Casino extends CokesAbility implements ActiveHandler {
 
     private enum Effects {
         DAMAGE_INCREMENT("주는 대미지 1 증가"),
-        WITHER("4초마다 1의 고정 마법 대미지 부여"),
+        WITHER("4초마다 1의 시듦 대미지 부여"),
         RESISTANCE("받는 대미지 1 감소"),
         HEAL("체력 2 즉시 회복"),
         TWIST("10초마다 시야 뒤틀림"),
