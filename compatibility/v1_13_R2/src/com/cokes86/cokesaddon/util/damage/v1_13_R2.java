@@ -28,18 +28,21 @@ public class v1_13_R2 implements DamageImpl{
     public boolean damageVoid(org.bukkit.entity.@NotNull Entity entity, @Nullable Player damager, float damage) {
         Entity nmsEntity = ((CraftEntity)entity).getHandle();
         EntityPlayer nmsDamager = damager != null ? ((CraftPlayer)damager).getHandle() : null;
-        return nmsEntity.damageEntity(new EntityDamageSource("void", nmsDamager), damage);
+        return nmsEntity.damageEntity(new EntityDamageSource("void", nmsDamager) {{
+            this.setIgnoreArmor();
+            this.n();
+        }}, damage);
     }
 
     private EntityDamageSourceIndirect magic(net.minecraft.server.v1_13_R2.Entity nmsEntity, EntityPlayer nmsDamager) {
         EntityDamageSourceIndirect source;
         if (nmsDamager != null) {
             source = new EntityDamageSourceIndirect("magic", new EntityPotion(nmsEntity.getWorld(), nmsDamager, SPLASH_POTION), nmsDamager) {{
-                setMagic(); setIgnoreArmor(); m();
+                setMagic(); setIgnoreArmor(); n();
             }};
         } else {
             source = new EntityDamageSourceIndirect("magic", new EntityPotion(nmsEntity.getWorld(), nmsEntity.locX, nmsEntity.locY, nmsEntity.locZ, SPLASH_POTION), null){{
-                setMagic(); setIgnoreArmor(); m();
+                setMagic(); setIgnoreArmor(); n();
             }};
         }
         return source;
