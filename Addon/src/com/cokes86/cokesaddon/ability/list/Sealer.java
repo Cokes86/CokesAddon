@@ -2,6 +2,7 @@ package com.cokes86.cokesaddon.ability.list;
 
 import com.cokes86.cokesaddon.ability.CokesAbility;
 import com.cokes86.cokesaddon.effect.list.Seal;
+import com.cokes86.cokesaddon.event.CEntityDamageEvent;
 import daybreak.abilitywar.AbilityWar;
 import daybreak.abilitywar.ability.AbilityBase;
 import daybreak.abilitywar.ability.AbilityManifest;
@@ -26,7 +27,6 @@ import org.bukkit.entity.Player;
 import org.bukkit.entity.Projectile;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
-import org.bukkit.event.entity.EntityDamageByEntityEvent;
 
 import java.util.HashSet;
 import java.util.Map;
@@ -164,7 +164,8 @@ public class Sealer extends CokesAbility implements TargetHandler {
 
 
 		@EventHandler
-		public void onEntityDamageByEntity(EntityDamageByEntityEvent e) {
+		public void onEntityDamage(CEntityDamageEvent e) {
+			if (e.getDamager() == null) return;
 			Entity attacker = e.getDamager();
 			if (attacker instanceof Projectile) {
 				Projectile projectile = (Projectile) attacker;

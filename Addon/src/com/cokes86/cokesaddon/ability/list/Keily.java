@@ -1,6 +1,7 @@
 package com.cokes86.cokesaddon.ability.list;
 
 import com.cokes86.cokesaddon.ability.CokesAbility;
+import com.cokes86.cokesaddon.event.CEntityDamageEvent;
 import com.cokes86.cokesaddon.util.FunctionalInterfaceUnit;
 import daybreak.abilitywar.ability.AbilityManifest;
 import daybreak.abilitywar.ability.SubscribeEvent;
@@ -15,9 +16,6 @@ import daybreak.abilitywar.utils.library.SoundLib;
 import daybreak.google.common.base.Strings;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
-import org.bukkit.event.entity.EntityDamageByBlockEvent;
-import org.bukkit.event.entity.EntityDamageByEntityEvent;
-import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
 
 @AbilityManifest(name = "케일리", rank = AbilityManifest.Rank.S, species = AbilityManifest.Species.HUMAN, explain = {
@@ -101,8 +99,8 @@ public class Keily extends CokesAbility implements ActiveHandler {
 		return false;
 	}
 
-	@SubscribeEvent(onlyRelevant = true)
-	public void onEntityDamage(EntityDamageEvent e) {
+	@SubscribeEvent
+	public void onEntityDamage(CEntityDamageEvent e) {
 		if (e.getEntity().equals(getPlayer())) {
 			if (e.getCause().equals(DamageCause.BLOCK_EXPLOSION) || e.getCause().equals(DamageCause.ENTITY_EXPLOSION))
 				e.setCancelled(true);
@@ -112,15 +110,5 @@ public class Keily extends CokesAbility implements ActiveHandler {
 				SoundLib.ENTITY_EXPERIENCE_ORB_PICKUP.playSound(getPlayer());
 			}
 		}
-	}
-
-	@SubscribeEvent(onlyRelevant = true)
-	public void onEntityDamageByEntityEvent(EntityDamageByEntityEvent e) {
-		onEntityDamage(e);
-	}
-
-	@SubscribeEvent(onlyRelevant = true)
-	public void onEntityDamageByBlockEvent(EntityDamageByBlockEvent e) {
-		onEntityDamage(e);
 	}
 }

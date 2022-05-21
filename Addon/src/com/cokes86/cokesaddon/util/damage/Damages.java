@@ -30,12 +30,8 @@ public class Damages {
         return instance.damageWither(entity, damage);
     }
 
-    public static boolean damageTrue(@NotNull Player entity, @Nullable Player damager, float damage) {
-        if (!originDamages().canDamage(entity, DamageCause.ENTITY_ATTACK, damage)) {
-            return false;
-        }
-        Healths.setHealth(entity, entity.getHealth() - damage);
-        return true;
+    public static boolean damageVoid(@NotNull Player entity, @Nullable Player damager, float damage) {
+        return instance.damageVoid(entity, damager, damage);
     }
 
     public static INSTANCE originDamages() {

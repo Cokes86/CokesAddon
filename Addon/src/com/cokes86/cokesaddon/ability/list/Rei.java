@@ -1,6 +1,7 @@
 package com.cokes86.cokesaddon.ability.list;
 
 import com.cokes86.cokesaddon.ability.CokesAbility;
+import com.cokes86.cokesaddon.event.CEntityDamageEvent;
 import com.cokes86.cokesaddon.util.AttributeUtil;
 import com.cokes86.cokesaddon.util.FunctionalInterfaceUnit;
 import daybreak.abilitywar.ability.AbilityManifest;
@@ -22,9 +23,6 @@ import org.bukkit.GameMode;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Projectile;
-import org.bukkit.event.entity.EntityDamageByBlockEvent;
-import org.bukkit.event.entity.EntityDamageByEntityEvent;
-import org.bukkit.event.entity.EntityDamageEvent;
 
 @AbilityManifest(name = "레이", rank = Rank.L, species = Species.HUMAN, explain = {
 		"쿨타임이 아닐 때 상대방을 공격할 시 최대 체력의 $[cost]%를 코스트로",
@@ -56,14 +54,24 @@ public class Rei extends CokesAbility {
 	}
 
 	@SubscribeEvent
-	private void onEntityDamageByEntity(EntityDamageByEntityEvent e) {
-		onEntityDamage(e);
+	public void onEntityDamage(CEntityDamageEvent e) {
+		if (e.getDamager() == null) return;
 
 		Entity damager = e.getDamager();
 		if (NMS.isArrow(damager)) {
 			Projectile arrow = (Projectile) e.getDamager();
 			if (arrow.getShooter() instanceof Entity) {
 				damager = (Entity) arrow.getShooter();
+			}
+		}
+
+		if (e.getEntity().equals(getPlayer()) && !cooldown.isRunning() && !e.isCancelled()) {
+			double damage = e.getFinalDamage();
+			if (getPlayer().getHealth() - damage <= 0) {
+				e.setDamage(0);
+				getPlayer().setHealth(respawn.getValue());
+				cooldown.start();
+				SoundLib.ENTITY_FIREWORK_ROCKET_LAUNCH.playSound(getPlayer());
 			}
 		}
 
@@ -93,19 +101,6 @@ public class Rei extends CokesAbility {
 			getPlayer().setHealth(respawn.getValue());
 			cooldown.start();
 			SoundLib.ENTITY_FIREWORK_ROCKET_LAUNCH.playSound(getPlayer());
-		}
-	}
-
-	@SubscribeEvent(priority = 5, childs = {EntityDamageByBlockEvent.class})
-	private void onEntityDamage(EntityDamageEvent e) {
-		if (e.getEntity().equals(getPlayer()) && !cooldown.isRunning() && !e.isCancelled()) {
-			double damage = e.getFinalDamage();
-			if (getPlayer().getHealth() - damage <= 0) {
-				e.setDamage(0);
-				getPlayer().setHealth(respawn.getValue());
-				cooldown.start();
-				SoundLib.ENTITY_FIREWORK_ROCKET_LAUNCH.playSound(getPlayer());
-			}
 		}
 	}
 }

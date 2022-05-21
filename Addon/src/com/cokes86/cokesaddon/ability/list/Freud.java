@@ -1,6 +1,7 @@
 package com.cokes86.cokesaddon.ability.list;
 
 import com.cokes86.cokesaddon.ability.CokesAbility;
+import com.cokes86.cokesaddon.event.CEntityDamageEvent;
 import com.cokes86.cokesaddon.util.FunctionalInterfaceUnit;
 import daybreak.abilitywar.AbilityWar;
 import daybreak.abilitywar.ability.AbilityManifest;
@@ -38,9 +39,6 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.HandlerList;
 import org.bukkit.event.Listener;
-import org.bukkit.event.entity.EntityDamageByBlockEvent;
-import org.bukkit.event.entity.EntityDamageByEntityEvent;
-import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
 import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.projectiles.ProjectileSource;
@@ -137,8 +135,8 @@ public class Freud extends CokesAbility implements ActiveHandler {
 		magic = Magic.getRandomMagic();
 	}
 
-	@SubscribeEvent(childs = {EntityDamageByBlockEvent.class, EntityDamageByEntityEvent.class})
-	public void onEntityDamage(EntityDamageEvent e) {
+	@SubscribeEvent
+	public void onEntityDamage(CEntityDamageEvent e) {
 		if (e.getCause().equals(DamageCause.BLOCK_EXPLOSION) || e.getCause().equals(DamageCause.ENTITY_EXPLOSION)) {
 			if (explosion.contains(e.getEntity().getUniqueId())) {
 				e.getEntity().getVelocity().setY(0);

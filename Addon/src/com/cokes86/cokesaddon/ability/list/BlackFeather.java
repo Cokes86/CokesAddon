@@ -1,6 +1,7 @@
 package com.cokes86.cokesaddon.ability.list;
 
 import com.cokes86.cokesaddon.ability.CokesAbility;
+import com.cokes86.cokesaddon.event.CEntityDamageEvent;
 import com.cokes86.cokesaddon.util.FunctionalInterfaceUnit;
 import daybreak.abilitywar.ability.AbilityManifest;
 import daybreak.abilitywar.ability.SubscribeEvent;
@@ -8,7 +9,6 @@ import daybreak.abilitywar.game.AbstractGame;
 import daybreak.abilitywar.game.event.participant.ParticipantDeathEvent;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Projectile;
-import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
@@ -41,7 +41,8 @@ public class BlackFeather extends CokesAbility {
     }
 
     @SubscribeEvent
-    public void onEntityDamageByEntity(@NotNull EntityDamageByEntityEvent e) {
+    public void onEntityDamage(CEntityDamageEvent e) {
+        if (e.getDamager() == null) return;
         Entity damager = e.getDamager();
         if (damager instanceof Projectile) {
             Projectile projectile = (Projectile) damager;

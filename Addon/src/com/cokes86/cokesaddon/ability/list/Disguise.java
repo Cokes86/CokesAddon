@@ -1,6 +1,7 @@
 package com.cokes86.cokesaddon.ability.list;
 
 import com.cokes86.cokesaddon.ability.CokesAbility;
+import com.cokes86.cokesaddon.event.CEntityDamageEvent;
 import com.cokes86.cokesaddon.util.FunctionalInterfaceUnit;
 import com.cokes86.cokesaddon.util.disguise.DisguiseUtil;
 import daybreak.abilitywar.ability.AbilityManifest;
@@ -24,7 +25,6 @@ import org.bukkit.Note.Tone;
 import org.bukkit.entity.Arrow;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
-import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 
 @AbilityManifest(name = "변장술", rank = Rank.A, species = Species.HUMAN, explain = {
@@ -132,7 +132,8 @@ public class Disguise extends CokesAbility implements ActiveHandler {
 	}
 
 	@SubscribeEvent
-	public void onEntityDamageByEntity(EntityDamageByEntityEvent e) {
+	public void onEntityDamage(CEntityDamageEvent e) {
+		if (e.getDamager() == null) return;
 		Entity damager = e.getDamager();
 		if (damager instanceof Arrow) {
 			Arrow arrow = (Arrow) damager;

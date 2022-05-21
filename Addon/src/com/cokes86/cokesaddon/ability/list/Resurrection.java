@@ -1,6 +1,7 @@
 package com.cokes86.cokesaddon.ability.list;
 
 import com.cokes86.cokesaddon.ability.CokesAbility;
+import com.cokes86.cokesaddon.event.CEntityDamageEvent;
 import com.cokes86.cokesaddon.util.AttributeUtil;
 import com.cokes86.cokesaddon.util.FunctionalInterfaceUnit;
 import daybreak.abilitywar.ability.AbilityManifest;
@@ -12,9 +13,6 @@ import daybreak.abilitywar.utils.base.minecraft.nms.NMS;
 import daybreak.abilitywar.utils.library.SoundLib;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Projectile;
-import org.bukkit.event.entity.EntityDamageByBlockEvent;
-import org.bukkit.event.entity.EntityDamageByEntityEvent;
-import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.potion.PotionEffect;
 
 @AbilityManifest(name = "부활", rank = Rank.S, species = Species.DEMIGOD, explain = {
@@ -35,8 +33,9 @@ public class Resurrection extends CokesAbility {
 		}
 	}
 
-	@SubscribeEvent(priority = 6, childs = {EntityDamageByBlockEvent.class})
-	public void onEntityDamage(EntityDamageEvent e) {
+	@SubscribeEvent
+	public void onEntityDamage(CEntityDamageEvent e) {
+		if (e.getDamager() == null) return;
 		if (!resurrection) {
 			if (e.getEntity().equals(getPlayer())) {
 				double health = getPlayer().getHealth();
@@ -50,14 +49,7 @@ public class Resurrection extends CokesAbility {
 					resurrection = true;
 				}
 			}
-		}
-	}
-
-	@SubscribeEvent(priority = 6)
-	public void onEntityDamageByEntity(EntityDamageByEntityEvent e) {
-		onEntityDamage(e);
-
-		if (resurrection) {
+		} else {
 			Entity damager = e.getDamager();
 			if (NMS.isArrow(damager)) {
 				Projectile arrow = (Projectile) damager;

@@ -1,6 +1,7 @@
 package com.cokes86.cokesaddon.ability.list;
 
 import com.cokes86.cokesaddon.ability.CokesAbility;
+import com.cokes86.cokesaddon.event.CEntityDamageEvent;
 import com.cokes86.cokesaddon.util.FunctionalInterfaceUnit;
 import daybreak.abilitywar.ability.AbilityManifest;
 import daybreak.abilitywar.ability.AbilityManifest.Rank;
@@ -26,9 +27,6 @@ import org.bukkit.entity.ArmorStand;
 import org.bukkit.entity.Arrow;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
-import org.bukkit.event.entity.EntityDamageByBlockEvent;
-import org.bukkit.event.entity.EntityDamageByEntityEvent;
-import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.player.PlayerArmorStandManipulateEvent;
 import org.bukkit.inventory.EntityEquipment;
 import org.bukkit.inventory.ItemStack;
@@ -162,8 +160,9 @@ public class Mir extends CokesAbility implements ActiveHandler {
 		return false;
 	}
 
-	@SubscribeEvent(childs = {EntityDamageByBlockEvent.class})
-	public void onEntityDamage(EntityDamageEvent e) {
+	@SubscribeEvent
+	public void onEntityDamage(CEntityDamageEvent e) {
+		if (e.getDamager() == null) return;
 		if (element == Element.GNOME && armorStand != null && e.getEntity().equals(getPlayer()) && getPlayer().getLocation().subtract(armorStand.getLocation().clone().add(0, -5, 0)).length() <= element.range) {
 			e.setDamage(e.getDamage() * (1 - DAMAGE_DECREMENT.getValue() / 100.0));
 		}
@@ -171,11 +170,7 @@ public class Mir extends CokesAbility implements ActiveHandler {
 		if (durationTimer.isRunning() && e.getEntity().equals(armorStand)) {
 			e.setCancelled(true);
 		}
-	}
 
-	@SubscribeEvent
-	public void onEntityDamageByEntity(EntityDamageByEntityEvent e) {
-		onEntityDamage(e);
 		Entity damager = e.getDamager();
 		if (damager instanceof Arrow) {
 			Arrow arrow = (Arrow) damager;

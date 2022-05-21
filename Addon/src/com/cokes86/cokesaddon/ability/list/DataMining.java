@@ -1,6 +1,7 @@
 package com.cokes86.cokesaddon.ability.list;
 
 import com.cokes86.cokesaddon.ability.CokesAbility;
+import com.cokes86.cokesaddon.event.CEntityDamageEvent;
 import com.cokes86.cokesaddon.util.FunctionalInterfaceUnit;
 import daybreak.abilitywar.ability.*;
 import daybreak.abilitywar.ability.Tips.*;
@@ -15,6 +16,8 @@ import daybreak.abilitywar.utils.base.minecraft.nms.NMS;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.entity.ArmorStand;
+import org.bukkit.entity.Entity;
+import org.bukkit.entity.Projectile;
 
 import java.text.DecimalFormat;
 import java.util.ArrayList;
@@ -159,6 +162,26 @@ public class DataMining extends CokesAbility implements ActiveHandler {
 			}
 		}
 		return result;
+	}
+
+	@SubscribeEvent
+	public void onEntityDamage(CEntityDamageEvent e) {
+		if (e.getDamager() == null) return;
+
+		if (e.getEntity().equals(getPlayer())) {
+			e.setDamage(e.getDamage() * (1 - defenseUp.getValue()*2 / max_count * defense_count));
+		}
+
+		Entity attacker = e.getDamager();
+		if (NMS.isArrow(attacker)) {
+			Projectile arrow = (Projectile) attacker;
+			if (arrow.getShooter() instanceof Entity) {
+				attacker = (Entity) arrow.getShooter();
+			}
+		}
+		if (attacker.equals(getPlayer())) {
+			e.setDamage(e.getDamage() + damageUp.getValue()*2 / max_count * damage_count);
+		}
 	}
 
 	private class Scanning extends AbilityTimer {

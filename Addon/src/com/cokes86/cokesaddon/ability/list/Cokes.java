@@ -1,6 +1,7 @@
 package com.cokes86.cokesaddon.ability.list;
 
 import com.cokes86.cokesaddon.ability.CokesAbility;
+import com.cokes86.cokesaddon.event.CEntityDamageEvent;
 import com.cokes86.cokesaddon.util.FunctionalInterfaceUnit;
 import daybreak.abilitywar.AbilityWar;
 import daybreak.abilitywar.ability.AbilityManifest;
@@ -23,7 +24,6 @@ import org.bukkit.entity.Projectile;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.HandlerList;
 import org.bukkit.event.Listener;
-import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityRegainHealthEvent;
 
 import java.util.HashMap;
@@ -239,7 +239,8 @@ public class Cokes extends CokesAbility implements ActiveHandler {
         }
 
         @EventHandler
-        public void onEntityDamageByEntity(EntityDamageByEntityEvent e) {
+        public void onEntityDamage(CEntityDamageEvent e) {
+            if (e.getDamager() == null) return;
             if (e.getEntity().equals(getPlayer())) {
                 e.setDamage(e.getDamage()-Math.min(results.get("O"),3)*0.5);
             }

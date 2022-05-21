@@ -1,6 +1,7 @@
 package com.cokes86.cokesaddon.ability.list;
 
 import com.cokes86.cokesaddon.ability.CokesAbility;
+import com.cokes86.cokesaddon.event.CEntityDamageEvent;
 import com.cokes86.cokesaddon.util.FunctionalInterfaceUnit;
 import daybreak.abilitywar.ability.AbilityManifest;
 import daybreak.abilitywar.ability.SubscribeEvent;
@@ -16,7 +17,6 @@ import org.bukkit.Note;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Projectile;
-import org.bukkit.event.entity.EntityDamageByEntityEvent;
 
 @AbilityManifest(name = "너만 때린다", rank = AbilityManifest.Rank.A, species = AbilityManifest.Species.HUMAN, explain = {
         "§7패시브 §8- §c분산 타격§f: 같은 대상을 연속으로 공격할 시 대미지가 1회 타격은 $[FIRST_HIT]%,",
@@ -64,7 +64,8 @@ public class OnlyHitYou extends CokesAbility implements ActiveHandler {
     }
 
     @SubscribeEvent
-    public void onEntityDamageByEntity(EntityDamageByEntityEvent e) {
+    public void onEntityDamage(CEntityDamageEvent e) {
+        if (e.getDamager() == null) return;
         Entity attacker = e.getDamager();
         if (attacker instanceof Projectile) {
             Projectile projectile = (Projectile) attacker;
@@ -73,7 +74,7 @@ public class OnlyHitYou extends CokesAbility implements ActiveHandler {
             }
         }
 
-        if (attacker.equals(getPlayer()) && e.getEntity() instanceof Player) {
+        if (attacker != null && attacker.equals(getPlayer()) && e.getEntity() instanceof Player) {
             Player target = (Player) e.getEntity();
             if (!passive.getTargetPlayer().equals(target)) {
                 if (!passive.isLockOn()) {

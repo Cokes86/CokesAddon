@@ -1,6 +1,7 @@
 package com.cokes86.cokesaddon.ability.list;
 
 import com.cokes86.cokesaddon.ability.CokesAbility;
+import com.cokes86.cokesaddon.event.CEntityDamageEvent;
 import daybreak.abilitywar.ability.AbilityManifest;
 import daybreak.abilitywar.ability.SubscribeEvent;
 import daybreak.abilitywar.ability.decorator.ActiveHandler;
@@ -19,7 +20,6 @@ import org.bukkit.Material;
 import org.bukkit.entity.Arrow;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
-import org.bukkit.event.entity.EntityDamageByEntityEvent;
 
 import java.util.Arrays;
 import java.util.Random;
@@ -124,7 +124,8 @@ public class Poker extends CokesAbility implements ActiveHandler {
 	}
 
 	@SubscribeEvent
-	public void onEntityDamageByEntity(EntityDamageByEntityEvent e) {
+	public void onEntityDamage(CEntityDamageEvent e) {
+		if (e.getDamager() == null) return;
 		Entity damager = e.getDamager();
 		if (damager instanceof Arrow) {
 			Arrow arrow = (Arrow) e.getDamager();

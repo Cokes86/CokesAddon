@@ -2,6 +2,7 @@ package com.cokes86.cokesaddon.ability.list;
 
 import com.cokes86.cokesaddon.ability.CokesAbility;
 import com.cokes86.cokesaddon.ability.CokesAbility.Config.Condition;
+import com.cokes86.cokesaddon.event.CEntityDamageEvent;
 import com.cokes86.cokesaddon.util.FunctionalInterfaceUnit;
 import daybreak.abilitywar.AbilityWar;
 import daybreak.abilitywar.ability.AbilityManifest;
@@ -10,7 +11,6 @@ import daybreak.abilitywar.ability.AbilityManifest.Species;
 import daybreak.abilitywar.ability.SubscribeEvent;
 import daybreak.abilitywar.ability.decorator.ActiveHandler;
 import daybreak.abilitywar.game.AbstractGame.Participant;
-import daybreak.abilitywar.utils.annotations.Beta;
 import daybreak.abilitywar.utils.base.color.RGB;
 import daybreak.abilitywar.utils.base.concurrent.TimeUnit;
 import daybreak.abilitywar.utils.base.math.geometry.Circle;
@@ -28,7 +28,6 @@ import org.bukkit.entity.Projectile;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.HandlerList;
 import org.bukkit.event.Listener;
-import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.util.Vector;
 
@@ -78,7 +77,8 @@ public class Kevin extends CokesAbility implements ActiveHandler {
     }
 
     @SubscribeEvent
-    public void onEntityDamageByEntity(EntityDamageByEntityEvent e) {
+    public void onEntityDamage(CEntityDamageEvent e) {
+        if (e.getDamager() == null) return;
         Entity damager = e.getDamager();
         if (NMS.isArrow(damager)) {
             Projectile arrow = (Projectile) e.getDamager();

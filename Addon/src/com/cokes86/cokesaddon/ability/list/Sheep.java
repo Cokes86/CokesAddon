@@ -1,6 +1,7 @@
 package com.cokes86.cokesaddon.ability.list;
 
 import com.cokes86.cokesaddon.ability.CokesAbility;
+import com.cokes86.cokesaddon.event.CEntityDamageEvent;
 import com.cokes86.cokesaddon.util.FunctionalInterfaceUnit;
 import com.google.common.collect.ImmutableList;
 import daybreak.abilitywar.ability.AbilityManifest;
@@ -17,9 +18,6 @@ import daybreak.abilitywar.utils.base.minecraft.nms.NMS;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
-import org.bukkit.event.entity.EntityDamageByBlockEvent;
-import org.bukkit.event.entity.EntityDamageByEntityEvent;
-import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
 import org.bukkit.util.Vector;
 
@@ -87,8 +85,8 @@ public class Sheep extends CokesAbility {
         }
     }
 
-    @SubscribeEvent(childs = {EntityDamageByBlockEvent.class, EntityDamageByEntityEvent.class})
-    public void onEntityDamage(EntityDamageEvent e) {
+    @SubscribeEvent
+    public void onEntityDamage(CEntityDamageEvent e) {
         if (damageCauseList.contains(e.getCause())) {
             e.setDamage(e.getDamage() * (1 + DAMAGE.getValue() / 100.0));
         } else {

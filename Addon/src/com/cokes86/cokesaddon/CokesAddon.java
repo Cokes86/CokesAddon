@@ -3,6 +3,7 @@ package com.cokes86.cokesaddon;
 import com.cokes86.cokesaddon.ability.AddonAbilityFactory;
 import com.cokes86.cokesaddon.ability.CokesAbility;
 import com.cokes86.cokesaddon.effect.AddonEffectRegistry;
+import com.cokes86.cokesaddon.event.CEntityDamageEvent;
 import com.cokes86.cokesaddon.gamemode.disguiseparty.DisguiseParty;
 import com.cokes86.cokesaddon.gamemode.tailcatch.TailCatch;
 import com.cokes86.cokesaddon.synergy.AddonSynergyFactory;
@@ -11,6 +12,7 @@ import daybreak.abilitywar.AbilityWar;
 import daybreak.abilitywar.addon.Addon;
 import daybreak.abilitywar.addon.AddonLoader;
 import daybreak.abilitywar.game.Category;
+import daybreak.abilitywar.game.GameManager;
 import daybreak.abilitywar.game.event.GameCreditEvent;
 import daybreak.abilitywar.game.list.mix.AbstractMix;
 import daybreak.abilitywar.game.manager.GameFactory;
@@ -18,6 +20,8 @@ import daybreak.abilitywar.utils.base.Messager;
 import org.bukkit.Bukkit;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
+import org.bukkit.event.entity.EntityDamageEvent;
+import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
 
 import java.io.File;
 import java.util.HashMap;
@@ -84,6 +88,12 @@ public class CokesAddon extends Addon implements Listener {
 			}
 			e.addCredit("§c코크스 애드온 §f제작자 : Cokes_86  [§7디스코드 §f: Cokes_86#9329]");
 		}
+	}
+
+	@EventHandler
+	public void onEntityDamage(EntityDamageEvent e) {
+		if (!GameManager.isGameRunning() || e.getCause() == DamageCause.VOID) return;
+		Bukkit.getPluginManager().callEvent(new CEntityDamageEvent(e));
 	}
 
 	public static File getAddonFile(String name) {

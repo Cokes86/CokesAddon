@@ -1,6 +1,7 @@
 package com.cokes86.cokesaddon.ability.list;
 
 import com.cokes86.cokesaddon.ability.CokesAbility;
+import com.cokes86.cokesaddon.event.CEntityDamageEvent;
 import com.cokes86.cokesaddon.util.FunctionalInterfaceUnit;
 import daybreak.abilitywar.AbilityWar;
 import daybreak.abilitywar.ability.AbilityManifest;
@@ -21,9 +22,6 @@ import org.bukkit.attribute.Attribute;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.ArmorStand;
 import org.bukkit.entity.Player;
-import org.bukkit.event.entity.EntityDamageByBlockEvent;
-import org.bukkit.event.entity.EntityDamageByEntityEvent;
-import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
 import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.player.PlayerArmorStandManipulateEvent;
@@ -167,8 +165,9 @@ public class Blocks extends CokesAbility implements ActiveHandler {
 		return false;
 	}
 
-	@SubscribeEvent(childs = {EntityDamageByBlockEvent.class})
-	public void onEntityDamage(EntityDamageEvent e) {
+	@SubscribeEvent
+	public void onEntityDamage(CEntityDamageEvent e) {
+		if (e.getDamager() == null) return;
 		if (e.getEntity().equals(armorStand)) {
 			e.setCancelled(true);
 			return;
@@ -202,10 +201,7 @@ public class Blocks extends CokesAbility implements ActiveHandler {
 				}
 			}
 		}
-	}
 
-	@SubscribeEvent
-	public void onEntityDamageByEntity(EntityDamageByEntityEvent e) {
 		if (e.getEntity().equals(getPlayer())) {
 			if (e.getDamager() instanceof Player) {
 				Player damager = (Player) e.getDamager();

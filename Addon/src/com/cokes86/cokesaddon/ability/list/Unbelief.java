@@ -1,6 +1,7 @@
 package com.cokes86.cokesaddon.ability.list;
 
 import com.cokes86.cokesaddon.ability.CokesAbility;
+import com.cokes86.cokesaddon.event.CEntityDamageEvent;
 import com.cokes86.cokesaddon.util.FunctionalInterfaceUnit;
 import daybreak.abilitywar.ability.AbilityManifest;
 import daybreak.abilitywar.ability.AbilityManifest.Rank;
@@ -19,7 +20,6 @@ import org.bukkit.Material;
 import org.bukkit.entity.Arrow;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
-import org.bukkit.event.entity.EntityDamageByEntityEvent;
 
 import java.util.function.Predicate;
 
@@ -77,7 +77,8 @@ public class Unbelief extends CokesAbility implements ActiveHandler {
 	}
 
 	@SubscribeEvent
-	public void onEntityDamageByEntity(EntityDamageByEntityEvent e) {
+	public void onEntityDamage(CEntityDamageEvent e) {
+		if (e.getDamager() == null) return;
 		Entity damager = e.getDamager();
 		if (damager instanceof Arrow) {
 			Arrow arrow = (Arrow) damager;

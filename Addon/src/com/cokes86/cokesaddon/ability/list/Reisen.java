@@ -2,6 +2,7 @@ package com.cokes86.cokesaddon.ability.list;
 
 import com.cokes86.cokesaddon.ability.CokesAbility;
 import com.cokes86.cokesaddon.effect.list.Warp;
+import com.cokes86.cokesaddon.event.CEntityDamageEvent;
 import com.cokes86.cokesaddon.util.FunctionalInterfaceUnit;
 import daybreak.abilitywar.ability.AbilityManifest;
 import daybreak.abilitywar.ability.SubscribeEvent;
@@ -26,7 +27,6 @@ import org.bukkit.boss.BossBar;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Projectile;
-import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.util.Vector;
 
 import java.util.List;
@@ -186,7 +186,8 @@ public class Reisen extends CokesAbility implements ActiveHandler {
     int hit = 0;
 
     @SubscribeEvent
-    public void onEntityDamageByEntity(EntityDamageByEntityEvent e) {
+    public void onEntityDamage(CEntityDamageEvent e) {
+        if (e.getDamager() == null) return;
         Entity damager = e.getDamager();
         if (NMS.isArrow(damager)) {
             Projectile arrow = (Projectile) e.getDamager();

@@ -1,6 +1,7 @@
 package com.cokes86.cokesaddon.ability.list;
 
 import com.cokes86.cokesaddon.ability.CokesAbility;
+import com.cokes86.cokesaddon.event.CEntityDamageEvent;
 import com.cokes86.cokesaddon.util.CokesUtil;
 import com.cokes86.cokesaddon.util.FunctionalInterfaceUnit;
 import daybreak.abilitywar.ability.AbilityManifest;
@@ -19,8 +20,7 @@ import org.bukkit.Material;
 import org.bukkit.Note;
 import org.bukkit.entity.Damageable;
 import org.bukkit.entity.Player;
-import org.bukkit.event.entity.EntityDamageByEntityEvent;
-import org.bukkit.event.entity.EntityDamageEvent;
+import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
 
 import java.util.Map;
 import java.util.Set;
@@ -144,7 +144,8 @@ public class Justin extends CokesAbility implements ActiveHandler {
     }
 
     @SubscribeEvent
-    public void onEntityDamageByEntity(EntityDamageByEntityEvent e) {
+    public void onEntityDamage(CEntityDamageEvent e) {
+        if (e.getDamager() == null) return;
         if (e.getDamager().equals(getPlayer()) && swords.contains(getPlayer().getInventory().getItemInMainHand().getType()) && !e.getEntity().equals(getPlayer())) {
             if (!madness) {
                 if (normalTimer.isRunning()) {
@@ -159,7 +160,7 @@ public class Justin extends CokesAbility implements ActiveHandler {
                 normalTimer = new NormalTimer((Damageable) e.getEntity(), damage*decrease);
                 normalTimer.start();
             } else {
-                if (e.getCause() == EntityDamageEvent.DamageCause.MAGIC) return;
+                if (e.getCause() == DamageCause.MAGIC) return;
                 if (getGame().isGameStarted() && e.getEntity() instanceof Player) {
                     if (getGame().isParticipating(e.getEntity().getUniqueId())) {
                         final AbstractGame.Participant victim = getGame().getParticipant(e.getEntity().getUniqueId());

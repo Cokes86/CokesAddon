@@ -2,6 +2,7 @@ package com.cokes86.cokesaddon.ability.list;
 
 import com.cokes86.cokesaddon.ability.CokesAbility;
 import com.cokes86.cokesaddon.ability.CokesAbility.Config.Condition;
+import com.cokes86.cokesaddon.event.CEntityDamageEvent;
 import com.cokes86.cokesaddon.util.FunctionalInterfaceUnit;
 import daybreak.abilitywar.ability.AbilityManifest;
 import daybreak.abilitywar.ability.AbilityManifest.Rank;
@@ -28,9 +29,6 @@ import org.bukkit.Material;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Projectile;
-import org.bukkit.event.entity.EntityDamageByBlockEvent;
-import org.bukkit.event.entity.EntityDamageByEntityEvent;
-import org.bukkit.event.entity.EntityDamageEvent;
 
 @AbilityManifest(name = "휘트니", rank = Rank.S, species = Species.HUMAN, explain = {
         "철괴 우클릭시 $[DURATION]간 유지되고 최대 6번 중첩가능한 버프를 부여합니다. $[COOLDOWN_ONE]",
@@ -98,16 +96,13 @@ public class Whitney extends CokesAbility implements ActiveHandler {
         return false;
     }
 
-    @SubscribeEvent(childs = {EntityDamageByBlockEvent.class})
-    public void onEntityDamage(EntityDamageEvent e) {
+    @SubscribeEvent
+    public void onEntityDamage(CEntityDamageEvent e) {
+        if (e.getDamager() == null) return;
+
         if (e.getEntity().equals(getPlayer()) && timer.getStack() == 6) {
             e.setDamage(e.getDamage() * (1 - DEFENCE.getValue()/100.0));
         }
-    }
-
-    @SubscribeEvent
-    public void onEntityDamageByEntity(EntityDamageByEntityEvent e) {
-        onEntityDamage(e);
 
         Entity damager = e.getDamager();
         if (damager instanceof Projectile) {

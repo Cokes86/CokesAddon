@@ -1,9 +1,10 @@
 package com.cokes86.cokesaddon.ability.list;
 
 import com.cokes86.cokesaddon.ability.CokesAbility;
+import com.cokes86.cokesaddon.ability.CokesAbility.Config.Condition;
+import com.cokes86.cokesaddon.event.CEntityDamageEvent;
 import com.cokes86.cokesaddon.util.AttributeUtil;
 import com.cokes86.cokesaddon.util.FunctionalInterfaceUnit;
-import com.cokes86.cokesaddon.ability.CokesAbility.Config.Condition;
 import daybreak.abilitywar.ability.AbilityManifest;
 import daybreak.abilitywar.ability.SubscribeEvent;
 import daybreak.abilitywar.ability.decorator.ActiveHandler;
@@ -17,9 +18,6 @@ import daybreak.abilitywar.utils.library.SoundLib;
 import org.bukkit.Material;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
-import org.bukkit.event.entity.EntityDamageByBlockEvent;
-import org.bukkit.event.entity.EntityDamageByEntityEvent;
-import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.inventory.ItemStack;
 
 import java.util.ArrayList;
@@ -78,8 +76,8 @@ public class Rude extends CokesAbility implements ActiveHandler {
         return false;
     }
 
-    @SubscribeEvent(childs = {EntityDamageByBlockEvent.class, EntityDamageByEntityEvent.class})
-    public void onEntityDamage(EntityDamageEvent e) {
+    @SubscribeEvent
+    public void onEntityDamage(CEntityDamageEvent e) {
         if (e.getEntity().equals(getPlayer()) && duration.isRunning()) {
             e.setDamage(e.getDamage() * (1 - DAMAGE.getValue() / 100.0));
         }

@@ -1,6 +1,7 @@
 package com.cokes86.cokesaddon.ability.list;
 
 import com.cokes86.cokesaddon.ability.CokesAbility;
+import com.cokes86.cokesaddon.event.CEntityDamageEvent;
 import com.cokes86.cokesaddon.util.FunctionalInterfaceUnit;
 import daybreak.abilitywar.ability.AbilityManifest;
 import daybreak.abilitywar.ability.AbilityManifest.Rank;
@@ -11,9 +12,6 @@ import daybreak.abilitywar.game.AbstractGame.Participant;
 import daybreak.abilitywar.game.AbstractGame.Participant.ActionbarNotification.ActionbarChannel;
 import daybreak.abilitywar.utils.base.TimeUtil;
 import org.bukkit.Material;
-import org.bukkit.event.entity.EntityDamageByBlockEvent;
-import org.bukkit.event.entity.EntityDamageByEntityEvent;
-import org.bukkit.event.entity.EntityDamageEvent;
 
 @AbilityManifest(name = "겜블러", rank = Rank.B, species = Species.HUMAN, explain = {
 		"매 $[du]마다 받는 대미지와 주는 대미지가",
@@ -90,16 +88,11 @@ public class Gambler extends CokesAbility implements ActiveHandler {
 	}
 
 	@SubscribeEvent
-	public void onEntityDamageByEntity(EntityDamageByEntityEvent e) {
-		onEntityDamage(e);
-
+	public void onEntityDamage(CEntityDamageEvent e) {
+		if (e.getDamager() == null) return;
 		if (e.getDamager().equals(getPlayer())) {
 			e.setDamage(e.getDamage() * ((double) give / 100));
 		}
-	}
-
-	@SubscribeEvent(childs = {EntityDamageByBlockEvent.class})
-	public void onEntityDamage(EntityDamageEvent e) {
 		if (e.getEntity().equals(getPlayer())) {
 			e.setDamage(e.getDamage() * ((double) receive / 100));
 		}

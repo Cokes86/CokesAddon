@@ -1,6 +1,7 @@
 package com.cokes86.cokesaddon.ability.list;
 
 import com.cokes86.cokesaddon.ability.CokesAbility;
+import com.cokes86.cokesaddon.event.CEntityDamageEvent;
 import com.cokes86.cokesaddon.util.FunctionalInterfaceUnit;
 import daybreak.abilitywar.ability.AbilityManifest;
 import daybreak.abilitywar.ability.AbilityManifest.Rank;
@@ -16,7 +17,6 @@ import org.bukkit.Note;
 import org.bukkit.Note.Tone;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Projectile;
-import org.bukkit.event.entity.EntityDamageByEntityEvent;
 
 @AbilityManifest(name = "가시", rank = Rank.A, species = Species.OTHERS, explain = {
 		"철괴 우클릭시 $[DURATION]동안 상대방의 화살 공격의 대미지를 0으로 하고,",
@@ -46,7 +46,8 @@ public class Thorn extends CokesAbility implements ActiveHandler {
 	}
 
 	@SubscribeEvent
-	private void onEntityDamageByEntity(EntityDamageByEntityEvent e) {
+	public void onEntityDamage(CEntityDamageEvent e) {
+		if (e.getDamager() == null) return;
 		if (e.getEntity().equals(getPlayer()) && duration.isRunning()) {
 			if (NMS.isArrow(e.getDamager())) {
 				Projectile a = (Projectile) e.getDamager();
