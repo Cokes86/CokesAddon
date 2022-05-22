@@ -159,8 +159,7 @@ public abstract class PhantomThief extends CokesAbility implements ActiveHandler
 
 	@SubscribeEvent
 	public void onEntityDamage(CEntityDamageEvent e) {
-		if (e.getDamager() == null) return;
-		if (e.getDamager().equals(getPlayer()) && timer.isInvincible()) {
+		if (e.getDamager() != null && e.getDamager().equals(getPlayer()) && timer.isInvincible()) {
 			e.setCancelled(true);
 		}
 

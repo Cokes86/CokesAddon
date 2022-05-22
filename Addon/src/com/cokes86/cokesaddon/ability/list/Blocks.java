@@ -167,7 +167,6 @@ public class Blocks extends CokesAbility implements ActiveHandler {
 
 	@SubscribeEvent
 	public void onEntityDamage(CEntityDamageEvent e) {
-		if (e.getDamager() == null) return;
 		if (e.getEntity().equals(armorStand)) {
 			e.setCancelled(true);
 			return;

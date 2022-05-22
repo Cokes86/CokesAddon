@@ -240,21 +240,22 @@ public class Cokes extends CokesAbility implements ActiveHandler {
 
         @EventHandler
         public void onEntityDamage(CEntityDamageEvent e) {
-            if (e.getDamager() == null) return;
             if (e.getEntity().equals(getPlayer())) {
                 e.setDamage(e.getDamage()-Math.min(results.get("O"),3)*0.5);
             }
 
             Entity attacker = e.getDamager();
-            if (NMS.isArrow(attacker)) {
-                Projectile arrow = (Projectile) attacker;
-                if (arrow.getShooter() instanceof Entity) {
-                    attacker = (Entity) arrow.getShooter();
+            if (attacker != null) {
+                if (NMS.isArrow(attacker)) {
+                    Projectile arrow = (Projectile) attacker;
+                    if (arrow.getShooter() instanceof Entity) {
+                        attacker = (Entity) arrow.getShooter();
+                    }
                 }
-            }
 
-            if (attacker.equals(getPlayer())) {
-                e.setDamage(e.getDamage() + Math.min(results.get("C"),3)*0.75);
+                if (attacker.equals(getPlayer())) {
+                    e.setDamage(e.getDamage() + Math.min(results.get("C"),3)*0.75);
+                }
             }
         }
 

@@ -1,5 +1,6 @@
 package com.cokes86.cokesaddon.synergy.list;
 
+import com.cokes86.cokesaddon.event.CEntityDamageEvent;
 import com.cokes86.cokesaddon.synergy.CokesSynergy;
 import com.cokes86.cokesaddon.util.FunctionalInterfaceUnit;
 import daybreak.abilitywar.ability.AbilityManifest;
@@ -23,9 +24,6 @@ import org.bukkit.Material;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
-import org.bukkit.event.entity.EntityDamageByBlockEvent;
-import org.bukkit.event.entity.EntityDamageByEntityEvent;
-import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
 
 import java.util.HashMap;
@@ -142,8 +140,8 @@ public class AirDisintegration extends CokesSynergy implements ActiveHandler {
 		return false;
 	}
 
-	@SubscribeEvent(childs = {EntityDamageByBlockEvent.class})
-	public void onEntityDamage(EntityDamageEvent e) {
+	@SubscribeEvent
+	public void onCEntityDamage(CEntityDamageEvent e) {
 		if (e.getCause().equals(DamageCause.FALL) && falling && e.getEntity().equals(getPlayer())) {
 			falling = false;
 			e.setCancelled(true);
@@ -154,13 +152,10 @@ public class AirDisintegration extends CokesSynergy implements ActiveHandler {
 				e.setCancelled(true);
 			}
 		}
-	}
 
-	@SubscribeEvent
-	public void onEntityDamageByEntity(EntityDamageByEntityEvent e) {
 		if (e.getEntity() instanceof LivingEntity) {
 			LivingEntity entity = (LivingEntity) e.getEntity();
-			if (entities != null && entities.contains(entity) && !e.getDamager().equals(getPlayer())) {
+			if (entities != null && entities.contains(entity) && e.getDamager() != null && !e.getDamager().equals(getPlayer())) {
 				e.setCancelled(true);
 			}
 		}

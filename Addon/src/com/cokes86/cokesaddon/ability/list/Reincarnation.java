@@ -105,7 +105,6 @@ public class Reincarnation extends CokesAbility {
 
 	@SubscribeEvent
 	public void onEntityDamage(CEntityDamageEvent e) {
-		if (e.getDamager() == null) return;
 		if (e.getEntity().equals(getPlayer())) {
 			if (reincarnation.isRunning())
 				e.setCancelled(true);
@@ -124,7 +123,7 @@ public class Reincarnation extends CokesAbility {
 			}
 		}
 
-		if (e.getEntity() instanceof Player && damager.equals(getPlayer())) {
+		if (damager != null && e.getEntity() instanceof Player && damager.equals(getPlayer())) {
 			Player target = (Player) e.getEntity();
 			if (reincarnation.isRunning() && getGame().isParticipating(target) && !e.isCancelled()) {
 				e.setDamage(e.getDamage() * (damage.getValue() / 100.0D));

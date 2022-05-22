@@ -1,5 +1,6 @@
 package com.cokes86.cokesaddon.synergy.list;
 
+import com.cokes86.cokesaddon.event.CEntityDamageEvent;
 import com.cokes86.cokesaddon.synergy.CokesSynergy;
 import com.cokes86.cokesaddon.util.FunctionalInterfaceUnit;
 import daybreak.abilitywar.ability.AbilityManifest;
@@ -19,7 +20,6 @@ import org.bukkit.attribute.Attribute;
 import org.bukkit.attribute.AttributeInstance;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Projectile;
-import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityShootBowEvent;
 import org.bukkit.event.entity.ProjectileHitEvent;
 
@@ -112,8 +112,8 @@ public class ReaperArrow extends CokesSynergy implements ActiveHandler {
 	}
 
 	@SubscribeEvent
-	public void onEntityDamageByEntity(EntityDamageByEntityEvent e) {
-		if (e.getDamager().equals(reaperArrow) && e.getEntity() instanceof LivingEntity) {
+	public void onCEntityDamage(CEntityDamageEvent e) {
+		if (e.getDamager() != null && e.getDamager().equals(reaperArrow) && e.getEntity() instanceof LivingEntity) {
 			LivingEntity entity = (LivingEntity) e.getEntity();
 			e.setCancelled(true);
 			AttributeInstance attribute = entity.getAttribute(Attribute.GENERIC_MAX_HEALTH);

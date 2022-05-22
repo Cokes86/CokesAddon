@@ -35,7 +35,6 @@ public class Resurrection extends CokesAbility {
 
 	@SubscribeEvent
 	public void onEntityDamage(CEntityDamageEvent e) {
-		if (e.getDamager() == null) return;
 		if (!resurrection) {
 			if (e.getEntity().equals(getPlayer())) {
 				double health = getPlayer().getHealth();
@@ -51,6 +50,7 @@ public class Resurrection extends CokesAbility {
 			}
 		} else {
 			Entity damager = e.getDamager();
+			if (damager == null) return;
 			if (NMS.isArrow(damager)) {
 				Projectile arrow = (Projectile) damager;
 				if (arrow.getShooter() instanceof Entity) {

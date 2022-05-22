@@ -1,5 +1,6 @@
 package com.cokes86.cokesaddon.synergy.list;
 
+import com.cokes86.cokesaddon.event.CEntityDamageEvent;
 import com.cokes86.cokesaddon.synergy.CokesSynergy;
 import com.cokes86.cokesaddon.util.FunctionalInterfaceUnit;
 import daybreak.abilitywar.ability.AbilityManifest;
@@ -23,9 +24,6 @@ import org.bukkit.boss.BarColor;
 import org.bukkit.boss.BarStyle;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
-import org.bukkit.event.entity.EntityDamageByBlockEvent;
-import org.bukkit.event.entity.EntityDamageByEntityEvent;
-import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
@@ -136,8 +134,8 @@ public class TheEnd extends CokesSynergy implements ActiveHandler {
 		}
 	}
 
-	@SubscribeEvent(childs = {EntityDamageByBlockEvent.class, EntityDamageByEntityEvent.class})
-	public void onEntityDamage(EntityDamageEvent e) {
+	@SubscribeEvent
+	public void onCEntityDamage(CEntityDamageEvent e) {
 		if (e.getEntity().equals(getPlayer()) && timer.isRunning()) {
 			e.setDamage(e.getDamage() * (100 - reduce.getValue()) / 100);
 		}

@@ -98,12 +98,11 @@ public class Whitney extends CokesAbility implements ActiveHandler {
 
     @SubscribeEvent
     public void onEntityDamage(CEntityDamageEvent e) {
-        if (e.getDamager() == null) return;
-
         if (e.getEntity().equals(getPlayer()) && timer.getStack() == 6) {
             e.setDamage(e.getDamage() * (1 - DEFENCE.getValue()/100.0));
         }
 
+        if (e.getDamager() == null) return;
         Entity damager = e.getDamager();
         if (damager instanceof Projectile) {
             Projectile projectile = (Projectile) damager;

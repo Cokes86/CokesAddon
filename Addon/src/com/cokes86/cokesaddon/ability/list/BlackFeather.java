@@ -42,7 +42,6 @@ public class BlackFeather extends CokesAbility {
 
     @SubscribeEvent
     public void onEntityDamage(CEntityDamageEvent e) {
-        if (e.getDamager() == null) return;
         Entity damager = e.getDamager();
         if (damager instanceof Projectile) {
             Projectile projectile = (Projectile) damager;
@@ -51,7 +50,7 @@ public class BlackFeather extends CokesAbility {
             }
         }
 
-        if (damager.equals(getPlayer()) && getGame().isParticipating(e.getEntity().getUniqueId())) {
+        if (damager != null && damager.equals(getPlayer()) && getGame().isParticipating(e.getEntity().getUniqueId())) {
             int counter = counterList.size();
             double damage1 = DAMAGE.getValue() / 100.0;
             double damage2 = counter * DAMAGE_UPGRADE.getValue();

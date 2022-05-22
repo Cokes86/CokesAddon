@@ -1,5 +1,6 @@
 package com.cokes86.cokesaddon.synergy.list;
 
+import com.cokes86.cokesaddon.event.CEntityDamageEvent;
 import com.cokes86.cokesaddon.synergy.CokesSynergy;
 import com.cokes86.cokesaddon.util.AttributeUtil;
 import daybreak.abilitywar.ability.AbilityManifest;
@@ -14,9 +15,6 @@ import daybreak.abilitywar.utils.library.PotionEffects;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Projectile;
-import org.bukkit.event.entity.EntityDamageByBlockEvent;
-import org.bukkit.event.entity.EntityDamageByEntityEvent;
-import org.bukkit.event.entity.EntityDamageEvent;
 
 import java.util.function.Predicate;
 
@@ -51,8 +49,8 @@ public class LureOfRoses extends CokesSynergy {
 		super(participant);
 	}
 
-	@SubscribeEvent(childs = {EntityDamageByBlockEvent.class})
-	public void onEntityDamage(EntityDamageEvent e) {
+	@SubscribeEvent
+	public void onCEntityDamage(CEntityDamageEvent e) {
 		if (e.getEntity().equals(getPlayer())) {
 			e.setDamage(e.getDamage() * (1 + Math.min(counter, 50.0) / 100));
 			if (duration.isRunning()) {
@@ -64,12 +62,8 @@ public class LureOfRoses extends CokesSynergy {
 				counter = 0;
 			}
 		}
-	}
 
-	@SubscribeEvent
-	public void onEntityDamageByEntity(EntityDamageByEntityEvent e) {
-		onEntityDamage(e);
-
+		if (e.getDamager() == null) return;
 		Entity attacker = e.getDamager();
 		if (attacker instanceof Projectile) {
 			Projectile entity = (Projectile) attacker;

@@ -55,10 +55,9 @@ public class Rei extends CokesAbility {
 
 	@SubscribeEvent
 	public void onEntityDamage(CEntityDamageEvent e) {
-		if (e.getDamager() == null) return;
 
 		Entity damager = e.getDamager();
-		if (NMS.isArrow(damager)) {
+		if (damager != null && NMS.isArrow(damager)) {
 			Projectile arrow = (Projectile) e.getDamager();
 			if (arrow.getShooter() instanceof Entity) {
 				damager = (Entity) arrow.getShooter();
@@ -75,7 +74,7 @@ public class Rei extends CokesAbility {
 			}
 		}
 
-		if (e.getEntity() instanceof Player && !e.getEntity().equals(getPlayer()) && damager.equals(getPlayer()) && !cooldown.isRunning() && !e.isCancelled()) {
+		if (damager != null && e.getEntity() instanceof Player && !e.getEntity().equals(getPlayer()) && damager.equals(getPlayer()) && !cooldown.isRunning() && !e.isCancelled()) {
 			e.setDamage(e.getDamage() * (1 + damage.getValue() / 100.0));
 			final double maxHealth = AttributeUtil.getMaxHealth(getPlayer()), health = getPlayer().getHealth();
 			final float absorption = NMS.getAbsorptionHearts(getPlayer());

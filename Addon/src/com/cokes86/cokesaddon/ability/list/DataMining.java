@@ -166,21 +166,22 @@ public class DataMining extends CokesAbility implements ActiveHandler {
 
 	@SubscribeEvent
 	public void onEntityDamage(CEntityDamageEvent e) {
-		if (e.getDamager() == null) return;
 
 		if (e.getEntity().equals(getPlayer())) {
 			e.setDamage(e.getDamage() * (1 - defenseUp.getValue()*2 / max_count * defense_count));
 		}
 
 		Entity attacker = e.getDamager();
-		if (NMS.isArrow(attacker)) {
-			Projectile arrow = (Projectile) attacker;
-			if (arrow.getShooter() instanceof Entity) {
-				attacker = (Entity) arrow.getShooter();
+		if (attacker != null) {
+			if (NMS.isArrow(attacker)) {
+				Projectile arrow = (Projectile) attacker;
+				if (arrow.getShooter() instanceof Entity) {
+					attacker = (Entity) arrow.getShooter();
+				}
 			}
-		}
-		if (attacker.equals(getPlayer())) {
-			e.setDamage(e.getDamage() + damageUp.getValue()*2 / max_count * damage_count);
+			if (attacker.equals(getPlayer())) {
+				e.setDamage(e.getDamage() + damageUp.getValue()*2 / max_count * damage_count);
+			}
 		}
 	}
 

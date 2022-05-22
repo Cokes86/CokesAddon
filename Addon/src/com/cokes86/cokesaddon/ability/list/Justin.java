@@ -145,8 +145,7 @@ public class Justin extends CokesAbility implements ActiveHandler {
 
     @SubscribeEvent
     public void onEntityDamage(CEntityDamageEvent e) {
-        if (e.getDamager() == null) return;
-        if (e.getDamager().equals(getPlayer()) && swords.contains(getPlayer().getInventory().getItemInMainHand().getType()) && !e.getEntity().equals(getPlayer())) {
+        if (e.getDamager() != null && e.getDamager().equals(getPlayer()) && swords.contains(getPlayer().getInventory().getItemInMainHand().getType()) && !e.getEntity().equals(getPlayer())) {
             if (!madness) {
                 if (normalTimer.isRunning()) {
                     normalTimer.stop(false);

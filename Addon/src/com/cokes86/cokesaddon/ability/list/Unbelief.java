@@ -15,11 +15,12 @@ import daybreak.abilitywar.game.event.participant.ParticipantDeathEvent;
 import daybreak.abilitywar.game.module.DeathManager;
 import daybreak.abilitywar.game.team.interfaces.Teamable;
 import daybreak.abilitywar.utils.base.math.LocationUtil;
+import daybreak.abilitywar.utils.base.minecraft.nms.NMS;
 import daybreak.abilitywar.utils.library.SoundLib;
 import org.bukkit.Material;
-import org.bukkit.entity.Arrow;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
+import org.bukkit.entity.Projectile;
 
 import java.util.function.Predicate;
 
@@ -78,20 +79,19 @@ public class Unbelief extends CokesAbility implements ActiveHandler {
 
 	@SubscribeEvent
 	public void onEntityDamage(CEntityDamageEvent e) {
-		if (e.getDamager() == null) return;
-		Entity damager = e.getDamager();
-		if (damager instanceof Arrow) {
-			Arrow arrow = (Arrow) damager;
-			if (arrow.getShooter() instanceof Entity) {
-				damager = (Entity) arrow.getShooter();
-			}
-		}
-
 		if (teammate != null) {
 			if (invTimer.isRunning() && (e.getEntity().equals(teammate.getPlayer()) || e.getEntity().equals(getPlayer()))) {
 				e.setCancelled(true);
 			}
 
+			if (e.getDamager() == null) return;
+			Entity damager = e.getDamager();
+			if (NMS.isArrow(damager)) {
+				Projectile arrow = (Projectile) damager;
+				if (arrow.getShooter() instanceof Entity) {
+					damager = (Entity) arrow.getShooter();
+				}
+			}
 			if (damager.equals(teammate.getPlayer()) && e.getEntity().equals(getPlayer())) {
 				if (!attackable) {
 					hitted += 1;

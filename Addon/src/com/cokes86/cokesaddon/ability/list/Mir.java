@@ -23,10 +23,7 @@ import daybreak.abilitywar.utils.library.ParticleLib;
 import daybreak.abilitywar.utils.library.PotionEffects;
 import org.bukkit.Location;
 import org.bukkit.Material;
-import org.bukkit.entity.ArmorStand;
-import org.bukkit.entity.Arrow;
-import org.bukkit.entity.Entity;
-import org.bukkit.entity.Player;
+import org.bukkit.entity.*;
 import org.bukkit.event.player.PlayerArmorStandManipulateEvent;
 import org.bukkit.inventory.EntityEquipment;
 import org.bukkit.inventory.ItemStack;
@@ -162,7 +159,6 @@ public class Mir extends CokesAbility implements ActiveHandler {
 
 	@SubscribeEvent
 	public void onEntityDamage(CEntityDamageEvent e) {
-		if (e.getDamager() == null) return;
 		if (element == Element.GNOME && armorStand != null && e.getEntity().equals(getPlayer()) && getPlayer().getLocation().subtract(armorStand.getLocation().clone().add(0, -5, 0)).length() <= element.range) {
 			e.setDamage(e.getDamage() * (1 - DAMAGE_DECREMENT.getValue() / 100.0));
 		}
@@ -172,14 +168,14 @@ public class Mir extends CokesAbility implements ActiveHandler {
 		}
 
 		Entity damager = e.getDamager();
-		if (damager instanceof Arrow) {
-			Arrow arrow = (Arrow) damager;
+		if (damager != null && NMS.isArrow(damager)) {
+			Projectile arrow = (Projectile) damager;
 			if (arrow.getShooter() instanceof Entity) {
 				damager = (Entity) arrow.getShooter();
 			}
 		}
 
-		if (element == Element.THUNDERBIRD && armorStand != null && damager.equals(getPlayer()) && getPlayer().getLocation().subtract(armorStand.getLocation().clone().add(0, -5, 0)).length() <= element.range) {
+		if (damager != null && element == Element.THUNDERBIRD && armorStand != null && damager.equals(getPlayer()) && getPlayer().getLocation().subtract(armorStand.getLocation().clone().add(0, -5, 0)).length() <= element.range) {
 			if (!e.getEntity().equals(armorStand)) {
 				e.setDamage(e.getDamage() * DAMAGE_INCREMENT.getValue());
 				e.getEntity().getWorld().strikeLightningEffect(e.getEntity().getLocation());

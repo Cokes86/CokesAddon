@@ -1,6 +1,7 @@
 package com.cokes86.cokesaddon.synergy.list;
 
 import com.cokes86.cokesaddon.effect.list.ArmorBroken;
+import com.cokes86.cokesaddon.event.CEntityDamageEvent;
 import com.cokes86.cokesaddon.synergy.CokesSynergy;
 import com.cokes86.cokesaddon.util.FunctionalInterfaceUnit;
 import daybreak.abilitywar.AbilityWar;
@@ -34,9 +35,6 @@ import org.bukkit.entity.*;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.HandlerList;
 import org.bukkit.event.Listener;
-import org.bukkit.event.entity.EntityDamageByBlockEvent;
-import org.bukkit.event.entity.EntityDamageByEntityEvent;
-import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.ProjectileLaunchEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerItemHeldEvent;
@@ -120,8 +118,8 @@ public class ShrineOfGod extends CokesSynergy implements ActiveHandler {
         }
     }
 
-    @SubscribeEvent(childs = {EntityDamageByBlockEvent.class, EntityDamageByEntityEvent.class})
-    public void onEntityDamage(EntityDamageEvent e) {
+    @SubscribeEvent
+    public void onCEntityDamage(CEntityDamageEvent e) {
         if (e.getEntity().equals(getPlayer()) && duration.isRunning()) {
             e.setDamage(e.getDamage() * 1.25);
         }

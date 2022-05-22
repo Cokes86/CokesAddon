@@ -1,5 +1,6 @@
 package com.cokes86.cokesaddon.synergy.list;
 
+import com.cokes86.cokesaddon.event.CEntityDamageEvent;
 import com.cokes86.cokesaddon.synergy.CokesSynergy;
 import com.cokes86.cokesaddon.synergy.CokesSynergy.Config.Condition;
 import com.cokes86.cokesaddon.util.FunctionalInterfaceUnit;
@@ -16,7 +17,6 @@ import org.bukkit.attribute.Attribute;
 import org.bukkit.entity.Arrow;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
-import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityRegainHealthEvent;
 
 //복수 + 복수귀
@@ -65,27 +65,29 @@ public class Wasinsangdam extends CokesSynergy implements ActiveHandler {
     }
 
     @SubscribeEvent
-    public void onEntityDamageByEntity(EntityDamageByEntityEvent e) {
-        Entity damager = e.getDamager();
-        if (damager instanceof Arrow) {
-            Arrow arrow = (Arrow) damager;
-            if (arrow.getShooter() instanceof Entity) {
-                damager = (Entity) arrow.getShooter();
+    public void onCEntityDamage(CEntityDamageEvent e) {
+        if (e.getDamager() != null) {
+            Entity damager = e.getDamager();
+            if (damager instanceof Arrow) {
+                Arrow arrow = (Arrow) damager;
+                if (arrow.getShooter() instanceof Entity) {
+                    damager = (Entity) arrow.getShooter();
+                }
             }
-        }
 
-        if (damager.equals(getPlayer())) {
-            if (e.getEntity().equals(resentment.getPlayer())) {
-                double final_damage = e.getFinalDamage();
-                e.setDamage(e.getDamage() * (1 + DAMAGE_INCREMENT.getValue()/100) + damage_increment);
-                damage_increment += final_damage * 0.25;
-            } else {
-                e.setDamage(e.getDamage() * (1 + DAMAGE_INCREMENT.getValue()/100));
+            if (damager.equals(getPlayer())) {
+                if (e.getEntity().equals(resentment.getPlayer())) {
+                    double final_damage = e.getFinalDamage();
+                    e.setDamage(e.getDamage() * (1 + DAMAGE_INCREMENT.getValue()/100) + damage_increment);
+                    damage_increment += final_damage * 0.25;
+                } else {
+                    e.setDamage(e.getDamage() * (1 + DAMAGE_INCREMENT.getValue()/100));
+                }
             }
-        }
 
-        if (damager.equals(resentment.getPlayer()) && e.getEntity().equals(getPlayer())) {
-            damage_increment += e.getFinalDamage() * 0.25;
+            if (damager.equals(resentment.getPlayer()) && e.getEntity().equals(getPlayer())) {
+                damage_increment += e.getFinalDamage() * 0.25;
+            }
         }
 
         if (e.getEntity().equals(getPlayer()) && resentment == null && getPlayer().getHealth() - e.getFinalDamage() <= 0) {

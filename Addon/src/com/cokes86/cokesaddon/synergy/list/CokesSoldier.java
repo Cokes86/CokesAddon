@@ -1,5 +1,6 @@
 package com.cokes86.cokesaddon.synergy.list;
 
+import com.cokes86.cokesaddon.event.CEntityDamageEvent;
 import com.cokes86.cokesaddon.synergy.CokesSynergy;
 import com.cokes86.cokesaddon.util.FunctionalInterfaceUnit;
 import daybreak.abilitywar.AbilityWar;
@@ -28,7 +29,6 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.HandlerList;
 import org.bukkit.event.Listener;
-import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.util.Vector;
 
@@ -252,7 +252,7 @@ public class CokesSoldier extends CokesSynergy implements ActiveHandler {
         }
 
         @EventHandler
-        public void onEntityDamage(EntityDamageEvent e) {
+        public void onCEntityDamage(CEntityDamageEvent e) {
             if (e.getEntity().equals(getPlayer())) {
                 e.setDamage(e.getDamage() * 0.01);
             }

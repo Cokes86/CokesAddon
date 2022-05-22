@@ -1,5 +1,6 @@
 package com.cokes86.cokesaddon.synergy.list;
 
+import com.cokes86.cokesaddon.event.CEntityDamageEvent;
 import com.cokes86.cokesaddon.synergy.CokesSynergy;
 import com.cokes86.cokesaddon.synergy.CokesSynergy.Config.Condition;
 import com.cokes86.cokesaddon.util.AttributeUtil;
@@ -29,9 +30,6 @@ import org.bukkit.Material;
 import org.bukkit.World;
 import org.bukkit.entity.Damageable;
 import org.bukkit.entity.Player;
-import org.bukkit.event.entity.EntityDamageByBlockEvent;
-import org.bukkit.event.entity.EntityDamageByEntityEvent;
-import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
 import org.bukkit.event.entity.EntityRegainHealthEvent;
 import org.bukkit.util.Vector;
@@ -153,8 +151,8 @@ public class ReiBurningSoul extends CokesSynergy implements ActiveHandler {
         }
     }
 
-    @SubscribeEvent(childs = {EntityDamageByBlockEvent.class})
-    public void onEntityDamage(EntityDamageEvent e) {
+    @SubscribeEvent
+    public void onCEntityDamage(CEntityDamageEvent e) {
         if (damageCauseList.contains(e.getCause())) { //타오르는 영혼[화염피해 추댐]
             e.setDamage(e.getDamage() * (1 + burningSoul.getTotalBurningSoul()* FIRE_DAMAGE_INCREMENT.getValue()));
         }
@@ -169,6 +167,18 @@ public class ReiBurningSoul extends CokesSynergy implements ActiveHandler {
                 player.setFireTicks(player.getFireTicks() + LAST_BURNING_FIRE_DURATION.getValue()*20);
             }
         }
+
+        //한 맺힌 힘
+        if (e.getDamager() != null && e.getDamager().equals(getPlayer()) && getGame().isParticipating(e.getEntity().getUniqueId())) {
+            if (e.getEntity().getFireTicks() >= DAMAGE_INCREMENT_PREDICATE.getValue()) {
+                int firetick = e.getEntity().getFireTicks();
+                e.getEntity().setFireTicks(0);
+                double damageIncrement = (firetick - DAMAGE_INCREMENT_PREDICATE.getValue()*20) * 0.06;
+                e.setDamage(e.getDamage() + damageIncrement);
+            } else {
+                e.getEntity().setFireTicks(e.getEntity().getFireTicks() + 20 + burningSoul.getTotalBurningSoul()*20);
+            }
+        }
     }
 
     @SubscribeEvent
@@ -179,23 +189,6 @@ public class ReiBurningSoul extends CokesSynergy implements ActiveHandler {
             List<Player> nearby = LocationUtil.getNearbyEntities(Player.class, getPlayer().getLocation(), LAST_BURNING_RANGE.getValue(), LAST_BURNING_RANGE.getValue(), predicate);
             for (Player player : nearby) {
                 player.setFireTicks(player.getFireTicks() + LAST_BURNING_FIRE_DURATION.getValue()*20);
-            }
-        }
-    }
-
-    @SubscribeEvent
-    public void onEntityDamageByEntity(EntityDamageByEntityEvent e) {
-        onEntityDamage(e);
-
-        //한 맺힌 힘
-        if (e.getDamager().equals(getPlayer()) && getGame().isParticipating(e.getEntity().getUniqueId())) {
-            if (e.getEntity().getFireTicks() >= DAMAGE_INCREMENT_PREDICATE.getValue()) {
-                int firetick = e.getEntity().getFireTicks();
-                e.getEntity().setFireTicks(0);
-                double damageIncrement = (firetick - DAMAGE_INCREMENT_PREDICATE.getValue()*20) * 0.06;
-                e.setDamage(e.getDamage() + damageIncrement);
-            } else {
-                e.getEntity().setFireTicks(e.getEntity().getFireTicks() + 20 + burningSoul.getTotalBurningSoul()*20);
             }
         }
     }

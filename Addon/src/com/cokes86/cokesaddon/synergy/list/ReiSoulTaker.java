@@ -1,5 +1,6 @@
 package com.cokes86.cokesaddon.synergy.list;
 
+import com.cokes86.cokesaddon.event.CEntityDamageEvent;
 import com.cokes86.cokesaddon.synergy.CokesSynergy;
 import com.cokes86.cokesaddon.util.AttributeUtil;
 import com.cokes86.cokesaddon.util.FunctionalInterfaceUnit;
@@ -97,8 +98,8 @@ public class ReiSoulTaker extends CokesSynergy implements ActiveHandler {
         }
     }
 
-    @SubscribeEvent(childs = {EntityDamageByBlockEvent.class})
-    public void onEntityDamage(EntityDamageEvent e) {
+    @SubscribeEvent
+    public void onCEntityDamage(CEntityDamageEvent e) {
         if (e.getEntity().equals(getPlayer())) {
             if (getPlayer().getHealth() - e.getFinalDamage() <= 0 && !arousal_cool.isRunning() && soul > 0) {
                 e.setDamage(0);
@@ -109,22 +110,8 @@ public class ReiSoulTaker extends CokesSynergy implements ActiveHandler {
                 channel.update(null);
             }
         }
-    }
 
-    @SubscribeEvent
-    public void onPlayerSetHealth(PlayerSetHealthEvent e) {
-        if (e.getPlayer().equals(getPlayer()) && e.getHealth() <= 0 && !arousal_cool.isRunning() && soul > 0 && !e.isCancelled()) {
-            Healths.setHealth(getPlayer(), soul * (1+ (duration.isRunning() ? 0.5 : 0)));
-            arousal_cool.start();
-
-            soul = 0;
-            channel.update(null);
-        }
-    }
-
-    @SubscribeEvent
-    public void onEntityDamageByEntity(EntityDamageByEntityEvent e) {
-        onEntityDamage(e);
+        if (e.getDamager() == null) return;
         Entity damager = e.getDamager();
         if (damager instanceof Arrow) {
             Arrow arrow = (Arrow) e.getDamager();
@@ -152,6 +139,17 @@ public class ReiSoulTaker extends CokesSynergy implements ActiveHandler {
                     }
                 }
             }
+        }
+    }
+
+    @SubscribeEvent
+    public void onPlayerSetHealth(PlayerSetHealthEvent e) {
+        if (e.getPlayer().equals(getPlayer()) && e.getHealth() <= 0 && !arousal_cool.isRunning() && soul > 0 && !e.isCancelled()) {
+            Healths.setHealth(getPlayer(), soul * (1+ (duration.isRunning() ? 0.5 : 0)));
+            arousal_cool.start();
+
+            soul = 0;
+            channel.update(null);
         }
     }
 
