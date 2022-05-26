@@ -5,6 +5,7 @@ import daybreak.abilitywar.utils.base.minecraft.entity.health.Healths;
 import daybreak.abilitywar.utils.base.minecraft.version.ServerVersion;
 import daybreak.abilitywar.utils.base.minecraft.version.VersionNotSupportedException;
 import org.bukkit.entity.Entity;
+import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
 import org.jetbrains.annotations.NotNull;
@@ -32,6 +33,14 @@ public class Damages {
 
     public static boolean damageVoid(@NotNull Player entity, @Nullable Player damager, float damage) {
         return instance.damageVoid(entity, damager, damage);
+    }
+
+    public static boolean damageMagic(@NotNull Entity entity, @Nullable Player damager, boolean ignore, float damage) {
+        return originDamages().damageMagic(entity, damager, ignore, damage);
+    }
+
+    public static boolean damageFixed(@NotNull Player entity, @NotNull LivingEntity damager, float damage) {
+        return originDamages().damageFixed(entity,damager,damage);
     }
 
     public static INSTANCE originDamages() {
