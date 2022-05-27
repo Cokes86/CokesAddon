@@ -43,6 +43,11 @@ public class Damages {
         return originDamages().damageFixed(entity,damager,damage);
     }
 
+    public static boolean canDamage(@NotNull Entity victim, @Nullable Entity entity, DamageCause cause, float damage) {
+        if (entity != null) return originDamages().canDamage(victim, entity, cause, damage);
+        else return originDamages().canDamage(victim, cause, damage);
+    }
+
     public static INSTANCE originDamages() {
         return daybreak.abilitywar.utils.base.minecraft.damage.Damages.INSTANCE;
     }

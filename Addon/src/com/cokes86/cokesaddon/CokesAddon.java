@@ -2,13 +2,13 @@ package com.cokes86.cokesaddon;
 
 import com.cokes86.cokesaddon.ability.AddonAbilityFactory;
 import com.cokes86.cokesaddon.ability.CokesAbility;
+import com.cokes86.cokesaddon.command.CokesCommand;
 import com.cokes86.cokesaddon.effect.AddonEffectRegistry;
 import com.cokes86.cokesaddon.event.CEntityDamageEvent;
 import com.cokes86.cokesaddon.gamemode.disguiseparty.DisguiseParty;
 import com.cokes86.cokesaddon.gamemode.tailcatch.TailCatch;
 import com.cokes86.cokesaddon.synergy.AddonSynergyFactory;
 import com.cokes86.cokesaddon.synergy.CokesSynergy;
-import daybreak.abilitywar.AbilityWar;
 import daybreak.abilitywar.addon.Addon;
 import daybreak.abilitywar.addon.AddonLoader;
 import daybreak.abilitywar.game.Category;
@@ -64,7 +64,7 @@ public class CokesAddon extends Addon implements Listener {
 		Bukkit.getServer().getScheduler().scheduleSyncDelayedTask(getPlugin(), configLoader);
 
 		//command
-		AbilityWar.getPlugin().getCommands().getMainCommand().addSubCommand("ctest", new CokesTestCommand());
+		new CokesCommand();
 
 		//Load Complete
 		Messager.sendConsoleMessage("[§cCokesAddon§r] "+getDisplayName()+"이 활성화되었습니다.");

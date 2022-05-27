@@ -17,6 +17,7 @@ import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Projectile;
 import org.bukkit.event.entity.EntityDamageEvent;
+import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
 
 import java.text.DecimalFormat;
 
@@ -58,7 +59,7 @@ public class Revenge extends CokesAbility {
 				new AbilityTimer(1) {
 					public void run(int arg0) {
 						Player target = (Player) e.getEntity();
-						if (!target.isDead()) {
+						if (!target.isDead() && Damages.canDamage(target, getPlayer(), DamageCause.VOID, (float) magicfixed_damage)) {
 							target.setNoDamageTicks(0);
 							Damages.damageVoid(target, getPlayer(), (float) magicfixed_damage);
 						}

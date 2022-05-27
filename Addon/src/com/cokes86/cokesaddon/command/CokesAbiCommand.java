@@ -1,4 +1,4 @@
-package com.cokes86.cokesaddon;
+package com.cokes86.cokesaddon.command;
 
 import com.cokes86.cokesaddon.ability.AddonAbilityFactory;
 import daybreak.abilitywar.Command;
@@ -16,7 +16,7 @@ import org.bukkit.entity.Player;
 
 import java.util.Arrays;
 
-public class CokesTestCommand extends Command {
+public class CokesAbiCommand extends Command {
 
     @Override
     protected boolean onCommand(CommandSender sender, String command, String[] args) {
