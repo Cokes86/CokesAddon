@@ -1,0 +1,22 @@
+{
+  "format": "GITHUB",
+  "author": "Cokes86",
+  "repository": "CokesAddon",
+  "name": "CokesAddon",
+  "displayName": "코크스 애드온",
+  "developer": "Cokes_86",
+  "icon": "ecb53e2f-fdf3-4089-ae34-86cff3fc5f34",
+  "links": [
+    {
+      "name": "Github",
+      "link": "https://github.com/Cokes86"
+    }
+  ],
+  "description": [
+    "AbilityWar의 영원한 노예, 스땡의 메인...§8이겠죠?",
+    "새로운 능력과 게임모드로 게임의 질을 더해보세요!",
+    "§c코크스 애드온§7으로 게임을 더욱 즐겁게 즐겨주세요!",
+    "",
+    "애드온 관련 문의: 디스코드 §cCokes_86#9329"
+  ]
+}
