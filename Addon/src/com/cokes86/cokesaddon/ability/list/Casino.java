@@ -1,7 +1,10 @@
 package com.cokes86.cokesaddon.ability.list;
 
 import com.cokes86.cokesaddon.ability.CokesAbility;
+import com.cokes86.cokesaddon.ability.CokesAbility.Config.Condition;
+import com.cokes86.cokesaddon.event.CEntityDamageEvent;
 import com.cokes86.cokesaddon.util.AttributeUtil;
+import com.cokes86.cokesaddon.util.FunctionalInterfaceUnit;
 import com.cokes86.cokesaddon.util.arrow.ArrowUtil;
 import com.cokes86.cokesaddon.util.damage.Damages;
 import com.google.common.base.Strings;
@@ -25,9 +28,9 @@ import daybreak.abilitywar.utils.library.SoundLib;
 import daybreak.google.common.collect.ImmutableMap;
 import org.bukkit.*;
 import org.bukkit.attribute.Attribute;
-import org.bukkit.entity.Arrow;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
+import org.bukkit.entity.Projectile;
 import org.bukkit.event.entity.*;
 import org.bukkit.util.Vector;
 
@@ -40,7 +43,33 @@ import java.util.function.Predicate;
         "철괴 좌클릭으로 자신에게 부여된 효과를 알 수 있습니다."
 })
 public class Casino extends CokesAbility implements ActiveHandler {
-    private static final Config<Integer> COOLDOWN = Config.of(Casino.class, "쿨타임", 60, Config.Condition.COOLDOWN);
+    //쿨타임
+    private static final Config<Integer> COOLDOWN = Config.of(Casino.class, "cooldown", 60, Config.Condition.COOLDOWN,
+            "# 쿨타임", "# 기본값: 60 (초)");
+
+    //각종 효과 세부내역
+    private static final Config<Double> DAMAGE_INCREMENT_VALUE = Config.of(Casino.class, "effects.damage-increment", 0.5, FunctionalInterfaceUnit.positive(),
+            "# 효과 중 대미지 증가량 수치", "# 기본값: 0.5");
+    private static final Config<Double> DAMAGE_DECREMENT_VALUE = Config.of(Casino.class, "effects.damage-decrement", 0.5, FunctionalInterfaceUnit.positive(),
+            "# 효과 중 대미지 감소량 수치", "# 기본값: 0.5");
+    private static final Config<Integer> WITHER_PERIOD = Config.of(Casino.class, "effects.wither-period", 4, Condition.TIME,
+            "# 효과 중 위더 대미지 주기", "# 기본값: 4 (초)");
+    private static final Config<Integer> TWIST_PERIOD = Config.of(Casino.class, "effects.twist-period", 10, Condition.TIME,
+            "# 효과 중 시야 뒤틀림 주기", "# 기본값: 10 (초)");
+    private static final Config<Integer> HEAL_VALUE = Config.of(Casino.class, "effects.heal", 2, FunctionalInterfaceUnit.positive(),
+            "# 효과 중 체력 즉시 회복량", "# 기본값: 2");
+    private static final Config<Integer> MAX_HEALTH_DECREMENT = Config.of(Casino.class, "effects.max-health-decrement", 2, FunctionalInterfaceUnit.positive(),
+            "# 효과 중 최대 체력 감소량", "# 기본값: 2");
+    private static final Config<Double> REGAIN_INCREMENT = Config.of(Casino.class, "effects.regain-increment", 0.2, FunctionalInterfaceUnit.positive(),
+            "# 효과 중 주기적인 체력 회복 증가량", "# 기본값: 0.2 (배)");
+    private static final Config<Integer> BLEED_ATTACK_PREDICATE = Config.of(Casino.class, "effects.bleed-attack-predicate", 4, FunctionalInterfaceUnit.positive(),
+            "# 효과 중 출혈 부여 조건", "# 기본값: 4 (회)");
+    private static final Config<Integer> BLEED_DURATION = Config.of(Casino.class, "effects.bleed-duration", 1, FunctionalInterfaceUnit.positive(),
+            "# 효과 중 출혈 시간", "# 기본값: 1 (초)");
+    private static final Config<Integer> COOLDOWN_INCREMENT = Config.of(Casino.class, "effects.cooldown-increment", 50, FunctionalInterfaceUnit.positive(),
+            "# 효과 중 쿨타임 증가량", "# 기본값: 50 (%)");
+    private static final Config<Integer> STUN_DURATION = Config.of(Casino.class, "effects.stun-duration", 2, Condition.TIME,
+            "# 효과 중 스턴 지속시간", "# 기본값: 2 (초)");
 
     private final double defaultMaxHealth = Objects.requireNonNull(getPlayer().getAttribute(Attribute.GENERIC_MAX_HEALTH)).getBaseValue();
     private Cooldown cooldown = new Cooldown(COOLDOWN.getValue(), CooldownDecrease._75);
@@ -115,9 +144,11 @@ public class Casino extends CokesAbility implements ActiveHandler {
     public boolean ActiveSkill(Material material, ClickType clickType) {
         if (material == Material.IRON_INGOT) {
             if (clickType == ClickType.RIGHT_CLICK && !cooldown.isCooldown() && !infoTimer.isRunning()) {
-                if (effects.containsValue(false)) {
-                    return infoTimer.start();
+                if (!effects.containsValue(false)) {
+                    getPlayer().sendMessage("§c[!]§f 모든 효과를 다 받았습니다.");
+                    return false;
                 }
+                return infoTimer.start();
             } else if (clickType == ClickType.LEFT_CLICK) {
                 getPlayer().sendMessage("[Casino] 효과 목록");
                 StringJoiner joiner = new StringJoiner(", ");
@@ -130,8 +161,7 @@ public class Casino extends CokesAbility implements ActiveHandler {
         return false;
     }
 
-    @SubscribeEvent(childs = {EntityDamageByBlockEvent.class})
-    public void onEntityDamage(EntityDamageEvent e) {
+    public void onEntityDamage(CEntityDamageEvent e) {
         if (e.getEntity().equals(getPlayer()) && e.getCause().equals(EntityDamageEvent.DamageCause.FALL) && effects.get(Effects.IGNORE_FALL)) {
             e.setCancelled(true);
             getPlayer().sendMessage("§a낙하 대미지를 받지 않습니다.");
@@ -139,26 +169,22 @@ public class Casino extends CokesAbility implements ActiveHandler {
         } else if (e.getEntity().equals(getPlayer()) && (e.getCause().equals(EntityDamageEvent.DamageCause.FIRE) || e.getCause().equals(EntityDamageEvent.DamageCause.FIRE_TICK)) && effects.get(Effects.FIRE_RESISTANCE)) {
             e.setCancelled(true);
         }
-    }
-
-    @SubscribeEvent
-    public void onEntityDamageByEntity(EntityDamageByEntityEvent e) {
-        onEntityDamage(e);
 
         Entity attacker = e.getDamager();
-        if (attacker instanceof Arrow) {
-            Arrow arrow = (Arrow) attacker;
-            if (arrow.getShooter() instanceof Entity) {
-                attacker = (Entity) arrow.getShooter();
+        if (attacker == null) return;
+        if (NMS.isArrow(attacker)) {
+            Projectile projectile = (Projectile) e.getDamager();
+            if (projectile.getShooter() instanceof Entity) {
+                attacker = (Entity) projectile.getShooter();
             }
         }
 
         if (e.getEntity().equals(getPlayer()) && effects.get(Effects.RESISTANCE)) {
-            e.setDamage(e.getDamage()-1);
+            e.setDamage(e.getDamage()- DAMAGE_DECREMENT_VALUE.getValue());
         }
         if (attacker.equals(getPlayer())) {
             if (effects.get(Effects.DAMAGE_INCREMENT)) {
-                e.setDamage(e.getDamage()+1);
+                e.setDamage(e.getDamage()+ DAMAGE_INCREMENT_VALUE.getValue());
             }
             if (effects.get(Effects.BLEED)) {
                 if (predicate.test(e.getEntity()) && getGame().isParticipating(e.getEntity().getUniqueId())) {
@@ -173,7 +199,7 @@ public class Casino extends CokesAbility implements ActiveHandler {
     @SubscribeEvent
     public void onEntityRegainHealth(EntityRegainHealthEvent e) {
         if (e.getEntity().equals(getPlayer()) && effects.get(Effects.REGAIN)) {
-            e.setAmount(e.getAmount() * 1.2);
+            e.setAmount(e.getAmount() * (1 + REGAIN_INCREMENT.getValue()));
         }
     }
 
@@ -206,17 +232,17 @@ public class Casino extends CokesAbility implements ActiveHandler {
     }
 
     private enum Effects {
-        DAMAGE_INCREMENT("주는 대미지 1 증가"),
-        WITHER("4초마다 1의 시듦 대미지 부여"),
-        RESISTANCE("받는 대미지 1 감소"),
-        HEAL("체력 2 즉시 회복"),
-        TWIST("10초마다 시야 뒤틀림"),
-        REGAIN("회복량 0.2배 증가"),
-        MAX_HEALTH_DOWN("최대 체력 2 감소"),
-        BLEED("4회 타격 시 출혈 부여"),
-        COOLDOWN_UP("쿨타임 50% 증가"),
+        DAMAGE_INCREMENT("주는 대미지 "+ DAMAGE_INCREMENT_VALUE + " 증가"),
+        WITHER(WITHER_PERIOD+"마다 1의 시듦 대미지 부여"),
+        RESISTANCE("받는 대미지 "+DAMAGE_DECREMENT_VALUE+" 감소"),
+        HEAL("체력 "+HEAL_VALUE+" 즉시 회복"),
+        TWIST(TWIST_PERIOD+"마다 시야 뒤틀림"),
+        REGAIN("회복량 "+REGAIN_INCREMENT+"배 증가"),
+        MAX_HEALTH_DOWN("최대 체력 "+MAX_HEALTH_DECREMENT+" 감소"),
+        BLEED(BLEED_ATTACK_PREDICATE+"회 타격 시 출혈 "+BLEED_DURATION+"부여"),
+        COOLDOWN_UP("쿨타임 "+COOLDOWN_INCREMENT+"% 증가"),
         IGNORE_FALL("낙하대미지 무시"),
-        STUN("스턴 2초 부여"),
+        STUN("스턴 "+STUN_DURATION+" 부여"),
         FIRE_RESISTANCE("화염저항 영구히 부여"),
         NO_CRITICAL("화살 크리티컬 삭제");
 
@@ -297,19 +323,19 @@ public class Casino extends CokesAbility implements ActiveHandler {
                             wither.start();
                             break;
                         case HEAL:
-                            Healths.setHealth(getPlayer(), getPlayer().getHealth() + 2);
+                            Healths.setHealth(getPlayer(), getPlayer().getHealth() + HEAL_VALUE.getValue());
                             break;
                         case TWIST:
                             aim.start();
                             break;
                         case MAX_HEALTH_DOWN:
-                            AttributeUtil.setMaxHealth(getPlayer(), defaultMaxHealth - 2);
+                            AttributeUtil.setMaxHealth(getPlayer(), defaultMaxHealth - MAX_HEALTH_DECREMENT.getValue());
                             break;
                         case COOLDOWN_UP:
-                            cooldown = new Cooldown((int)(COOLDOWN.getValue() * 1.5), CooldownDecrease._75);
+                            cooldown = new Cooldown((int)(COOLDOWN.getValue() * (1+ COOLDOWN_INCREMENT.getValue()/100.0)), CooldownDecrease._75);
                             break;
                         case STUN:
-                            Stun.apply(getParticipant(), TimeUnit.SECONDS, 2);
+                            Stun.apply(getParticipant(), TimeUnit.SECONDS, STUN_DURATION.getValue());
                             break;
                         default:
                         	break;
@@ -343,7 +369,7 @@ public class Casino extends CokesAbility implements ActiveHandler {
         }
 
         public void onCountSet() {
-            String text = "§c".concat(Strings.repeat("☑",hit)).concat(Strings.repeat("☐", 3-hit));
+            String text = "§c".concat(Strings.repeat("☑",hit)).concat(Strings.repeat("☐", BLEED_ATTACK_PREDICATE.getValue()-hit));
             hologram.setText(text);
         }
 
@@ -364,9 +390,9 @@ public class Casino extends CokesAbility implements ActiveHandler {
 
             setCount(10);
 
-            if (hit == 4) {
+            if (hit == BLEED_ATTACK_PREDICATE.getValue()) {
                 stop(false);
-                Bleed.apply(participant, TimeUnit.SECONDS, 1);
+                Bleed.apply(participant, TimeUnit.SECONDS, BLEED_DURATION.getValue());
             }
         }
     }

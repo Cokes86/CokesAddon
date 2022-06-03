@@ -100,7 +100,7 @@ public class Aris extends CokesAbility implements ActiveHandler {
 		@Override
 		protected void onCountSet() {
 			super.onCountSet();
-			actionbarChannel.update("§d사슬 카운터: " + chain);
+			actionbarChannel.update("§d사슬 카운터§8: §f" + chain);
 		}
 	}.setPeriod(TimeUnit.TICKS, 1);
 
@@ -117,10 +117,14 @@ public class Aris extends CokesAbility implements ActiveHandler {
 
 	@Override
 	public boolean ActiveSkill(Material material, ClickType clickType) {
-		if (material.equals(Material.IRON_INGOT) && clickType.equals(ClickType.RIGHT_CLICK) && (duration == null || !duration.isDuration()) && chain != 0 && !cooldown.isCooldown()) {
+		if (material.equals(Material.IRON_INGOT) && clickType.equals(ClickType.RIGHT_CLICK) && (duration == null || !duration.isDuration()) && !cooldown.isCooldown()) {
+			if (chain == 0) {
+				getPlayer().sendMessage("§c[!]§f §d사슬 카운터§f가 존재하지 않습니다.");
+				return false;
+			}
 			final List<Player> players = LocationUtil.getNearbyEntities(Player.class, getPlayer().getLocation(), RANGE.getValue(), RANGE.getValue(), predicate);
 			if (players.isEmpty()) {
-				getPlayer().sendMessage("주변에 플레이어가 존재하지 않습니다.");
+				getPlayer().sendMessage("§c[!]§f 주변에 플레이어가 존재하지 않습니다.");
 				return false;
 			}
 			duration = new CaughtUpTimer(players);

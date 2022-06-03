@@ -36,6 +36,10 @@ public class Ain extends CokesAbility implements ActiveHandler {
             if (clickType == ClickType.RIGHT_CLICK) {
                 boolean used = false;
                 List<Player> nearby = LocationUtil.getNearbyEntities(Player.class, getPlayer().getLocation().clone(), RANGE.getValue(), RANGE.getValue(), player -> !player.equals(getPlayer()));
+                if (nearby.isEmpty()) {
+                    getPlayer().sendMessage("§c[!]§f 주변에 플레이어가 존재하지 않습니다.");
+                    return false;
+                }
                 for (Player near : nearby) {
                     if (!getGame().isParticipating(near)) continue;
                     AbstractGame.Participant participant = getGame().getParticipant(near);
