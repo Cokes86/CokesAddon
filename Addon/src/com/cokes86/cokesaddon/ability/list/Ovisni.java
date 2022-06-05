@@ -80,8 +80,8 @@ public class Ovisni extends CokesAbility implements ActiveHandler {
 
 	@SubscribeEvent
 	public void onEntityDamage(CEntityDamageEvent e) {
-		if (e.getDamager() == null) return;
 		Entity damager = e.getDamager();
+		if (damager == null) return;
 		if (damager instanceof Arrow) {
 			Arrow arrow = (Arrow) damager;
 			if (arrow.getShooter() instanceof Entity) {

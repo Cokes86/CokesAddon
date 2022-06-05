@@ -38,7 +38,7 @@ import java.util.Random;
 import java.util.Set;
 import java.util.function.Predicate;
 
-@AbilityManifest(name = "권투선수R", rank = Rank.A, species = Species.HUMAN, explain = {
+@AbilityManifest(name = "권투선수", rank = Rank.A, species = Species.HUMAN, explain = {
         "§7패시브 §8- §c잽§f: 검으로 공격 시 대미지가 $[JAP_DAMAGE_DECREMENT_PERCENTAGE]% 감소합니다.",
         "  잽을 포함한 모든 스킬 사용 이후, 2초간 다른 스킬을 사용할 수 있습니다.",
         "  이때, 잽을 제외한 스킬을 사용 시, 모든 스킬의 쿨타임이 1초 감소하며, 무적틱을 무시합니다.",

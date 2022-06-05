@@ -105,7 +105,7 @@ public class Poker extends CokesAbility implements ActiveHandler {
 						additional = result.getRight();
 						break;
 					case "Triple":
-						getPlayer().sendMessage("완벽합니다! §e트리플§f입니다! 자신을 제외한 모든 플레이어에게 " + (result.getRight() * 1.5) + "만큼의 대미지를 줍니다.");
+						getPlayer().sendMessage("완벽합니다! §e트리플§f입니다! 자신을 제외한 모든 플레이어에게 " + (result.getRight() * 1.5) + "만큼의 관통 대미지를 줍니다.");
 						for (Participant p : getGame().getParticipants()) {
 							if (p.equals(getParticipant())) continue;
 							if (predicate.test(p.getPlayer())) {
