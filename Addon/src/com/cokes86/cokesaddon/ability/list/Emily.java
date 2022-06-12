@@ -2,7 +2,7 @@ package com.cokes86.cokesaddon.ability.list;
 
 import com.cokes86.cokesaddon.ability.CokesAbility;
 import com.cokes86.cokesaddon.util.CokesUtil;
-import com.cokes86.cokesaddon.util.FunctionalInterfaceUnit;
+import com.cokes86.cokesaddon.util.FunctionalInterfaces;
 import daybreak.abilitywar.AbilityWar;
 import daybreak.abilitywar.ability.AbilityManifest;
 import daybreak.abilitywar.ability.SubscribeEvent;
@@ -72,24 +72,24 @@ import java.util.function.Predicate;
 public class Emily extends CokesAbility implements ActiveHandler {
     private static final Set<Material> swords = CokesUtil.getSwords();
 
-    private static final Config<Integer> ALCHEMY_CAPSULE_COOL = Config.of(Emily.class, "알케미_캡슐_쿨타임", 15, Config.Condition.COOLDOWN);
-    private static final Config<Integer> ALCHEMY_CAPSULE_DURATION = Config.of(Emily.class, "알케미_캡슐_지속시간", 7, Config.Condition.TIME);
-    private static final Config<Integer> ALCHEMY_AREA_SLOWDOWN_COOL = Config.of(Emily.class, "알케미_에리어_둔화_쿨타임_증가량", 1, Config.Condition.TIME);
-    private static final Config<Integer> ALCHEMY_AREA_FROST_MAX_COUNT = Config.of(Emily.class, "알케미_에리어_둔화_빙결_횟수", 3, FunctionalInterfaceUnit.positive());
+    private static final Config<Integer> ALCHEMY_CAPSULE_COOL = Config.of(Emily.class, "알케미_캡슐_쿨타임", 15, FunctionalInterfaces.positive(), FunctionalInterfaces.COOLDOWN);
+    private static final Config<Integer> ALCHEMY_CAPSULE_DURATION = Config.of(Emily.class, "알케미_캡슐_지속시간", 7, FunctionalInterfaces.positive(), FunctionalInterfaces.TIME);
+    private static final Config<Integer> ALCHEMY_AREA_SLOWDOWN_COOL = Config.of(Emily.class, "알케미_에리어_둔화_쿨타임_증가량", 1, FunctionalInterfaces.positive(), FunctionalInterfaces.TIME);
+    private static final Config<Integer> ALCHEMY_AREA_FROST_MAX_COUNT = Config.of(Emily.class, "알케미_에리어_둔화_빙결_횟수", 3, FunctionalInterfaces.positive());
     private static final Config<Double> ALCHEMY_CAPSULE_POWER = Config.of(Emily.class, "알케미_캡슐_힘", 1.35, new String[] {
             "# 알케미 캡슐이 날아가는 힘을 조절합니다.",
             "# 1을 기준으로 값이 커질수록 더욱 강한 힘으로 날아갑니다.",
             "# 기본값: 1.35"
-    }, Config.Condition.NORMAL, FunctionalInterfaceUnit.positive());
+    }, FunctionalInterfaces.positive());
     private static final Config<Double> ALCHEMY_CAPSULE_SPEED = Config.of(Emily.class, "알케미_캡슐_속도", 1.5, new String[] {
             "# 알케미 캡슐이 날아가는 속도를 조절합니다.",
             "# 1을 기준으로 값이 커질수록 더욱 빠르게 날아갑니다.",
             "# 기본값: 1.5"
-    }, Config.Condition.NORMAL, FunctionalInterfaceUnit.positive());
-    private static final Config<Double> ALCHEMY_CAPSULE_DAMAGE = Config.of(Emily.class, "알케미_캡슐_대미지", 5.0, FunctionalInterfaceUnit.positive());
-    private static final Config<Double> ALCHEMY_CAPSULE_AREA_RANGE = Config.of(Emily.class, "알케미_캡슐_에리어_범위", 6.5, FunctionalInterfaceUnit.positive());
-    private static final Config<Double> ALCHEMY_AREA_EXPLOSION_DAMAGE = Config.of(Emily.class, "알케미_에리어_폭발_대미지", 5.0, FunctionalInterfaceUnit.positive());
-    private static final Config<Double> ALCHEMY_AREA_BONUS_DAMAGE = Config.of(Emily.class, "알케미_에리어_화상_추가대미지", 3.0, FunctionalInterfaceUnit.positive());
+    }, FunctionalInterfaces.positive());
+    private static final Config<Double> ALCHEMY_CAPSULE_DAMAGE = Config.of(Emily.class, "알케미_캡슐_대미지", 5.0, FunctionalInterfaces.positive());
+    private static final Config<Double> ALCHEMY_CAPSULE_AREA_RANGE = Config.of(Emily.class, "알케미_캡슐_에리어_범위", 6.5, FunctionalInterfaces.positive());
+    private static final Config<Double> ALCHEMY_AREA_EXPLOSION_DAMAGE = Config.of(Emily.class, "알케미_에리어_폭발_대미지", 5.0, FunctionalInterfaces.positive());
+    private static final Config<Double> ALCHEMY_AREA_BONUS_DAMAGE = Config.of(Emily.class, "알케미_에리어_화상_추가대미지", 3.0, FunctionalInterfaces.positive());
 
     private final Cooldown cooldown = new Cooldown(ALCHEMY_CAPSULE_COOL.getValue(), CooldownDecrease._25);
     private final AbilityTimer alchemyChangeCooldown = new AbilityTimer(1){}.setPeriod(TimeUnit.TICKS, 4);

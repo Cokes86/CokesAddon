@@ -2,8 +2,7 @@ package com.cokes86.cokesaddon.ability.list;
 
 import com.cokes86.cokesaddon.ability.CokesAbility;
 import com.cokes86.cokesaddon.effect.list.Nightmare;
-import com.cokes86.cokesaddon.util.FunctionalInterfaceUnit;
-import com.cokes86.cokesaddon.ability.CokesAbility.Config.Condition;
+import com.cokes86.cokesaddon.util.FunctionalInterfaces;
 import daybreak.abilitywar.ability.AbilityManifest;
 import daybreak.abilitywar.ability.decorator.ActiveHandler;
 import daybreak.abilitywar.config.enums.CooldownDecrease;
@@ -42,12 +41,12 @@ import static org.bukkit.ChatColor.GRAY;
         "  액티브, 타겟팅 능력을 사용할 수 없습니다."
 })
 public class Iris extends CokesAbility implements ActiveHandler {
-    private static final Config<Integer> RAINBOW_COOLDOWN = Config.of(Iris.class, "레인보우_쿨타임", 10, Condition.COOLDOWN);
-    private static final Config<Integer> RAINBOW_RANGE = Config.of(Iris.class, "레인보우_범위", 7, FunctionalInterfaceUnit.positive());
-    private static final Config<Double> RAINBOW_DAMAGE = Config.of(Iris.class, "레인보우_대미지", 3.0, FunctionalInterfaceUnit.positive());
-    private static final Config<Integer> NIGHTMARE_DURATION = Config.of(Iris.class, "악몽_지속시간", 7, Condition.TIME);
-    private static final Config<Integer> NIGHTMARE_COOLDOWN = Config.of(Iris.class, "나이트메어_쿨타임", 50, Condition.COOLDOWN);
-    private static final Config<Integer> STACK_PREDICATE = Config.of(Iris.class, "나이트메어_스택조건", 5, FunctionalInterfaceUnit.positive());
+    private static final Config<Integer> RAINBOW_COOLDOWN = Config.of(Iris.class, "레인보우_쿨타임", 10, FunctionalInterfaces.positive(), FunctionalInterfaces.COOLDOWN);
+    private static final Config<Integer> RAINBOW_RANGE = Config.of(Iris.class, "레인보우_범위", 7, FunctionalInterfaces.positive());
+    private static final Config<Double> RAINBOW_DAMAGE = Config.of(Iris.class, "레인보우_대미지", 3.0, FunctionalInterfaces.positive());
+    private static final Config<Integer> NIGHTMARE_DURATION = Config.of(Iris.class, "악몽_지속시간", 7, FunctionalInterfaces.positive(), FunctionalInterfaces.TIME);
+    private static final Config<Integer> NIGHTMARE_COOLDOWN = Config.of(Iris.class, "나이트메어_쿨타임", 50, FunctionalInterfaces.positive(), FunctionalInterfaces.COOLDOWN);
+    private static final Config<Integer> STACK_PREDICATE = Config.of(Iris.class, "나이트메어_스택조건", 5, FunctionalInterfaces.positive());
 
     private final Cooldown rainbow = new Cooldown(RAINBOW_COOLDOWN.getValue(), "레인보우", CooldownDecrease._90);
     private final Cooldown nightmare = new Cooldown(NIGHTMARE_COOLDOWN.getValue(), "나이트메어", CooldownDecrease._90);

@@ -2,6 +2,7 @@ package com.cokes86.cokesaddon.ability.list;
 
 import com.cokes86.cokesaddon.ability.CokesAbility;
 import com.cokes86.cokesaddon.event.CEntityDamageEvent;
+import com.cokes86.cokesaddon.util.FunctionalInterfaces;
 import daybreak.abilitywar.ability.AbilityManifest;
 import daybreak.abilitywar.ability.SubscribeEvent;
 import daybreak.abilitywar.ability.decorator.ActiveHandler;
@@ -34,7 +35,7 @@ import java.util.function.Predicate;
 		"자신과 팀을 제외한 모든 플레이어에게 (트리플의 수 * 1.5)의 관통 대미지를 줍니다."
 })
 public class Poker extends CokesAbility implements ActiveHandler {
-	private static final Config<Integer> cool = Config.of(Poker.class, "쿨타임", 30, Config.Condition.COOLDOWN);
+	private static final Config<Integer> cool = Config.of(Poker.class, "쿨타임", 30, FunctionalInterfaces.positive(), FunctionalInterfaces.COOLDOWN);
 	private final int[] num = new int[3];
 	private int additional = 0;
 	private final ActionbarChannel ac = newActionbarChannel();

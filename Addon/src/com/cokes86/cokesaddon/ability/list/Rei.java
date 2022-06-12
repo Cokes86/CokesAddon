@@ -3,7 +3,7 @@ package com.cokes86.cokesaddon.ability.list;
 import com.cokes86.cokesaddon.ability.CokesAbility;
 import com.cokes86.cokesaddon.event.CEntityDamageEvent;
 import com.cokes86.cokesaddon.util.AttributeUtil;
-import com.cokes86.cokesaddon.util.FunctionalInterfaceUnit;
+import com.cokes86.cokesaddon.util.FunctionalInterfaces;
 import daybreak.abilitywar.ability.AbilityManifest;
 import daybreak.abilitywar.ability.AbilityManifest.Rank;
 import daybreak.abilitywar.ability.AbilityManifest.Species;
@@ -41,11 +41,11 @@ import org.bukkit.entity.Projectile;
 },
 stats = @Stats(offense = Level.NINE, survival = Level.FIVE, crowdControl = Level.ZERO, mobility = Level.ZERO, utility = Level.THREE), difficulty = Difficulty.NORMAL)
 public class Rei extends CokesAbility {
-	private static final Config<Double> damage = Config.of(Rei.class, "추가대미지", 85.0, FunctionalInterfaceUnit.positive());
-	private static final Config<Double> cost = Config.of(Rei.class, "코스트(%)", 4.5, FunctionalInterfaceUnit.positive());
-	private static final Config<Integer> cool = Config.of(Rei.class, "쿨타임", 100, Config.Condition.COOLDOWN);
-	private static final Config<Integer> respawn = Config.of(Rei.class, "부활체력", 4, FunctionalInterfaceUnit.positive(),
-			FunctionalInterfaceUnit.addJosa(Josa.이가));
+	private static final Config<Double> damage = Config.of(Rei.class, "추가대미지", 85.0, FunctionalInterfaces.positive());
+	private static final Config<Double> cost = Config.of(Rei.class, "코스트(%)", 4.5, FunctionalInterfaces.positive());
+	private static final Config<Integer> cool = Config.of(Rei.class, "쿨타임", 100, FunctionalInterfaces.positive(), FunctionalInterfaces.COOLDOWN);
+	private static final Config<Integer> respawn = Config.of(Rei.class, "부활체력", 4, FunctionalInterfaces.positive(),
+			FunctionalInterfaces.addJosa(Josa.이가));
 
 	private final Cooldown cooldown = new Cooldown(cool.getValue(), CooldownDecrease._75);
 

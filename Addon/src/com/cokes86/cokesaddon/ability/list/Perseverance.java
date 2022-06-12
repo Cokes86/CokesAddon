@@ -2,7 +2,7 @@ package com.cokes86.cokesaddon.ability.list;
 
 import com.cokes86.cokesaddon.ability.CokesAbility;
 import com.cokes86.cokesaddon.event.CEntityDamageEvent;
-import com.cokes86.cokesaddon.util.FunctionalInterfaceUnit;
+import com.cokes86.cokesaddon.util.FunctionalInterfaces;
 import daybreak.abilitywar.ability.AbilityManifest;
 import daybreak.abilitywar.ability.AbilityManifest.Rank;
 import daybreak.abilitywar.ability.AbilityManifest.Species;
@@ -21,9 +21,9 @@ import java.text.DecimalFormat;
 		"[아이디어 제공자 §bRainStar_§f]"
 })
 public class Perseverance extends CokesAbility {
-	private static final Config<Integer> max = Config.of(Perseverance.class, "최대치(%)", 100, FunctionalInterfaceUnit.positive());
-	private static final Config<Integer> upg = Config.of(Perseverance.class, "성장치(%p)", 20, FunctionalInterfaceUnit.positive());
-	private static final Config<Integer> period = Config.of(Perseverance.class, "주기", 70, FunctionalInterfaceUnit.positive(),
+	private static final Config<Integer> max = Config.of(Perseverance.class, "최대치(%)", 100, FunctionalInterfaces.positive());
+	private static final Config<Integer> upg = Config.of(Perseverance.class, "성장치(%p)", 20, FunctionalInterfaces.positive());
+	private static final Config<Integer> period = Config.of(Perseverance.class, "주기", 70, FunctionalInterfaces.positive(),
 			t -> new DecimalFormat("0.##").format(t/20.0)+"초");
 
 	private double give = 0;

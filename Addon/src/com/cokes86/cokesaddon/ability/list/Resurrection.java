@@ -3,7 +3,7 @@ package com.cokes86.cokesaddon.ability.list;
 import com.cokes86.cokesaddon.ability.CokesAbility;
 import com.cokes86.cokesaddon.event.CEntityDamageEvent;
 import com.cokes86.cokesaddon.util.AttributeUtil;
-import com.cokes86.cokesaddon.util.FunctionalInterfaceUnit;
+import com.cokes86.cokesaddon.util.FunctionalInterfaces;
 import daybreak.abilitywar.ability.AbilityManifest;
 import daybreak.abilitywar.ability.AbilityManifest.Rank;
 import daybreak.abilitywar.ability.AbilityManifest.Species;
@@ -20,7 +20,7 @@ import org.bukkit.potion.PotionEffect;
 		"그 이후 모든 공격이 상대에게 주는 대미지가 $[BONUS_DAMAGE] 증가합니다."
 })
 public class Resurrection extends CokesAbility {
-	private static final Config<Double> BONUS_DAMAGE = Config.of(Resurrection.class, "추가대미지", 2.0, FunctionalInterfaceUnit.positive());
+	private static final Config<Double> BONUS_DAMAGE = Config.of(Resurrection.class, "추가대미지", 2.0, FunctionalInterfaces.positive());
 	private boolean resurrection = false;
 
 	public Resurrection(Participant arg0) {

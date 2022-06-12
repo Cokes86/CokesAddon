@@ -3,7 +3,7 @@ package com.cokes86.cokesaddon.ability.list;
 import com.cokes86.cokesaddon.ability.CokesAbility;
 import com.cokes86.cokesaddon.effect.list.DamageDown;
 import com.cokes86.cokesaddon.event.CEntityDamageEvent;
-import com.cokes86.cokesaddon.util.FunctionalInterfaceUnit;
+import com.cokes86.cokesaddon.util.FunctionalInterfaces;
 import daybreak.abilitywar.ability.AbilityManifest;
 import daybreak.abilitywar.ability.AbilityManifest.Rank;
 import daybreak.abilitywar.ability.AbilityManifest.Species;
@@ -45,11 +45,11 @@ public class Seth extends CokesAbility implements ActiveHandler {
 	private final List<Participant> participants = new ArrayList<>(getGame().getParticipants());
 	private int kill = 0;
 	private final DecimalFormat df = new DecimalFormat("0.##");
-	public static final Config<Integer> MAX_DAMAGE = Config.of(Seth.class, "추가대미지", 9, FunctionalInterfaceUnit.greaterThanOrEqual(0));
-	public static final Config<Integer> COOL = Config.of(Seth.class, "쿨타임", 60, Config.Condition.COOLDOWN);
-	public static final Config<Integer> DEBUFF = Config.of(Seth.class, "디버프시간", 5, Config.Condition.TIME);
-	public static final Config<Integer> RANGE = Config.of(Seth.class, "범위", 7, FunctionalInterfaceUnit.positive());
-	public static final Config<Integer> DEBUFF_MAX = Config.of(Seth.class, "감소_최대치", 4, FunctionalInterfaceUnit.positive());
+	public static final Config<Integer> MAX_DAMAGE = Config.of(Seth.class, "추가대미지", 9, FunctionalInterfaces.positive());
+	public static final Config<Integer> COOL = Config.of(Seth.class, "쿨타임", 60, FunctionalInterfaces.positive(), FunctionalInterfaces.COOLDOWN);
+	public static final Config<Integer> DEBUFF = Config.of(Seth.class, "디버프시간", 5, FunctionalInterfaces.positive(), FunctionalInterfaces.TIME);
+	public static final Config<Integer> RANGE = Config.of(Seth.class, "범위", 7, FunctionalInterfaces.positive());
+	public static final Config<Integer> DEBUFF_MAX = Config.of(Seth.class, "감소_최대치", 4, FunctionalInterfaces.positive());
 
 	private final Predicate<Entity> predicate = entity -> {
 		if (entity.equals(getPlayer())) return false;

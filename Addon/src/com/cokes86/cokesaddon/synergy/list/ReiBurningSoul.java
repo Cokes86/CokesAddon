@@ -4,7 +4,7 @@ import com.cokes86.cokesaddon.event.CEntityDamageEvent;
 import com.cokes86.cokesaddon.synergy.CokesSynergy;
 import com.cokes86.cokesaddon.synergy.CokesSynergy.Config.Condition;
 import com.cokes86.cokesaddon.util.AttributeUtil;
-import com.cokes86.cokesaddon.util.FunctionalInterfaceUnit;
+import com.cokes86.cokesaddon.util.FunctionalInterfaces;
 import com.google.common.collect.ImmutableList;
 import daybreak.abilitywar.ability.AbilityManifest;
 import daybreak.abilitywar.ability.AbilityManifest.Rank;
@@ -69,23 +69,23 @@ import java.util.function.Predicate;
 })
 public class ReiBurningSoul extends CokesSynergy implements ActiveHandler {
     //컨피그
-    private static final Config<Double> FIRE_DAMAGE_INCREMENT = Config.of(ReiBurningSoul.class, "fire-damage-increment", 10d, FunctionalInterfaceUnit.positive(),
+    private static final Config<Double> FIRE_DAMAGE_INCREMENT = Config.of(ReiBurningSoul.class, "fire-damage-increment", 10d, FunctionalInterfaces.positive(),
             "# 버닝 소울 개당 증가할 화염피해 증가량", "# 기본값: 10.0(%)");
-    private static final Config<Integer> MAX_SOUL = Config.of(ReiBurningSoul.class, "max-soul", 5, FunctionalInterfaceUnit.positive(),
+    private static final Config<Integer> MAX_SOUL = Config.of(ReiBurningSoul.class, "max-soul", 5, FunctionalInterfaces.positive(),
             "# 수거로 획득 가능한 최대 버닝 소울의 개수", "# 기본값: 5(개)");
     private static final Config<Integer> DAMAGE_INCREMENT_PREDICATE = Config.of(ReiBurningSoul.class, "damage-increment-predicate", 5, Condition.TIME,
             "# 발화 시간에 따른 추가 대미지 조건", "# 기본값: 5(초)");
-    private static final Config<Double> SOUL_LIBERATION_COST = Config.of(ReiBurningSoul.class, "soul-liveration-cost", 10d, FunctionalInterfaceUnit.between(0d,100d,false),
+    private static final Config<Double> SOUL_LIBERATION_COST = Config.of(ReiBurningSoul.class, "soul-liveration-cost", 10d, FunctionalInterfaces.between(0d,100d,false),
             "# 영혼 해방 시 필요한 체력 코스트", "# 기본값: 10.0(%)");
     private static final Config<Integer> TEMPORARY_SOUL_DURATION = Config.of(ReiBurningSoul.class, "temporary-soul-duration", 7, Condition.TIME,
             "# 임시 버닝 소울의 지속시간", "# 기본값: 7(초)");
-    private static final Config<Integer> LIBERATION_SOUL_RANGE = Config.of(ReiBurningSoul.class, "liveration-soul-range", 10, FunctionalInterfaceUnit.positive(),
+    private static final Config<Integer> LIBERATION_SOUL_RANGE = Config.of(ReiBurningSoul.class, "liveration-soul-range", 10, FunctionalInterfaces.positive(),
             "# 해방된 버닝 소울이 적을 인식하는 범위", "# 기본값: 5(블럭)");
-    private static final Config<Float> LIBERATION_SOUL_DAMAGE = Config.of(ReiBurningSoul.class, "liveration-soul-damage", 3f, FunctionalInterfaceUnit.positive(),
+    private static final Config<Float> LIBERATION_SOUL_DAMAGE = Config.of(ReiBurningSoul.class, "liveration-soul-damage", 3f, FunctionalInterfaces.positive(),
             "# 해방된 버닝 소울 적중시 대미지", "# 기본값: 3.0");
     private static final Config<Integer> LIBERATION_SOUL_FIRE_DURATION = Config.of(ReiBurningSoul.class, "liveration-soul-fire-duration", 2, Condition.TIME,
             "# 해방된 버닝 소울 적중시 추가할 발화 시간", "# 기본값: 2(초)");
-    private static final Config<Integer> LAST_BURNING_RANGE = Config.of(ReiBurningSoul.class, "last-burning-range", 5, FunctionalInterfaceUnit.positive(),
+    private static final Config<Integer> LAST_BURNING_RANGE = Config.of(ReiBurningSoul.class, "last-burning-range", 5, FunctionalInterfaces.positive(),
             "# 라스트 버닝에서 발화를 적용할 플레이어 범위", "# 기본값: 5(블럭)");
     private static final Config<Integer> LAST_BURNING_FIRE_DURATION = Config.of(ReiBurningSoul.class, "last-burning-fire-duration", 5, Condition.TIME,
             "# 라스트 버닝 추가 발화 시간", "# 기본값: 5(초)");

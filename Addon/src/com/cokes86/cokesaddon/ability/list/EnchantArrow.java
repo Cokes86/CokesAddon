@@ -3,7 +3,7 @@ package com.cokes86.cokesaddon.ability.list;
 import com.cokes86.cokesaddon.ability.CokesAbility;
 import com.cokes86.cokesaddon.event.CEntityDamageEvent;
 import com.cokes86.cokesaddon.util.CokesUtil;
-import com.cokes86.cokesaddon.util.FunctionalInterfaceUnit;
+import com.cokes86.cokesaddon.util.FunctionalInterfaces;
 import daybreak.abilitywar.ability.AbilityManifest;
 import daybreak.abilitywar.ability.AbilityManifest.Rank;
 import daybreak.abilitywar.ability.AbilityManifest.Species;
@@ -27,22 +27,22 @@ import java.util.Objects;
 		"[아이디어 제공자 §bRainStar_§f]"
 })
 public class EnchantArrow extends CokesAbility {
-	private static final Config<Double> DAMAGE = Config.of(EnchantArrow.class, "damage", 8.5, FunctionalInterfaceUnit.positive(),
+	private static final Config<Double> DAMAGE = Config.of(EnchantArrow.class, "damage", 8.5, FunctionalInterfaces.positive(),
 			"# 인챈트 스택 당 상승할 대미지 증가량",
 			"# 기본값: 8.5 (%)");
-	private static final Config<Integer> RISK = Config.of(EnchantArrow.class, "risk", 1, FunctionalInterfaceUnit.positive(),
+	private static final Config<Integer> RISK = Config.of(EnchantArrow.class, "risk", 1, FunctionalInterfaces.positive(),
 			"# 인챈트 스택이 없는 상태에서 적중 실패 시 받는 대미지",
 			"# 기본값: 1");
-	private static final Config<Integer> MAX_STACK = Config.of(EnchantArrow.class, "max-stack", 9, FunctionalInterfaceUnit.positive(),
+	private static final Config<Integer> MAX_STACK = Config.of(EnchantArrow.class, "max-stack", 9, FunctionalInterfaces.positive(),
 			"# 인챈트 스택의 최대치",
 			"# 기본값: 9");
-	private static final Config<Integer> MAX_STACK_UP = Config.of(EnchantArrow.class, "max-increase-stack", 3, FunctionalInterfaceUnit.positive(),
+	private static final Config<Integer> MAX_STACK_UP = Config.of(EnchantArrow.class, "max-increase-stack", 3, FunctionalInterfaces.positive(),
 			"# 인챈트 스택의 최대 증가량",
 			"# 기본값: 3");
-	private static final Config<Integer> MAX_STACK_DOWN = Config.of(EnchantArrow.class, "max-decrease-stack", 3, FunctionalInterfaceUnit.positive(),
+	private static final Config<Integer> MAX_STACK_DOWN = Config.of(EnchantArrow.class, "max-decrease-stack", 3, FunctionalInterfaces.positive(),
 			"# 인챈트 스택의 최대 감소량",
 			"# 기본값: 3");
-	private static final Config<Integer> DISTANCE = Config.of(EnchantArrow.class, "distance", 10, FunctionalInterfaceUnit.positive(),
+	private static final Config<Integer> DISTANCE = Config.of(EnchantArrow.class, "distance", 10, FunctionalInterfaces.positive(),
 			"# 인챈트 스택이 증가하거나 감소할 때 거리의 비례량",
 			"# 가까울 수록 인챈트 스택이 적게 증가, 크게 감소합니다.",
 			"# 기본값: 10 (블럭)");

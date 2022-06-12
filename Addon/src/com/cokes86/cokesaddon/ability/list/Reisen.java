@@ -3,7 +3,7 @@ package com.cokes86.cokesaddon.ability.list;
 import com.cokes86.cokesaddon.ability.CokesAbility;
 import com.cokes86.cokesaddon.effect.list.Warp;
 import com.cokes86.cokesaddon.event.CEntityDamageEvent;
-import com.cokes86.cokesaddon.util.FunctionalInterfaceUnit;
+import com.cokes86.cokesaddon.util.FunctionalInterfaces;
 import daybreak.abilitywar.ability.AbilityManifest;
 import daybreak.abilitywar.ability.SubscribeEvent;
 import daybreak.abilitywar.ability.decorator.ActiveHandler;
@@ -52,19 +52,19 @@ import java.util.function.Predicate;
         "상대방을 보고 우클릭 시 상대방의 액티브, 타겟팅 능력을 봉인합니다."
 })
 public class Reisen extends CokesAbility implements ActiveHandler {
-    private static final Config<Integer> MADNESS_ENHANCE_PREDICATE = Config.of(Reisen.class, "광기를_다루는_자.강화_조건", 25, FunctionalInterfaceUnit.positive());
-    private static final Config<Integer> MADNESS_ENHANCE_PERIOD_DECREASE = Config.of(Reisen.class, "광기를_다루는_자.강화_주기_감소치(%)", 50, FunctionalInterfaceUnit.between(0, 100, false));
-    private static final Config<Integer> MADNESS_PERIOD = Config.of(Reisen.class, "광기를_다루는_자.주기", 20, Config.Condition.TIME);
-    private static final Config<Integer> MADNESS_RANGE = Config.of(Reisen.class, "광기를_다루는_자.범위", 5, FunctionalInterfaceUnit.positive());
+    private static final Config<Integer> MADNESS_ENHANCE_PREDICATE = Config.of(Reisen.class, "광기를_다루는_자.강화_조건", 25, FunctionalInterfaces.positive());
+    private static final Config<Integer> MADNESS_ENHANCE_PERIOD_DECREASE = Config.of(Reisen.class, "광기를_다루는_자.강화_주기_감소치(%)", 50, FunctionalInterfaces.between(0, 100, false));
+    private static final Config<Integer> MADNESS_PERIOD = Config.of(Reisen.class, "광기를_다루는_자.주기", 20, FunctionalInterfaces.positive(), FunctionalInterfaces.TIME);
+    private static final Config<Integer> MADNESS_RANGE = Config.of(Reisen.class, "광기를_다루는_자.범위", 5, FunctionalInterfaces.positive());
 
-    private static final Config<Integer> MIND_SHAKER_ENHANCE_PREDICATE = Config.of(Reisen.class, "마인드_쉐이커.강화_조건", 50, FunctionalInterfaceUnit.positive());
-    private static final Config<Integer> MIND_SHAKER_ENHANCE_DURATION = Config.of(Reisen.class, "마인드_쉐이커.강화_뒤틀림_지속시간", 7, Config.Condition.TIME);
+    private static final Config<Integer> MIND_SHAKER_ENHANCE_PREDICATE = Config.of(Reisen.class, "마인드_쉐이커.강화_조건", 50, FunctionalInterfaces.positive());
+    private static final Config<Integer> MIND_SHAKER_ENHANCE_DURATION = Config.of(Reisen.class, "마인드_쉐이커.강화_뒤틀림_지속시간", 7, FunctionalInterfaces.positive(), FunctionalInterfaces.TIME);
 
-    private static final Config<Integer> EYES_RANGE = Config.of(Reisen.class, "광기의_눈동자.범위", 10, FunctionalInterfaceUnit.positive());
-    private static final Config<Integer> EYES_DURATION = Config.of(Reisen.class, "광기의_눈동자.지속시간", 10, Config.Condition.TIME);
-    private static final Config<Integer> EYES_COOLDOWN = Config.of(Reisen.class, "광기의_눈동자.쿨타임", 10, Config.Condition.COOLDOWN);
-    private static final Config<Integer> EYES_ENHANCE_PREDICATE = Config.of(Reisen.class, "광기의_눈동자.강화_조건", 35, FunctionalInterfaceUnit.positive());
-    private static final Config<Integer> EYES_ENHANCE_COOLDOWN_DECREASE = Config.of(Reisen.class, "광기의_눈동자.강화_쿨타임_감소치(%)", 50, FunctionalInterfaceUnit.between(0, 100, false));
+    private static final Config<Integer> EYES_RANGE = Config.of(Reisen.class, "광기의_눈동자.범위", 10, FunctionalInterfaces.positive());
+    private static final Config<Integer> EYES_DURATION = Config.of(Reisen.class, "광기의_눈동자.지속시간", 10, FunctionalInterfaces.positive(), FunctionalInterfaces.TIME);
+    private static final Config<Integer> EYES_COOLDOWN = Config.of(Reisen.class, "광기의_눈동자.쿨타임", 10, FunctionalInterfaces.positive(), FunctionalInterfaces.COOLDOWN);
+    private static final Config<Integer> EYES_ENHANCE_PREDICATE = Config.of(Reisen.class, "광기의_눈동자.강화_조건", 35, FunctionalInterfaces.positive());
+    private static final Config<Integer> EYES_ENHANCE_COOLDOWN_DECREASE = Config.of(Reisen.class, "광기의_눈동자.강화_쿨타임_감소치(%)", 50, FunctionalInterfaces.between(0, 100, false));
 
     public Reisen(AbstractGame.Participant arg0) {
         super(arg0);

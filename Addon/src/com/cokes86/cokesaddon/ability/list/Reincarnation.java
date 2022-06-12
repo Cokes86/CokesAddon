@@ -3,7 +3,7 @@ package com.cokes86.cokesaddon.ability.list;
 import com.cokes86.cokesaddon.ability.CokesAbility;
 import com.cokes86.cokesaddon.event.CEntityDamageEvent;
 import com.cokes86.cokesaddon.util.AttributeUtil;
-import com.cokes86.cokesaddon.util.FunctionalInterfaceUnit;
+import com.cokes86.cokesaddon.util.FunctionalInterfaces;
 import daybreak.abilitywar.ability.AbilityManifest;
 import daybreak.abilitywar.ability.AbilityManifest.Rank;
 import daybreak.abilitywar.ability.AbilityManifest.Species;
@@ -37,13 +37,13 @@ import java.util.List;
 		"[아이디어 제공자 §bSato207§f]"
 })
 public class Reincarnation extends CokesAbility {
-	public static final Config<Integer> duration = Config.of(Reincarnation.class, "지속시간", 25, Config.Condition.TIME);
-	public static final Config<Integer> cooldown = Config.of(Reincarnation.class, "쿨타임", 600, Config.Condition.COOLDOWN);
-	public static final Config<Integer> damage = Config.of(Reincarnation.class, "감소대미지(%)", 50, FunctionalInterfaceUnit.positive());
-	public static final Config<Integer> hit = Config.of(Reincarnation.class, "타격횟수", 5, FunctionalInterfaceUnit.positive());
-	public static final Config<Integer> heal = Config.of(Reincarnation.class, "회복수치량(%)", 5, FunctionalInterfaceUnit.positive());
-	public static final Config<Integer> respawn = Config.of(Reincarnation.class, "회복량", 2, FunctionalInterfaceUnit.positive(),
-			FunctionalInterfaceUnit.addJosa(Josa.이가));
+	public static final Config<Integer> duration = Config.of(Reincarnation.class, "지속시간", 25, FunctionalInterfaces.positive(), FunctionalInterfaces.TIME);
+	public static final Config<Integer> cooldown = Config.of(Reincarnation.class, "쿨타임", 600, FunctionalInterfaces.positive(), FunctionalInterfaces.COOLDOWN);
+	public static final Config<Integer> damage = Config.of(Reincarnation.class, "감소대미지(%)", 50, FunctionalInterfaces.positive());
+	public static final Config<Integer> hit = Config.of(Reincarnation.class, "타격횟수", 5, FunctionalInterfaces.positive());
+	public static final Config<Integer> heal = Config.of(Reincarnation.class, "회복수치량(%)", 5, FunctionalInterfaces.positive());
+	public static final Config<Integer> respawn = Config.of(Reincarnation.class, "회복량", 2, FunctionalInterfaces.positive(),
+			FunctionalInterfaces.addJosa(Josa.이가));
 	private final ActionbarChannel ac = newActionbarChannel();
 	private int hitted = 0;
 	private final Cooldown cool = new Cooldown(cooldown.getValue());

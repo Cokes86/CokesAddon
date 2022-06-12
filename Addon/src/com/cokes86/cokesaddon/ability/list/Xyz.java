@@ -1,7 +1,7 @@
 package com.cokes86.cokesaddon.ability.list;
 
 import com.cokes86.cokesaddon.ability.CokesAbility;
-import com.cokes86.cokesaddon.util.FunctionalInterfaceUnit;
+import com.cokes86.cokesaddon.util.FunctionalInterfaces;
 import daybreak.abilitywar.AbilityWar;
 import daybreak.abilitywar.ability.AbilityManifest;
 import daybreak.abilitywar.ability.AbilityManifest.Rank;
@@ -43,8 +43,8 @@ import java.util.Map.Entry;
 		"신속2, 힘1 버프가 상시로 주어집니다."
 })
 public class Xyz extends CokesAbility implements ActiveHandler {
-	private static final Config<Integer> range = Config.of(Xyz.class, "범위", 10, FunctionalInterfaceUnit.positive());
-	private static final Config<Integer> duration = Config.of(Xyz.class, "지속시간", 40, Config.Condition.TIME);
+	private static final Config<Integer> range = Config.of(Xyz.class, "범위", 10, FunctionalInterfaces.positive());
+	private static final Config<Integer> duration = Config.of(Xyz.class, "지속시간", 40, FunctionalInterfaces.positive(), FunctionalInterfaces.TIME);
 	private final Predicate<Entity> predicate = entity -> {
 		if (entity == null || entity.equals(getPlayer())) return false;
 		if (entity instanceof Player) {

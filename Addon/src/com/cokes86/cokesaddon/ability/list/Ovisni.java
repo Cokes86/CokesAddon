@@ -3,7 +3,7 @@ package com.cokes86.cokesaddon.ability.list;
 import com.cokes86.cokesaddon.ability.CokesAbility;
 import com.cokes86.cokesaddon.event.CEntityDamageEvent;
 import com.cokes86.cokesaddon.util.CokesUtil;
-import com.cokes86.cokesaddon.util.FunctionalInterfaceUnit;
+import com.cokes86.cokesaddon.util.FunctionalInterfaces;
 import daybreak.abilitywar.ability.AbilityManifest;
 import daybreak.abilitywar.ability.AbilityManifest.Rank;
 import daybreak.abilitywar.ability.AbilityManifest.Species;
@@ -36,10 +36,10 @@ import java.util.concurrent.ConcurrentHashMap;
 })
 public class Ovisni extends CokesAbility implements ActiveHandler {
 
-	public static final Config<Integer> COOLDOWN_CONFIG = Config.of(Ovisni.class, "쿨타임", 30, Config.Condition.COOLDOWN);
-	public static final Config<Integer> MAX_COUNTER_CONFIG = Config.of(Ovisni.class, "최대카운터", 7, FunctionalInterfaceUnit.positive());
-	public static final Config<Integer> DELAY = Config.of(Ovisni.class, "지속딜레이", 10, Config.Condition.TIME);
-	public static final Config<Integer> MAX_DAMAGE_HIT = Config.of(Ovisni.class, "최대_맹독_타격_횟수", 12, FunctionalInterfaceUnit.positive());
+	public static final Config<Integer> COOLDOWN_CONFIG = Config.of(Ovisni.class, "쿨타임", 30, FunctionalInterfaces.positive(), FunctionalInterfaces.COOLDOWN);
+	public static final Config<Integer> MAX_COUNTER_CONFIG = Config.of(Ovisni.class, "최대카운터", 7, FunctionalInterfaces.positive());
+	public static final Config<Integer> DELAY = Config.of(Ovisni.class, "지속딜레이", 10, FunctionalInterfaces.positive(), FunctionalInterfaces.TIME);
+	public static final Config<Integer> MAX_DAMAGE_HIT = Config.of(Ovisni.class, "최대_맹독_타격_횟수", 12, FunctionalInterfaces.positive());
 
 	private final Map<Participant, OvisniStack> stackMap = new ConcurrentHashMap<>();
 

@@ -2,7 +2,7 @@ package com.cokes86.cokesaddon.synergy.list;
 
 import com.cokes86.cokesaddon.event.CEntityDamageEvent;
 import com.cokes86.cokesaddon.synergy.CokesSynergy;
-import com.cokes86.cokesaddon.util.FunctionalInterfaceUnit;
+import com.cokes86.cokesaddon.util.FunctionalInterfaces;
 import daybreak.abilitywar.AbilityWar;
 import daybreak.abilitywar.ability.AbilityManifest;
 import daybreak.abilitywar.ability.Materials;
@@ -50,7 +50,7 @@ public class CokesSoldier extends CokesSynergy implements ActiveHandler {
     private static final Config<Integer> SALUTE_COOLDOWN = Config.of(CokesSoldier.class, "사단장_쿨타임", 60, Config.Condition.COOLDOWN);
 
     private static final Config<Integer> K2_COOLDOWN = Config.of(CokesSoldier.class, "K2_쿨타임", 10, Config.Condition.COOLDOWN);
-    private static final Config<Double> K2_DAMAGE = Config.of(CokesSoldier.class, "K2_대미지", 5.0, FunctionalInterfaceUnit.positive());
+    private static final Config<Double> K2_DAMAGE = Config.of(CokesSoldier.class, "K2_대미지", 5.0, FunctionalInterfaces.positive());
 
     public CokesSoldier(AbstractGame.Participant participant) {
         super(participant);

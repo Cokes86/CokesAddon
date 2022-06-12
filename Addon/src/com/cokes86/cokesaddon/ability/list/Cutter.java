@@ -1,7 +1,7 @@
 package com.cokes86.cokesaddon.ability.list;
 
 import com.cokes86.cokesaddon.ability.CokesAbility;
-import com.cokes86.cokesaddon.util.FunctionalInterfaceUnit;
+import com.cokes86.cokesaddon.util.FunctionalInterfaces;
 import daybreak.abilitywar.ability.AbilityManifest;
 import daybreak.abilitywar.ability.decorator.ActiveHandler;
 import daybreak.abilitywar.game.AbstractGame;
@@ -13,9 +13,9 @@ import org.bukkit.Material;
 		"이후 자연회복을 제외하고 1초당 1씩, 총 $[duration]만큼의 체력을 회복합니다."
 })
 public class Cutter extends CokesAbility implements ActiveHandler {
-	private static final Config<Integer> cool = Config.of(Cutter.class, "쿨타임", 10, Config.Condition.COOLDOWN);
-	private static final Config<Integer> duration = Config.of(Cutter.class, "회복량", 7, FunctionalInterfaceUnit.positive());
-	private static final Config<Integer> risk = Config.of(Cutter.class, "코스트", 4, FunctionalInterfaceUnit.positive());
+	private static final Config<Integer> cool = Config.of(Cutter.class, "쿨타임", 10, FunctionalInterfaces.positive(), FunctionalInterfaces.COOLDOWN);
+	private static final Config<Integer> duration = Config.of(Cutter.class, "회복량", 7, FunctionalInterfaces.positive());
+	private static final Config<Integer> risk = Config.of(Cutter.class, "코스트", 4, FunctionalInterfaces.positive());
 
 	private final Cooldown cooldownTimer = new Cooldown(cool.getValue());
 	private final Duration durationTimer = new Duration(duration.getValue(), cooldownTimer) {

@@ -2,7 +2,7 @@ package com.cokes86.cokesaddon.ability.list;
 
 import com.cokes86.cokesaddon.ability.CokesAbility;
 import com.cokes86.cokesaddon.event.CEntityDamageEvent;
-import com.cokes86.cokesaddon.util.FunctionalInterfaceUnit;
+import com.cokes86.cokesaddon.util.FunctionalInterfaces;
 import daybreak.abilitywar.ability.AbilityManifest;
 import daybreak.abilitywar.ability.AbilityManifest.Rank;
 import daybreak.abilitywar.ability.AbilityManifest.Species;
@@ -23,9 +23,9 @@ import org.bukkit.entity.Projectile;
 		"상대방에게 무시한 대미지의 $[DAMAGE]%를 입힙니다. $[COOL]"
 })
 public class Thorn extends CokesAbility implements ActiveHandler {
-	private static final Config<Integer> COOL = Config.of(Thorn.class, "쿨타임", 20, Config.Condition.COOLDOWN);
-	private static final Config<Integer> DURATION = Config.of(Thorn.class, "지속시간", 5, Config.Condition.TIME);
-	private static final Config<Double> DAMAGE = Config.of(Thorn.class, "반사대미지(%)", 60.0, FunctionalInterfaceUnit.positive());
+	private static final Config<Integer> COOL = Config.of(Thorn.class, "쿨타임", 20, FunctionalInterfaces.positive(), FunctionalInterfaces.COOLDOWN);
+	private static final Config<Integer> DURATION = Config.of(Thorn.class, "지속시간", 5, FunctionalInterfaces.positive(), FunctionalInterfaces.TIME);
+	private static final Config<Double> DAMAGE = Config.of(Thorn.class, "반사대미지(%)", 60.0, FunctionalInterfaces.positive());
 	private final Cooldown cooldown = new Cooldown(COOL.getValue());
 	private final Duration duration = new Duration(DURATION.getValue(), cooldown) {
 		@Override

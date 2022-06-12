@@ -2,7 +2,7 @@ package com.cokes86.cokesaddon.synergy.list;
 
 import com.cokes86.cokesaddon.event.CEntityDamageEvent;
 import com.cokes86.cokesaddon.synergy.CokesSynergy;
-import com.cokes86.cokesaddon.util.FunctionalInterfaceUnit;
+import com.cokes86.cokesaddon.util.FunctionalInterfaces;
 import daybreak.abilitywar.ability.AbilityManifest;
 import daybreak.abilitywar.ability.AbilityManifest.Rank;
 import daybreak.abilitywar.ability.AbilityManifest.Species;
@@ -38,7 +38,7 @@ import java.util.function.Predicate;
 		"능력 사용 이후 1회에 한정해 낙하대미지를 받지 않습니다."
 })
 public class AirDisintegration extends CokesSynergy implements ActiveHandler {
-	public static final Config<Integer> range = Config.of(AirDisintegration.class, "범위", 7, FunctionalInterfaceUnit.positive());
+	public static final Config<Integer> range = Config.of(AirDisintegration.class, "범위", 7, FunctionalInterfaces.positive());
 	public static final Config<Integer> cool = Config.of(AirDisintegration.class, "쿨타임", 15, Config.Condition.COOLDOWN);
 	private final Predicate<Entity> STRICT_PREDICATE = entity -> {
 		if (entity.equals(getPlayer())) return false;

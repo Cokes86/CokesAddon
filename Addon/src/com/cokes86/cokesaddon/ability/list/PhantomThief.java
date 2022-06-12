@@ -3,6 +3,7 @@ package com.cokes86.cokesaddon.ability.list;
 import com.cokes86.cokesaddon.ability.AddonAbilityFactory.SupportNMS;
 import com.cokes86.cokesaddon.ability.CokesAbility;
 import com.cokes86.cokesaddon.event.CEntityDamageEvent;
+import com.cokes86.cokesaddon.util.FunctionalInterfaces;
 import daybreak.abilitywar.ability.*;
 import daybreak.abilitywar.ability.decorator.ActiveHandler;
 import daybreak.abilitywar.ability.decorator.TargetHandler;
@@ -62,10 +63,10 @@ public abstract class PhantomThief extends CokesAbility implements ActiveHandler
 		}
 	};
 
-	private static final Config<Integer> cooldown = Config.of(PhantomThief.class, "쿨타임", 120, Config.Condition.COOLDOWN);
-	private static final Config<Integer> duration = Config.of(PhantomThief.class, "팬텀모드_지속시간", 15, Config.Condition.TIME);
-	private static final Config<Integer> glowing = Config.of(PhantomThief.class, "발광모드_지속시간", 10, Config.Condition.TIME);
-	private static final Config<Integer> change = Config.of(PhantomThief.class, "능력변환_대기시간", 30, Config.Condition.TIME);
+	private static final Config<Integer> cooldown = Config.of(PhantomThief.class, "쿨타임", 120, FunctionalInterfaces.positive(), FunctionalInterfaces.COOLDOWN);
+	private static final Config<Integer> duration = Config.of(PhantomThief.class, "팬텀모드_지속시간", 15, FunctionalInterfaces.positive(), FunctionalInterfaces.TIME);
+	private static final Config<Integer> glowing = Config.of(PhantomThief.class, "발광모드_지속시간", 10, FunctionalInterfaces.positive(), FunctionalInterfaces.TIME);
+	private static final Config<Integer> change = Config.of(PhantomThief.class, "능력변환_대기시간", 30, FunctionalInterfaces.positive(), FunctionalInterfaces.TIME);
 
 	private final Cooldown c = new Cooldown(cooldown.getValue());
 	private final PhantomThiefTimer timer = new PhantomThiefTimer();

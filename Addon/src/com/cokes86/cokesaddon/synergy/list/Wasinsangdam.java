@@ -3,7 +3,7 @@ package com.cokes86.cokesaddon.synergy.list;
 import com.cokes86.cokesaddon.event.CEntityDamageEvent;
 import com.cokes86.cokesaddon.synergy.CokesSynergy;
 import com.cokes86.cokesaddon.synergy.CokesSynergy.Config.Condition;
-import com.cokes86.cokesaddon.util.FunctionalInterfaceUnit;
+import com.cokes86.cokesaddon.util.FunctionalInterfaces;
 import daybreak.abilitywar.ability.AbilityManifest;
 import daybreak.abilitywar.ability.AbilityManifest.Rank;
 import daybreak.abilitywar.ability.AbilityManifest.Species;
@@ -30,7 +30,7 @@ import org.bukkit.event.entity.EntityRegainHealthEvent;
         "원한 상태에서 철괴 우클릭 시, 대상에게 텔레포트합니다. $[COOLDOWN]"
 })
 public class Wasinsangdam extends CokesSynergy implements ActiveHandler {
-    private static final Config<Double> DAMAGE_INCREMENT = Config.of(Wasinsangdam.class, "damage-increment", 25.0, FunctionalInterfaceUnit.positive());
+    private static final Config<Double> DAMAGE_INCREMENT = Config.of(Wasinsangdam.class, "damage-increment", 25.0, FunctionalInterfaces.positive());
     private static final Config<Integer> COOLDOWN = Config.of(Wasinsangdam.class, "cooldown", 50, Condition.COOLDOWN);
 
     private final Cooldown cooldown = new Cooldown(COOLDOWN.getValue());

@@ -2,7 +2,7 @@ package com.cokes86.cokesaddon.synergy.list;
 
 import com.cokes86.cokesaddon.event.CEntityDamageEvent;
 import com.cokes86.cokesaddon.synergy.CokesSynergy;
-import com.cokes86.cokesaddon.util.FunctionalInterfaceUnit;
+import com.cokes86.cokesaddon.util.FunctionalInterfaces;
 import daybreak.abilitywar.ability.AbilityManifest;
 import daybreak.abilitywar.ability.SubscribeEvent;
 import daybreak.abilitywar.ability.decorator.ActiveHandler;
@@ -32,11 +32,11 @@ import org.bukkit.event.entity.ProjectileHitEvent;
 public class ReaperArrow extends CokesSynergy implements ActiveHandler {
 	private static final Config<Integer> duration = Config.of(ReaperArrow.class, "충전시간", 60, Config.Condition.TIME);
 	private static final Config<Integer> cool = Config.of(ReaperArrow.class, "쿨타임", 60, Config.Condition.COOLDOWN);
-	private static final Config<Double> damage1 = Config.of(ReaperArrow.class, "체력비례대미지.1스택", 10.0, FunctionalInterfaceUnit.between(0.0, 100.0, true));
-	private static final Config<Double> damage2 = Config.of(ReaperArrow.class, "체력비례대미지.2스택", 25.0, FunctionalInterfaceUnit.between(0.0, 100.0, true));
-	private static final Config<Double> damage3 = Config.of(ReaperArrow.class, "체력비례대미지.3스택", 50.0, FunctionalInterfaceUnit.between(0.0, 100.0, true));
-	private static final Config<Double> damage4 = Config.of(ReaperArrow.class, "체력비례대미지.4스택", 75.0, FunctionalInterfaceUnit.between(0.0, 100.0, true));
-	private static final Config<Double> damage5 = Config.of(ReaperArrow.class, "체력비례대미지.5스택", 95.0, FunctionalInterfaceUnit.between(0.0, 100.0, true));
+	private static final Config<Double> damage1 = Config.of(ReaperArrow.class, "체력비례대미지.1스택", 10.0, FunctionalInterfaces.between(0.0, 100.0, true));
+	private static final Config<Double> damage2 = Config.of(ReaperArrow.class, "체력비례대미지.2스택", 25.0, FunctionalInterfaces.between(0.0, 100.0, true));
+	private static final Config<Double> damage3 = Config.of(ReaperArrow.class, "체력비례대미지.3스택", 50.0, FunctionalInterfaces.between(0.0, 100.0, true));
+	private static final Config<Double> damage4 = Config.of(ReaperArrow.class, "체력비례대미지.4스택", 75.0, FunctionalInterfaces.between(0.0, 100.0, true));
+	private static final Config<Double> damage5 = Config.of(ReaperArrow.class, "체력비례대미지.5스택", 95.0, FunctionalInterfaces.between(0.0, 100.0, true));
 	private static final double[] stackDamage;
 
 	static {

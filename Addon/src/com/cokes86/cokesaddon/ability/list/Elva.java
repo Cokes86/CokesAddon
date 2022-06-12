@@ -1,7 +1,7 @@
 package com.cokes86.cokesaddon.ability.list;
 
 import com.cokes86.cokesaddon.ability.CokesAbility;
-import com.cokes86.cokesaddon.util.FunctionalInterfaceUnit;
+import com.cokes86.cokesaddon.util.FunctionalInterfaces;
 import daybreak.abilitywar.ability.AbilityManifest;
 import daybreak.abilitywar.ability.AbilityManifest.Rank;
 import daybreak.abilitywar.ability.AbilityManifest.Species;
@@ -44,9 +44,9 @@ import java.util.function.Predicate;
 		"[아이디어 제공자 §bSato207§f]"
 })
 public class Elva extends CokesAbility {
-	private static final Config<Integer> maxarrow = Config.of(Elva.class, "마법화살수", 200, FunctionalInterfaceUnit.positive());
-	private static final Config<Integer> speed = Config.of(Elva.class, "발사속도(틱)", 4, FunctionalInterfaceUnit.positive());
-	private static final Config<Double> damage = Config.of(Elva.class, "마법화살대미지", 2.5, FunctionalInterfaceUnit.positive());
+	private static final Config<Integer> maxarrow = Config.of(Elva.class, "마법화살수", 200, FunctionalInterfaces.positive());
+	private static final Config<Integer> speed = Config.of(Elva.class, "발사속도(틱)", 4, FunctionalInterfaces.positive());
+	private static final Config<Double> damage = Config.of(Elva.class, "마법화살대미지", 2.5, FunctionalInterfaces.positive());
 
 	private final Predicate<Entity> predicate = entity -> {
 		if (entity.equals(getPlayer())) return false;

@@ -2,7 +2,7 @@ package com.cokes86.cokesaddon.synergy.list;
 
 import com.cokes86.cokesaddon.synergy.CokesSynergy;
 import com.cokes86.cokesaddon.synergy.CokesSynergy.Config.Condition;
-import com.cokes86.cokesaddon.util.FunctionalInterfaceUnit;
+import com.cokes86.cokesaddon.util.FunctionalInterfaces;
 import daybreak.abilitywar.ability.AbilityManifest;
 import daybreak.abilitywar.ability.AbilityManifest.Rank;
 import daybreak.abilitywar.ability.AbilityManifest.Species;
@@ -33,11 +33,11 @@ import java.util.function.Predicate;
         "최대 체력의 $[DAMAGE]%의 대미지를 주고 공중에 $[BLOCK]블럭 위로 옮깁니다. $[COOLDOWN]"
 })
 public class GravityArrow extends CokesSynergy {
-    private static final Config<Integer> RANGE = Config.of(GravityArrow.class, "range", 5, FunctionalInterfaceUnit.positive(),
+    private static final Config<Integer> RANGE = Config.of(GravityArrow.class, "range", 5, FunctionalInterfaces.positive(),
             "# 범위", "# 기본값: 5 (블럭)");
-    private static final Config<Double> DAMAGE = Config.of(GravityArrow.class, "damage", 15.0, FunctionalInterfaceUnit.between(0.0,100.0,false),
+    private static final Config<Double> DAMAGE = Config.of(GravityArrow.class, "damage", 15.0, FunctionalInterfaces.between(0.0,100.0,false),
             "# 최대 체력 비례 대미지", "# 기본값: 15.0 (%)");
-    private static final Config<Integer> BLOCK = Config.of(GravityArrow.class, "block", 5, FunctionalInterfaceUnit.positive(),
+    private static final Config<Integer> BLOCK = Config.of(GravityArrow.class, "block", 5, FunctionalInterfaces.positive(),
             "# 위로 올라갈 정도", "# 기본값: 5 (블럭)");
     private static final Config<Integer> COOLDOWN = Config.of(GravityArrow.class, "cooldown", 8, Condition.COOLDOWN,
             "# 쿨타임", "# 기본값: 8 (초)");

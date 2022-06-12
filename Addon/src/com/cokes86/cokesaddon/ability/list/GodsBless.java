@@ -2,6 +2,7 @@ package com.cokes86.cokesaddon.ability.list;
 
 import com.cokes86.cokesaddon.ability.CokesAbility;
 import com.cokes86.cokesaddon.effect.list.GodOfBreak;
+import com.cokes86.cokesaddon.util.FunctionalInterfaces;
 import daybreak.abilitywar.ability.AbilityManifest;
 import daybreak.abilitywar.ability.AbilityManifest.Rank;
 import daybreak.abilitywar.ability.AbilityManifest.Species;
@@ -20,9 +21,9 @@ import org.bukkit.Material;
 		"  지속시간 종료 시 자신이 얻은 공격력의 5배에 달하는 대미지를 받습니다."
 })
 public class GodsBless extends CokesAbility implements ActiveHandler {
-	private static final Config<Integer> duration = Config.of(GodsBless.class, "지속시간", 15, Config.Condition.TIME);
-	private static final Config<Integer> rightCool = Config.of(GodsBless.class, "우클릭_쿨타임", 60, Config.Condition.COOLDOWN);
-	private static final Config<Integer> leftCool = Config.of(GodsBless.class, "좌클릭_쿨타임", 60, Config.Condition.COOLDOWN);
+	private static final Config<Integer> duration = Config.of(GodsBless.class, "지속시간", 15, FunctionalInterfaces.positive(), FunctionalInterfaces.TIME);
+	private static final Config<Integer> rightCool = Config.of(GodsBless.class, "우클릭_쿨타임", 60, FunctionalInterfaces.positive(), FunctionalInterfaces.COOLDOWN);
+	private static final Config<Integer> leftCool = Config.of(GodsBless.class, "좌클릭_쿨타임", 60, FunctionalInterfaces.positive(), FunctionalInterfaces.COOLDOWN);
 	private final Cooldown rightCooldown = new Cooldown(rightCool.getValue(), "파괴의 신");
 	private final Cooldown leftCooldown = new Cooldown(leftCool.getValue(), "아직 안끝났어");
 

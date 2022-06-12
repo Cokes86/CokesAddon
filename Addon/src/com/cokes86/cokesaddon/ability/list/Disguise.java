@@ -2,7 +2,7 @@ package com.cokes86.cokesaddon.ability.list;
 
 import com.cokes86.cokesaddon.ability.CokesAbility;
 import com.cokes86.cokesaddon.event.CEntityDamageEvent;
-import com.cokes86.cokesaddon.util.FunctionalInterfaceUnit;
+import com.cokes86.cokesaddon.util.FunctionalInterfaces;
 import com.cokes86.cokesaddon.util.disguise.DisguiseUtil;
 import daybreak.abilitywar.ability.AbilityManifest;
 import daybreak.abilitywar.ability.AbilityManifest.Rank;
@@ -37,14 +37,14 @@ import org.bukkit.event.player.PlayerQuitEvent;
 		"※ 스킨변경: $[changeSkin], 이름변경: $[changeNameTag]"
 })
 public class Disguise extends CokesAbility implements ActiveHandler {
-	private static final Config<Integer> range = Config.of(Disguise.class, "범위", 7, FunctionalInterfaceUnit.positive());
-	private static final Config<Integer> count = Config.of(Disguise.class, "변장_후_공격받는_횟수", 3, FunctionalInterfaceUnit.positive());
-	private static final Config<Integer> cool = Config.of(Disguise.class, "쿨타임", 180, Config.Condition.COOLDOWN);
-	private static final Config<Integer> reflect = Config.of(Disguise.class, "반사(%)", 50, FunctionalInterfaceUnit.positive());
-	private static final Config<Boolean> changeSkin = Config.of(Disguise.class, "스킨변경", true, FunctionalInterfaceUnit.onoff(),
+	private static final Config<Integer> range = Config.of(Disguise.class, "범위", 7, FunctionalInterfaces.positive());
+	private static final Config<Integer> count = Config.of(Disguise.class, "변장_후_공격받는_횟수", 3, FunctionalInterfaces.positive());
+	private static final Config<Integer> cool = Config.of(Disguise.class, "쿨타임", 180, FunctionalInterfaces.positive(), FunctionalInterfaces.COOLDOWN);
+	private static final Config<Integer> reflect = Config.of(Disguise.class, "반사(%)", 50, FunctionalInterfaces.positive());
+	private static final Config<Boolean> changeSkin = Config.of(Disguise.class, "스킨변경", true, FunctionalInterfaces.ON_OFF,
 			"# 변장술 사용할 시 변장술의 대상으로 스킨 변경 여부",
 			"# 기본값: true");
-	private static final Config<Boolean> changeNameTag = Config.of(Disguise.class, "이름표변경", true, FunctionalInterfaceUnit.onoff(),
+	private static final Config<Boolean> changeNameTag = Config.of(Disguise.class, "이름표변경", true, FunctionalInterfaces.ON_OFF,
 			"# 변장술 사용할 시 변장술의 대상으로 닉네임 변경 여부",
 			"# 팀전에선 작동하지 않음",
 			"# 기본값: true");

@@ -2,7 +2,7 @@ package com.cokes86.cokesaddon.ability.list;
 
 import com.cokes86.cokesaddon.ability.CokesAbility;
 import com.cokes86.cokesaddon.event.CEntityDamageEvent;
-import com.cokes86.cokesaddon.util.FunctionalInterfaceUnit;
+import com.cokes86.cokesaddon.util.FunctionalInterfaces;
 import daybreak.abilitywar.AbilityWar;
 import daybreak.abilitywar.ability.AbilityManifest;
 import daybreak.abilitywar.ability.AbilityManifest.Rank;
@@ -60,20 +60,20 @@ import java.util.UUID;
 		"    §a폭발§f: $[damage_explosion]의 관통 대미지를 주고 $[fuse]의 위력으로 폭발. $[mana_explosion]"
 })
 public class Freud extends CokesAbility implements ActiveHandler {
-	private static final Config<Integer> mana_burn = Config.of(Freud.class, "fire-magic-cost", 30, FunctionalInterfaceUnit.positive(),
-			FunctionalInterfaceUnit.formatter("§c소모 §7: §b"));
-	private static final Config<Integer> mana_weakness = Config.of(Freud.class, "weakness-magic-cost", 45, FunctionalInterfaceUnit.positive(),
-			FunctionalInterfaceUnit.formatter("§c소모 §7: §b"));
-	private static final Config<Integer> mana_explosion = Config.of(Freud.class, "explosion-magic-cost", 80, FunctionalInterfaceUnit.positive(),
-			FunctionalInterfaceUnit.formatter("§c소모 §7: §b"));
-	private static final Config<Integer> damage_burn = Config.of(Freud.class, "fire-damage", 2, FunctionalInterfaceUnit.positive());
-	private static final Config<Integer> damage_weakness = Config.of(Freud.class, "weakness-damage", 3, FunctionalInterfaceUnit.positive());
-	private static final Config<Integer> damage_explosion = Config.of(Freud.class, "explosion-damage", 2, FunctionalInterfaceUnit.positive());
-	private static final Config<Integer> fireTick = Config.of(Freud.class, "fire-duration", 50, FunctionalInterfaceUnit.positive());
-	private static final Config<Integer> weakness_duration = Config.of(Freud.class, "weakness-duration", 3, FunctionalInterfaceUnit.positive());
-	private static final Config<Float> fuse = Config.of(Freud.class, "explosion-fuse", 0.4f, FunctionalInterfaceUnit.positive());
-	private static final Config<Integer> MANA_REGAIN_TIME = Config.of(Freud.class, "mana-regain-period", 5, FunctionalInterfaceUnit.positive());
-	private static final Config<Integer> ELEMENTAL_CIRCLE_DURATION = Config.of(Freud.class, "elemental-circle-duration", 2, Config.Condition.TIME);
+	private static final Config<Integer> mana_burn = Config.of(Freud.class, "fire-magic-cost", 30, FunctionalInterfaces.positive(),
+			FunctionalInterfaces.formatter("§c소모 §7: §b"));
+	private static final Config<Integer> mana_weakness = Config.of(Freud.class, "weakness-magic-cost", 45, FunctionalInterfaces.positive(),
+			FunctionalInterfaces.formatter("§c소모 §7: §b"));
+	private static final Config<Integer> mana_explosion = Config.of(Freud.class, "explosion-magic-cost", 80, FunctionalInterfaces.positive(),
+			FunctionalInterfaces.formatter("§c소모 §7: §b"));
+	private static final Config<Integer> damage_burn = Config.of(Freud.class, "fire-damage", 2, FunctionalInterfaces.positive());
+	private static final Config<Integer> damage_weakness = Config.of(Freud.class, "weakness-damage", 3, FunctionalInterfaces.positive());
+	private static final Config<Integer> damage_explosion = Config.of(Freud.class, "explosion-damage", 2, FunctionalInterfaces.positive());
+	private static final Config<Integer> fireTick = Config.of(Freud.class, "fire-duration", 50, FunctionalInterfaces.positive());
+	private static final Config<Integer> weakness_duration = Config.of(Freud.class, "weakness-duration", 3, FunctionalInterfaces.positive());
+	private static final Config<Float> fuse = Config.of(Freud.class, "explosion-fuse", 0.4f, FunctionalInterfaces.positive());
+	private static final Config<Integer> MANA_REGAIN_TIME = Config.of(Freud.class, "mana-regain-period", 5, FunctionalInterfaces.positive());
+	private static final Config<Integer> ELEMENTAL_CIRCLE_DURATION = Config.of(Freud.class, "elemental-circle-duration", 2, FunctionalInterfaces.positive(), FunctionalInterfaces.TIME);
 
 	private final Set<UUID> explosion = new HashSet<>();
 

@@ -2,7 +2,7 @@ package com.cokes86.cokesaddon.synergy.list;
 
 import com.cokes86.cokesaddon.event.CEntityDamageEvent;
 import com.cokes86.cokesaddon.synergy.CokesSynergy;
-import com.cokes86.cokesaddon.util.FunctionalInterfaceUnit;
+import com.cokes86.cokesaddon.util.FunctionalInterfaces;
 import daybreak.abilitywar.ability.AbilityManifest;
 import daybreak.abilitywar.ability.AbilityManifest.Rank;
 import daybreak.abilitywar.ability.AbilityManifest.Species;
@@ -42,7 +42,7 @@ import java.util.function.Predicate;
 })
 public class TheEnd extends CokesSynergy implements ActiveHandler {
 	public static final Config<Integer> du = Config.of(TheEnd.class, "지속시간", 40, Config.Condition.TIME);
-	public static final Config<Double> reduce = Config.of(TheEnd.class, "감소대미지(%)", 50.0, FunctionalInterfaceUnit.between(0.0, 100.0, false));
+	public static final Config<Double> reduce = Config.of(TheEnd.class, "감소대미지(%)", 50.0, FunctionalInterfaces.between(0.0, 100.0, false));
 	private final Map<Participant, ActionbarChannel> acs = new HashMap<>();
 	private final Predicate<Entity> predicate = entity -> {
 		if (entity.equals(getPlayer())) return false;

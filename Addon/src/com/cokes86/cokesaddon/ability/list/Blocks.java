@@ -2,7 +2,7 @@ package com.cokes86.cokesaddon.ability.list;
 
 import com.cokes86.cokesaddon.ability.CokesAbility;
 import com.cokes86.cokesaddon.event.CEntityDamageEvent;
-import com.cokes86.cokesaddon.util.FunctionalInterfaceUnit;
+import com.cokes86.cokesaddon.util.FunctionalInterfaces;
 import daybreak.abilitywar.AbilityWar;
 import daybreak.abilitywar.ability.AbilityManifest;
 import daybreak.abilitywar.ability.AbilityManifest.Rank;
@@ -51,9 +51,9 @@ summarize = {
 		"돌상태는 상대방이 곡괭이가 있지 않는 이상 늘 대미지 감소"
 }, stats = @Tips.Stats(offense = Tips.Level.ZERO, survival = Tips.Level.EIGHT, crowdControl = Tips.Level.ZERO, mobility = Tips.Level.ZERO, utility = Tips.Level.EIGHT), difficulty = Tips.Difficulty.EASY)
 public class Blocks extends CokesAbility implements ActiveHandler {
-	private static final Config<Integer> stone = Config.of(Blocks.class, "돌_받는대미지감소량(%)", 20, FunctionalInterfaceUnit.between(0, 100, false));
-	private static final Config<Integer> glass = Config.of(Blocks.class, "유리_받는대미지_증가량(%)", 100, FunctionalInterfaceUnit.positive());
-	private static final Config<Integer> inv = Config.of(Blocks.class, "모래_무적시간", 6, FunctionalInterfaceUnit.positive(), "단위: 틱");
+	private static final Config<Integer> stone = Config.of(Blocks.class, "돌_받는대미지감소량(%)", 20, FunctionalInterfaces.between(0, 100, false));
+	private static final Config<Integer> glass = Config.of(Blocks.class, "유리_받는대미지_증가량(%)", 100, FunctionalInterfaces.positive());
+	private static final Config<Integer> inv = Config.of(Blocks.class, "모래_무적시간", 6, FunctionalInterfaces.positive(), "단위: 틱");
 	private Condition condition = Condition.STONE;
 	private final Participant.ActionbarNotification.ActionbarChannel ac = this.newActionbarChannel();
 	private ArmorStand armorStand;

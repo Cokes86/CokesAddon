@@ -1,7 +1,7 @@
 package com.cokes86.cokesaddon.synergy.list;
 
 import com.cokes86.cokesaddon.synergy.CokesSynergy;
-import com.cokes86.cokesaddon.util.FunctionalInterfaceUnit;
+import com.cokes86.cokesaddon.util.FunctionalInterfaces;
 import daybreak.abilitywar.ability.AbilityManifest;
 import daybreak.abilitywar.ability.decorator.ActiveHandler;
 import daybreak.abilitywar.game.AbstractGame;
@@ -35,10 +35,10 @@ import java.util.function.Predicate;
 })
 public class SlicingMaelstrom extends CokesSynergy implements ActiveHandler {
     public static final Config<Integer> cooldown = Config.of(SlicingMaelstrom.class, "쿨타임", 60, Config.Condition.COOLDOWN);
-    public static final Config<Integer> LIGHTNING_COUNT = Config.of(SlicingMaelstrom.class, "반복횟수", 6, FunctionalInterfaceUnit.positive());
-    public static final Config<Integer> range = Config.of(SlicingMaelstrom.class, "범위", 10, FunctionalInterfaceUnit.positive());
-    public static final Config<Integer> DAMAGE = Config.of(SlicingMaelstrom.class, "대미지", 1, FunctionalInterfaceUnit.positive());
-    public static final Config<Integer> ADDITIONAL = Config.of(SlicingMaelstrom.class, "추가대미지", 1, FunctionalInterfaceUnit.positive());
+    public static final Config<Integer> LIGHTNING_COUNT = Config.of(SlicingMaelstrom.class, "반복횟수", 6, FunctionalInterfaces.positive());
+    public static final Config<Integer> range = Config.of(SlicingMaelstrom.class, "범위", 10, FunctionalInterfaces.positive());
+    public static final Config<Integer> DAMAGE = Config.of(SlicingMaelstrom.class, "대미지", 1, FunctionalInterfaces.positive());
+    public static final Config<Integer> ADDITIONAL = Config.of(SlicingMaelstrom.class, "추가대미지", 1, FunctionalInterfaces.positive());
     private final Predicate<Entity> predicate = entity -> {
         if (entity.equals(getPlayer())) return false;
         if (entity instanceof Player) {

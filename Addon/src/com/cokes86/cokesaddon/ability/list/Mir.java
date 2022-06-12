@@ -2,7 +2,7 @@ package com.cokes86.cokesaddon.ability.list;
 
 import com.cokes86.cokesaddon.ability.CokesAbility;
 import com.cokes86.cokesaddon.event.CEntityDamageEvent;
-import com.cokes86.cokesaddon.util.FunctionalInterfaceUnit;
+import com.cokes86.cokesaddon.util.FunctionalInterfaces;
 import daybreak.abilitywar.ability.AbilityManifest;
 import daybreak.abilitywar.ability.AbilityManifest.Rank;
 import daybreak.abilitywar.ability.AbilityManifest.Species;
@@ -45,14 +45,14 @@ import java.util.function.Predicate;
 		"썬더버드: 자신이 영역 내 공격 시 대미지 증가, 노움: 대미지 감소"
 })
 public class Mir extends CokesAbility implements ActiveHandler {
-	private static final Config<Integer> COOLDOWN = Config.of(Mir.class, "쿨타임", 20, Config.Condition.COOLDOWN);
-	private static final Config<Integer> DURATION = Config.of(Mir.class, "지속시간", 10, Config.Condition.TIME);
-	private static final Config<Integer> RANGE_IFRIT = Config.of(Mir.class, "범위.이프리트", 8, FunctionalInterfaceUnit.positive());
-	private static final Config<Integer> RANGE_SHADE = Config.of(Mir.class, "범위.셰이드", 12, FunctionalInterfaceUnit.positive());
-	private static final Config<Integer> RANGE_THUNDER = Config.of(Mir.class, "범위.썬더버드", 12, FunctionalInterfaceUnit.positive());
-	private static final Config<Integer> RANGE_GNOME = Config.of(Mir.class, "범위.노움", 15, FunctionalInterfaceUnit.positive());
-	private static final Config<Double> DAMAGE_DECREMENT = Config.of(Mir.class, "노움_대미지감소율(%)", 25d, FunctionalInterfaceUnit.positive());
-	private static final Config<Double> DAMAGE_INCREMENT = Config.of(Mir.class, "썬더버드_딜증가배율(%)", 20d, FunctionalInterfaceUnit.positive());
+	private static final Config<Integer> COOLDOWN = Config.of(Mir.class, "쿨타임", 20, FunctionalInterfaces.positive(), FunctionalInterfaces.COOLDOWN);
+	private static final Config<Integer> DURATION = Config.of(Mir.class, "지속시간", 10, FunctionalInterfaces.positive(), FunctionalInterfaces.TIME);
+	private static final Config<Integer> RANGE_IFRIT = Config.of(Mir.class, "범위.이프리트", 8, FunctionalInterfaces.positive());
+	private static final Config<Integer> RANGE_SHADE = Config.of(Mir.class, "범위.셰이드", 12, FunctionalInterfaces.positive());
+	private static final Config<Integer> RANGE_THUNDER = Config.of(Mir.class, "범위.썬더버드", 12, FunctionalInterfaces.positive());
+	private static final Config<Integer> RANGE_GNOME = Config.of(Mir.class, "범위.노움", 15, FunctionalInterfaces.positive());
+	private static final Config<Double> DAMAGE_DECREMENT = Config.of(Mir.class, "노움_대미지감소율(%)", 25d, FunctionalInterfaces.positive());
+	private static final Config<Double> DAMAGE_INCREMENT = Config.of(Mir.class, "썬더버드_딜증가배율(%)", 20d, FunctionalInterfaces.positive());
 
 	private final Predicate<Entity> predicate = entity -> {
 		if (entity.equals(getPlayer())) return false;

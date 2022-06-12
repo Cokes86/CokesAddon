@@ -1,9 +1,8 @@
 package com.cokes86.cokesaddon.ability.list;
 
 import com.cokes86.cokesaddon.ability.CokesAbility;
-import com.cokes86.cokesaddon.ability.CokesAbility.Config.Condition;
 import com.cokes86.cokesaddon.event.CEntityDamageEvent;
-import com.cokes86.cokesaddon.util.FunctionalInterfaceUnit;
+import com.cokes86.cokesaddon.util.FunctionalInterfaces;
 import daybreak.abilitywar.AbilityWar;
 import daybreak.abilitywar.ability.AbilityManifest;
 import daybreak.abilitywar.ability.AbilityManifest.Rank;
@@ -41,10 +40,10 @@ import java.util.List;
         "위치추적기간의 거리는 10블럭을 넘어야만 합니다."
 })
 public class Kevin extends CokesAbility implements ActiveHandler {
-    private final Config<Integer> MAX_GPS = Config.of(Kevin.class, "max-gps", 3, FunctionalInterfaceUnit.positive());
-    private final Config<Integer> COOLDOWN = Config.of(Kevin.class, "cooldown", 60, Condition.COOLDOWN);
-    private final Config<Integer> DURATION = Config.of(Kevin.class, "duration", 60, Condition.TIME);
-    private final Config<Double> DAMAGE_INCREMENT = Config.of(Kevin.class, "damage-increment", 2.0, FunctionalInterfaceUnit.positive());
+    private final Config<Integer> MAX_GPS = Config.of(Kevin.class, "max-gps", 3, FunctionalInterfaces.positive());
+    private final Config<Integer> COOLDOWN = Config.of(Kevin.class, "cooldown", 60, FunctionalInterfaces.positive(), FunctionalInterfaces.COOLDOWN);
+    private final Config<Integer> DURATION = Config.of(Kevin.class, "duration", 60, FunctionalInterfaces.positive(), FunctionalInterfaces.TIME);
+    private final Config<Double> DAMAGE_INCREMENT = Config.of(Kevin.class, "damage-increment", 2.0, FunctionalInterfaces.positive());
 
     private int playerDetected = 0;
     private final List<GPS> gpsList = new ArrayList<>();

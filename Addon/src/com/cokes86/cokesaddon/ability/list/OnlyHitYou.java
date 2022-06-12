@@ -2,7 +2,7 @@ package com.cokes86.cokesaddon.ability.list;
 
 import com.cokes86.cokesaddon.ability.CokesAbility;
 import com.cokes86.cokesaddon.event.CEntityDamageEvent;
-import com.cokes86.cokesaddon.util.FunctionalInterfaceUnit;
+import com.cokes86.cokesaddon.util.FunctionalInterfaces;
 import daybreak.abilitywar.ability.AbilityManifest;
 import daybreak.abilitywar.ability.SubscribeEvent;
 import daybreak.abilitywar.ability.decorator.ActiveHandler;
@@ -28,12 +28,12 @@ import org.bukkit.entity.Projectile;
         "  대상이 사망하거나 다시 사용할 경우 취소됩니다."
 })
 public class OnlyHitYou extends CokesAbility implements ActiveHandler {
-    private static final Config<Integer> COOLDOWN = Config.of(OnlyHitYou.class, "쿨타임", 60, Config.Condition.COOLDOWN);
-    private static final Config<Integer> FIRST_HIT = Config.of(OnlyHitYou.class, "첫번째_타격_배율(%)", 75, FunctionalInterfaceUnit.positive());
-    private static final Config<Integer> SECOND_HIT = Config.of(OnlyHitYou.class, "두번째_타격_배율(%)", 100, FunctionalInterfaceUnit.positive());
-    private static final Config<Integer> THIRD_HIT = Config.of(OnlyHitYou.class, "세번째_타격_배율(%)", 125, FunctionalInterfaceUnit.positive());
-    private static final Config<Integer> LOCK_ON = Config.of(OnlyHitYou.class, "록_온_추가_배율(%)", 75, FunctionalInterfaceUnit.positive());
-    private static final Config<Integer> COOLDOWN_DECREASE = Config.of(OnlyHitYou.class, "쿨타임_감소_배율(%)", 25, FunctionalInterfaceUnit.positive());
+    private static final Config<Integer> COOLDOWN = Config.of(OnlyHitYou.class, "쿨타임", 60, FunctionalInterfaces.positive(), FunctionalInterfaces.COOLDOWN);
+    private static final Config<Integer> FIRST_HIT = Config.of(OnlyHitYou.class, "첫번째_타격_배율(%)", 75, FunctionalInterfaces.positive());
+    private static final Config<Integer> SECOND_HIT = Config.of(OnlyHitYou.class, "두번째_타격_배율(%)", 100, FunctionalInterfaces.positive());
+    private static final Config<Integer> THIRD_HIT = Config.of(OnlyHitYou.class, "세번째_타격_배율(%)", 125, FunctionalInterfaces.positive());
+    private static final Config<Integer> LOCK_ON = Config.of(OnlyHitYou.class, "록_온_추가_배율(%)", 75, FunctionalInterfaces.positive());
+    private static final Config<Integer> COOLDOWN_DECREASE = Config.of(OnlyHitYou.class, "쿨타임_감소_배율(%)", 25, FunctionalInterfaces.positive());
 
     private final HitTimer passive = new HitTimer();
     private final Cooldown cool = new Cooldown(COOLDOWN.getValue());

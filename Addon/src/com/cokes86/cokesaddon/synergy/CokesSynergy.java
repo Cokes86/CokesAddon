@@ -1,7 +1,7 @@
 package com.cokes86.cokesaddon.synergy;
 
 import com.cokes86.cokesaddon.CokesAddon;
-import com.cokes86.cokesaddon.util.FunctionalInterfaceUnit;
+import com.cokes86.cokesaddon.util.FunctionalInterfaces;
 import daybreak.abilitywar.config.ability.AbilitySettings;
 import daybreak.abilitywar.config.ability.AbilitySettings.SettingObject;
 import daybreak.abilitywar.game.AbstractGame.Participant;
@@ -41,11 +41,11 @@ public class CokesSynergy extends Synergy {
 		}
 
 		public static <T> Config<T> of(Class<? extends CokesSynergy> aClass, String name, T value, String[] description, Condition condition, Function<T, String> function) {
-			return of(aClass, name, value, description, condition, FunctionalInterfaceUnit.always(), function);
+			return of(aClass, name, value, description, condition, FunctionalInterfaces.always(), function);
 		}
 
 		public static <T> Config<T> of(Class<? extends CokesSynergy> aClass, String name, T value, Condition condition, String... description) {
-			return of(aClass, name, value, description, condition, FunctionalInterfaceUnit.always(), Object::toString);
+			return of(aClass, name, value, description, condition, FunctionalInterfaces.always(), Object::toString);
 		}
 
 		public static <T> Config<T> of(Class<? extends CokesSynergy> aClass, String name, T value, Predicate<T> predicate, String... description) {
@@ -57,7 +57,7 @@ public class CokesSynergy extends Synergy {
 		}
 
 		public static <T> Config<T> of(Class<? extends CokesSynergy> aClass, String name, T value, String... description) {
-			return of(aClass, name, value, description, Condition.NORMAL, FunctionalInterfaceUnit.always(), Objects::toString);
+			return of(aClass, name, value, description, Condition.NORMAL, FunctionalInterfaces.always(), Objects::toString);
 		}
 
 		public String toString() {

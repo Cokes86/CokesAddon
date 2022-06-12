@@ -1,10 +1,9 @@
 package com.cokes86.cokesaddon.ability.list;
 
 import com.cokes86.cokesaddon.ability.CokesAbility;
-import com.cokes86.cokesaddon.ability.CokesAbility.Config.Condition;
 import com.cokes86.cokesaddon.event.CEntityDamageEvent;
 import com.cokes86.cokesaddon.util.AttributeUtil;
-import com.cokes86.cokesaddon.util.FunctionalInterfaceUnit;
+import com.cokes86.cokesaddon.util.FunctionalInterfaces;
 import daybreak.abilitywar.ability.AbilityManifest;
 import daybreak.abilitywar.ability.SubscribeEvent;
 import daybreak.abilitywar.ability.decorator.ActiveHandler;
@@ -35,10 +34,10 @@ import java.util.function.Predicate;
         "갑옷과, 양 손의 아이템은 뒤엎지 않습니다."
 })
 public class Rude extends CokesAbility implements ActiveHandler {
-    private static final Config<Integer> RUDE_RANGE = Config.of(Rude.class, "범위", 10, FunctionalInterfaceUnit.positive());
-    private static final Config<Integer> RUDE_DURATION = Config.of(Rude.class, "지속시간", 5, Condition.TIME);
-    private static final Config<Integer> RUDE_COOLDOWN = Config.of(Rude.class, "쿨타임", 60, Condition.COOLDOWN);
-    private static final Config<Integer> DAMAGE = Config.of(Rude.class, "받는_대미지_감소량(%)", 20, FunctionalInterfaceUnit.between(0, 100, false));
+    private static final Config<Integer> RUDE_RANGE = Config.of(Rude.class, "범위", 10, FunctionalInterfaces.positive());
+    private static final Config<Integer> RUDE_DURATION = Config.of(Rude.class, "지속시간", 5, FunctionalInterfaces.positive(), FunctionalInterfaces.TIME);
+    private static final Config<Integer> RUDE_COOLDOWN = Config.of(Rude.class, "쿨타임", 60, FunctionalInterfaces.positive(), FunctionalInterfaces.COOLDOWN);
+    private static final Config<Integer> DAMAGE = Config.of(Rude.class, "받는_대미지_감소량(%)", 20, FunctionalInterfaces.between(0, 100, false));
     private final Cooldown cooldown = new Cooldown(RUDE_COOLDOWN.getValue());
     private final RudeDuration duration = new RudeDuration();
 

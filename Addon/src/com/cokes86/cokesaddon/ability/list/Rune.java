@@ -2,7 +2,7 @@ package com.cokes86.cokesaddon.ability.list;
 
 import com.cokes86.cokesaddon.ability.CokesAbility;
 import com.cokes86.cokesaddon.util.AttributeUtil;
-import com.cokes86.cokesaddon.util.FunctionalInterfaceUnit;
+import com.cokes86.cokesaddon.util.FunctionalInterfaces;
 import daybreak.abilitywar.ability.AbilityManifest;
 import daybreak.abilitywar.ability.AbilityManifest.Rank;
 import daybreak.abilitywar.ability.AbilityManifest.Species;
@@ -34,9 +34,9 @@ import java.util.function.Predicate;
 		"철괴 우클릭시 자신 주위 $[range]블럭 이내 랜덤한 1명에게 1의 관통 데미지를 줍니다.",
 		"이 행위는 0.25초 간격으로 $[damage]번 반복합니다. $[cool]"})
 public class Rune extends CokesAbility implements ActiveHandler {
-	public static Config<Integer> damage = Config.of(Rune.class, "반복횟수", 7, FunctionalInterfaceUnit.positive());
-	public static Config<Integer> cool = Config.of(Rune.class, "쿨타임", 60, Config.Condition.COOLDOWN);
-	public static Config<Integer> range = Config.of(Rune.class, "범위", 5, FunctionalInterfaceUnit.positive());
+	public static Config<Integer> damage = Config.of(Rune.class, "반복횟수", 7, FunctionalInterfaces.positive());
+	public static Config<Integer> cool = Config.of(Rune.class, "쿨타임", 60, FunctionalInterfaces.positive(), FunctionalInterfaces.COOLDOWN);
+	public static Config<Integer> range = Config.of(Rune.class, "범위", 5, FunctionalInterfaces.positive());
 
 	private final Predicate<Entity> predicate = entity -> {
 		if (entity.equals(getPlayer())) return false;

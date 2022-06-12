@@ -1,10 +1,9 @@
 package com.cokes86.cokesaddon.ability.list;
 
 import com.cokes86.cokesaddon.ability.CokesAbility;
-import com.cokes86.cokesaddon.ability.CokesAbility.Config.Condition;
 import com.cokes86.cokesaddon.event.CEntityDamageEvent;
 import com.cokes86.cokesaddon.util.AttributeUtil;
-import com.cokes86.cokesaddon.util.FunctionalInterfaceUnit;
+import com.cokes86.cokesaddon.util.FunctionalInterfaces;
 import com.cokes86.cokesaddon.util.arrow.ArrowUtil;
 import com.cokes86.cokesaddon.util.damage.Damages;
 import com.google.common.base.Strings;
@@ -44,31 +43,31 @@ import java.util.function.Predicate;
 })
 public class Casino extends CokesAbility implements ActiveHandler {
     //쿨타임
-    private static final Config<Integer> COOLDOWN = Config.of(Casino.class, "cooldown", 60, Config.Condition.COOLDOWN,
+    private static final Config<Integer> COOLDOWN = Config.of(Casino.class, "cooldown", 60, FunctionalInterfaces.positive(), FunctionalInterfaces.COOLDOWN,
             "# 쿨타임", "# 기본값: 60 (초)");
 
     //각종 효과 세부내역
-    private static final Config<Double> DAMAGE_INCREMENT_VALUE = Config.of(Casino.class, "effects.damage-increment", 0.5, FunctionalInterfaceUnit.positive(),
+    private static final Config<Double> DAMAGE_INCREMENT_VALUE = Config.of(Casino.class, "effects.damage-increment", 0.5, FunctionalInterfaces.positive(),
             "# 효과 중 대미지 증가량 수치", "# 기본값: 0.5");
-    private static final Config<Double> DAMAGE_DECREMENT_VALUE = Config.of(Casino.class, "effects.damage-decrement", 0.5, FunctionalInterfaceUnit.positive(),
+    private static final Config<Double> DAMAGE_DECREMENT_VALUE = Config.of(Casino.class, "effects.damage-decrement", 0.5, FunctionalInterfaces.positive(),
             "# 효과 중 대미지 감소량 수치", "# 기본값: 0.5");
-    private static final Config<Integer> WITHER_PERIOD = Config.of(Casino.class, "effects.wither-period", 4, Condition.TIME,
+    private static final Config<Integer> WITHER_PERIOD = Config.of(Casino.class, "effects.wither-period", 4, FunctionalInterfaces.positive(), FunctionalInterfaces.TIME,
             "# 효과 중 위더 대미지 주기", "# 기본값: 4 (초)");
-    private static final Config<Integer> TWIST_PERIOD = Config.of(Casino.class, "effects.twist-period", 10, Condition.TIME,
+    private static final Config<Integer> TWIST_PERIOD = Config.of(Casino.class, "effects.twist-period", 10, FunctionalInterfaces.positive(), FunctionalInterfaces.TIME,
             "# 효과 중 시야 뒤틀림 주기", "# 기본값: 10 (초)");
-    private static final Config<Integer> HEAL_VALUE = Config.of(Casino.class, "effects.heal", 2, FunctionalInterfaceUnit.positive(),
+    private static final Config<Integer> HEAL_VALUE = Config.of(Casino.class, "effects.heal", 2, FunctionalInterfaces.positive(),
             "# 효과 중 체력 즉시 회복량", "# 기본값: 2");
-    private static final Config<Integer> MAX_HEALTH_DECREMENT = Config.of(Casino.class, "effects.max-health-decrement", 2, FunctionalInterfaceUnit.positive(),
+    private static final Config<Integer> MAX_HEALTH_DECREMENT = Config.of(Casino.class, "effects.max-health-decrement", 2, FunctionalInterfaces.positive(),
             "# 효과 중 최대 체력 감소량", "# 기본값: 2");
-    private static final Config<Double> REGAIN_INCREMENT = Config.of(Casino.class, "effects.regain-increment", 0.2, FunctionalInterfaceUnit.positive(),
+    private static final Config<Double> REGAIN_INCREMENT = Config.of(Casino.class, "effects.regain-increment", 0.2, FunctionalInterfaces.positive(),
             "# 효과 중 주기적인 체력 회복 증가량", "# 기본값: 0.2 (배)");
-    private static final Config<Integer> BLEED_ATTACK_PREDICATE = Config.of(Casino.class, "effects.bleed-attack-predicate", 4, FunctionalInterfaceUnit.positive(),
+    private static final Config<Integer> BLEED_ATTACK_PREDICATE = Config.of(Casino.class, "effects.bleed-attack-predicate", 4, FunctionalInterfaces.positive(),
             "# 효과 중 출혈 부여 조건", "# 기본값: 4 (회)");
-    private static final Config<Integer> BLEED_DURATION = Config.of(Casino.class, "effects.bleed-duration", 1, FunctionalInterfaceUnit.positive(),
+    private static final Config<Integer> BLEED_DURATION = Config.of(Casino.class, "effects.bleed-duration", 1, FunctionalInterfaces.positive(),
             "# 효과 중 출혈 시간", "# 기본값: 1 (초)");
-    private static final Config<Integer> COOLDOWN_INCREMENT = Config.of(Casino.class, "effects.cooldown-increment", 50, FunctionalInterfaceUnit.positive(),
+    private static final Config<Integer> COOLDOWN_INCREMENT = Config.of(Casino.class, "effects.cooldown-increment", 50, FunctionalInterfaces.positive(),
             "# 효과 중 쿨타임 증가량", "# 기본값: 50 (%)");
-    private static final Config<Integer> STUN_DURATION = Config.of(Casino.class, "effects.stun-duration", 2, Condition.TIME,
+    private static final Config<Integer> STUN_DURATION = Config.of(Casino.class, "effects.stun-duration", 2, FunctionalInterfaces.positive(), FunctionalInterfaces.TIME,
             "# 효과 중 스턴 지속시간", "# 기본값: 2 (초)");
 
     private final double defaultMaxHealth = Objects.requireNonNull(getPlayer().getAttribute(Attribute.GENERIC_MAX_HEALTH)).getBaseValue();

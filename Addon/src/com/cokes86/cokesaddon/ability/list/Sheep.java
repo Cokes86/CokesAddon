@@ -2,7 +2,7 @@ package com.cokes86.cokesaddon.ability.list;
 
 import com.cokes86.cokesaddon.ability.CokesAbility;
 import com.cokes86.cokesaddon.event.CEntityDamageEvent;
-import com.cokes86.cokesaddon.util.FunctionalInterfaceUnit;
+import com.cokes86.cokesaddon.util.FunctionalInterfaces;
 import com.google.common.collect.ImmutableList;
 import daybreak.abilitywar.ability.AbilityManifest;
 import daybreak.abilitywar.ability.AbilityManifest.Rank;
@@ -30,14 +30,14 @@ import java.util.function.Predicate;
         "$[RANGE]블럭 이내 플레이어가 존재할 시, 그 중 가까운 플레이어를 바라보게 시선이 변경됩니다."
 })
 public class Sheep extends CokesAbility {
-    private static final Config<Double> DAMAGE = Config.of(Sheep.class, "damage", 150.0, FunctionalInterfaceUnit.positive(),
+    private static final Config<Double> DAMAGE = Config.of(Sheep.class, "damage", 150.0, FunctionalInterfaces.positive(),
             "# 불, 용암, 마그마블럭으로 인해 받는 대미지 감소량",
             " # 기본값: 150.0 (%)");
-    private static final Config<Double> DAMAGE_REDUCE = Config.of(Sheep.class, "damage_reduce", 15.0, FunctionalInterfaceUnit.between(0.0, 100.0, false),
+    private static final Config<Double> DAMAGE_REDUCE = Config.of(Sheep.class, "damage_reduce", 15.0, FunctionalInterfaces.between(0.0, 100.0, false),
             "# 이를 제외한 모든 대미지 감소량",
             " # 기본값: 15.0 (%)");
 
-    private static final Config<Integer> RANGE = Config.of(Sheep.class, "range", 5, FunctionalInterfaceUnit.positive(),
+    private static final Config<Integer> RANGE = Config.of(Sheep.class, "range", 5, FunctionalInterfaces.positive(),
             "# 시선이 변경될 플레이어 거리 최댓값",
             " # 기본값: 5 (블럭)");
 

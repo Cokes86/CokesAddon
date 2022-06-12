@@ -1,7 +1,7 @@
 package com.cokes86.cokesaddon.ability.list;
 
 import com.cokes86.cokesaddon.ability.CokesAbility;
-import com.cokes86.cokesaddon.util.FunctionalInterfaceUnit;
+import com.cokes86.cokesaddon.util.FunctionalInterfaces;
 import daybreak.abilitywar.ability.AbilityManifest;
 import daybreak.abilitywar.ability.decorator.ActiveHandler;
 import daybreak.abilitywar.game.AbstractGame;
@@ -17,11 +17,11 @@ import java.util.List;
         "  그 쿨타임을 $[INCREASE] 증가시킵키다. $[COOL]"
 })
 public class Ain extends CokesAbility implements ActiveHandler {
-    private static final Config<Integer> RANGE = Config.of(Ain.class, "range", 5, FunctionalInterfaceUnit.positive(),
+    private static final Config<Integer> RANGE = Config.of(Ain.class, "range", 5, FunctionalInterfaces.positive(),
             "# 능력 망각 범위", "# 기본값: 5 (블럭)");
-    private static final Config<Integer> INCREASE = Config.of(Ain.class, "increase", 30, Config.Condition.TIME,
+    private static final Config<Integer> INCREASE = Config.of(Ain.class, "increase", 30, FunctionalInterfaces.positive(), FunctionalInterfaces.COOLDOWN,
             "# 능력 망각 상대방 쿨타임 증가량", "# 기본값: 30 (초)");
-    private static final Config<Integer> COOL = Config.of(Ain.class, "cooldown", 60, Config.Condition.COOLDOWN,
+    private static final Config<Integer> COOL = Config.of(Ain.class, "cooldown", 60,  FunctionalInterfaces.positive(), FunctionalInterfaces.COOLDOWN,
             "# 능력 망각 쿨타임", "# 기본값: 60 (초)");
 
     private final Cooldown cooldown = new Cooldown(COOL.getValue());

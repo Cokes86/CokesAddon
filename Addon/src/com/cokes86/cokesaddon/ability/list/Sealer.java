@@ -3,6 +3,7 @@ package com.cokes86.cokesaddon.ability.list;
 import com.cokes86.cokesaddon.ability.CokesAbility;
 import com.cokes86.cokesaddon.effect.list.Seal;
 import com.cokes86.cokesaddon.event.CEntityDamageEvent;
+import com.cokes86.cokesaddon.util.FunctionalInterfaces;
 import daybreak.abilitywar.AbilityWar;
 import daybreak.abilitywar.ability.AbilityBase;
 import daybreak.abilitywar.ability.AbilityManifest;
@@ -41,8 +42,8 @@ import java.util.Set;
 })
 @NotAvailable({AbstractTripleMix.class})
 public class Sealer extends CokesAbility implements TargetHandler {
-	private static final Config<Integer> cool = Config.of(Sealer.class, "쿨타임", 60, Config.Condition.COOLDOWN);
-	private static final Config<Integer> duration = Config.of(Sealer.class, "지속시간", 7, Config.Condition.TIME);
+	private static final Config<Integer> cool = Config.of(Sealer.class, "쿨타임", 60, FunctionalInterfaces.positive(), FunctionalInterfaces.COOLDOWN);
+	private static final Config<Integer> duration = Config.of(Sealer.class, "지속시간", 7, FunctionalInterfaces.positive(), FunctionalInterfaces.TIME);
 
 	private final Set<Player> synergy = new HashSet<>();
 	private final Map<Rank, Integer> rank = ImmutableMap.<Rank, Integer>builder().put(Rank.C, 1).put(Rank.B, 2).put(Rank.A, 3).put(Rank.S, 4).put(Rank.L, 5).put(Rank.SPECIAL, 6).build();

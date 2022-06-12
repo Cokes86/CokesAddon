@@ -1,7 +1,7 @@
 package com.cokes86.cokesaddon.ability.list;
 
 import com.cokes86.cokesaddon.ability.CokesAbility;
-import com.cokes86.cokesaddon.util.FunctionalInterfaceUnit;
+import com.cokes86.cokesaddon.util.FunctionalInterfaces;
 import daybreak.abilitywar.ability.AbilityBase;
 import daybreak.abilitywar.ability.AbilityManifest;
 import daybreak.abilitywar.ability.AbilityManifest.Rank;
@@ -35,8 +35,8 @@ import java.util.function.Predicate;
 		"§8[§7HIDDEN§8] §b완벽한 조화§f: 완벽한 조화라는 것은 무엇일까?"
 })
 public class Harmony extends CokesAbility {
-	private static final Config<Integer> duration = Config.of(Harmony.class, "주기", 5, Config.Condition.TIME);
-	private static final Config<Integer> range = Config.of(Harmony.class, "범위", 10, FunctionalInterfaceUnit.positive());
+	private static final Config<Integer> duration = Config.of(Harmony.class, "주기", 5, FunctionalInterfaces.positive(), FunctionalInterfaces.TIME);
+	private static final Config<Integer> range = Config.of(Harmony.class, "범위", 10, FunctionalInterfaces.positive());
 	private boolean hidden = false;
 
 	private final Predicate<Entity> predicate = entity -> {

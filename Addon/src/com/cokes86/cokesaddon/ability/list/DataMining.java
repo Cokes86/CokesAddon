@@ -2,7 +2,7 @@ package com.cokes86.cokesaddon.ability.list;
 
 import com.cokes86.cokesaddon.ability.CokesAbility;
 import com.cokes86.cokesaddon.event.CEntityDamageEvent;
-import com.cokes86.cokesaddon.util.FunctionalInterfaceUnit;
+import com.cokes86.cokesaddon.util.FunctionalInterfaces;
 import daybreak.abilitywar.ability.*;
 import daybreak.abilitywar.ability.Tips.*;
 import daybreak.abilitywar.ability.decorator.ActiveHandler;
@@ -55,10 +55,10 @@ import java.util.Random;
 @NotAvailable(AbstractTripleMix.class)
 @Materials(materials = Material.GOLD_INGOT)
 public class DataMining extends CokesAbility implements ActiveHandler {
-	private static final Config<Double> damageUp = Config.of(DataMining.class, "최대주는대미지성장치", 1.1, FunctionalInterfaceUnit.positive());
-	private static final Config<Double> defenseUp = Config.of(DataMining.class, "최대받는대미지감소성장치", 25.00, FunctionalInterfaceUnit.positive(), "#단위: %");
-	private static final Config<Integer> player_value = Config.of(DataMining.class, "인원별_스택치", 4, FunctionalInterfaceUnit.positive());
-	private static final Config<Integer> duration = Config.of(DataMining.class, "자동스택추가주기", 60, Config.Condition.TIME);
+	private static final Config<Double> damageUp = Config.of(DataMining.class, "최대주는대미지성장치", 1.1, FunctionalInterfaces.positive());
+	private static final Config<Double> defenseUp = Config.of(DataMining.class, "최대받는대미지감소성장치", 25.00, FunctionalInterfaces.positive(), "#단위: %");
+	private static final Config<Integer> player_value = Config.of(DataMining.class, "인원별_스택치", 4, FunctionalInterfaces.positive());
+	private static final Config<Integer> duration = Config.of(DataMining.class, "자동스택추가주기", 60, FunctionalInterfaces.positive(), FunctionalInterfaces.TIME);
 	private final DecimalFormat df = new DecimalFormat("0.##");
 	private int damage_count = 0;
 	private int defense_count = 0;
