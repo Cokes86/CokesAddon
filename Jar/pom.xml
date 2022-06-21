@@ -58,6 +58,11 @@
             <artifactId>v1_16_R3</artifactId>
             <version>${revision}</version>
         </dependency>
+        <dependency>
+            <groupId>com.cokes86</groupId>
+            <artifactId>v1_17_R1</artifactId>
+            <version>${revision}</version>
+        </dependency>
     </dependencies>
 
     <build>
