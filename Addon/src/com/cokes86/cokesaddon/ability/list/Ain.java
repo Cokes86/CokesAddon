@@ -19,7 +19,7 @@ import java.util.List;
 public class Ain extends CokesAbility implements ActiveHandler {
     private static final Config<Integer> RANGE = Config.of(Ain.class, "range", 5, FunctionalInterfaces.positive(),
             "# 능력 망각 범위", "# 기본값: 5 (블럭)");
-    private static final Config<Integer> INCREASE = Config.of(Ain.class, "increase", 30, FunctionalInterfaces.positive(), FunctionalInterfaces.COOLDOWN,
+    private static final Config<Integer> INCREASE = Config.of(Ain.class, "increase", 30, FunctionalInterfaces.positive(), FunctionalInterfaces.TIME,
             "# 능력 망각 상대방 쿨타임 증가량", "# 기본값: 30 (초)");
     private static final Config<Integer> COOL = Config.of(Ain.class, "cooldown", 60,  FunctionalInterfaces.positive(), FunctionalInterfaces.COOLDOWN,
             "# 능력 망각 쿨타임", "# 기본값: 60 (초)");

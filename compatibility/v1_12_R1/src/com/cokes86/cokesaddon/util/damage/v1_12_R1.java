@@ -28,10 +28,7 @@ public class v1_12_R1 implements DamageImpl{
     public boolean damageVoid(org.bukkit.entity.@NotNull Entity entity, @Nullable Player damager, float damage) {
         Entity nmsEntity = ((CraftEntity)entity).getHandle();
         EntityPlayer nmsDamager = damager != null ? ((CraftPlayer)damager).getHandle() : null;
-        return nmsEntity.damageEntity(new EntityDamageSource("void", nmsDamager) {{
-            this.setIgnoreArmor();
-            this.m();
-        }}, damage);
+        return nmsEntity.damageEntity(DamageSource.OUT_OF_WORLD, damage);
     }
 
     private EntityDamageSourceIndirect magic(net.minecraft.server.v1_12_R1.Entity nmsEntity, EntityPlayer nmsDamager) {

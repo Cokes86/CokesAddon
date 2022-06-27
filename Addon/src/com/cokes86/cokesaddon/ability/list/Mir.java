@@ -21,6 +21,7 @@ import daybreak.abilitywar.utils.base.random.Random;
 import daybreak.abilitywar.utils.library.MaterialX;
 import daybreak.abilitywar.utils.library.ParticleLib;
 import daybreak.abilitywar.utils.library.PotionEffects;
+import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.entity.*;
@@ -78,6 +79,10 @@ public class Mir extends CokesAbility implements ActiveHandler {
 		@Override
 		protected void onDurationStart() {
 			element = getRandomElement();
+			if (element == null) {
+				Bukkit.broadcastMessage("error");
+				stop(false);
+			}
 
 			armorStand = getPlayer().getWorld().spawn(getPlayer().getLocation().clone().add(0, 3, 0), ArmorStand.class);
 			armorStand.setCustomName(element.displayName);
@@ -145,7 +150,15 @@ public class Mir extends CokesAbility implements ActiveHandler {
 	public Element getRandomElement() {
 		Random random = new Random();
 		Element after = random.pick(Element.values());
-		return element.equals(after) ? getRandomElement() : after;
+		if (element == null) {
+			return after;
+		} else {
+			if (after.equals(element)) {
+				return getRandomElement();
+			} else {
+				return after;
+			}
+		}
 	}
 
 	@Override

@@ -6,7 +6,9 @@ import com.cokes86.cokesaddon.util.FunctionalInterfaces;
 import daybreak.abilitywar.ability.AbilityManifest;
 import daybreak.abilitywar.ability.SubscribeEvent;
 import daybreak.abilitywar.game.AbstractGame;
+import daybreak.abilitywar.game.AbstractGame.Participant.ActionbarNotification.ActionbarChannel;
 import daybreak.abilitywar.game.event.participant.ParticipantDeathEvent;
+import daybreak.abilitywar.utils.base.concurrent.TimeUnit;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Projectile;
 import org.jetbrains.annotations.NotNull;
@@ -36,8 +38,23 @@ public class BlackFeather extends CokesAbility {
 
     private final List<BlackFeatherCounter> counterList = new ArrayList<>();
 
+    private final AbilityTimer counter = new AbilityTimer() {
+        private final ActionbarChannel channel = newActionbarChannel();
+        @Override
+        protected void run(int count) {
+            channel.update("§7"+ counterList.size());
+        }
+    }.setPeriod(TimeUnit.TICKS, 1);
+
     public BlackFeather(AbstractGame.Participant arg0) {
         super(arg0);
+    }
+
+    @Override
+    protected void onUpdate(Update update) {
+        if (update == Update.RESTRICTION_CLEAR) {
+            counter.start();
+        }
     }
 
     @SubscribeEvent
@@ -53,7 +70,7 @@ public class BlackFeather extends CokesAbility {
         if (damager != null && damager.equals(getPlayer()) && getGame().isParticipating(e.getEntity().getUniqueId())) {
             int counter = counterList.size();
             double damage1 = DAMAGE.getValue() / 100.0;
-            double damage2 = counter * DAMAGE_UPGRADE.getValue();
+            double damage2 = counter * DAMAGE_UPGRADE.getValue() / 100.0;
             e.setDamage(e.getDamage() * (damage1 + damage2));
             AbstractGame.Participant target = getGame().getParticipant(e.getEntity().getUniqueId());
             new BlackFeatherCounter(target);

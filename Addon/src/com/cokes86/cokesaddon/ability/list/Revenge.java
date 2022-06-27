@@ -16,7 +16,6 @@ import org.bukkit.ChatColor;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Projectile;
-import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
 
 import java.text.DecimalFormat;
@@ -54,7 +53,7 @@ public class Revenge extends CokesAbility {
 					damager = (Entity) arrow.getShooter();
 				}
 			}
-			if (e.getCause() == EntityDamageEvent.DamageCause.MAGIC) return;
+			if (e.getCause() == DamageCause.VOID) return;
 			if (damager.equals(getPlayer()) && e.getEntity() instanceof Player && !e.getEntity().equals(getPlayer())) {
 				new AbilityTimer(1) {
 					public void run(int arg0) {
@@ -65,6 +64,7 @@ public class Revenge extends CokesAbility {
 						}
 					}
 				}.setInitialDelay(TimeUnit.TICKS, 1).setPeriod(TimeUnit.TICKS, 1).start();
+				getPlayer().sendMessage(e.getCause().name());
 			}
 		}
 	}

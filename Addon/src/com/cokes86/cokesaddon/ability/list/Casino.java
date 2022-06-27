@@ -93,7 +93,7 @@ public class Casino extends CokesAbility implements ActiveHandler {
         protected void run(int count) {
             Damages.damageWither(getPlayer(), 1);
         }
-    }.setInitialDelay(TimeUnit.SECONDS, 4).setPeriod(TimeUnit.SECONDS, 4).register();
+    }.setInitialDelay(TimeUnit.SECONDS, WITHER_PERIOD.getValue()).setPeriod(TimeUnit.SECONDS, WITHER_PERIOD.getValue()).register();
     private final AbilityTimer aim = new AbilityTimer() {
         @Override
         protected void run(int count) {
@@ -105,7 +105,7 @@ public class Casino extends CokesAbility implements ActiveHandler {
                 NMS.rotateHead(player, getPlayer(), LocationUtil.getYaw(direction), LocationUtil.getPitch(direction));
             }
         }
-    }.setInitialDelay(TimeUnit.SECONDS, 10).setPeriod(TimeUnit.SECONDS, 10).register();
+    }.setInitialDelay(TimeUnit.SECONDS, TWIST_PERIOD.getValue()).setPeriod(TimeUnit.SECONDS, TWIST_PERIOD.getValue()).register();
     private final AbilityInfoTimer infoTimer = new AbilityInfoTimer();
 
     public Casino(AbstractGame.Participant arg0) {

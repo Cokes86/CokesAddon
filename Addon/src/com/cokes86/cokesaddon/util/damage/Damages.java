@@ -16,7 +16,7 @@ public class Damages {
 
     static {
         try {
-            instance = Class.forName("cokes86.addon.util.damage." + ServerVersion.getName())
+            instance = Class.forName("com.cokes86.cokesaddon.util.damage." + ServerVersion.getName())
                     .asSubclass(DamageImpl.class).getConstructor().newInstance();
         } catch (Exception e) {
             throw new VersionNotSupportedException();

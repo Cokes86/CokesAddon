@@ -10,7 +10,7 @@ public class ArrowUtil {
 
     static {
         try {
-            instance = Class.forName("cokes86.addon.util.arrow." + ServerVersion.getName())
+            instance = Class.forName("com.cokes86.cokesaddon.util.arrow." + ServerVersion.getName())
                     .asSubclass(ArrowImpl.class).getConstructor().newInstance();
         } catch (Exception e) {
             throw new VersionNotSupportedException();

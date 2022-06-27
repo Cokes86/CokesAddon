@@ -141,6 +141,7 @@ public class Whitney extends CokesAbility implements ActiveHandler {
                 cooldown_two.setCooldown((int) (COOLDOWN_TWO.getValue() * 0.5));
                 this.setMaximumCount((int) (DURATION.getValue() * 20 * 0.5));
             }
+            setPeriod(TimeUnit.TICKS, 1);
         }
 
         @Override
@@ -166,6 +167,8 @@ public class Whitney extends CokesAbility implements ActiveHandler {
                 cooldown_two.start();
             }
             stack = 0;
+            channel.update(null);
+
         }
 
         @Override
@@ -175,6 +178,7 @@ public class Whitney extends CokesAbility implements ActiveHandler {
                 cooldown_two.start();
             }
             stack = 0;
+            channel.update(null);
         }
 
         public boolean isCooldown(){
@@ -191,7 +195,7 @@ public class Whitney extends CokesAbility implements ActiveHandler {
                 } else if (stack == 6) {
                     this.setCount(duration);
                     isStart = cooldown_two.start();
-                } else if (stack >= 6) {
+                } else if (stack > 6) {
                     stack = 6;
                     getPlayer().sendMessage("§c[!]§f 휘트니의 버프 스택은 최대 6단계까지만 가능합니다.");
                 } else {

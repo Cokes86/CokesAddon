@@ -29,6 +29,10 @@ public class CEntityDamageEvent extends Event implements Cancellable {
         return handlers;
     }
 
+    public static HandlerList getHandlerList() {
+        return handlers;
+    }
+
     public @Nullable Entity getDamager() {
         return damager;
     }
