@@ -85,7 +85,7 @@ public class Wasinsangdam extends CokesSynergy implements ActiveHandler {
                 }
             }
 
-            if (damager.equals(resentment.getPlayer()) && e.getEntity().equals(getPlayer())) {
+            if (resentment != null && damager.equals(resentment.getPlayer()) && e.getEntity().equals(getPlayer())) {
                 damage_increment += e.getFinalDamage() * 0.25;
             }
         }
