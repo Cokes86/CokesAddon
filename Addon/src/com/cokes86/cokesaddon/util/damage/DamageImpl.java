@@ -9,5 +9,5 @@ public interface DamageImpl {
 
     boolean damageMagicFixed(@NotNull Entity entity, @Nullable Player damager, float damage);
     boolean damageWither(@NotNull Entity entity, float damage);
-    boolean damageVoid(@NotNull Entity entity, @Nullable Player damager, float damage);
+    boolean damageVoid(@NotNull Entity entity, float damage);
 }

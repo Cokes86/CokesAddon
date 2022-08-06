@@ -60,7 +60,7 @@ public class Revenge extends CokesAbility {
 						Player target = (Player) e.getEntity();
 						if (!target.isDead() && Damages.canDamage(target, getPlayer(), DamageCause.VOID, (float) magicfixed_damage)) {
 							target.setNoDamageTicks(0);
-							Damages.damageVoid(target, getPlayer(), (float) magicfixed_damage);
+							Damages.damageVoid(target, (float) magicfixed_damage);
 						}
 					}
 				}.setInitialDelay(TimeUnit.TICKS, 1).setPeriod(TimeUnit.TICKS, 1).start();

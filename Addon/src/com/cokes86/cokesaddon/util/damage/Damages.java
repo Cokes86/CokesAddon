@@ -31,8 +31,8 @@ public class Damages {
         return instance.damageWither(entity, damage);
     }
 
-    public static boolean damageVoid(@NotNull Player entity, @Nullable Player damager, float damage) {
-        return instance.damageVoid(entity, damager, damage);
+    public static boolean damageVoid(@NotNull Player entity, float damage) {
+        return instance.damageVoid(entity, damage);
     }
 
     public static boolean damageMagic(@NotNull Entity entity, @Nullable Player damager, boolean ignore, float damage) {

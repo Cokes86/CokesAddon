@@ -28,6 +28,10 @@ public class FunctionalInterfaces {
         return upper(than).or(equals(ZERO));
     }
 
+    public static @NotNull <T extends Number> Predicate<T> lessThanOrEqual(T than) {
+        return upper(than).negate();
+    }
+
     public static @NotNull <T extends Number> Predicate<T> lower(T than) {
         return greaterThanOrEqual(than).negate();
     }

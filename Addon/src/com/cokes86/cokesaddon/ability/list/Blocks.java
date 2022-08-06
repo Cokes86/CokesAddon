@@ -220,11 +220,7 @@ public class Blocks extends CokesAbility implements ActiveHandler {
 					} else {
 						e.setDamage(e.getDamage() * (100.0 - stone.getValue()) / 100);
 					}
-				} else {
-					onEntityDamage(e);
 				}
-			} else {
-				onEntityDamage(e);
 			}
 		}
 	}
