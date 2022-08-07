@@ -3,6 +3,7 @@ package com.cokes86.cokesaddon.util.disguise;
 import com.mojang.authlib.properties.Property;
 import daybreak.abilitywar.AbilityWar;
 import daybreak.abilitywar.utils.base.collect.Pair;
+import daybreak.abilitywar.utils.base.minecraft.SkinInfo;
 import net.minecraft.server.v1_12_R1.EntityPlayer;
 import net.minecraft.server.v1_12_R1.PacketPlayOutPlayerInfo;
 import org.bukkit.Bukkit;

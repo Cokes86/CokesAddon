@@ -145,6 +145,8 @@ public class Disguise extends CokesAbility implements ActiveHandler {
 		if (e.getEntity().equals(getPlayer()) && target != null && damager instanceof Player && !damager.equals(getPlayer())) {
 			check += 1;
 			SoundLib.BELL.playInstrument(getPlayer(), Note.natural(1, Tone.C));
+			target.getPlayer().damage(e.getDamage() * reflect.getValue() / 100.0, damager);
+			e.setDamage(0);
 			if (check >= count.getValue()) {
 				target = null;
 				check = 0;
@@ -160,8 +162,6 @@ public class Disguise extends CokesAbility implements ActiveHandler {
 				}
 				cooldown.start();
 			}
-			target.getPlayer().damage(e.getDamage() * reflect.getValue() / 100.0, damager);
-			e.setDamage(0);
 		}
 	}
 

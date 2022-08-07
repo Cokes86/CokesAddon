@@ -48,7 +48,7 @@ public class Test extends CokesAbility implements ActiveHandler {
             Damages.damageMagicFixed(getPlayer(), getPlayer(), 10);
             Healths.setHealth(getPlayer(), AttributeUtil.getMaxHealth(getPlayer()));
 
-            Damages.damageVoid(getPlayer(), getPlayer(), 10);
+            Damages.damageVoid(getPlayer(), 10);
             Healths.setHealth(getPlayer(), AttributeUtil.getMaxHealth(getPlayer()));
         }
         return false;
