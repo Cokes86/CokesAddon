@@ -3,6 +3,7 @@ package com.cokes86.cokesaddon.ability.test;
 import com.cokes86.cokesaddon.ability.CokesAbility;
 import com.cokes86.cokesaddon.util.dummy.Dummy;
 import com.cokes86.cokesaddon.util.dummy.DummyImpl;
+import com.cokes86.cokesaddon.util.nms.NMSUtil;
 import daybreak.abilitywar.ability.AbilityManifest;
 import daybreak.abilitywar.ability.AbilityManifest.Rank;
 import daybreak.abilitywar.ability.AbilityManifest.Species;
@@ -26,7 +27,6 @@ import org.bukkit.Material;
 그림자 => npc, 그림자 만들면 3초간 본체 은신.
 */
 public class PhantomThiefRemake extends CokesAbility implements ActiveHandler {
-    private final Dummy dummy = new Dummy(getPlayer().getServer(), getPlayer().getWorld(), getPlayer().getLocation(), getPlayer());
 
     public PhantomThiefRemake(Participant arg0) {
         super(arg0);
@@ -35,18 +35,13 @@ public class PhantomThiefRemake extends CokesAbility implements ActiveHandler {
     @Override
     public boolean ActiveSkill(Material material, ClickType clickType) {
         if (material == Material.IRON_INGOT && clickType == ClickType.RIGHT_CLICK) {
-            dummy.create(getPlayer().getServer(), getPlayer().getWorld(), getPlayer().getLocation(), getPlayer());
+            NMSUtil.createDummy(getPlayer().getLocation(), getPlayer());
         }
         return false;
     }
 
     @Override
     protected void onUpdate(Update update) {
-        if (update != Update.RESTRICTION_CLEAR) {
-            for (DummyImpl dummys : dummy.getDummies().values()) {
-                dummy.remove();
-            }
-            dummy.getDummies().clear();
-        }
+
     }
 }

@@ -8,6 +8,8 @@ import daybreak.abilitywar.utils.base.collect.Pair;
 import net.minecraft.server.v1_12_R1.*;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
+import org.bukkit.craftbukkit.v1_12_R1.CraftServer;
+import org.bukkit.craftbukkit.v1_12_R1.CraftWorld;
 import org.bukkit.craftbukkit.v1_12_R1.entity.CraftEntity;
 import org.bukkit.craftbukkit.v1_12_R1.entity.CraftPlayer;
 import org.bukkit.entity.Arrow;
@@ -135,7 +137,7 @@ public class NMSImpl implements INMS {
 
     @Override
     public IDummy createDummy(Location location, Player player) {
-        return new DummyImpl((MinecraftServer) Bukkit.getServer(), (WorldServer) location.getWorld(), location, player);
+        return new DummyImpl(((CraftServer) Bukkit.getServer()).getServer(), ((CraftWorld) location.getWorld()).getHandle(), location, player);
     }
 
     @Override
