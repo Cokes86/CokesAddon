@@ -5,6 +5,10 @@ import com.cokes86.cokesaddon.util.nms.INMS;
 import com.mojang.authlib.properties.Property;
 import daybreak.abilitywar.AbilityWar;
 import daybreak.abilitywar.utils.base.collect.Pair;
+import daybreak.abilitywar.utils.base.reflect.ReflectionUtil.FieldUtil;
+import io.netty.channel.ChannelHandlerContext;
+import io.netty.channel.ChannelOutboundHandlerAdapter;
+import io.netty.channel.ChannelPromise;
 import net.minecraft.server.v1_12_R1.*;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
@@ -12,19 +16,25 @@ import org.bukkit.craftbukkit.v1_12_R1.CraftServer;
 import org.bukkit.craftbukkit.v1_12_R1.CraftWorld;
 import org.bukkit.craftbukkit.v1_12_R1.entity.CraftEntity;
 import org.bukkit.craftbukkit.v1_12_R1.entity.CraftPlayer;
+import org.bukkit.craftbukkit.v1_12_R1.inventory.CraftItemStack;
 import org.bukkit.entity.Arrow;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
+import org.bukkit.event.player.PlayerJoinEvent;
+import org.bukkit.event.player.PlayerQuitEvent;
+import org.bukkit.scheduler.BukkitRunnable;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.lang.reflect.Field;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
+import java.util.Map.Entry;
 
 public class NMSImpl implements INMS {
+    private final Set<UUID> hideSet = new HashSet<>();
+
+    private final Map<UUID, Pair<CraftPlayer, ChannelOutboundHandlerAdapter>> channelHandlers = new HashMap<>();
+
     @Override
     public void setCritical(Entity arrow, boolean critical) {
         if (!(arrow instanceof Arrow)) throw new IllegalArgumentException("arrow must be an instance of Arrow");
@@ -138,6 +148,146 @@ public class NMSImpl implements INMS {
     @Override
     public IDummy createDummy(Location location, Player player) {
         return new DummyImpl(((CraftServer) Bukkit.getServer()).getServer(), ((CraftWorld) location.getWorld()).getHandle(), location, player);
+    }
+
+    @Override
+    public void hidePlayer(Player hide) {
+        final CraftPlayer craftPlayer = (CraftPlayer) hide;
+        craftPlayer.getHandle().getDataWatcher().set(new DataWatcherObject<>(10, DataWatcherRegistry.b), 0);
+        craftPlayer.getHandle().setInvisible(true);
+        final PacketPlayOutEntityEquipment[] packets = {
+                new PacketPlayOutEntityEquipment(hide.getEntityId(), EnumItemSlot.MAINHAND, ItemStack.a),
+                new PacketPlayOutEntityEquipment(hide.getEntityId(), EnumItemSlot.OFFHAND, ItemStack.a),
+                new PacketPlayOutEntityEquipment(hide.getEntityId(), EnumItemSlot.HEAD, ItemStack.a),
+                new PacketPlayOutEntityEquipment(hide.getEntityId(), EnumItemSlot.CHEST, ItemStack.a),
+                new PacketPlayOutEntityEquipment(hide.getEntityId(), EnumItemSlot.LEGS, ItemStack.a),
+                new PacketPlayOutEntityEquipment(hide.getEntityId(), EnumItemSlot.FEET, ItemStack.a)
+        };
+        injectSelf(hide);
+        for (CraftPlayer player : ((CraftServer) Bukkit.getServer()).getOnlinePlayers()) {
+            if (player.equals(hide)) continue;
+            for (PacketPlayOutEntityEquipment packet : packets) {
+                player.getHandle().playerConnection.sendPacket(packet);
+            }
+            injectPlayer(hide, player);
+        }
+        hideSet.add(hide.getUniqueId());
+    }
+
+    @Override
+    public void showPlayer(Player show) {
+        final PacketPlayOutEntityEquipment[] packets = {
+                new PacketPlayOutEntityEquipment(show.getEntityId(), EnumItemSlot.MAINHAND, CraftItemStack.asNMSCopy(show.getInventory().getItemInMainHand())),
+                new PacketPlayOutEntityEquipment(show.getEntityId(), EnumItemSlot.OFFHAND, CraftItemStack.asNMSCopy(show.getInventory().getItemInOffHand())),
+                new PacketPlayOutEntityEquipment(show.getEntityId(), EnumItemSlot.HEAD, CraftItemStack.asNMSCopy(show.getInventory().getHelmet())),
+                new PacketPlayOutEntityEquipment(show.getEntityId(), EnumItemSlot.CHEST, CraftItemStack.asNMSCopy(show.getInventory().getChestplate())),
+                new PacketPlayOutEntityEquipment(show.getEntityId(), EnumItemSlot.LEGS, CraftItemStack.asNMSCopy(show.getInventory().getLeggings())),
+                new PacketPlayOutEntityEquipment(show.getEntityId(), EnumItemSlot.FEET, CraftItemStack.asNMSCopy(show.getInventory().getBoots()))
+        };
+        for (Entry<UUID, Pair<CraftPlayer, ChannelOutboundHandlerAdapter>> entry : channelHandlers.entrySet()) {
+            final CraftPlayer player = entry.getValue().getLeft();
+            try {
+                player.getHandle().playerConnection.networkManager.channel.pipeline().remove(entry.getValue().getRight());
+            } catch (NoSuchElementException ignored) {}
+            if (!player.isValid()) continue;
+            for (PacketPlayOutEntityEquipment packet : packets) {
+                player.getHandle().playerConnection.sendPacket(packet);
+            }
+        }
+        channelHandlers.clear();
+        new BukkitRunnable() {
+            @Override
+            public void run() {
+                ((CraftPlayer) show).getHandle().setInvisible(false);
+            }
+        }.runTaskLater(AbilityWar.getPlugin(), 2L);
+        hideSet.remove(show.getUniqueId());
+    }
+
+    @Override
+    public void onPlayerJoin(Player hiding, PlayerJoinEvent e) {
+        if (hideSet.contains(hiding.getUniqueId())) return;
+        final CraftPlayer player = (CraftPlayer) e.getPlayer();
+        new BukkitRunnable() {
+            @Override
+            public void run() {
+                if (player.equals(hiding)) {
+                    injectSelf(hiding);
+                } else {
+                    for (PacketPlayOutEntityEquipment packet : new PacketPlayOutEntityEquipment[] {
+                            new PacketPlayOutEntityEquipment(hiding.getEntityId(), EnumItemSlot.MAINHAND, ItemStack.a),
+                            new PacketPlayOutEntityEquipment(hiding.getEntityId(), EnumItemSlot.OFFHAND, ItemStack.a),
+                            new PacketPlayOutEntityEquipment(hiding.getEntityId(), EnumItemSlot.HEAD, ItemStack.a),
+                            new PacketPlayOutEntityEquipment(hiding.getEntityId(), EnumItemSlot.CHEST, ItemStack.a),
+                            new PacketPlayOutEntityEquipment(hiding.getEntityId(), EnumItemSlot.LEGS, ItemStack.a),
+                            new PacketPlayOutEntityEquipment(hiding.getEntityId(), EnumItemSlot.FEET, ItemStack.a)
+                    }) {
+                        player.getHandle().playerConnection.sendPacket(packet);
+                    }
+                    injectPlayer(hiding, player);
+                }
+            }
+        }.runTaskLater(AbilityWar.getPlugin(), 2L);
+    }
+
+    @Override
+    public void onPlayerQuit(Player hiding, PlayerQuitEvent e) {
+        final CraftPlayer player = (CraftPlayer) e.getPlayer();
+        if (channelHandlers.containsKey(player.getUniqueId())) {
+            try {
+                player.getHandle().playerConnection.networkManager.channel.pipeline().remove(channelHandlers.remove(player.getUniqueId()).getRight());
+            } catch (NoSuchElementException ignored) {
+            }
+        }
+    }
+
+    @Override
+    public void injectPlayer(Player hiding, Player inject) {
+        if (!inject.isValid()) return;
+        final DataWatcherObject<Byte> BYTE_DATA_WATCHER_OBJECT;
+        try {
+            BYTE_DATA_WATCHER_OBJECT = FieldUtil.getStaticValue(Entity.class, "Z");
+        } catch (NoSuchFieldException | IllegalAccessException e) {
+            throw new RuntimeException(e);
+        }
+        if (channelHandlers.containsKey(inject.getUniqueId())) {
+            final Pair<CraftPlayer, ChannelOutboundHandlerAdapter> pair = channelHandlers.get(inject.getUniqueId());
+            if (!pair.getLeft().isValid()) {
+                try {
+                    pair.getLeft().getHandle().playerConnection.networkManager.channel.pipeline().remove(pair.getRight());
+                } catch (NoSuchElementException ignored) {}
+            } else return;
+        }
+        final ChannelOutboundHandlerAdapter handler = new ChannelOutboundHandlerAdapter() {
+            @Override
+            public void write(ChannelHandlerContext ctx, Object packet, ChannelPromise promise) throws Exception {
+                if (packet instanceof PacketPlayOutEntityEquipment) {
+                    if ((int) FieldUtil.getValue(packet, "a") == hiding.getEntityId()) {
+                        FieldUtil.setValue(packet, "c", ItemStack.a);
+                    }
+                } else if (packet instanceof PacketPlayOutEntityMetadata) {
+                    if ((int) FieldUtil.getValue(packet, "a") == hiding.getEntityId()) {
+                        List<net.minecraft.server.v1_12_R1.DataWatcher.Item<?>> items = FieldUtil.getValue(packet, "b");
+                        if (items.size() != 0) {
+                            net.minecraft.server.v1_12_R1.DataWatcher.Item<?> item = items.get(0);
+                            if (BYTE_DATA_WATCHER_OBJECT.equals(item.a())) {
+                                net.minecraft.server.v1_12_R1.DataWatcher.Item<Byte> byteItem = (net.minecraft.server.v1_12_R1.DataWatcher.Item<Byte>) item;
+                                byteItem.a((byte) (byteItem.b() | 1 << 5));
+                                ((CraftPlayer) hiding).getHandle().setInvisible(true);
+                            }
+                        }
+                    }
+                }
+                super.write(ctx, packet, promise);
+            }
+        };
+        channelHandlers.put(inject.getUniqueId(), Pair.of((CraftPlayer) inject, handler));
+        ((CraftPlayer) inject).getHandle().playerConnection.networkManager.channel.pipeline().addBefore("packet_handler", hashCode() + ":" + inject.getName(), handler);
+    }
+
+    @Override
+    public void injectSelf(Player hiding) {
+
     }
 
     @Override

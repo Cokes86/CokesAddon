@@ -3,6 +3,8 @@ package com.cokes86.cokesaddon.util.nms;
 import org.bukkit.Location;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
+import org.bukkit.event.player.PlayerJoinEvent;
+import org.bukkit.event.player.PlayerQuitEvent;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -25,4 +27,11 @@ public interface INMS {
     boolean isChangedSkin(Player player);
 
     IDummy createDummy(Location location, Player player);
+
+    void hidePlayer(Player hide);
+    void showPlayer(Player show);
+    void onPlayerJoin(Player hiding, PlayerJoinEvent e);
+    void onPlayerQuit(Player hiding, PlayerQuitEvent e);
+    void injectPlayer(Player hiding, Player inject);
+    void injectSelf(Player hiding);
 }
