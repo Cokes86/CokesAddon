@@ -6,12 +6,16 @@ import com.cokes86.cokesaddon.util.nms.NMSUtil;
 import daybreak.abilitywar.ability.AbilityManifest;
 import daybreak.abilitywar.ability.AbilityManifest.Rank;
 import daybreak.abilitywar.ability.AbilityManifest.Species;
+import daybreak.abilitywar.ability.SubscribeEvent;
 import daybreak.abilitywar.ability.decorator.ActiveHandler;
 import daybreak.abilitywar.game.AbstractGame.Participant;
+import daybreak.abilitywar.utils.base.concurrent.TimeUnit;
 import org.bukkit.Material;
+import org.bukkit.event.player.PlayerJoinEvent;
+import org.bukkit.event.player.PlayerQuitEvent;
 
 @AbilityManifest(name = "팬쉽리메이크", rank = Rank.A, species = Species.HUMAN, explain = {
-        "철괴 우클릭 - 그림자 도둑: 자신 위치에 그림자를 3초간 소환하고 자신은 3초간 은신합니다.",
+        "철괴 우클릭 - 팬텀 쇼: 자신 위치에 그림자를 3초간 소환하고 자신은 3초간 은신합니다.",
         "  그림자를 공격한 플레이어는 폭발과 함께",
         "  그 사람의 능력의 등급을 §c1단계 내려 재배정§f합니다.",
         "[HIDDEN] 불쌍한 아이로구나"
@@ -24,6 +28,8 @@ import org.bukkit.Material;
 */
 public class PhantomThiefRemake extends CokesAbility implements ActiveHandler {
     private IDummy phantom = null;
+    private final Cooldown cooldown = new Cooldown(90);
+    private final PhantomShow phantomShow = new PhantomShow();
 
     public PhantomThiefRemake(Participant arg0) {
         super(arg0);
@@ -31,11 +37,8 @@ public class PhantomThiefRemake extends CokesAbility implements ActiveHandler {
 
     @Override
     public boolean ActiveSkill(Material material, ClickType clickType) {
-        if (material == Material.IRON_INGOT && clickType == ClickType.RIGHT_CLICK && phantom == null) {
-            phantom = NMSUtil.createDummy(getPlayer().getLocation(), getPlayer());
-            for (Participant participant : getGame().getParticipants()) {
-                phantom.display(participant.getPlayer());
-            }
+        if (material == Material.IRON_INGOT && clickType == ClickType.RIGHT_CLICK && phantom == null && !cooldown.isCooldown() && !phantomShow.isDuration()) {
+            return phantomShow.start();
         }
         return false;
     }
@@ -46,5 +49,56 @@ public class PhantomThiefRemake extends CokesAbility implements ActiveHandler {
             phantom.remove();
             phantom = null;
         }
+    }
+
+    @SubscribeEvent
+    public void onPlayerJoin(PlayerJoinEvent e) {
+        if (phantomShow.isRunning()) {
+            NMSUtil.onPlayerJoin(getPlayer(), e);
+        }
+    }
+
+    @SubscribeEvent
+    public void onPlayerQuit(PlayerQuitEvent e) {
+        if (phantomShow.isRunning()) {
+            NMSUtil.onPlayerQuit(getPlayer(), e);
+        }
+    }
+
+    private class PhantomShow extends Duration {
+
+        public PhantomShow() {
+            super(60,cooldown);
+            setPeriod(TimeUnit.TICKS, 1);
+        }
+
+        @Override
+        protected void onDurationStart() {
+            phantom = NMSUtil.createDummy(getPlayer().getLocation(), getPlayer());
+            for (Participant participant : getGame().getParticipants()) {
+                phantom.display(participant.getPlayer());
+            }
+            NMSUtil.hidePlayer(getPlayer());
+            getParticipant().attributes().TARGETABLE.setValue(false);
+        }
+
+        @Override
+        protected void onDurationEnd() {
+            phantom.remove();
+            phantom = null;
+            NMSUtil.showPlayer(getPlayer());
+            getParticipant().attributes().TARGETABLE.setValue(true);
+        }
+
+        @Override
+        protected void onDurationSilentEnd() {
+            phantom.remove();
+            phantom = null;
+            NMSUtil.showPlayer(getPlayer());
+            getParticipant().attributes().TARGETABLE.setValue(true);
+        }
+
+        @Override
+        protected void onDurationProcess(int i) {}
     }
 }

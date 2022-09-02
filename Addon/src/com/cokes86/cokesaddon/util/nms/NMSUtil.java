@@ -5,6 +5,8 @@ import daybreak.abilitywar.utils.base.minecraft.version.VersionNotSupportedExcep
 import org.bukkit.Location;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
+import org.bukkit.event.player.PlayerJoinEvent;
+import org.bukkit.event.player.PlayerQuitEvent;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -71,4 +73,12 @@ public class NMSUtil {
     public static boolean isChangedSkin(Player player) {
         return INSTANCE.isChangedSkin(player);
     }
+
+    public static void hidePlayer(Player hide) { INSTANCE.hidePlayer(hide); }
+
+    public static void showPlayer(Player show) { INSTANCE.showPlayer(show); }
+
+    public static void onPlayerJoin(Player hiding, PlayerJoinEvent e) { INSTANCE.onPlayerJoin(hiding, e); }
+
+    public static void onPlayerQuit(Player hiding, PlayerQuitEvent e) { INSTANCE.onPlayerQuit(hiding, e); }
 }

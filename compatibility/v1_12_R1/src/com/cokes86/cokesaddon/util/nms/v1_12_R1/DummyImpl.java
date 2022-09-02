@@ -35,8 +35,8 @@ public class DummyImpl extends EntityPlayer implements IDummy {
     private final EmptyNetworkManager networkManager;
     private final Player origin;
 
-    public DummyImpl(final MinecraftServer server, final WorldServer world, final Location location, Player player) {
-        super(server, world, createProfile(player), new PlayerInteractManager(world));
+    public DummyImpl(final MinecraftServer server, final WorldServer world, final Location location, Player skin) {
+        super(server, world, createProfile(skin), new PlayerInteractManager(world));
         this.playerInteractManager.setGameMode(EnumGamemode.SURVIVAL);
         try {
             this.networkManager = new EmptyNetworkManager(EnumProtocolDirection.CLIENTBOUND);
@@ -54,8 +54,8 @@ public class DummyImpl extends EntityPlayer implements IDummy {
         }.runTaskLater(AbilityWar.getPlugin(), 2L);
         setPosition(location.getX(), location.getY(), location.getZ());
         this.invulnerableTicks = 0;
-        this.hologram = NMS.newHologram(world.getWorld(), locX, locY + 2, locZ, player.getDisplayName());
-        this.origin = player;
+        this.hologram = NMS.newHologram(world.getWorld(), locX, locY + 2, locZ, skin.getDisplayName());
+        this.origin = skin;
     }
 
     @Override

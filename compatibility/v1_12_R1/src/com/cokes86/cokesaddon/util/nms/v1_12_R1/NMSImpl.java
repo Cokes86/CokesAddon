@@ -194,7 +194,7 @@ public class NMSImpl implements INMS {
                 player.getHandle().playerConnection.sendPacket(packet);
             }
         }
-        channelHandlers.clear();
+        channelHandlers.remove(show.getUniqueId());
         new BukkitRunnable() {
             @Override
             public void run() {
@@ -242,6 +242,7 @@ public class NMSImpl implements INMS {
     }
 
     @Override
+    @SuppressWarnings("unchecked")
     public void injectPlayer(Player hiding, Player inject) {
         if (!inject.isValid()) return;
         final DataWatcherObject<Byte> BYTE_DATA_WATCHER_OBJECT;
@@ -286,8 +287,46 @@ public class NMSImpl implements INMS {
     }
 
     @Override
+    @SuppressWarnings("unchecked")
     public void injectSelf(Player hiding) {
-
+        final CraftPlayer player = (CraftPlayer) hiding;
+        final DataWatcherObject<Byte> BYTE_DATA_WATCHER_OBJECT;
+        try {
+            BYTE_DATA_WATCHER_OBJECT = FieldUtil.getStaticValue(Entity.class, "Z");
+        } catch (NoSuchFieldException | IllegalAccessException e) {
+            throw new RuntimeException(e);
+        }
+        if (!player.isValid()) return;
+        if (channelHandlers.containsKey(player.getUniqueId())) {
+            final Pair<CraftPlayer, ChannelOutboundHandlerAdapter> pair = channelHandlers.get(player.getUniqueId());
+            if (!pair.getLeft().isValid()) {
+                try {
+                    pair.getLeft().getHandle().playerConnection.networkManager.channel.pipeline().remove(pair.getRight());
+                } catch (NoSuchElementException ignored) {
+                }
+            } else return;
+        }
+        final ChannelOutboundHandlerAdapter handler = new ChannelOutboundHandlerAdapter() {
+            @Override
+            public void write(ChannelHandlerContext ctx, Object packet, ChannelPromise promise) throws Exception {
+                if (packet instanceof PacketPlayOutEntityMetadata) {
+                    if ((int) FieldUtil.getValue(packet, "a") == hiding.getEntityId()) {
+                        List<net.minecraft.server.v1_12_R1.DataWatcher.Item<?>> items = FieldUtil.getValue(packet, "b");
+                        if (items.size() != 0) {
+                            net.minecraft.server.v1_12_R1.DataWatcher.Item<?> item = items.get(0);
+                            if (BYTE_DATA_WATCHER_OBJECT.equals(item.a())) {
+                                net.minecraft.server.v1_12_R1.DataWatcher.Item<Byte> byteItem = (net.minecraft.server.v1_12_R1.DataWatcher.Item<Byte>) item;
+                                byteItem.a((byte) (byteItem.b() | 1 << 5));
+                                ((CraftPlayer) hiding).getHandle().setInvisible(true);
+                            }
+                        }
+                    }
+                }
+                super.write(ctx, packet, promise);
+            }
+        };
+        channelHandlers.put(player.getUniqueId(), Pair.of(player, handler));
+        player.getHandle().playerConnection.networkManager.channel.pipeline().addBefore("packet_handler", hashCode() + ":" + player.getName(), handler);
     }
 
     @Override
