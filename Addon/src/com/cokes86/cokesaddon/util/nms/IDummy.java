@@ -5,7 +5,6 @@ import org.bukkit.entity.Player;
 import java.util.UUID;
 
 public interface IDummy {
-    int TICKS_TO_RESET = 140;
     byte SKIN_BIT_LAYER = 0x02 | 0x04 | 0x08 | 0x10 | 0x20 | 0x40;
 
     void addDamage(double damage);

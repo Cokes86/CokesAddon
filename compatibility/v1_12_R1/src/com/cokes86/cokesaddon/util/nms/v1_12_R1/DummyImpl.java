@@ -30,8 +30,7 @@ public class DummyImpl extends EntityPlayer implements IDummy {
 
     private final JavaPlugin plugin = AbilityWar.getPlugin();
     private final IHologram hologram;
-    private double elapsedSeconds = 1, damages = 0;
-    private int untilReset = -1;
+    private double damages = 0;
     private final EmptyNetworkManager networkManager;
     private final Player origin;
 
@@ -65,22 +64,12 @@ public class DummyImpl extends EntityPlayer implements IDummy {
             return;
         }
         hologram.teleport(getWorld().getWorld(), locX, locY + 2, locZ, yaw, pitch);
-        if (untilReset > 0) {
-            elapsedSeconds += .05;
-            if (--untilReset <= 0) {
-                this.untilReset = -1;
-                this.elapsedSeconds = 1;
-                this.damages = 0;
-            }
-        }
         super.B_();
     }
 
     @Override
     public void addDamage(final double damage) {
-        this.untilReset = TICKS_TO_RESET;
         this.damages += damage;
-        updateHologram();
     }
 
     @Override
