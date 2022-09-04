@@ -37,8 +37,8 @@ import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 
-import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @AbilityManifest(name = "팬쉽리메이크", rank = Rank.A, species = Species.HUMAN, explain = {
         "§7철괴 우클릭 §8- §c팬텀 쇼§f: 자신 위치에 §7그림자§f를 3초간 소환하고 자신은 §a은신§f합니다. $[COOLDOWN]",
@@ -66,43 +66,24 @@ public class PhantomThiefRemake extends CokesAbility implements ActiveHandler {
     private final Cooldown cooldown = new Cooldown(90);
     private final PhantomShow phantomShow = new PhantomShow();
 
-    private final List<AbilityRegistration> rank_c = new ArrayList<>();
-    private final List<AbilityRegistration> rank_b = new ArrayList<>();
-    private final List<AbilityRegistration> rank_a = new ArrayList<>();
-    private final List<AbilityRegistration> rank_s = new ArrayList<>();
-    private final List<AbilityRegistration> rank_l = new ArrayList<>();
-    private final List<AbilityRegistration> rank_special = new ArrayList<>();
-
-    {
-        for (AbilityRegistration registration : AbilityList.values()) {
-            switch (registration.getManifest().rank()) {
-                case SPECIAL: {
-                    rank_special.add(registration);
-                    break;
-                }
-                case L: {
-                    rank_l.add(registration);
-                    break;
-                }
-                case S: {
-                    rank_s.add(registration);
-                    break;
-                }
-                case A: {
-                    rank_a.add(registration);
-                    break;
-                }
-                case B: {
-                    rank_b.add(registration);
-                    break;
-                }
-                case C: {
-                    rank_c.add(registration);
-                    break;
-                }
-            }
-        }
-    }
+    private final List<AbilityRegistration> rank_c = AbilityList.values().stream()
+                .filter(registration -> registration.getManifest().rank().equals(Rank.C))
+                .collect(Collectors.toList());
+    private final List<AbilityRegistration> rank_b = AbilityList.values().stream()
+                .filter(registration -> registration.getManifest().rank().equals(Rank.B))
+                .collect(Collectors.toList());
+    private final List<AbilityRegistration> rank_a = AbilityList.values().stream()
+                .filter(registration -> registration.getManifest().rank().equals(Rank.A))
+                .collect(Collectors.toList());
+    private final List<AbilityRegistration> rank_s = AbilityList.values().stream()
+                .filter(registration -> registration.getManifest().rank().equals(Rank.S))
+                .collect(Collectors.toList());
+    private final List<AbilityRegistration> rank_l = AbilityList.values().stream()
+                .filter(registration -> registration.getManifest().rank().equals(Rank.L))
+                .collect(Collectors.toList());
+    private final List<AbilityRegistration> rank_special = AbilityList.values().stream()
+                .filter(registration -> registration.getManifest().rank().equals(Rank.SPECIAL))
+                .collect(Collectors.toList());
 
     public PhantomThiefRemake(Participant arg0) {
         super(arg0);
