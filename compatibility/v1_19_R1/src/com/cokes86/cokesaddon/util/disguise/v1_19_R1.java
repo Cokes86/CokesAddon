@@ -88,7 +88,7 @@ public class v1_19_R1 implements DisguiseImpl {
             skin = property != origin.get(player.getUniqueId()).getRight();
 
             EntityPlayer enp = cp.getHandle();
-            nameTag = !origin.get(player.getUniqueId()).getLeft().equals(enp.fz().getName());
+            nameTag = !origin.get(player.getUniqueId()).getLeft().equals(enp.fy().getName());
         }
 
         return skin || nameTag;

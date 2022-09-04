@@ -1,10 +1,13 @@
 package com.cokes86.cokesaddon.util;
 
+import daybreak.abilitywar.utils.base.minecraft.nms.NMS;
 import daybreak.abilitywar.utils.library.MaterialX;
 import daybreak.google.common.base.Strings;
 import daybreak.google.common.collect.ImmutableSet;
 import daybreak.google.common.collect.ImmutableSet.Builder;
 import org.bukkit.Material;
+import org.bukkit.entity.Entity;
+import org.bukkit.entity.Projectile;
 
 public class CokesUtil {
 
@@ -28,5 +31,19 @@ public class CokesUtil {
 
     public static String repeatWithTwoColor(String repeat, char color1, int count1, char color2, int count2) {
         return "§"+Character.toString(color1).concat(Strings.repeat(repeat, count1)).concat("§"+ color2).concat(Strings.repeat(repeat, count2));
+    }
+
+    public static Entity getDamager(Entity entity) {
+        Entity attacker = entity;
+        if (attacker != null) {
+            if (NMS.isArrow(attacker)) {
+                Projectile arrow = (Projectile) attacker;
+                if (arrow.getShooter() instanceof Entity) {
+                    attacker = (Entity) arrow.getShooter();
+                }
+            }
+        }
+
+        return attacker;
     }
 }

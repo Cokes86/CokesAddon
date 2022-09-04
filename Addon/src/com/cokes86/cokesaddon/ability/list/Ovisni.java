@@ -25,14 +25,15 @@ import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
 @AbilityManifest(name = "오비스니", rank = Rank.A, species = Species.HUMAN, explain = {
-		"상대방을 공격할 시 상대방에게 §2맹독§f을 1 증가합니다.",
-		"상대방은 매 $[DELAY]마다 §2맹독§f만큼의 대미지를 받습니다. (최대 $[MAX_DAMAGE_HIT])",
-		"철괴 우클릭시 모든 플레이어의 §2맹독§f을 모두 감소하고",
-		"그 수의 2배만큼의 대미지를 입힙니다. $[COOLDOWN_CONFIG]",
-		"각각 플레이어마다 §2맹독§f은 최대 $[MAX_COUNTER_CONFIG]까지 증가합니다.",
-		"철괴 좌클릭시 모든 플레이어의 §2맹독§f을 알 수 있습니다.",
-		"0개는 따로 표시하지 않습니다.",
-		"맹독을 가진 플레이어는 자신이 맹독에 걸렸는 지 알 수 없습니다."
+		"§7패시브 §8- §2맹독§f: 상대방을 공격할 시 §2맹독§f을 부여합니다.",
+		"  §2맹독§f은 최대 $[MAX_COUNTER_CONFIG]번 중첩이 가능합니다.",
+		"  매 $[DELAY]마다 1의 대미지를 주며, 이는 중첩된 수만큼 증가합니다.",
+		"  §2맹독§f으로 인한 대미지는 $[MAX_DAMAGE_HIT]번까지 주며,",
+		"  §2맹독§f으로 인한 피해 역시 §2맹독§f을 부여합니다.",
+		"  §2맹독§f을 가진 플레이어는 자신이 §2맹독§f에 걸렸는 지 알 수 없습니다.",
+		"§7철괴 우클릭 §8- §c바이탈 브레이크§f: 모든 플레이어의 §2맹독§f을 제거하며",
+		"  가지고있던 §2맹독§f의 2배만큼의 대미지를 줍니다. $[COOLDOWN_CONFIG]",
+		"§7철괴 좌클릭 §8- §c바이탈 체크§f: 모든 플레이어의 §2맹독§f 중첩수를 알 수 있습니다."
 })
 public class Ovisni extends CokesAbility implements ActiveHandler {
 

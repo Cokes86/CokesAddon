@@ -43,7 +43,7 @@ public class v1_19_R1 implements DamageImpl{
                 y(); m(); o();
             }};
         } else {
-            source = new EntityDamageSourceIndirect("magic", setItem(new EntityPotion(nmsEntity.s, nmsEntity.dg(), nmsEntity.di(), nmsEntity.dm())), null){{
+            source = new EntityDamageSourceIndirect("magic", setItem(new EntityPotion(nmsEntity.s, nmsEntity.df(), nmsEntity.dh(), nmsEntity.dl())), null){{
                 y(); m(); o();
             }};
         }

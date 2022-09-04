@@ -1,10 +1,12 @@
 package com.cokes86.cokesaddon.ability.test;
 
 import com.cokes86.cokesaddon.ability.CokesAbility;
+import com.cokes86.cokesaddon.util.CokesUtil;
 import com.cokes86.cokesaddon.util.FunctionalInterfaces;
 import com.cokes86.cokesaddon.util.nms.IDummy;
 import com.cokes86.cokesaddon.util.nms.NMSUtil;
-import daybreak.abilitywar.ability.AbilityBase;
+import daybreak.abilitywar.AbilityWar;
+import daybreak.abilitywar.ability.AbilityFactory.AbilityRegistration;
 import daybreak.abilitywar.ability.AbilityManifest;
 import daybreak.abilitywar.ability.AbilityManifest.Rank;
 import daybreak.abilitywar.ability.AbilityManifest.Species;
@@ -17,13 +19,21 @@ import daybreak.abilitywar.game.AbstractGame.Participant;
 import daybreak.abilitywar.game.AbstractGame.Participant.ActionbarNotification.ActionbarChannel;
 import daybreak.abilitywar.game.list.mix.AbstractMix;
 import daybreak.abilitywar.game.list.mix.triplemix.AbstractTripleMix;
+import daybreak.abilitywar.game.manager.AbilityList;
 import daybreak.abilitywar.utils.base.TimeUtil;
 import daybreak.abilitywar.utils.base.concurrent.TimeUnit;
 import daybreak.abilitywar.utils.base.random.Random;
 import daybreak.abilitywar.utils.library.SoundLib;
+import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.Note;
 import org.bukkit.Note.Tone;
+import org.bukkit.entity.Entity;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.HandlerList;
+import org.bukkit.event.Listener;
+import org.bukkit.event.entity.EntityDamageByEntityEvent;
+import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 
@@ -32,7 +42,7 @@ import java.util.List;
 
 @AbilityManifest(name = "팬쉽리메이크", rank = Rank.A, species = Species.HUMAN, explain = {
         "§7철괴 우클릭 §8- §c팬텀 쇼§f: 자신 위치에 §7그림자§f를 3초간 소환하고 자신은 §a은신§f합니다. $[COOLDOWN]",
-        "  그림자를 공격한 플레이어는 폭발과 함께 $[DAMAGE]의 대미지를 주고",
+        "  그림자를 공격한 플레이어는 $[DAMAGE]의 대미지를 주고",
         "  그 사람의 능력의 등급을 §b1단계 내려 재배정§f합니다.",
         "  재배정한 플레이어는 3초간 무적시간이 부여합니다.",
         "  그림자가 사라지면 §a은신§f또한 중간에 해제됩니다.",
@@ -48,17 +58,51 @@ public class PhantomThiefRemake extends CokesAbility implements ActiveHandler {
     private static final Config<Integer> COOLDOWN = Config.of(PhantomThiefRemake.class, "cooldown", 90, FunctionalInterfaces.positive(), FunctionalInterfaces.COOLDOWN,
             "# 팬텀 쇼 쿨타임",
             "# 기본 값: 90 (초)");
+    private static final Config<Double> DAMAGE = Config.of(PhantomThiefRemake.class, "damage", 7.0, FunctionalInterfaces.positive(),
+            "# 팬텀 쇼 도중 분신 공격 시 대미지",
+            "# 기본 값: 7");
 
     private IDummy phantom = null;
     private final Cooldown cooldown = new Cooldown(90);
     private final PhantomShow phantomShow = new PhantomShow();
 
-    private final List<AbilityBase> rank_c = new ArrayList<>();
-    private final List<AbilityBase> rank_b = new ArrayList<>();
-    private final List<AbilityBase> rank_a = new ArrayList<>();
-    private final List<AbilityBase> rank_s = new ArrayList<>();
-    private final List<AbilityBase> rank_l = new ArrayList<>();
-    private final List<AbilityBase> rank_special = new ArrayList<>();
+    private final List<AbilityRegistration> rank_c = new ArrayList<>();
+    private final List<AbilityRegistration> rank_b = new ArrayList<>();
+    private final List<AbilityRegistration> rank_a = new ArrayList<>();
+    private final List<AbilityRegistration> rank_s = new ArrayList<>();
+    private final List<AbilityRegistration> rank_l = new ArrayList<>();
+    private final List<AbilityRegistration> rank_special = new ArrayList<>();
+
+    {
+        for (AbilityRegistration registration : AbilityList.values()) {
+            switch (registration.getManifest().rank()) {
+                case SPECIAL: {
+                    rank_special.add(registration);
+                    break;
+                }
+                case L: {
+                    rank_l.add(registration);
+                    break;
+                }
+                case S: {
+                    rank_s.add(registration);
+                    break;
+                }
+                case A: {
+                    rank_a.add(registration);
+                    break;
+                }
+                case B: {
+                    rank_b.add(registration);
+                    break;
+                }
+                case C: {
+                    rank_c.add(registration);
+                    break;
+                }
+            }
+        }
+    }
 
     public PhantomThiefRemake(Participant arg0) {
         super(arg0);
@@ -91,6 +135,17 @@ public class PhantomThiefRemake extends CokesAbility implements ActiveHandler {
     public void onPlayerQuit(PlayerQuitEvent e) {
         if (phantomShow.isRunning()) {
             NMSUtil.onPlayerQuit(getPlayer(), e);
+        }
+    }
+
+    @SubscribeEvent
+    public void onEntityDamage(EntityDamageByEntityEvent e) {
+        Entity damagerEntity = CokesUtil.getDamager(e.getDamager());
+        if (phantomShow.isRunning() && e.getEntity().equals(phantom) && !damagerEntity.equals(getPlayer()) && getGame().isParticipating(damagerEntity.getUniqueId())) {
+            Participant damager = getGame().getParticipant(damagerEntity.getUniqueId());
+            damager.getPlayer().damage(DAMAGE.getValue(), getPlayer());
+            new InvTimer(getGame(), damager).start();
+            phantomShow.stop(false);
         }
     }
 
@@ -127,11 +182,10 @@ public class PhantomThiefRemake extends CokesAbility implements ActiveHandler {
         }
 
         @Override
-        protected void onDurationProcess(int i) {
-        }
+        protected void onDurationProcess(int i) {}
     }
 
-    private class InvTimer extends GameTimer {
+    private class InvTimer extends GameTimer implements Listener {
         private final ActionbarChannel channel;
         private final Participant target;
         public InvTimer(AbstractGame game, Participant target) {
@@ -143,8 +197,9 @@ public class PhantomThiefRemake extends CokesAbility implements ActiveHandler {
         @Override
         protected void onStart() {
             if (target.getAbility() != null) {
+                Bukkit.getPluginManager().registerEvents(InvTimer.this, AbilityWar.getPlugin());
                 Rank rank = target.getAbility().getRank();
-                List<AbilityBase> returnAbilities = null;
+                List<AbilityRegistration> returnAbilities = null;
                 switch(rank) {
                     case SPECIAL: {
                         returnAbilities = rank_l;
@@ -167,7 +222,7 @@ public class PhantomThiefRemake extends CokesAbility implements ActiveHandler {
                         break;
                     }
                     case C: {
-                        List<AbilityBase> tmp = rank_special;
+                        List<AbilityRegistration> tmp = rank_special;
                         tmp.addAll(rank_l);
                         tmp.addAll(rank_s);
                         tmp.addAll(rank_a);
@@ -176,12 +231,12 @@ public class PhantomThiefRemake extends CokesAbility implements ActiveHandler {
                         break;
                     }
                 }
-                AbilityBase newOne = new Random().pick(returnAbilities);
+                AbilityRegistration newOne = new Random().pick(returnAbilities);
                 try {
-                    target.setAbility(newOne.getRegistration());
-                    target.getPlayer().sendMessage("[팬텀 시프] 능력이 재배정되었습니다. 당신의 능력은 §e"+newOne.getName()+"§f입니다.");
+                    target.setAbility(newOne);
+                    target.getPlayer().sendMessage("[팬텀 시프] 능력이 재배정되었습니다. 당신의 능력은 §e"+newOne.getManifest().name()+"§f입니다.");
                 } catch (ReflectiveOperationException e) {
-                    getPlayer().sendMessage("능력을 재배정하는 도중 오류가 발생하였습니다.");
+                    getPlayer().sendMessage("[팬텀 시프] 능력을 재배정하는 도중 오류가 발생하였습니다.");
                     e.printStackTrace();
                     stop(true);
                 }
@@ -192,6 +247,23 @@ public class PhantomThiefRemake extends CokesAbility implements ActiveHandler {
         protected void run(int count) {
             channel.update("무적: "+ TimeUtil.parseTimeAsString(count));
             SoundLib.PIANO.broadcastInstrument(Note.natural(1, Tone.C));
+        }
+
+        @Override
+        protected void onEnd() {
+            HandlerList.unregisterAll(InvTimer.this);
+        }
+
+        @Override
+        protected void onSilentEnd() {
+            HandlerList.unregisterAll(InvTimer.this);
+        }
+
+        @EventHandler
+        public void onEntityDamage(EntityDamageEvent e) {
+            if (e.getEntity().equals(target.getPlayer())) {
+                e.setCancelled(true);
+            }
         }
     }
 }

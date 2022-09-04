@@ -64,7 +64,7 @@ public class Justin extends CokesAbility implements ActiveHandler {
     private static final Config<Double> DAMAGE = Config.of(Justin.class, "giving-damage-decrement", 30.0, FunctionalInterfaces.positive(),
         "# 슬래시 1인격 주는 대미지 감소량",
         "# 기본값 : 30.0 (%)");
-    private static final Config<Float> GET_THIS_DAMAGE = Config.of(Justin.class, "fix-damage", 2.0f, FunctionalInterfaces.positive(),
+    private static final Config<Double> GET_THIS_DAMAGE = Config.of(Justin.class, "fix-damage", 2.0, FunctionalInterfaces.positive(),
         "# 이거나 받아라 2인격 고정 대미지량",
         "# 기본값 : 2.0");
     private static final Config<Double> TWO_PERSON_DAMAGE_INCREASE = Config.of(Justin.class, "receive-damage-increment", 20.0, FunctionalInterfaces.positive(),
@@ -252,7 +252,7 @@ public class Justin extends CokesAbility implements ActiveHandler {
             new AbilityTimer(stack) {
                 @Override
                 protected void run(int count) {
-                    Damages.damageMagic(target.getPlayer(), getPlayer(), true, GET_THIS_DAMAGE.getValue());
+                    Damages.damageMagic(target.getPlayer(), getPlayer(), true, GET_THIS_DAMAGE.getValue().floatValue());
                     target.getPlayer().setNoDamageTicks(0);
                 }
             }.setPeriod(TimeUnit.TICKS, 10).start();

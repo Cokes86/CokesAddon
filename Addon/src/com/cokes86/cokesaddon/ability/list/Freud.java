@@ -71,7 +71,7 @@ public class Freud extends CokesAbility implements ActiveHandler {
 	private static final Config<Integer> damage_explosion = Config.of(Freud.class, "explosion-damage", 2, FunctionalInterfaces.positive());
 	private static final Config<Integer> fireTick = Config.of(Freud.class, "fire-duration", 50, FunctionalInterfaces.positive());
 	private static final Config<Integer> weakness_duration = Config.of(Freud.class, "weakness-duration", 3, FunctionalInterfaces.positive());
-	private static final Config<Float> fuse = Config.of(Freud.class, "explosion-fuse", 0.4f, FunctionalInterfaces.positive());
+	private static final Config<Double> fuse = Config.of(Freud.class, "explosion-fuse", 0.4, FunctionalInterfaces.positive());
 	private static final Config<Integer> MANA_REGAIN_TIME = Config.of(Freud.class, "mana-regain-period", 5, FunctionalInterfaces.positive());
 	private static final Config<Integer> ELEMENTAL_CIRCLE_DURATION = Config.of(Freud.class, "elemental-circle-duration", 2, FunctionalInterfaces.positive(), FunctionalInterfaces.TIME);
 
@@ -182,7 +182,7 @@ public class Freud extends CokesAbility implements ActiveHandler {
 		EXPLOSION("§a폭발§f", mana_explosion.getValue(), RGB.of(102, 153, 1), BarColor.GREEN) {
 			protected void onDamaged(Damageable target, Player owner) {
 				Damages.damageFixed(target, owner, damage_explosion.getValue());
-				target.getWorld().createExplosion(target.getLocation().clone().add(0, -0.3, 0), fuse.getValue());
+				target.getWorld().createExplosion(target.getLocation().clone().add(0, -0.3, 0), fuse.getValue().floatValue());
 			}
 		};
 

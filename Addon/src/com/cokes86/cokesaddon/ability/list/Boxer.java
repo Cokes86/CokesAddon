@@ -99,7 +99,7 @@ public class Boxer extends CokesAbility implements TargetHandler {
             "# 더킹 쿨타임", "# 기본값: 20 (초)");
 
     //더킹 댐감 컨피그
-    private static final Config<Float> DUCKING_DAMAGE_DECREMENT = Config.of(Boxer.class, "ducking-damage-decrement", 0.5f, FunctionalInterfaces.positive(),
+    private static final Config<Double> DUCKING_DAMAGE_DECREMENT = Config.of(Boxer.class, "ducking-damage-decrement", 0.5, FunctionalInterfaces.positive(),
             "# 더킹 이후 연계되는 스킬 대미지 감소량", "# 기본값: 0.5");
 
     //콤비네이션 추가 컨피그
@@ -188,7 +188,7 @@ public class Boxer extends CokesAbility implements TargetHandler {
             }
             float damage = (float) (EnchantLib.getDamageWithSharpnessEnchantment(sword, sharpness) * percentage / 100.0);
             skillTimer.participant.getPlayer().setNoDamageTicks(0);
-            Damages.damageMagic(skillTimer.participant.getPlayer(), getPlayer(), false, damage - (skillTimer.ducking ? DUCKING_DAMAGE_DECREMENT.getValue() : 0));
+            Damages.damageMagic(skillTimer.participant.getPlayer(), getPlayer(), false, damage - (skillTimer.ducking ? DUCKING_DAMAGE_DECREMENT.getValue().floatValue() : 0));
             skillTimer.participant.getPlayer().setVelocity(skillTimer.participant.getPlayer().getLocation().getDirection().clone().multiply(-2.5));
 
             skillTimer.setDucking(false);
@@ -222,7 +222,7 @@ public class Boxer extends CokesAbility implements TargetHandler {
 
                 skillTimer.participant.getPlayer().setNoDamageTicks(0);
                 float damage = (float) (EnchantLib.getDamageWithSharpnessEnchantment(sword, sharpness) * damage_percentage / 100.0);
-                Damages.damageMagic(skillTimer.participant.getPlayer(), getPlayer(), false, damage - (skillTimer.ducking ? DUCKING_DAMAGE_DECREMENT.getValue() : 0));
+                Damages.damageMagic(skillTimer.participant.getPlayer(), getPlayer(), false, damage - (skillTimer.ducking ? DUCKING_DAMAGE_DECREMENT.getValue().floatValue() : 0));
                 skillTimer.participant.getPlayer().setNoDamageTicks(0);
                 Damages.damageMagic(skillTimer.participant.getPlayer(), getPlayer(), true, (float) (thorn * thorn_percentage / 100.0f));
 
@@ -271,7 +271,7 @@ public class Boxer extends CokesAbility implements TargetHandler {
 
                 skillTimer.participant.getPlayer().setNoDamageTicks(0);
                 float damage = (float) (EnchantLib.getDamageWithSharpnessEnchantment(sword, sharpness) * damage_percentage / 100.0);
-                Damages.damageMagic(skillTimer.participant.getPlayer(), getPlayer(), false, damage - (skillTimer.ducking ? DUCKING_DAMAGE_DECREMENT.getValue() : 0));
+                Damages.damageMagic(skillTimer.participant.getPlayer(), getPlayer(), false, damage - (skillTimer.ducking ? DUCKING_DAMAGE_DECREMENT.getValue().floatValue() : 0));
 
                 double chance = new Random().nextDouble() * 99;
                 if (chance <= stun_percentage) {

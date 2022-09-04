@@ -30,7 +30,7 @@ public class Keily extends CokesAbility implements ActiveHandler {
 	private static final Config<Integer> cool = Config.of(Keily.class, "쿨타임", 45, FunctionalInterfaces.positive(), FunctionalInterfaces.COOLDOWN);
 	private static final Config<Integer> duration = Config.of(Keily.class, "비행지속시간", 2, FunctionalInterfaces.positive(), FunctionalInterfaces.TIME);
 	private static final Config<Integer> max_switch = Config.of(Keily.class, "최대_스위치", 3, FunctionalInterfaces.positive());
-	private static final Config<Float> fuse = Config.of(Keily.class, "폭발_위력", 1.3f, FunctionalInterfaces.positive());
+	private static final Config<Double> fuse = Config.of(Keily.class, "폭발_위력", 1.3, FunctionalInterfaces.positive());
 	private final int count = Wreck.isEnabled(GameManager.getGame()) ? (int) ((100 - Configuration.Settings.getCooldownDecrease().getPercentage()) / 100.0 * dura.getValue()) : dura.getValue();
 	private boolean falling = false;
 	private final Cooldown c = new Cooldown(cool.getValue());
@@ -89,7 +89,7 @@ public class Keily extends CokesAbility implements ActiveHandler {
 	public boolean ActiveSkill(Material arg0, ClickType arg1) {
 		if (arg0.equals(Material.IRON_INGOT) && arg1.equals(ClickType.RIGHT_CLICK)) {
 			if (switchCounter > 0 && !flying.isRunning() && !c.isCooldown()) {
-				getPlayer().getWorld().createExplosion(getPlayer().getLocation(), switchCounter * fuse.getValue(), false);
+				getPlayer().getWorld().createExplosion(getPlayer().getLocation(), switchCounter * fuse.getValue().floatValue(), false);
 				switchCounter = 0;
 				channel.update(ChatColor.DARK_GREEN.toString().concat(Strings.repeat("●", switchCounter).concat(Strings.repeat("○", max_switch.getValue() - switchCounter))));
 				flying.start();
