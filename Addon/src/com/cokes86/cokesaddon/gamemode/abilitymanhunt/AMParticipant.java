@@ -1,4 +1,4 @@
-package com.cokes86.cokesaddon.gamemode.huntingrunner;
+package com.cokes86.cokesaddon.gamemode.abilitymanhunt;
 
 import daybreak.abilitywar.ability.AbilityBase;
 import daybreak.abilitywar.ability.AbilityFactory.AbilityRegistration;
@@ -10,12 +10,12 @@ import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-public class HRParticipant extends Participant {
+public class AMParticipant extends Participant {
 
     private AbilityBase ability = null;
     private final Attributes attributes = new Attributes();
 
-    protected HRParticipant(AbstractGame abstractGame, @NotNull Player arg0) {
+    protected AMParticipant(AbstractGame abstractGame, @NotNull Player arg0) {
         abstractGame.super(arg0);
     }
 

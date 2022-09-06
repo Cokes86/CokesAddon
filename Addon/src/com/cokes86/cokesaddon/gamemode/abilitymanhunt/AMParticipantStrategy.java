@@ -1,30 +1,30 @@
-package com.cokes86.cokesaddon.gamemode.huntingrunner;
+package com.cokes86.cokesaddon.gamemode.abilitymanhunt;
 
 import daybreak.abilitywar.game.ParticipantStrategy;
 import org.bukkit.entity.Player;
 
 import java.util.*;
 
-public class HRStrategy implements ParticipantStrategy {
-    private final Map<String, HRParticipant> HuntingRunnerParticipants = new HashMap<>();
-    private HRParticipant targetHuntingRunnerParticipant;
+public class AMParticipantStrategy implements ParticipantStrategy {
+    private final Map<String, AMParticipant> HuntingRunnerParticipants = new HashMap<>();
+    private AMParticipant targetHuntingRunnerParticipant;
 
-    public HRParticipant getTargetHuntingRunnerParticipant() {
+    public AMParticipant getTargetHuntingRunnerParticipant() {
         return targetHuntingRunnerParticipant;
     }
 
-    public void setTargetHuntingRunnerParticipant(HRParticipant target) {
+    public void setTargetHuntingRunnerParticipant(AMParticipant target) {
         this.targetHuntingRunnerParticipant = target;
     }
 
-    public HRStrategy(HuntingRunner huntingrunner, Collection<Player> players) {
+    public AMParticipantStrategy(AbilityManhunt huntingrunner, Collection<Player> players) {
         for (Player player : players) {
-            HuntingRunnerParticipants.put(player.getUniqueId().toString(), new HRParticipant(huntingrunner, player));
+            HuntingRunnerParticipants.put(player.getUniqueId().toString(), new AMParticipant(huntingrunner, player));
         }
     }
 
     @Override
-    public Collection<? extends HRParticipant> getParticipants() {
+    public Collection<? extends AMParticipant> getParticipants() {
         return Collections.unmodifiableCollection(HuntingRunnerParticipants.values());
     }
 
@@ -34,7 +34,7 @@ public class HRStrategy implements ParticipantStrategy {
     }
 
     @Override
-    public HRParticipant getParticipant(UUID uuid) {
+    public AMParticipant getParticipant(UUID uuid) {
         return HuntingRunnerParticipants.get(uuid.toString());
     }
 

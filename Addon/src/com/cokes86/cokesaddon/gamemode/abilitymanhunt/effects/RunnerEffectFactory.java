@@ -1,4 +1,4 @@
-package com.cokes86.cokesaddon.gamemode.huntingrunner.effects;
+package com.cokes86.cokesaddon.gamemode.abilitymanhunt.effects;
 
 import daybreak.abilitywar.ability.AbilityFactory;
 import daybreak.abilitywar.ability.AbilityManifest;

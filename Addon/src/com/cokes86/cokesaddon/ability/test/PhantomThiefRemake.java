@@ -34,8 +34,6 @@ import org.bukkit.event.HandlerList;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
-import org.bukkit.event.player.PlayerJoinEvent;
-import org.bukkit.event.player.PlayerQuitEvent;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -102,20 +100,6 @@ public class PhantomThiefRemake extends CokesAbility implements ActiveHandler {
         if (update != Update.RESTRICTION_CLEAR && phantom != null) {
             phantom.remove();
             phantom = null;
-        }
-    }
-
-    @SubscribeEvent
-    public void onPlayerJoin(PlayerJoinEvent e) {
-        if (phantomShow.isRunning()) {
-            NMSUtil.onPlayerJoin(getPlayer(), e);
-        }
-    }
-
-    @SubscribeEvent
-    public void onPlayerQuit(PlayerQuitEvent e) {
-        if (phantomShow.isRunning()) {
-            NMSUtil.onPlayerQuit(getPlayer(), e);
         }
     }
 

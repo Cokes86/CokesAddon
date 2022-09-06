@@ -30,8 +30,4 @@ public interface INMS {
 
     void hidePlayer(Player hide);
     void showPlayer(Player show);
-    void onPlayerJoin(Player hiding, PlayerJoinEvent e);
-    void onPlayerQuit(Player hiding, PlayerQuitEvent e);
-    void injectPlayer(Player hiding, Player inject);
-    void injectSelf(Player hiding);
 }

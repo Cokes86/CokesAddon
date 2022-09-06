@@ -4,6 +4,7 @@ import com.mojang.authlib.properties.Property;
 import daybreak.abilitywar.AbilityWar;
 import daybreak.abilitywar.utils.base.collect.Pair;
 import net.minecraft.network.protocol.game.PacketPlayOutPlayerInfo;
+import net.minecraft.network.protocol.game.PacketPlayOutPlayerInfo.EnumPlayerInfoAction;
 import net.minecraft.server.level.EntityPlayer;
 import org.bukkit.Bukkit;
 import org.bukkit.craftbukkit.v1_19_R1.entity.CraftPlayer;
@@ -88,7 +89,7 @@ public class v1_19_R1 implements DisguiseImpl {
             skin = property != origin.get(player.getUniqueId()).getRight();
 
             EntityPlayer enp = cp.getHandle();
-            nameTag = !origin.get(player.getUniqueId()).getLeft().equals(enp.fy().getName());
+            nameTag = !origin.get(player.getUniqueId()).getLeft().equals(enp.getGameProfile().getName());
         }
 
         return skin || nameTag;
@@ -97,12 +98,12 @@ public class v1_19_R1 implements DisguiseImpl {
     @Override
     public void reloadPlayer(Player p) {
         Bukkit.getOnlinePlayers().forEach(pl ->
-                (((CraftPlayer)pl).getHandle()).b.a(new PacketPlayOutPlayerInfo(
-                        PacketPlayOutPlayerInfo.EnumPlayerInfoAction.e, ((CraftPlayer)pl).getHandle())));
+                (((CraftPlayer)pl).getHandle()).connection.send(new PacketPlayOutPlayerInfo(
+                        EnumPlayerInfoAction.REMOVE_PLAYER, ((CraftPlayer)pl).getHandle())));
 
         Bukkit.getOnlinePlayers().forEach(pl ->
-                (((CraftPlayer)pl).getHandle()).b.a(new PacketPlayOutPlayerInfo(
-                        PacketPlayOutPlayerInfo.EnumPlayerInfoAction.a, ((CraftPlayer)pl).getHandle())));
+                (((CraftPlayer)pl).getHandle()).connection.send(new PacketPlayOutPlayerInfo(
+                        EnumPlayerInfoAction.ADD_PLAYER, ((CraftPlayer)pl).getHandle())));
 
         Bukkit.getOnlinePlayers().forEach(pl -> pl.hidePlayer(AbilityWar.getPlugin(), p));
         Bukkit.getOnlinePlayers().forEach(pl -> pl.showPlayer(AbilityWar.getPlugin(), p));

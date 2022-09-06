@@ -1,6 +1,6 @@
-package com.cokes86.cokesaddon.gamemode.huntingrunner;
+package com.cokes86.cokesaddon.gamemode.abilitymanhunt;
 
-import com.cokes86.cokesaddon.gamemode.huntingrunner.effects.RunnerEffect;
+import com.cokes86.cokesaddon.gamemode.abilitymanhunt.effects.RunnerEffect;
 import daybreak.abilitywar.ability.AbilityBase;
 import daybreak.abilitywar.ability.AbilityManifest;
 import daybreak.abilitywar.ability.AbilityManifest.Rank;

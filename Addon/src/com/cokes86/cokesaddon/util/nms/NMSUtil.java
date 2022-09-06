@@ -77,8 +77,4 @@ public class NMSUtil {
     public static void hidePlayer(Player hide) { INSTANCE.hidePlayer(hide); }
 
     public static void showPlayer(Player show) { INSTANCE.showPlayer(show); }
-
-    public static void onPlayerJoin(Player hiding, PlayerJoinEvent e) { INSTANCE.onPlayerJoin(hiding, e); }
-
-    public static void onPlayerQuit(Player hiding, PlayerQuitEvent e) { INSTANCE.onPlayerQuit(hiding, e); }
 }
