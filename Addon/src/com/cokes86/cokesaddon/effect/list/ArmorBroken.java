@@ -4,7 +4,7 @@ import com.cokes86.cokesaddon.effect.AddonEffectRegistry;
 import com.cokes86.cokesaddon.util.AttributeUtil;
 import daybreak.abilitywar.AbilityWar;
 import daybreak.abilitywar.game.AbstractGame;
-import daybreak.abilitywar.game.manager.effect.event.ParticipantEffectApplyEvent;
+import daybreak.abilitywar.game.manager.effect.event.ParticipantPreEffectApplyEvent;
 import daybreak.abilitywar.game.manager.effect.registry.ApplicationMethod;
 import daybreak.abilitywar.game.manager.effect.registry.EffectManifest;
 import daybreak.abilitywar.game.manager.effect.registry.EffectRegistry;
@@ -44,7 +44,7 @@ public class ArmorBroken extends AbstractGame.Effect implements Listener {
     }
 
     @EventHandler
-    private void onParticipantEffectApply(ParticipantEffectApplyEvent e) {
+    private void onParticipantEffectApply(ParticipantPreEffectApplyEvent e) {
         if (e.getParticipant().equals(participant)) {
             if (e.getEffectType().equals(broken)) {
                 if (e.getParticipant().getEffects(broken).size() >= 5) {

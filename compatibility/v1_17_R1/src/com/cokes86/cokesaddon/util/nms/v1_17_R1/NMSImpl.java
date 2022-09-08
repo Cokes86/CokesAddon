@@ -1,4 +1,4 @@
-package com.cokes86.cokesaddon.util.nms.v1_12_R1;
+package com.cokes86.cokesaddon.util.nms.v1_17_R1;
 
 import com.cokes86.cokesaddon.util.nms.IDummy;
 import com.cokes86.cokesaddon.util.nms.INMS;
@@ -7,13 +7,19 @@ import daybreak.abilitywar.AbilityWar;
 import daybreak.abilitywar.game.AbstractGame.Participant;
 import daybreak.abilitywar.utils.base.collect.Pair;
 import io.netty.channel.ChannelOutboundHandlerAdapter;
-import net.minecraft.server.v1_12_R1.*;
+import net.minecraft.network.protocol.game.PacketPlayOutPlayerInfo;
+import net.minecraft.server.level.EntityPlayer;
+import net.minecraft.world.damagesource.DamageSource;
+import net.minecraft.world.damagesource.EntityDamageSourceIndirect;
+import net.minecraft.world.entity.projectile.EntityPotion;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
-import org.bukkit.craftbukkit.v1_12_R1.CraftServer;
-import org.bukkit.craftbukkit.v1_12_R1.CraftWorld;
-import org.bukkit.craftbukkit.v1_12_R1.entity.CraftEntity;
-import org.bukkit.craftbukkit.v1_12_R1.entity.CraftPlayer;
+import org.bukkit.craftbukkit.v1_17_R1.CraftServer;
+import org.bukkit.craftbukkit.v1_17_R1.CraftWorld;
+import org.bukkit.craftbukkit.v1_17_R1.entity.CraftEntity;
+import org.bukkit.craftbukkit.v1_17_R1.entity.CraftPlayer;
 import org.bukkit.entity.Arrow;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
@@ -43,38 +49,43 @@ public class NMSImpl implements INMS {
     private static final ItemStack SPLASH_POTION = new ItemStack(Items.SPLASH_POTION);
 
     @Override
-    public boolean damageMagicFixed(@NotNull org.bukkit.entity.Entity entity, @Nullable Player damager, float damage) {
-        net.minecraft.server.v1_12_R1.Entity nmsEntity = ((CraftEntity)entity).getHandle();
+    public boolean damageMagicFixed(@NotNull Entity entity, @Nullable Player damager, float damage) {
+        net.minecraft.world.entity.Entity nmsEntity = ((CraftEntity)entity).getHandle();
         EntityPlayer nmsDamager = damager != null ? ((CraftPlayer)damager).getHandle() : null;
 
         return nmsEntity.damageEntity(magic(nmsEntity, nmsDamager), damage);
     }
 
     @Override
-    public boolean damageWither(@NotNull org.bukkit.entity.Entity entity, float damage) {
-        net.minecraft.server.v1_12_R1.Entity nmsEntity = ((CraftEntity)entity).getHandle();
+    public boolean damageWither(@NotNull Entity entity, float damage) {
+        net.minecraft.world.entity.Entity nmsEntity = ((CraftEntity)entity).getHandle();
         return nmsEntity.damageEntity(DamageSource.WITHER, damage);
     }
 
     @Override
-    public boolean damageVoid(org.bukkit.entity.@NotNull Entity entity, float damage) {
-        net.minecraft.server.v1_12_R1.Entity nmsEntity = ((CraftEntity)entity).getHandle();
+    public boolean damageVoid(@NotNull Entity entity, float damage) {
+        net.minecraft.world.entity.Entity nmsEntity = ((CraftEntity)entity).getHandle();
         return nmsEntity.damageEntity(DamageSource.OUT_OF_WORLD, damage);
     }
 
     @SuppressWarnings("all")
-    private EntityDamageSourceIndirect magic(net.minecraft.server.v1_12_R1.Entity nmsEntity, EntityPlayer nmsDamager) {
+    private EntityDamageSourceIndirect magic(net.minecraft.world.entity.Entity nmsEntity, EntityPlayer nmsDamager) {
         EntityDamageSourceIndirect source;
         if (nmsDamager != null) {
-            source = new EntityDamageSourceIndirect("magic", new EntityPotion(nmsEntity.getWorld(), nmsDamager, SPLASH_POTION), nmsDamager) {{
-                setMagic(); setIgnoreArmor(); m();
+            source = new EntityDamageSourceIndirect("magic", setItem(new EntityPotion(nmsEntity.getWorld(), nmsDamager)), nmsDamager) {{
+                setMagic(); setIgnoreArmor(); setStarvation();
             }};
         } else {
-            source = new EntityDamageSourceIndirect("magic", new EntityPotion(nmsEntity.getWorld(), nmsEntity.locX, nmsEntity.locY, nmsEntity.locZ, SPLASH_POTION), null){{
-                setMagic(); setIgnoreArmor(); m();
+            source = new EntityDamageSourceIndirect("magic", setItem(new EntityPotion(nmsEntity.getWorld(), nmsEntity.locX(), nmsEntity.locY(), nmsEntity.locZ())), null){{
+                setMagic(); setIgnoreArmor(); setStarvation();
             }};
         }
         return source;
+    }
+
+    private EntityPotion setItem(final EntityPotion potion) {
+        potion.setItem(SPLASH_POTION);
+        return potion;
     }
 
     private static final Map<UUID, Pair<String, Property>> origin = new HashMap<>();
@@ -140,6 +151,7 @@ public class NMSImpl implements INMS {
     }
 
     @Override
+    @SuppressWarnings("all")
     public IDummy createDummy(Location location, Player player) {
         return new DummyImpl(((CraftServer) Bukkit.getServer()).getServer(), ((CraftWorld) location.getWorld()).getHandle(), location, player);
     }
@@ -182,11 +194,11 @@ public class NMSImpl implements INMS {
     @Override
     public void reloadPlayerSkin(Player p) {
         Bukkit.getOnlinePlayers().forEach(pl ->
-                (((CraftPlayer)pl).getHandle()).playerConnection.sendPacket(new PacketPlayOutPlayerInfo(
+                (((CraftPlayer)pl).getHandle()).connection.sendPacket(new PacketPlayOutPlayerInfo(
                         PacketPlayOutPlayerInfo.EnumPlayerInfoAction.REMOVE_PLAYER, ((CraftPlayer)pl).getHandle())));
 
         Bukkit.getOnlinePlayers().forEach(pl ->
-                (((CraftPlayer)pl).getHandle()).playerConnection.sendPacket(new PacketPlayOutPlayerInfo(
+                (((CraftPlayer)pl).getHandle()).connection.sendPacket(new PacketPlayOutPlayerInfo(
                         PacketPlayOutPlayerInfo.EnumPlayerInfoAction.ADD_PLAYER, ((CraftPlayer)pl).getHandle())));
 
         Bukkit.getOnlinePlayers().forEach(pl -> pl.hidePlayer(AbilityWar.getPlugin(), p));

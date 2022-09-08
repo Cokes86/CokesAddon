@@ -1,18 +1,29 @@
-package com.cokes86.cokesaddon.util.nms.v1_12_R1;
+package com.cokes86.cokesaddon.util.nms.v1_17_R1;
 
 import com.cokes86.cokesaddon.util.nms.IDummy;
 import com.mojang.authlib.GameProfile;
 import daybreak.abilitywar.AbilityWar;
 import daybreak.abilitywar.utils.base.minecraft.nms.IHologram;
 import daybreak.abilitywar.utils.base.minecraft.nms.NMS;
-import daybreak.abilitywar.utils.base.minecraft.nms.v1_12_R1.network.EmptyNetworkHandler;
-import daybreak.abilitywar.utils.base.minecraft.nms.v1_12_R1.network.EmptyNetworkManager;
-import net.minecraft.server.v1_12_R1.*;
-import net.minecraft.server.v1_12_R1.PacketPlayOutPlayerInfo.EnumPlayerInfoAction;
+import daybreak.abilitywar.utils.base.minecraft.nms.v1_17_R1.network.EmptyNetworkHandler;
+import daybreak.abilitywar.utils.base.minecraft.nms.v1_17_R1.network.EmptyNetworkManager;
+import net.minecraft.network.protocol.EnumProtocolDirection;
+import net.minecraft.network.protocol.game.PacketPlayOutEntityDestroy;
+import net.minecraft.network.protocol.game.PacketPlayOutNamedEntitySpawn;
+import net.minecraft.network.protocol.game.PacketPlayOutPlayerInfo;
+import net.minecraft.network.protocol.game.PacketPlayOutPlayerInfo.EnumPlayerInfoAction;
+import net.minecraft.network.syncher.DataWatcherObject;
+import net.minecraft.network.syncher.DataWatcherRegistry;
+import net.minecraft.server.MinecraftServer;
+import net.minecraft.server.level.EntityPlayer;
+import net.minecraft.server.level.WorldServer;
+import net.minecraft.server.network.PlayerConnection;
+import net.minecraft.world.damagesource.DamageSource;
+import net.minecraft.world.level.EnumGamemode;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
-import org.bukkit.craftbukkit.v1_12_R1.CraftServer;
-import org.bukkit.craftbukkit.v1_12_R1.entity.CraftPlayer;
+import org.bukkit.craftbukkit.v1_17_R1.CraftServer;
+import org.bukkit.craftbukkit.v1_17_R1.entity.CraftPlayer;
 import org.bukkit.entity.Player;
 import org.bukkit.event.entity.CreatureSpawnEvent.SpawnReason;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -35,16 +46,16 @@ public class DummyImpl extends EntityPlayer implements IDummy {
     private final Player origin;
 
     public DummyImpl(final MinecraftServer server, final WorldServer world, final Location location, Player skin) {
-        super(server, world, createProfile(skin), new PlayerInteractManager(world));
-        this.playerInteractManager.setGameMode(EnumGamemode.SURVIVAL);
+        super(server, world, createProfile(skin));
+        this.gameMode.setGameMode(EnumGamemode.SURVIVAL);
         try {
             this.networkManager = new EmptyNetworkManager(EnumProtocolDirection.CLIENTBOUND);
-            this.playerConnection = new EmptyNetworkHandler(server, networkManager, this);
-            networkManager.setPacketListener(playerConnection);
+            this.connection = new EmptyNetworkHandler(server, networkManager, this);
+            networkManager.setPacketListener(connection);
         } catch (IllegalAccessException e) {
             throw new RuntimeException(e);
         }
-        getDataWatcher().set(new DataWatcherObject<>(13, DataWatcherRegistry.a), SKIN_BIT_LAYER);
+        getDataWatcher().set(new DataWatcherObject<>(17, DataWatcherRegistry.BYTE), SKIN_BIT_LAYER);
         new BukkitRunnable() {
             @Override
             public void run() {
@@ -52,19 +63,19 @@ public class DummyImpl extends EntityPlayer implements IDummy {
             }
         }.runTaskLater(AbilityWar.getPlugin(), 2L);
         setPosition(location.getX(), location.getY(), location.getZ());
-        this.invulnerableTicks = 0;
-        this.hologram = NMS.newHologram(world.getWorld(), locX, locY + 2, locZ, skin.getDisplayName());
+        this.invulnerableTime = 0;
+        this.hologram = NMS.newHologram(world.getWorld(), locX(), locY() + 2, locZ(), skin.getDisplayName());
         this.origin = skin;
     }
 
     @Override
-    public void B_() {
+    public void tick() {
         if (!isAlive() || hologram.isUnregistered() || !plugin.isEnabled()) {
             remove();
             return;
         }
-        hologram.teleport(getWorld().getWorld(), locX, locY + 2, locZ, yaw, pitch);
-        super.B_();
+        hologram.teleport(getWorld().getWorld(), locX(), locY() + 2, locZ(), getYRot(), getXRot());
+        super.tick();
     }
 
     @Override
@@ -84,15 +95,9 @@ public class DummyImpl extends EntityPlayer implements IDummy {
     }
 
     @Override
-    public void die() {
-        networkManager.setConnected(false);
-        super.die();
-    }
-
-    @Override
     public void display(final Player player) {
         hologram.display(player);
-        final PlayerConnection playerConnection = ((CraftPlayer) player).getHandle().playerConnection;
+        final PlayerConnection playerConnection = ((CraftPlayer) player).getHandle().connection;
         playerConnection.sendPacket(new PacketPlayOutPlayerInfo(EnumPlayerInfoAction.ADD_PLAYER, this));
         playerConnection.sendPacket(new PacketPlayOutNamedEntitySpawn(this));
         new BukkitRunnable() {
@@ -122,13 +127,13 @@ public class DummyImpl extends EntityPlayer implements IDummy {
     @Override
     public void remove() {
         die();
-        getWorld().removeEntity(this);
+        ((WorldServer) getWorld()).getChunkProvider().removeEntity(this);
         if (!hologram.isUnregistered()) {
             hologram.unregister();
         }
         final PacketPlayOutEntityDestroy packet = new PacketPlayOutEntityDestroy(getId());
         for (CraftPlayer player : ((CraftServer) Bukkit.getServer()).getOnlinePlayers()) {
-            player.getHandle().playerConnection.sendPacket(packet);
+            player.getHandle().connection.sendPacket(packet);
         }
     }
 

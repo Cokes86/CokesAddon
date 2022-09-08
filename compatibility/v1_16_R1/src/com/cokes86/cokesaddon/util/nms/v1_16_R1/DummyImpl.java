@@ -1,18 +1,18 @@
-package com.cokes86.cokesaddon.util.nms.v1_12_R1;
+package com.cokes86.cokesaddon.util.nms.v1_16_R1;
 
 import com.cokes86.cokesaddon.util.nms.IDummy;
 import com.mojang.authlib.GameProfile;
 import daybreak.abilitywar.AbilityWar;
 import daybreak.abilitywar.utils.base.minecraft.nms.IHologram;
 import daybreak.abilitywar.utils.base.minecraft.nms.NMS;
-import daybreak.abilitywar.utils.base.minecraft.nms.v1_12_R1.network.EmptyNetworkHandler;
-import daybreak.abilitywar.utils.base.minecraft.nms.v1_12_R1.network.EmptyNetworkManager;
-import net.minecraft.server.v1_12_R1.*;
-import net.minecraft.server.v1_12_R1.PacketPlayOutPlayerInfo.EnumPlayerInfoAction;
+import daybreak.abilitywar.utils.base.minecraft.nms.v1_16_R1.network.EmptyNetworkHandler;
+import daybreak.abilitywar.utils.base.minecraft.nms.v1_16_R1.network.EmptyNetworkManager;
+import net.minecraft.server.v1_16_R1.PacketPlayOutPlayerInfo.EnumPlayerInfoAction;
+import net.minecraft.server.v1_16_R1.*;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
-import org.bukkit.craftbukkit.v1_12_R1.CraftServer;
-import org.bukkit.craftbukkit.v1_12_R1.entity.CraftPlayer;
+import org.bukkit.craftbukkit.v1_16_R1.CraftServer;
+import org.bukkit.craftbukkit.v1_16_R1.entity.CraftPlayer;
 import org.bukkit.entity.Player;
 import org.bukkit.event.entity.CreatureSpawnEvent.SpawnReason;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -44,7 +44,7 @@ public class DummyImpl extends EntityPlayer implements IDummy {
         } catch (IllegalAccessException e) {
             throw new RuntimeException(e);
         }
-        getDataWatcher().set(new DataWatcherObject<>(13, DataWatcherRegistry.a), SKIN_BIT_LAYER);
+        getDataWatcher().set(new DataWatcherObject<>(16, DataWatcherRegistry.a), SKIN_BIT_LAYER);
         new BukkitRunnable() {
             @Override
             public void run() {
@@ -53,18 +53,18 @@ public class DummyImpl extends EntityPlayer implements IDummy {
         }.runTaskLater(AbilityWar.getPlugin(), 2L);
         setPosition(location.getX(), location.getY(), location.getZ());
         this.invulnerableTicks = 0;
-        this.hologram = NMS.newHologram(world.getWorld(), locX, locY + 2, locZ, skin.getDisplayName());
+        this.hologram = NMS.newHologram(world.getWorld(), locX(), locY() + 2, locZ(), skin.getDisplayName());
         this.origin = skin;
     }
 
     @Override
-    public void B_() {
+    public void tick() {
         if (!isAlive() || hologram.isUnregistered() || !plugin.isEnabled()) {
             remove();
             return;
         }
-        hologram.teleport(getWorld().getWorld(), locX, locY + 2, locZ, yaw, pitch);
-        super.B_();
+        hologram.teleport(getWorld().getWorld(), locX(), locY() + 2, locZ(), yaw, pitch);
+        super.tick();
     }
 
     @Override
@@ -122,7 +122,7 @@ public class DummyImpl extends EntityPlayer implements IDummy {
     @Override
     public void remove() {
         die();
-        getWorld().removeEntity(this);
+        ((WorldServer) getWorld()).removeEntity(this);
         if (!hologram.isUnregistered()) {
             hologram.unregister();
         }

@@ -18,6 +18,7 @@ import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.EntityPlayer;
 import net.minecraft.server.level.WorldServer;
 import net.minecraft.server.network.PlayerConnection;
+import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityLiving;
 import net.minecraft.world.level.EnumGamemode;
@@ -32,6 +33,7 @@ import org.bukkit.scheduler.BukkitRunnable;
 
 import java.util.UUID;
 
+@SuppressWarnings("all")
 public class DummyImpl extends EntityPlayer implements IDummy {
 
     private static GameProfile createProfile(final Player player) {
@@ -122,6 +124,12 @@ public class DummyImpl extends EntityPlayer implements IDummy {
     @Override
     public UUID getUniqueID() {
         return ((Entity) this).getUUID();
+    }
+
+    @Override
+    public void die(DamageSource damagesource) {
+        networkManager.setConnected(false);
+        super.die(damagesource);
     }
 
     @Override
