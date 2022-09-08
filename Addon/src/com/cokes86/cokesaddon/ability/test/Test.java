@@ -3,13 +3,14 @@ package com.cokes86.cokesaddon.ability.test;
 import com.cokes86.cokesaddon.ability.CokesAbility;
 import com.cokes86.cokesaddon.event.CEntityDamageEvent;
 import com.cokes86.cokesaddon.util.AttributeUtil;
-import com.cokes86.cokesaddon.util.damage.Damages;
+import com.cokes86.cokesaddon.util.nms.NMSUtil;
 import daybreak.abilitywar.ability.AbilityManifest;
 import daybreak.abilitywar.ability.Materials;
 import daybreak.abilitywar.ability.SubscribeEvent;
 import daybreak.abilitywar.ability.decorator.ActiveHandler;
 import daybreak.abilitywar.game.AbstractGame;
 import daybreak.abilitywar.utils.annotations.Beta;
+import daybreak.abilitywar.utils.base.minecraft.damage.Damages;
 import daybreak.abilitywar.utils.base.minecraft.entity.health.Healths;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
@@ -39,16 +40,16 @@ public class Test extends CokesAbility implements ActiveHandler {
     @Override
     public boolean ActiveSkill(Material material, ClickType clickType) {
         if (material == Material.IRON_INGOT && clickType == ClickType.RIGHT_CLICK) {
-            Damages.damageMagic(getPlayer(), getPlayer(), false, 10);
+            NMSUtil.damageMagicFixed(getPlayer(), getPlayer(), 10);
             Healths.setHealth(getPlayer(), AttributeUtil.getMaxHealth(getPlayer()));
 
             Damages.damageFixed(getPlayer(), getPlayer(), 10);
             Healths.setHealth(getPlayer(), AttributeUtil.getMaxHealth(getPlayer()));
 
-            Damages.damageMagicFixed(getPlayer(), getPlayer(), 10);
+            NMSUtil.damageMagicFixed(getPlayer(), getPlayer(), 10);
             Healths.setHealth(getPlayer(), AttributeUtil.getMaxHealth(getPlayer()));
 
-            Damages.damageVoid(getPlayer(), 10);
+            NMSUtil.damageVoid(getPlayer(), 10);
             Healths.setHealth(getPlayer(), AttributeUtil.getMaxHealth(getPlayer()));
         }
         return false;

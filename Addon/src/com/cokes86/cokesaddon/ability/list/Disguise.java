@@ -3,7 +3,7 @@ package com.cokes86.cokesaddon.ability.list;
 import com.cokes86.cokesaddon.ability.CokesAbility;
 import com.cokes86.cokesaddon.event.CEntityDamageEvent;
 import com.cokes86.cokesaddon.util.FunctionalInterfaces;
-import com.cokes86.cokesaddon.util.disguise.DisguiseUtil;
+import com.cokes86.cokesaddon.util.nms.NMSUtil;
 import daybreak.abilitywar.ability.AbilityManifest;
 import daybreak.abilitywar.ability.AbilityManifest.Rank;
 import daybreak.abilitywar.ability.AbilityManifest.Species;
@@ -76,18 +76,18 @@ public class Disguise extends CokesAbility implements ActiveHandler {
 	@Override
 	protected void onUpdate(Update update) {
 		if (update != Update.RESTRICTION_CLEAR) {
-			if (DisguiseUtil.isChanged(getPlayer())) {
+			if (NMSUtil.isChangedSkin(getPlayer())) {
 				if (changeSkin.getValue()) {
-					DisguiseUtil.changeSkin(getPlayer(), getPlayer().getUniqueId());
+					NMSUtil.changeSkin(getPlayer(), getPlayer().getUniqueId());
 				}
 				if (changeNameTag.getValue() && !(getGame() instanceof Teamable)) {
-					DisguiseUtil.setPlayerNameTag(getPlayer(), getPlayer().getUniqueId());
+					NMSUtil.setPlayerNameTag(getPlayer(), getPlayer().getUniqueId());
 				}
-				DisguiseUtil.reloadPlayer(getPlayer());
+				NMSUtil.reloadPlayerData(getPlayer());
 			}
-			DisguiseUtil.clearData();
+			NMSUtil.clearSkinData();
 		} else {
-			DisguiseUtil.saveData();
+			NMSUtil.saveSkinData();
 		}
 	}
 
@@ -98,15 +98,15 @@ public class Disguise extends CokesAbility implements ActiveHandler {
 			if (player != null) {
 				target = getGame().getParticipant(player.getUniqueId());
 
-				DisguiseUtil.saveData();
+				NMSUtil.saveSkinData();
 				getPlayer().sendMessage(KoreanUtil.addJosa(player.getName(), Josa.으로로) + " 변장합니다.");
 				if (changeSkin.getValue()) {
-					DisguiseUtil.changeSkin(getPlayer(), player.getUniqueId());
+					NMSUtil.changeSkin(getPlayer(), player.getUniqueId());
 				}
 				if (changeNameTag.getValue() && !(getGame() instanceof Teamable)) {
-					DisguiseUtil.setPlayerNameTag(getPlayer(), player.getUniqueId());
+					NMSUtil.setPlayerNameTag(getPlayer(), player.getUniqueId());
 				}
-				DisguiseUtil.reloadPlayer(getPlayer());
+				NMSUtil.reloadPlayerData(getPlayer());
 				return true;
 			}
 		}
@@ -119,14 +119,14 @@ public class Disguise extends CokesAbility implements ActiveHandler {
 			target = null;
 			check = 0;
 			getPlayer().sendMessage("변장이 풀렸습니다.");
-			if (DisguiseUtil.isChanged(getPlayer())) {
+			if (NMSUtil.isChangedSkin(getPlayer())) {
 				if (changeSkin.getValue()) {
-					DisguiseUtil.changeSkin(getPlayer(), getPlayer().getUniqueId());
+					NMSUtil.changeSkin(getPlayer(), getPlayer().getUniqueId());
 				}
 				if (changeNameTag.getValue() && !(getGame() instanceof Teamable)) {
-					DisguiseUtil.setPlayerNameTag(getPlayer(), getPlayer().getUniqueId());
+					NMSUtil.setPlayerNameTag(getPlayer(), getPlayer().getUniqueId());
 				}
-				DisguiseUtil.reloadPlayer(getPlayer());
+				NMSUtil.reloadPlayerData(getPlayer());
 			}
 			cooldown.start();
 		}
@@ -151,14 +151,14 @@ public class Disguise extends CokesAbility implements ActiveHandler {
 				target = null;
 				check = 0;
 				getPlayer().sendMessage("변장이 풀렸습니다.");
-				if (DisguiseUtil.isChanged(getPlayer())) {
+				if (NMSUtil.isChangedSkin(getPlayer())) {
 					if (changeSkin.getValue()) {
-						DisguiseUtil.changeSkin(getPlayer(), getPlayer().getUniqueId());
+						NMSUtil.changeSkin(getPlayer(), getPlayer().getUniqueId());
 					}
 					if (changeNameTag.getValue() && !(getGame() instanceof Teamable)) {
-						DisguiseUtil.setPlayerNameTag(getPlayer(), getPlayer().getUniqueId());
+						NMSUtil.setPlayerNameTag(getPlayer(), getPlayer().getUniqueId());
 					}
-					DisguiseUtil.reloadPlayer(getPlayer());
+					NMSUtil.reloadPlayerData(getPlayer());
 				}
 				cooldown.start();
 			}
@@ -171,16 +171,16 @@ public class Disguise extends CokesAbility implements ActiveHandler {
 			target = null;
 			check = 0;
 			getPlayer().sendMessage("변장이 풀렸습니다.");
-			if (DisguiseUtil.isChanged(getPlayer())) {
+			if (NMSUtil.isChangedSkin(getPlayer())) {
 				if (changeSkin.getValue()) {
-					DisguiseUtil.changeSkin(getPlayer(), getPlayer().getUniqueId());
+					NMSUtil.changeSkin(getPlayer(), getPlayer().getUniqueId());
 				}
 				if (changeNameTag.getValue() && !(getGame() instanceof Teamable)) {
-					DisguiseUtil.setPlayerNameTag(getPlayer(), getPlayer().getUniqueId());
+					NMSUtil.setPlayerNameTag(getPlayer(), getPlayer().getUniqueId());
 				}
-				DisguiseUtil.reloadPlayer(getPlayer());
+				NMSUtil.reloadPlayerData(getPlayer());
 			}
-			DisguiseUtil.reloadPlayer(getPlayer());
+			NMSUtil.reloadPlayerData(getPlayer());
 			cooldown.start();
 		}
 	}

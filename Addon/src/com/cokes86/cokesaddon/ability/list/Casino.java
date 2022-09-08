@@ -4,8 +4,7 @@ import com.cokes86.cokesaddon.ability.CokesAbility;
 import com.cokes86.cokesaddon.event.CEntityDamageEvent;
 import com.cokes86.cokesaddon.util.AttributeUtil;
 import com.cokes86.cokesaddon.util.FunctionalInterfaces;
-import com.cokes86.cokesaddon.util.arrow.ArrowUtil;
-import com.cokes86.cokesaddon.util.damage.Damages;
+import com.cokes86.cokesaddon.util.nms.NMSUtil;
 import com.google.common.base.Strings;
 import daybreak.abilitywar.ability.AbilityManifest;
 import daybreak.abilitywar.ability.SubscribeEvent;
@@ -91,7 +90,7 @@ public class Casino extends CokesAbility implements ActiveHandler {
     private final AbilityTimer wither = new AbilityTimer() {
         @Override
         protected void run(int count) {
-            Damages.damageWither(getPlayer(), 1);
+            NMSUtil.damageWither(getPlayer(), 1);
         }
     }.setInitialDelay(TimeUnit.SECONDS, WITHER_PERIOD.getValue()).setPeriod(TimeUnit.SECONDS, WITHER_PERIOD.getValue()).register();
     private final AbilityTimer aim = new AbilityTimer() {
@@ -205,7 +204,7 @@ public class Casino extends CokesAbility implements ActiveHandler {
     @SubscribeEvent
     public void onProjectileLaunch(ProjectileLaunchEvent event) {
         if (event.getEntity().getShooter().equals(getPlayer()) && effects.get(Effects.NO_CRITICAL) && NMS.isArrow(event.getEntity())) {
-            ArrowUtil.of(event.getEntity()).setCritical(false);
+            NMSUtil.setCritical(event.getEntity(), false);
         }
     }
 

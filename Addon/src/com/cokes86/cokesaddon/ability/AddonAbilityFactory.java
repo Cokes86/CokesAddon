@@ -1,18 +1,17 @@
 package com.cokes86.cokesaddon.ability;
 
-import com.cokes86.cokesaddon.ability.list.Boxer;
-import com.cokes86.cokesaddon.ability.list.Kevin;
-import com.cokes86.cokesaddon.ability.test.PhantomThiefRemake;
-import com.cokes86.cokesaddon.ability.test.Test;
 import com.cokes86.cokesaddon.ability.list.*;
+import com.cokes86.cokesaddon.ability.list.PhantomThief;
+import com.cokes86.cokesaddon.ability.test.Test;
 import daybreak.abilitywar.ability.AbilityFactory;
 import daybreak.abilitywar.ability.AbilityManifest;
 import daybreak.abilitywar.game.manager.AbilityList;
 import daybreak.abilitywar.utils.annotations.Beta;
-import daybreak.abilitywar.utils.base.minecraft.version.ServerVersion;
 
-import java.lang.annotation.*;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 public class AddonAbilityFactory {
 	protected static final Map<String, Class<? extends CokesAbility>> abilities = new HashMap<>();
@@ -49,7 +48,6 @@ public class AddonAbilityFactory {
 		registerAbility(Freud.class);
 		registerAbility(Harmony.class);
 		registerAbility(Cutter.class);
-		registerAbilities(PhantomThief.class);
 
 		//1.1
 		registerAbility(Fish.class);
@@ -85,7 +83,8 @@ public class AddonAbilityFactory {
 		registerAbility(Kevin.class);
 		registerAbility(Boxer.class);
 
-		registerTestAbility(PhantomThiefRemake.class);
+		//1.9.2
+		registerAbility(PhantomThief.class);
 	}
 
 	public static void registerAbility(Class<? extends CokesAbility> clazz) {
@@ -117,22 +116,6 @@ public class AddonAbilityFactory {
 		}
 	}
 
-	public static void registerAbilities(Class<? extends CokesAbility> clazz) {
-		SupportNMS support = clazz.getAnnotation(SupportNMS.class);
-		if (support != null) {
-			try {
-				Class<? extends CokesAbility> clazz2 = Class.forName(clazz.getName().toLowerCase(Locale.ROOT)+"."+ServerVersion.getName()).asSubclass(clazz);
-				registerAbility(clazz2);
-				return;
-			} catch (Exception ex) {
-				ex.printStackTrace();
-				System.out.println("해당 버전에 호환되지 않습니다. : " + clazz.getName());
-				return;
-			}
-		}
-		System.out.println("해당 버전에 호환되지 않습니다. : " + clazz.getName());
-	}
-
 	public static List<String> nameValues() {
 		return new ArrayList<>(abilities.keySet());
 	}
@@ -140,9 +123,4 @@ public class AddonAbilityFactory {
 	public static Class<? extends CokesAbility> getTestAbilityByName(String name) {
 		return test_abilities.get(name);
 	}
-
-	@Retention(RetentionPolicy.RUNTIME)
-	@Target(ElementType.TYPE)
-	@Inherited
-	public @interface SupportNMS { }
 }

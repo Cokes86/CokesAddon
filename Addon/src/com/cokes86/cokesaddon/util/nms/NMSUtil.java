@@ -1,12 +1,11 @@
 package com.cokes86.cokesaddon.util.nms;
 
+import daybreak.abilitywar.game.AbstractGame.Participant;
 import daybreak.abilitywar.utils.base.minecraft.version.ServerVersion;
 import daybreak.abilitywar.utils.base.minecraft.version.VersionNotSupportedException;
 import org.bukkit.Location;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
-import org.bukkit.event.player.PlayerJoinEvent;
-import org.bukkit.event.player.PlayerQuitEvent;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -28,11 +27,11 @@ public class NMSUtil {
         return INSTANCE.createDummy(location, player);
     }
 
-    public void setCritical(Entity arrow, boolean critical) {
+    public static void setCritical(Entity arrow, boolean critical) {
         INSTANCE.setCritical(arrow, critical);
     }
 
-    public boolean isCritical(Entity arrow) {
+    public static boolean isCritical(Entity arrow) {
         return INSTANCE.isCritical(arrow);
     }
 
@@ -66,7 +65,7 @@ public class NMSUtil {
 
     public static void addSkinData(UUID uuid) { INSTANCE.addSkinData(uuid); }
 
-    public static void reloadPlayerSkin(Player player) {
+    public static void reloadPlayerData(Player player) {
         INSTANCE.reloadPlayerSkin(player);
     }
 
@@ -74,7 +73,7 @@ public class NMSUtil {
         return INSTANCE.isChangedSkin(player);
     }
 
-    public static void hidePlayer(Player hide) { INSTANCE.hidePlayer(hide); }
+    public static void hidePlayer(Participant hide) { INSTANCE.hidePlayer(hide); }
 
-    public static void showPlayer(Player show) { INSTANCE.showPlayer(show); }
+    public static void showPlayer(Participant show) { INSTANCE.showPlayer(show); }
 }

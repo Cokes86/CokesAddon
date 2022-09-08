@@ -4,6 +4,7 @@ import com.cokes86.cokesaddon.util.nms.IDummy;
 import com.cokes86.cokesaddon.util.nms.INMS;
 import com.mojang.authlib.properties.Property;
 import daybreak.abilitywar.AbilityWar;
+import daybreak.abilitywar.game.AbstractGame.Participant;
 import daybreak.abilitywar.utils.base.collect.Pair;
 import net.minecraft.network.protocol.game.PacketPlayOutPlayerInfo;
 import net.minecraft.network.protocol.game.PacketPlayOutPlayerInfo.EnumPlayerInfoAction;
@@ -162,17 +163,21 @@ public class NMSImpl implements INMS {
     private final Map<Player, StealthImpl> hideMap = new HashMap<>();
 
     @Override
-    public void hidePlayer(Player hide) {
-        StealthImpl impl = new StealthImpl(hide);
-        impl.hidePlayer();
-        hideMap.put(hide, impl);
+    public void hidePlayer(Participant hide) {
+        if (!hideMap.containsKey(hide.getPlayer())) {
+            StealthImpl impl = new StealthImpl(hide.getPlayer());
+            impl.hidePlayer();
+            hideMap.put(hide.getPlayer(), impl);
+            hide.attributes().TARGETABLE.setValue(false);
+        }
     }
 
     @Override
-    public void showPlayer(Player show) {
-        StealthImpl impl = hideMap.remove(show);
+    public void showPlayer(Participant show) {
+        StealthImpl impl = hideMap.remove(show.getPlayer());
         if (impl != null) {
             impl.showPlayer();
+            show.attributes().TARGETABLE.setValue(true);
         }
     }
 }

@@ -3,7 +3,7 @@ package com.cokes86.cokesaddon.ability.list;
 import com.cokes86.cokesaddon.ability.CokesAbility;
 import com.cokes86.cokesaddon.event.CEntityDamageEvent;
 import com.cokes86.cokesaddon.util.FunctionalInterfaces;
-import com.cokes86.cokesaddon.util.damage.Damages;
+import com.cokes86.cokesaddon.util.nms.NMSUtil;
 import daybreak.abilitywar.ability.AbilityManifest;
 import daybreak.abilitywar.ability.AbilityManifest.Rank;
 import daybreak.abilitywar.ability.AbilityManifest.Species;
@@ -11,6 +11,7 @@ import daybreak.abilitywar.ability.SubscribeEvent;
 import daybreak.abilitywar.game.AbstractGame.Participant;
 import daybreak.abilitywar.game.AbstractGame.Participant.ActionbarNotification.ActionbarChannel;
 import daybreak.abilitywar.utils.base.concurrent.TimeUnit;
+import daybreak.abilitywar.utils.base.minecraft.damage.Damages;
 import daybreak.abilitywar.utils.base.minecraft.nms.NMS;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Entity;
@@ -60,7 +61,7 @@ public class Revenge extends CokesAbility {
 						Player target = (Player) e.getEntity();
 						if (!target.isDead() && Damages.canDamage(target, getPlayer(), DamageCause.VOID, (float) magicfixed_damage)) {
 							target.setNoDamageTicks(0);
-							Damages.damageVoid(target, (float) magicfixed_damage);
+							NMSUtil.damageVoid(target, (float) magicfixed_damage);
 						}
 					}
 				}.setInitialDelay(TimeUnit.TICKS, 1).setPeriod(TimeUnit.TICKS, 1).start();

@@ -19,6 +19,8 @@ import net.minecraft.server.level.EntityPlayer;
 import net.minecraft.server.level.WorldServer;
 import net.minecraft.server.network.PlayerConnection;
 import net.minecraft.world.damagesource.DamageSource;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.EntityLiving;
 import net.minecraft.world.level.EnumGamemode;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
@@ -31,6 +33,7 @@ import org.bukkit.scheduler.BukkitRunnable;
 
 import java.util.UUID;
 
+@SuppressWarnings("all")
 public class DummyImpl extends EntityPlayer implements IDummy {
 
     private static GameProfile createProfile(final Player player) {
@@ -62,9 +65,9 @@ public class DummyImpl extends EntityPlayer implements IDummy {
                 world.addEntity(DummyImpl.this, SpawnReason.CUSTOM);
             }
         }.runTaskLater(AbilityWar.getPlugin(), 2L);
-        setPosition(location.getX(), location.getY(), location.getZ());
+        ((Entity) this).setPosition(location.getX(), location.getY(), location.getZ());
         this.invulnerableTime = 0;
-        this.hologram = NMS.newHologram(world.getWorld(), locX(), locY() + 2, locZ(), skin.getDisplayName());
+        this.hologram = NMS.newHologram(world.getWorld(), ((Entity) this).locX(), ((Entity) this).locY() + 2, ((Entity) this).locZ(), skin.getDisplayName());
         this.origin = skin;
     }
 
@@ -74,7 +77,7 @@ public class DummyImpl extends EntityPlayer implements IDummy {
             remove();
             return;
         }
-        hologram.teleport(getWorld().getWorld(), locX(), locY() + 2, locZ(), getYRot(), getXRot());
+        hologram.teleport(getWorld().getWorld(), ((Entity) this).locX(), ((Entity) this).locY() + 2, ((Entity) this).locZ(), ((Entity) this).getYRot(), ((Entity) this).getXRot());
         super.tick();
     }
 
@@ -137,4 +140,8 @@ public class DummyImpl extends EntityPlayer implements IDummy {
         }
     }
 
+    @Override
+    public boolean isAlive() {
+        return ((EntityLiving) this).isAlive();
+    }
 }

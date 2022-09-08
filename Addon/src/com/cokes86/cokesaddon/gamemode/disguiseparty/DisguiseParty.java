@@ -1,6 +1,6 @@
 package com.cokes86.cokesaddon.gamemode.disguiseparty;
 
-import com.cokes86.cokesaddon.util.disguise.DisguiseUtil;
+import com.cokes86.cokesaddon.util.nms.NMSUtil;
 import daybreak.abilitywar.AbilityWar;
 import daybreak.abilitywar.ability.AbilityBase;
 import daybreak.abilitywar.ability.AbilityFactory;
@@ -134,9 +134,9 @@ public class DisguiseParty extends AbstractGame implements Winnable {
                     stop();
                 } else {
                     tag.getPlayer().sendMessage("이런 §a목표§f가 아니에요!");
-                    DisguiseUtil.changeSkin(entity, entity.getUniqueId());
-                    DisguiseUtil.setPlayerNameTag(entity, entity.getUniqueId());
-                    DisguiseUtil.reloadPlayer(entity);
+                    NMSUtil.changeSkin(entity, entity.getUniqueId());
+                    NMSUtil.setPlayerNameTag(entity, entity.getUniqueId());
+                    NMSUtil.reloadPlayerData(entity);
                     setAttackChance(attack_chance--);
 
                     if (eliminate(entity) && attack_chance < 1) {
@@ -241,7 +241,7 @@ public class DisguiseParty extends AbstractGame implements Winnable {
             case 12: {
                 Bukkit.broadcastMessage("§a목표§f: "+target.getPlayer().getName());
                 SoundLib.ENTITY_ARROW_HIT_PLAYER.broadcastSound();
-                DisguiseUtil.addData(target.getPlayer().getUniqueId());
+                NMSUtil.addSkinData(target.getPlayer().getUniqueId());
                 break;
             }
 
@@ -253,9 +253,9 @@ public class DisguiseParty extends AbstractGame implements Winnable {
                     hideNameTag(participant.getPlayer());
                     if (participant.equals(tag) || participant.equals(target)) continue;
                     participant.getPlayer().sendMessage("§a목표§f "+target.getPlayer().getName()+"으로 변장합니다. 최대한 속이세요!");
-                    DisguiseUtil.changeSkin(participant.getPlayer(), target.getPlayer().getUniqueId());
-                    DisguiseUtil.setPlayerNameTag(participant.getPlayer(), target.getPlayer().getUniqueId());
-                    DisguiseUtil.reloadPlayer(participant.getPlayer());
+                    NMSUtil.changeSkin(participant.getPlayer(), target.getPlayer().getUniqueId());
+                    NMSUtil.setPlayerNameTag(participant.getPlayer(), target.getPlayer().getUniqueId());
+                    NMSUtil.reloadPlayerData(participant.getPlayer());
                 }
                 target.getPlayer().sendMessage("최대한 숨어서 오래 살아남으세요!");
                 attack_chance = ((getParticipants().size()-1) / 5) + 1;
@@ -419,11 +419,11 @@ public class DisguiseParty extends AbstractGame implements Winnable {
         HandlerList.unregisterAll(this);
         for (DisguiseParticipant participant : getParticipants()) {
             if (participant.equals(tag) || participant.equals(target)) continue;
-            DisguiseUtil.changeSkin(participant.getPlayer(), participant.getPlayer().getUniqueId());
-            DisguiseUtil.setPlayerNameTag(participant.getPlayer(), participant.getPlayer().getUniqueId());
-            DisguiseUtil.reloadPlayer(participant.getPlayer());
+            NMSUtil.changeSkin(participant.getPlayer(), participant.getPlayer().getUniqueId());
+            NMSUtil.setPlayerNameTag(participant.getPlayer(), participant.getPlayer().getUniqueId());
+            NMSUtil.reloadPlayerData(participant.getPlayer());
         }
-        DisguiseUtil.clearData();
+        NMSUtil.clearSkinData();
         if (disguiseTeam != null) disguiseTeam.unregister();
         super.onEnd();
     }

@@ -149,10 +149,12 @@ public class NMSImpl implements INMS {
 
     @Override
     public void hidePlayer(Participant hide) {
-        StealthImpl impl = new StealthImpl(hide.getPlayer());
-        impl.hidePlayer();
-        hideMap.put(hide.getPlayer(), impl);
-        hide.attributes().TARGETABLE.setValue(false);
+        if (!hideMap.containsKey(hide.getPlayer())) {
+            StealthImpl impl = new StealthImpl(hide.getPlayer());
+            impl.hidePlayer();
+            hideMap.put(hide.getPlayer(), impl);
+            hide.attributes().TARGETABLE.setValue(false);
+        }
     }
 
     @Override
