@@ -144,7 +144,7 @@ public class StealthImpl implements Listener, IStealth {
             public void write(ChannelHandlerContext ctx, Object packet, ChannelPromise promise) throws Exception {
                 if (packet instanceof PacketPlayOutEntityEquipment) {
                     if ((int) FieldUtil.getValue(packet, "a") == getPlayer().getEntityId()) {
-                        FieldUtil.setValue(packet, "c", ItemStack.a);
+                        FieldUtil.setValue(packet, "b", NULL_PAIR_LIST);
                     }
                 } else if (packet instanceof PacketPlayOutEntityMetadata) {
                     if ((int) FieldUtil.getValue(packet, "a") == getPlayer().getEntityId()) {
@@ -162,8 +162,8 @@ public class StealthImpl implements Listener, IStealth {
                 super.write(ctx, packet, promise);
             }
         };
-        channelHandlers.put(player.getUniqueId(), Pair.of((CraftPlayer) player, handler));
-        ((CraftPlayer) player).getHandle().playerConnection.networkManager.channel.pipeline().addBefore("packet_handler", hashCode() + ":" + player.getName(), handler);
+        channelHandlers.put(player.getUniqueId(), Pair.of((CraftPlayer)player, handler));
+        ((CraftPlayer)player).getHandle().playerConnection.networkManager.channel.pipeline().addBefore("packet_handler", hashCode() + ":" + player.getName(), handler);
     }
 
     @Override

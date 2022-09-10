@@ -42,26 +42,21 @@ import java.util.stream.Collectors;
         "§7철괴 우클릭 §8- §c팬텀 쇼§f: 자신 위치에 §7그림자§f를 3초간 소환하고 자신은 §a은신§f합니다. $[COOLDOWN]",
         "  그림자를 공격한 플레이어는 $[DAMAGE]의 대미지를 주고",
         "  그 사람의 능력의 등급을 §b1단계 내려 재배정§f합니다.",
-        "  재배정한 플레이어는 3초간 무적시간이 부여합니다.",
+        "  재배정한 플레이어는 3초간 무적시간이 부여되며, 공격또한 불가능합니다.",
         "  그림자가 사라지면 §a은신§f또한 중간에 해제됩니다.",
-        "[HIDDEN] 어 이게 아닌데"
+        "§8[§7HIDDEN§8] §b구제§f: 누구를 구제하셨나요?"
 })
 @NotAvailable({AbstractMix.class, AbstractTripleMix.class})
-/*
-철괴 우클릭 시 그림자를 소환 후 은신
-그림자 공격 시 그 자리에 폭발, 등급 1단계 하락
-그림자가 사라지면 은신 풀림.
-*/
 public class PhantomThief extends CokesAbility implements ActiveHandler {
     private static final Config<Integer> COOLDOWN = Config.of(PhantomThief.class, "cooldown", 120, FunctionalInterfaces.positive(), FunctionalInterfaces.COOLDOWN,
             "# 팬텀 쇼 쿨타임",
-            "# 기본 값: 90 (초)");
-    private static final Config<Double> DAMAGE = Config.of(PhantomThief.class, "damage", 7.0, FunctionalInterfaces.positive(),
+            "# 기본 값: 120 (초)");
+    private static final Config<Double> DAMAGE = Config.of(PhantomThief.class, "damage", 3.5, FunctionalInterfaces.positive(),
             "# 팬텀 쇼 도중 분신 공격 시 대미지",
-            "# 기본 값: 7");
+            "# 기본 값: 3.5");
 
     private IDummy phantom = null;
-    private final Cooldown cooldown = new Cooldown(90);
+    private final Cooldown cooldown = new Cooldown(COOLDOWN.getValue());
     private final PhantomShow phantomShow = new PhantomShow();
 
     private final List<AbilityRegistration> rank_c = AbilityList.values().stream()
@@ -111,6 +106,7 @@ public class PhantomThief extends CokesAbility implements ActiveHandler {
             damager.getPlayer().damage(DAMAGE.getValue(), getPlayer());
             new InvTimer(getGame(), damager).start();
             phantomShow.stop(false);
+            phantom.remove();
         }
     }
 
@@ -192,7 +188,9 @@ public class PhantomThief extends CokesAbility implements ActiveHandler {
                         tmp.addAll(rank_s);
                         tmp.addAll(rank_a);
                         returnAbilities = tmp;
-                        target.getPlayer().sendMessage("[팬텀 시프] 당신의 낮은 등급에 가여움을 느꼈는지 새로운 힘이 솟구치는 기분입니다.");
+                        target.getPlayer().sendMessage("[팬텀 시프] 팬텀 시프가 당신을 구제하였습니다.");
+                        getPlayer().sendMessage("[팬텀 시프] 당신은 누군가를 낮은 등급에서 구제하였습니다.");
+                        getPlayer().sendMessage("[팬텀 시프] HIDDEN <구제>를 달성하였습니다.");
                         break;
                     }
                 }
@@ -227,6 +225,14 @@ public class PhantomThief extends CokesAbility implements ActiveHandler {
         @EventHandler
         public void onEntityDamage(EntityDamageEvent e) {
             if (e.getEntity().equals(target.getPlayer())) {
+                e.setCancelled(true);
+            }
+        }
+
+        @EventHandler
+        public void onEntityDamage(EntityDamageByEntityEvent e) {
+            Entity damagerEntity = CokesUtil.getDamager(e.getDamager());
+            if (damagerEntity.equals(target.getPlayer())) {
                 e.setCancelled(true);
             }
         }
