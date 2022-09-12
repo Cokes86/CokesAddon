@@ -2,6 +2,7 @@ package com.cokes86.cokesaddon.ability.list;
 
 import com.cokes86.cokesaddon.ability.CokesAbility;
 import com.cokes86.cokesaddon.event.CEntityDamageEvent;
+import com.cokes86.cokesaddon.util.CokesUtil;
 import com.cokes86.cokesaddon.util.FunctionalInterfaces;
 import com.cokes86.cokesaddon.util.nms.NMSUtil;
 import daybreak.abilitywar.ability.AbilityManifest;
@@ -16,7 +17,6 @@ import daybreak.abilitywar.utils.base.minecraft.nms.NMS;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
-import org.bukkit.entity.Projectile;
 import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
 
 import java.text.DecimalFormat;
@@ -47,13 +47,7 @@ public class Revenge extends CokesAbility {
 			magicfixed_damage = e.getFinalDamage() * PERCENTAGE.getValue() / 100;
 			ac.update(ChatColor.BLUE + " 고정 대미지 : " + df.format(magicfixed_damage));
 		} else {
-			Entity damager = e.getDamager();
-			if (NMS.isArrow(damager)) {
-				Projectile arrow = (Projectile) damager;
-				if (arrow.getShooter() instanceof Entity) {
-					damager = (Entity) arrow.getShooter();
-				}
-			}
+			Entity damager = CokesUtil.getDamager(e.getDamager());
 			if (e.getCause() == DamageCause.VOID) return;
 			if (damager.equals(getPlayer()) && e.getEntity() instanceof Player && !e.getEntity().equals(getPlayer())) {
 				new AbilityTimer(1) {
@@ -65,7 +59,6 @@ public class Revenge extends CokesAbility {
 						}
 					}
 				}.setInitialDelay(TimeUnit.TICKS, 1).setPeriod(TimeUnit.TICKS, 1).start();
-				getPlayer().sendMessage(e.getCause().name());
 			}
 		}
 	}

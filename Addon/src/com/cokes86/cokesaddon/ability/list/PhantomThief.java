@@ -59,25 +59,6 @@ public class PhantomThief extends CokesAbility implements ActiveHandler {
     private final Cooldown cooldown = new Cooldown(COOLDOWN.getValue());
     private final PhantomShow phantomShow = new PhantomShow();
 
-    private final List<AbilityRegistration> rank_c = AbilityList.values().stream()
-                .filter(registration -> registration.getManifest().rank().equals(Rank.C))
-                .collect(Collectors.toList());
-    private final List<AbilityRegistration> rank_b = AbilityList.values().stream()
-                .filter(registration -> registration.getManifest().rank().equals(Rank.B))
-                .collect(Collectors.toList());
-    private final List<AbilityRegistration> rank_a = AbilityList.values().stream()
-                .filter(registration -> registration.getManifest().rank().equals(Rank.A))
-                .collect(Collectors.toList());
-    private final List<AbilityRegistration> rank_s = AbilityList.values().stream()
-                .filter(registration -> registration.getManifest().rank().equals(Rank.S))
-                .collect(Collectors.toList());
-    private final List<AbilityRegistration> rank_l = AbilityList.values().stream()
-                .filter(registration -> registration.getManifest().rank().equals(Rank.L))
-                .collect(Collectors.toList());
-    private final List<AbilityRegistration> rank_special = AbilityList.values().stream()
-                .filter(registration -> registration.getManifest().rank().equals(Rank.SPECIAL))
-                .collect(Collectors.toList());
-
     public PhantomThief(Participant arg0) {
         super(arg0);
     }
@@ -101,12 +82,13 @@ public class PhantomThief extends CokesAbility implements ActiveHandler {
     @SubscribeEvent
     public void onEntityDamage(EntityDamageByEntityEvent e) {
         Entity damagerEntity = CokesUtil.getDamager(e.getDamager());
-        if (phantomShow.isRunning() && e.getEntity().equals(phantom) && !damagerEntity.equals(getPlayer()) && getGame().isParticipating(damagerEntity.getUniqueId())) {
+        if (phantomShow.isRunning() && e.getEntity().getUniqueId().equals(phantom.getUniqueID()) && !damagerEntity.equals(getPlayer()) && getGame().isParticipating(damagerEntity.getUniqueId())) {
             Participant damager = getGame().getParticipant(damagerEntity.getUniqueId());
             damager.getPlayer().damage(DAMAGE.getValue(), getPlayer());
             new InvTimer(getGame(), damager).start();
             phantomShow.stop(false);
             phantom.remove();
+            e.setDamage(0);
         }
     }
 
@@ -118,7 +100,16 @@ public class PhantomThief extends CokesAbility implements ActiveHandler {
 
         @Override
         protected void onDurationStart() {
+            if (phantom != null) {
+                phantom.remove();
+            }
             phantom = NMSUtil.createDummy(getPlayer().getLocation(), getPlayer());
+            phantom.getBukkitEntity().getInventory().setItemInMainHand(getPlayer().getInventory().getItemInMainHand());
+            phantom.getBukkitEntity().getInventory().setItemInOffHand(getPlayer().getInventory().getItemInOffHand());
+            phantom.getBukkitEntity().getInventory().setHelmet(getPlayer().getInventory().getHelmet());
+            phantom.getBukkitEntity().getInventory().setChestplate(getPlayer().getInventory().getChestplate());
+            phantom.getBukkitEntity().getInventory().setLeggings(getPlayer().getInventory().getLeggings());
+            phantom.getBukkitEntity().getInventory().setBoots(getPlayer().getInventory().getBoots());
             for (Participant participant : getGame().getParticipants()) {
                 phantom.display(participant.getPlayer());
             }
@@ -160,44 +151,23 @@ public class PhantomThief extends CokesAbility implements ActiveHandler {
             if (target.getAbility() != null) {
                 Bukkit.getPluginManager().registerEvents(InvTimer.this, AbilityWar.getPlugin());
                 Rank rank = target.getAbility().getRank();
-                List<AbilityRegistration> returnAbilities = null;
-                switch(rank) {
-                    case SPECIAL: {
-                        returnAbilities = rank_l;
-                        break;
-                    }
-                    case L: {
-                        returnAbilities = rank_s;
-                        break;
-                    }
-                    case S: {
-                        returnAbilities = rank_a;
-                        break;
-                    }
-                    case A: {
-                        returnAbilities = rank_b;
-                        break;
-                    }
-                    case B: {
-                        returnAbilities = rank_c;
-                        break;
-                    }
-                    case C: {
-                        List<AbilityRegistration> tmp = rank_special;
-                        tmp.addAll(rank_l);
-                        tmp.addAll(rank_s);
-                        tmp.addAll(rank_a);
-                        returnAbilities = tmp;
-                        target.getPlayer().sendMessage("[팬텀 시프] 팬텀 시프가 당신을 구제하였습니다.");
-                        getPlayer().sendMessage("[팬텀 시프] 당신은 누군가를 낮은 등급에서 구제하였습니다.");
-                        getPlayer().sendMessage("[팬텀 시프] HIDDEN <구제>를 달성하였습니다.");
-                        break;
-                    }
-                }
+                List<AbilityRegistration> returnAbilities = AbilityList.values().stream().filter(abilityRegistration -> {
+                    Rank rank1 = abilityRegistration.getManifest().rank();
+                    return (rank == Rank.SPECIAL && rank1 == Rank.L) || (rank == Rank.L && rank1 == Rank.S)
+                            || (rank == Rank.S && rank1 == Rank.A) || (rank == Rank.A && rank1 == Rank.B)
+                            || (rank == Rank.B && rank1 == Rank.C) || (rank == Rank.C && (rank1 == Rank.S || rank1 == Rank.L || rank1 == Rank.SPECIAL));
+                }).collect(Collectors.toList());
+
                 AbilityRegistration newOne = new Random().pick(returnAbilities);
+                if (rank == Rank.C) {
+                    getPlayer().sendMessage(String.format("[팬텀 시프] §e%s§f님의 능력이 §eC등급§f이기에 <%s구제§f>하였습니다.",
+                            target.getPlayer().getDisplayName(),
+                            "§"+newOne.getManifest().rank().getRankName().charAt(1)));
+                }
                 try {
                     target.setAbility(newOne);
                     target.getPlayer().sendMessage("[팬텀 시프] 능력이 재배정되었습니다. 당신의 능력은 §e"+newOne.getManifest().name()+"§f입니다.");
+                    getPlayer().sendMessage(String.format("[팬텀 시프] §e%s§f님의 능력을 재배정하였습니다.", target.getPlayer().getDisplayName()));
                 } catch (ReflectiveOperationException e) {
                     getPlayer().sendMessage("[팬텀 시프] 능력을 재배정하는 도중 오류가 발생하였습니다.");
                     e.printStackTrace();
@@ -209,17 +179,19 @@ public class PhantomThief extends CokesAbility implements ActiveHandler {
         @Override
         protected void run(int count) {
             channel.update("무적: "+ TimeUtil.parseTimeAsString(count));
-            SoundLib.PIANO.broadcastInstrument(Note.natural(1, Tone.C));
+            SoundLib.PIANO.playInstrument(target.getPlayer(), Note.natural(1, Tone.C));
         }
 
         @Override
         protected void onEnd() {
             HandlerList.unregisterAll(InvTimer.this);
+            channel.unregister();
         }
 
         @Override
         protected void onSilentEnd() {
             HandlerList.unregisterAll(InvTimer.this);
+            channel.unregister();
         }
 
         @EventHandler

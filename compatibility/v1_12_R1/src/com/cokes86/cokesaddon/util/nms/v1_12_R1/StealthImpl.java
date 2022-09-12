@@ -98,10 +98,10 @@ public class StealthImpl implements Listener, IStealth {
             @Override
             public void run() {
                 ((CraftPlayer) getPlayer()).getHandle().setInvisible(false);
+                HandlerList.unregisterAll(StealthImpl.this);
+                StealthImpl.this.hiding = false;
             }
         }.runTaskLater(AbilityWar.getPlugin(), 2L);
-        HandlerList.unregisterAll(this);
-        this.hiding = false;
     }
 
     @Override
