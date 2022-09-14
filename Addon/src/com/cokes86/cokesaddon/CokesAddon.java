@@ -93,7 +93,8 @@ public class CokesAddon extends Addon implements Listener {
 	@EventHandler
 	public void onEntityDamage(EntityDamageEvent e) {
 		if (!GameManager.isGameRunning() || e.getCause() == DamageCause.VOID) return;
-		Bukkit.getPluginManager().callEvent(new CEntityDamageEvent(e));
+		CEntityDamageEvent event = new CEntityDamageEvent(e);
+		if (!event.isCancelled()) Bukkit.getPluginManager().callEvent(new CEntityDamageEvent(e));
 	}
 
 	public static File getAddonFile(String name) {

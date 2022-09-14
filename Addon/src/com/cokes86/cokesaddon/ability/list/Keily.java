@@ -16,14 +16,16 @@ import daybreak.abilitywar.utils.library.SoundLib;
 import daybreak.google.common.base.Strings;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
+import org.bukkit.block.BlockFace;
 import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
+import org.bukkit.event.player.PlayerMoveEvent;
 
 @AbilityManifest(name = "케일리", rank = AbilityManifest.Rank.S, species = AbilityManifest.Species.HUMAN, explain = {
 		"자신은 폭발공격을 받지 않습니다.",
 		"$[dura]마다 스위치를 1개씩 얻으며 최대 $[max_switch]개까지 증가합니다.",
 		"철괴 우클릭 시 스위치를 전부 소모해 자신의 위치에서 (소모한 스위치 * $[fuse])의 위력으로 폭발하고",
 		"$[duration]간 공중에 날 수 있습니다. $[cool]",
-		"또한 능력 사용 직후 1회에 한해 낙하데미지를 받지 않습니다."
+		"또한 능력 사용 직후 1회에 한해 낙하대미지를 받지 않습니다."
 })
 public class Keily extends CokesAbility implements ActiveHandler {
 	private static final Config<Integer> dura = Config.of(Keily.class, "카운터생성주기", 45, FunctionalInterfaces.positive(), FunctionalInterfaces.TIME);
@@ -109,6 +111,15 @@ public class Keily extends CokesAbility implements ActiveHandler {
 				falling = false;
 				SoundLib.ENTITY_EXPERIENCE_ORB_PICKUP.playSound(getPlayer());
 			}
+		}
+	}
+
+	@SubscribeEvent(priority = 9)
+	public void onPlayerMove(PlayerMoveEvent e) {
+		if (flying.isRunning()) return;
+		if (falling && getPlayer().getLocation().getBlock().getRelative(BlockFace.DOWN).getType() == Material.AIR) {
+			falling = false;
+			SoundLib.ENTITY_EXPERIENCE_ORB_PICKUP.playSound(getPlayer());
 		}
 	}
 }

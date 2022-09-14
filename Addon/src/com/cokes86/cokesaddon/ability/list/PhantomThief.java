@@ -3,9 +3,9 @@ package com.cokes86.cokesaddon.ability.list;
 import com.cokes86.cokesaddon.ability.CokesAbility;
 import com.cokes86.cokesaddon.util.CokesUtil;
 import com.cokes86.cokesaddon.util.FunctionalInterfaces;
+import com.cokes86.cokesaddon.util.InvincibilityTimer;
 import com.cokes86.cokesaddon.util.nms.IDummy;
 import com.cokes86.cokesaddon.util.nms.NMSUtil;
-import daybreak.abilitywar.AbilityWar;
 import daybreak.abilitywar.ability.AbilityFactory.AbilityRegistration;
 import daybreak.abilitywar.ability.AbilityManifest;
 import daybreak.abilitywar.ability.AbilityManifest.Rank;
@@ -13,27 +13,15 @@ import daybreak.abilitywar.ability.AbilityManifest.Species;
 import daybreak.abilitywar.ability.NotAvailable;
 import daybreak.abilitywar.ability.SubscribeEvent;
 import daybreak.abilitywar.ability.decorator.ActiveHandler;
-import daybreak.abilitywar.game.AbstractGame;
-import daybreak.abilitywar.game.AbstractGame.GameTimer;
 import daybreak.abilitywar.game.AbstractGame.Participant;
-import daybreak.abilitywar.game.AbstractGame.Participant.ActionbarNotification.ActionbarChannel;
 import daybreak.abilitywar.game.list.mix.AbstractMix;
 import daybreak.abilitywar.game.list.mix.triplemix.AbstractTripleMix;
 import daybreak.abilitywar.game.manager.AbilityList;
-import daybreak.abilitywar.utils.base.TimeUtil;
 import daybreak.abilitywar.utils.base.concurrent.TimeUnit;
 import daybreak.abilitywar.utils.base.random.Random;
-import daybreak.abilitywar.utils.library.SoundLib;
-import org.bukkit.Bukkit;
 import org.bukkit.Material;
-import org.bukkit.Note;
-import org.bukkit.Note.Tone;
 import org.bukkit.entity.Entity;
-import org.bukkit.event.EventHandler;
-import org.bukkit.event.HandlerList;
-import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
-import org.bukkit.event.entity.EntityDamageEvent;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -85,10 +73,39 @@ public class PhantomThief extends CokesAbility implements ActiveHandler {
         if (phantomShow.isRunning() && e.getEntity().getUniqueId().equals(phantom.getUniqueID()) && !damagerEntity.equals(getPlayer()) && getGame().isParticipating(damagerEntity.getUniqueId())) {
             Participant damager = getGame().getParticipant(damagerEntity.getUniqueId());
             damager.getPlayer().damage(DAMAGE.getValue(), getPlayer());
-            new InvTimer(getGame(), damager).start();
             phantomShow.stop(false);
             phantom.remove();
+            setNewAbility(damager);
             e.setDamage(0);
+        }
+    }
+
+    private void setNewAbility(Participant target) {
+        if (target.getAbility() != null) {
+            Rank rank = target.getAbility().getRank();
+            List<AbilityRegistration> returnAbilities = AbilityList.values().stream().filter(abilityRegistration -> {
+                Rank rank1 = abilityRegistration.getManifest().rank();
+                return (rank == Rank.SPECIAL && rank1 == Rank.L) || (rank == Rank.L && rank1 == Rank.S)
+                        || (rank == Rank.S && rank1 == Rank.A) || (rank == Rank.A && rank1 == Rank.B)
+                        || (rank == Rank.B && rank1 == Rank.C) || (rank == Rank.C && (rank1 == Rank.S || rank1 == Rank.L || rank1 == Rank.SPECIAL));
+            }).collect(Collectors.toList());
+
+            AbilityRegistration newOne = new Random().pick(returnAbilities);
+
+            try {
+                target.setAbility(newOne);
+                target.getPlayer().sendMessage("[팬텀 시프] 능력이 재배정되었습니다. 당신의 능력은 §e"+newOne.getManifest().name()+"§f입니다.");
+                getPlayer().sendMessage(String.format("[팬텀 시프] §e%s§f님의 능력을 재배정하였습니다.", target.getPlayer().getDisplayName()));
+                if (rank == Rank.C) {
+                    getPlayer().sendMessage(String.format("[팬텀 시프] §e%s§f님의 능력이 §eC등급§f이기에 <%s구제§f>하였습니다.",
+                            target.getPlayer().getDisplayName(),
+                            "§"+newOne.getManifest().rank().getRankName().charAt(1)));
+                }
+                new InvincibilityTimer(target, 3, true).start();
+            } catch (ReflectiveOperationException e) {
+                getPlayer().sendMessage("[팬텀 시프] 능력을 재배정하는 도중 오류가 발생하였습니다.");
+                e.printStackTrace();
+            }
         }
     }
 
@@ -135,78 +152,5 @@ public class PhantomThief extends CokesAbility implements ActiveHandler {
 
         @Override
         protected void onDurationProcess(int i) {}
-    }
-
-    private class InvTimer extends GameTimer implements Listener {
-        private final ActionbarChannel channel;
-        private final Participant target;
-        public InvTimer(AbstractGame game, Participant target) {
-            game.super(TaskType.REVERSE, 3);
-            channel = target.actionbar().newChannel();
-            this.target = target;
-        }
-
-        @Override
-        protected void onStart() {
-            if (target.getAbility() != null) {
-                Bukkit.getPluginManager().registerEvents(InvTimer.this, AbilityWar.getPlugin());
-                Rank rank = target.getAbility().getRank();
-                List<AbilityRegistration> returnAbilities = AbilityList.values().stream().filter(abilityRegistration -> {
-                    Rank rank1 = abilityRegistration.getManifest().rank();
-                    return (rank == Rank.SPECIAL && rank1 == Rank.L) || (rank == Rank.L && rank1 == Rank.S)
-                            || (rank == Rank.S && rank1 == Rank.A) || (rank == Rank.A && rank1 == Rank.B)
-                            || (rank == Rank.B && rank1 == Rank.C) || (rank == Rank.C && (rank1 == Rank.S || rank1 == Rank.L || rank1 == Rank.SPECIAL));
-                }).collect(Collectors.toList());
-
-                AbilityRegistration newOne = new Random().pick(returnAbilities);
-                if (rank == Rank.C) {
-                    getPlayer().sendMessage(String.format("[팬텀 시프] §e%s§f님의 능력이 §eC등급§f이기에 <%s구제§f>하였습니다.",
-                            target.getPlayer().getDisplayName(),
-                            "§"+newOne.getManifest().rank().getRankName().charAt(1)));
-                }
-                try {
-                    target.setAbility(newOne);
-                    target.getPlayer().sendMessage("[팬텀 시프] 능력이 재배정되었습니다. 당신의 능력은 §e"+newOne.getManifest().name()+"§f입니다.");
-                    getPlayer().sendMessage(String.format("[팬텀 시프] §e%s§f님의 능력을 재배정하였습니다.", target.getPlayer().getDisplayName()));
-                } catch (ReflectiveOperationException e) {
-                    getPlayer().sendMessage("[팬텀 시프] 능력을 재배정하는 도중 오류가 발생하였습니다.");
-                    e.printStackTrace();
-                    stop(true);
-                }
-            }
-        }
-
-        @Override
-        protected void run(int count) {
-            channel.update("무적: "+ TimeUtil.parseTimeAsString(count));
-            SoundLib.PIANO.playInstrument(target.getPlayer(), Note.natural(1, Tone.C));
-        }
-
-        @Override
-        protected void onEnd() {
-            HandlerList.unregisterAll(InvTimer.this);
-            channel.unregister();
-        }
-
-        @Override
-        protected void onSilentEnd() {
-            HandlerList.unregisterAll(InvTimer.this);
-            channel.unregister();
-        }
-
-        @EventHandler
-        public void onEntityDamage(EntityDamageEvent e) {
-            if (e.getEntity().equals(target.getPlayer())) {
-                e.setCancelled(true);
-            }
-        }
-
-        @EventHandler
-        public void onEntityDamage(EntityDamageByEntityEvent e) {
-            Entity damagerEntity = CokesUtil.getDamager(e.getDamager());
-            if (damagerEntity.equals(target.getPlayer())) {
-                e.setCancelled(true);
-            }
-        }
     }
 }

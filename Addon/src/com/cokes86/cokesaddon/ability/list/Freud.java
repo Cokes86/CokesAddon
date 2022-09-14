@@ -61,11 +61,11 @@ import java.util.UUID;
 })
 public class Freud extends CokesAbility implements ActiveHandler {
 	private static final Config<Integer> mana_burn = Config.of(Freud.class, "fire-magic-cost", 30, FunctionalInterfaces.positive(),
-			FunctionalInterfaces.formatter("§c소모 §7: §b"));
+			FunctionalInterfaces.prefix("§c소모 §7: §b"));
 	private static final Config<Integer> mana_weakness = Config.of(Freud.class, "weakness-magic-cost", 45, FunctionalInterfaces.positive(),
-			FunctionalInterfaces.formatter("§c소모 §7: §b"));
+			FunctionalInterfaces.prefix("§c소모 §7: §b"));
 	private static final Config<Integer> mana_explosion = Config.of(Freud.class, "explosion-magic-cost", 80, FunctionalInterfaces.positive(),
-			FunctionalInterfaces.formatter("§c소모 §7: §b"));
+			FunctionalInterfaces.prefix("§c소모 §7: §b"));
 	private static final Config<Integer> damage_burn = Config.of(Freud.class, "fire-damage", 2, FunctionalInterfaces.positive());
 	private static final Config<Integer> damage_weakness = Config.of(Freud.class, "weakness-damage", 3, FunctionalInterfaces.positive());
 	private static final Config<Integer> damage_explosion = Config.of(Freud.class, "explosion-damage", 2, FunctionalInterfaces.positive());

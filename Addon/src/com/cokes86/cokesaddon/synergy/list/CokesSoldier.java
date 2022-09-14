@@ -78,7 +78,7 @@ public class CokesSoldier extends CokesSynergy implements ActiveHandler {
                         CokesSoldier soldier = (CokesSoldier) mix.getSynergy();
                         if (soldier.isSalute()) {
                             Bukkit.broadcastMessage("§8[§7HIDDEN§8] §f감히 §e§l사단장님 §f앞에 총기를 들이밀어???");
-                            Bukkit.broadcastMessage("§8[§7HIDDEN§8] "+getPlayer().getName()+"님이 사단장님 앞에 총기를 사용하여 군기교육대로 끌려갔습니다.");
+                            Bukkit.broadcastMessage("§8[§7HIDDEN§8] "+getPlayer().getName()+"님이 사단장님 앞에 총기를 사용하여 §c군기교육대§f로 끌려갔습니다.");
                             Stun.apply(getParticipant(), TimeUnit.SECONDS, 30);
                             SoundLib.ENTITY_GENERIC_EXPLODE.playSound(getPlayer());
                             return false;

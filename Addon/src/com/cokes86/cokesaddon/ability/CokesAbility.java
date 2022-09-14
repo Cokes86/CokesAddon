@@ -20,6 +20,7 @@ public class CokesAbility extends AbilityBase {
 		super(arg0);
 	}
 
+	@SuppressWarnings("all")
 	public static class Config<T> extends SettingObject<T> {
 		private final Predicate<T> predicate;
 		private final Function<T, String> function;
@@ -39,11 +40,11 @@ public class CokesAbility extends AbilityBase {
 		}
 
 		public static <T> Config<T> of(Class<? extends CokesAbility> aClass, String name, T value, String[] description, Function<T, String> function) {
-			return of(aClass, name, value, description, FunctionalInterfaces.always(), function);
+			return of(aClass, name, value, description, FunctionalInterfaces.ALWAYS, function);
 		}
 
 		public static <T> Config<T> of(Class<? extends CokesAbility> aClass, String name, T value, String... description) {
-			return of(aClass, name, value, description, FunctionalInterfaces.always(), Object::toString);
+			return of(aClass, name, value, description, FunctionalInterfaces.ALWAYS, Object::toString);
 		}
 
 		public static <T> Config<T> of(Class<? extends CokesAbility> aClass, String name, T value, Predicate<T> predicate, String... description) {
@@ -51,7 +52,7 @@ public class CokesAbility extends AbilityBase {
 		}
 
 		public static <T> Config<T> of(Class<? extends CokesAbility> aClass, String name, T value, Function<T, String> function, String... description) {
-			return of(aClass, name, value, description, FunctionalInterfaces.always(), function);
+			return of(aClass, name, value, description, FunctionalInterfaces.ALWAYS, function);
 		}
 
 		public static <T> Config<T> of(Class<? extends CokesAbility> aClass, String name, T value, Predicate<T> predicate, Function<T, String> function, String... description) {

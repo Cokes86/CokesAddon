@@ -3,14 +3,15 @@ package com.cokes86.cokesaddon.ability.list;
 import com.cokes86.cokesaddon.ability.CokesAbility;
 import com.cokes86.cokesaddon.event.CEntityDamageEvent;
 import com.cokes86.cokesaddon.util.AttributeUtil;
+import com.cokes86.cokesaddon.util.CokesUtil;
 import com.cokes86.cokesaddon.util.FunctionalInterfaces;
+import com.cokes86.cokesaddon.util.InvincibilityTimer;
 import daybreak.abilitywar.ability.AbilityManifest;
 import daybreak.abilitywar.ability.AbilityManifest.Rank;
 import daybreak.abilitywar.ability.AbilityManifest.Species;
 import daybreak.abilitywar.ability.SubscribeEvent;
 import daybreak.abilitywar.game.AbstractGame.Participant;
 import daybreak.abilitywar.game.AbstractGame.Participant.ActionbarNotification.ActionbarChannel;
-import daybreak.abilitywar.utils.base.TimeUtil;
 import daybreak.abilitywar.utils.base.color.RGB;
 import daybreak.abilitywar.utils.base.concurrent.TimeUnit;
 import daybreak.abilitywar.utils.base.language.korean.KoreanUtil.Josa;
@@ -22,7 +23,6 @@ import daybreak.abilitywar.utils.library.SoundLib;
 import org.bukkit.Location;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
-import org.bukkit.entity.Projectile;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.entity.EntityRegainHealthEvent;
 
@@ -47,18 +47,17 @@ public class Reincarnation extends CokesAbility {
 	private final ActionbarChannel ac = newActionbarChannel();
 	private int hitted = 0;
 	private final Cooldown cool = new Cooldown(cooldown.getValue());
-	private final AbilityTimer reincarnation = new AbilityTimer(duration.getValue() * 20) {
+	private final AbilityTimer reincarnation = new InvincibilityTimer(getParticipant(), duration.getValue() * 20) {
 
-		protected void onStart() {
+		public void onInvincibilityStart() {
 			List<Player> nearby = LocationUtil.getNearbyEntities(Player.class, getPlayer().getLocation(), 5, 5, null);
 			SoundLib.ITEM_SHIELD_BLOCK.playSound(nearby);
 		}
 
 		@Override
-		protected void run(int arg0) {
+		public void onInvincibilityRun(int arg0) {
 			getPlayer().setHealth(1);
-			ac.update("지속 시간: " + TimeUtil.parseTimeAsString(getFixedCount()) + " 히트횟수: "
-					+ (hitted >= hit.getValue() ? "§a" + hitted : hitted) + "/ " + hit.getValue());
+			ac.update("히트횟수: " + (hitted >= hit.getValue() ? "§a" + hitted : hitted) + "/ " + hit.getValue());
 
 			if (arg0 % 5 == 0) {
 				for (Location l : Circle.iteratorOf(getPlayer().getLocation(), 3, 3 * 6).iterable()) {
@@ -72,7 +71,7 @@ public class Reincarnation extends CokesAbility {
 		}
 
 		@Override
-		protected void onEnd() {
+		public void onInvincibilityEnd() {
 			if (hitted >= hit.getValue()) {
 				double max_Health = AttributeUtil.getMaxHealth(getPlayer());
 				double return_heal = Math.min(max_Health, respawn.getValue() + max_Health * (hitted - hit.getValue()) * heal.getValue() / 100.0);
@@ -106,23 +105,14 @@ public class Reincarnation extends CokesAbility {
 	@SubscribeEvent
 	public void onEntityDamage(CEntityDamageEvent e) {
 		if (e.getEntity().equals(getPlayer())) {
-			if (reincarnation.isRunning())
-				e.setCancelled(true);
-			else if (!reincarnation.isRunning() && getPlayer().getHealth() - e.getFinalDamage() <= 0 && !cool.isRunning() && !e.isCancelled()) {
+			if (!reincarnation.isRunning() && getPlayer().getHealth() - e.getFinalDamage() <= 0 && !cool.isRunning() && !e.isCancelled()) {
 				e.setDamage(0);
 				getPlayer().setHealth(1);
 				reincarnation.setPeriod(TimeUnit.TICKS, 1).start();
 			}
 		}
 
-		Entity damager = e.getDamager();
-		if (damager instanceof Projectile) {
-			Projectile projectile = (Projectile) damager;
-			if (projectile.getShooter() instanceof Entity) {
-				damager = (Entity) projectile.getShooter();
-			}
-		}
-
+		Entity damager = CokesUtil.getDamager(e.getDamager());
 		if (damager != null && e.getEntity() instanceof Player && damager.equals(getPlayer())) {
 			Player target = (Player) e.getEntity();
 			if (reincarnation.isRunning() && getGame().isParticipating(target) && !e.isCancelled()) {
@@ -140,16 +130,9 @@ public class Reincarnation extends CokesAbility {
 
 	@SubscribeEvent(priority = 999, eventPriority = EventPriority.MONITOR)
 	public void onEntityDamage2(CEntityDamageEvent e) {
-		if (e.getDamager() == null) return;
-		Entity damager = e.getDamager();
-		if (damager instanceof Projectile) {
-			Projectile projectile = (Projectile) damager;
-			if (projectile.getShooter() instanceof Entity) {
-				damager = (Entity) projectile.getShooter();
-			}
-		}
+		Entity damager = CokesUtil.getDamager(e.getDamager());
 
-		if (e.getEntity() instanceof Player && damager.equals(getPlayer())) {
+		if (damager != null && e.getEntity() instanceof Player && damager.equals(getPlayer())) {
 			Player target = (Player) e.getEntity();
 			if (reincarnation.isRunning() && getGame().isParticipating(target) && !e.isCancelled()) {
 				hitted += 1;

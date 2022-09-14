@@ -2,6 +2,7 @@ package com.cokes86.cokesaddon.ability.list;
 
 import com.cokes86.cokesaddon.ability.CokesAbility;
 import com.cokes86.cokesaddon.event.CEntityDamageEvent;
+import com.cokes86.cokesaddon.util.CokesUtil;
 import com.cokes86.cokesaddon.util.FunctionalInterfaces;
 import daybreak.abilitywar.ability.AbilityManifest;
 import daybreak.abilitywar.ability.AbilityManifest.Rank;
@@ -10,7 +11,6 @@ import daybreak.abilitywar.ability.SubscribeEvent;
 import daybreak.abilitywar.game.AbstractGame.Participant;
 import daybreak.abilitywar.game.AbstractGame.Participant.ActionbarNotification.ActionbarChannel;
 import daybreak.abilitywar.utils.base.concurrent.TimeUnit;
-import org.bukkit.entity.Arrow;
 import org.bukkit.entity.Entity;
 
 import java.text.DecimalFormat;
@@ -54,13 +54,7 @@ public class Perseverance extends CokesAbility {
 	@SubscribeEvent
 	public void onEntityDamage(CEntityDamageEvent e) {
 		if (e.getDamager() == null) return;
-		Entity damager = e.getDamager();
-		if (damager instanceof Arrow) {
-			Arrow arrow = (Arrow) damager;
-			if (arrow.getShooter() instanceof Entity) {
-				damager = (Entity) arrow.getShooter();
-			}
-		}
+		Entity damager = CokesUtil.getDamager(e.getDamager());
 
 		if (damager.equals(getPlayer())) {
 			e.setDamage(e.getDamage() * (1 + give / 100.00));

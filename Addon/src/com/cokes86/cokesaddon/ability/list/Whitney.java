@@ -39,6 +39,12 @@ import org.bukkit.entity.Projectile;
         "* 4회 사용 시: 상대방 공격 시 주었던 최종 대미지의 $[VAMPIRE]% 회복.",
         "* 5회 사용 시: 상대방에게 주는 대미지 $[DAMAGE] 증가",
         "* 6회 사용 시: 상대방에게 받는 대미지 $[DEFENCE]% 감소",
+}, summarize = {
+        "철괴 우클릭 시 $[DURATION]간 유지되는 버프 획득. $[COOLDOWN_ONE]",
+        "버프는 최대 6단계. 단계마다 누적 적용. 6단계 적용 후 쿨타임은 $[COOLDOWN_TWO]",
+        "1단계: 신속 1단계 부여 | 2단계: $[RECOVERY_PERIOD]마다 체력 $[RECOVERY] 회복",
+        "3단계: 상대방 공격 시 출혈 $[BLEEDING] 부여 | 4단계: 상대방 공격 시 주었던 최종 대미지의 $[VAMPIRE]% 회복.",
+        "5단계: 상대방에게 주는 대미지 $[DAMAGE] 증가 | 6단계: 상대방에게 받는 대미지 $[DEFENCE]% 감소"
 })
 @Tips(difficulty = Difficulty.EASY, stats = @Stats(
     crowdControl = Level.ONE,

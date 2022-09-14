@@ -9,14 +9,16 @@ import org.jetbrains.annotations.NotNull;
 import java.util.function.Function;
 import java.util.function.Predicate;
 
-@SuppressWarnings("unchecked")
+@SuppressWarnings("all")
 public class FunctionalInterfaces {
     private static final Number ZERO = 0.0;
     public static final Function<Integer, String> COOLDOWN = Formatter::formatCooldown;
     public static final Function<Integer, String> TIME = TimeUtil::parseTimeAsString;
     public static final Function<Boolean, String> ON_OFF = a -> a ? "§b켜짐§f" : "§c꺼짐§f";
+    public static final Function<?, String> TO_STRING = Object::toString;
+    public static final Predicate ALWAYS = a -> true;
 
-    public static @NotNull <T extends Number> Predicate<T> positive(){
+    public static @NotNull <T extends Number> Predicate<T> positive() {
         return upper((T) ZERO);
     }
 
@@ -53,7 +55,7 @@ public class FunctionalInterfaces {
         return a -> KoreanUtil.addJosa(a.toString(), josa);
     }
 
-    public static <T> Function<T, String> formatter(String prefix) {
+    public static <T> Function<T, String> prefix(String prefix) {
         return a -> prefix + a;
     }
 }
