@@ -3,8 +3,6 @@ package com.cokes86.cokesaddon.util.nms.v1_13_R1;
 import com.cokes86.cokesaddon.util.nms.IDummy;
 import com.mojang.authlib.GameProfile;
 import daybreak.abilitywar.AbilityWar;
-import daybreak.abilitywar.utils.base.minecraft.nms.IHologram;
-import daybreak.abilitywar.utils.base.minecraft.nms.NMS;
 import daybreak.abilitywar.utils.base.minecraft.nms.v1_13_R1.network.EmptyNetworkHandler;
 import daybreak.abilitywar.utils.base.minecraft.nms.v1_13_R1.network.EmptyNetworkManager;
 import net.minecraft.server.v1_13_R1.*;
@@ -29,10 +27,8 @@ public class DummyImpl extends EntityPlayer implements IDummy {
     }
 
     private final JavaPlugin plugin = AbilityWar.getPlugin();
-    private final IHologram hologram;
     private double damages = 0;
     private final EmptyNetworkManager networkManager;
-    private final Player origin;
 
     public DummyImpl(final MinecraftServer server, final WorldServer world, final Location location, Player skin) {
         super(server, world, createProfile(skin), new PlayerInteractManager(world));
@@ -53,17 +49,14 @@ public class DummyImpl extends EntityPlayer implements IDummy {
         }.runTaskLater(AbilityWar.getPlugin(), 2L);
         setPosition(location.getX(), location.getY(), location.getZ());
         this.invulnerableTicks = 0;
-        this.hologram = NMS.newHologram(world.getWorld(), locX, locY + 2, locZ, skin.getDisplayName());
-        this.origin = skin;
     }
 
     @Override
     public void tick() {
-        if (!isAlive() || hologram.isUnregistered() || !plugin.isEnabled()) {
+        if (!isAlive() || !plugin.isEnabled()) {
             remove();
             return;
         }
-        hologram.teleport(getWorld().getWorld(), locX, locY + 2, locZ, yaw, pitch);
         super.tick();
     }
 
@@ -91,7 +84,6 @@ public class DummyImpl extends EntityPlayer implements IDummy {
 
     @Override
     public void display(final Player player) {
-        hologram.display(player);
         final PlayerConnection playerConnection = ((CraftPlayer) player).getHandle().playerConnection;
         playerConnection.sendPacket(new PacketPlayOutPlayerInfo(EnumPlayerInfoAction.ADD_PLAYER, this));
         playerConnection.sendPacket(new PacketPlayOutNamedEntitySpawn(this));
@@ -101,13 +93,6 @@ public class DummyImpl extends EntityPlayer implements IDummy {
                 playerConnection.sendPacket(new PacketPlayOutPlayerInfo(EnumPlayerInfoAction.REMOVE_PLAYER, DummyImpl.this));
             }
         }.runTaskLater(AbilityWar.getPlugin(), 50L);
-    }
-
-    private void updateHologram() {
-        if (hologram.isUnregistered()) {
-            return;
-        }
-        hologram.setText(origin.getDisplayName());
     }
 
     private double floor(final double a) {
@@ -123,9 +108,6 @@ public class DummyImpl extends EntityPlayer implements IDummy {
     public void remove() {
         die();
         getWorld().removeEntity(this);
-        if (!hologram.isUnregistered()) {
-            hologram.unregister();
-        }
         final PacketPlayOutEntityDestroy packet = new PacketPlayOutEntityDestroy(getId());
         for (CraftPlayer player : ((CraftServer) Bukkit.getServer()).getOnlinePlayers()) {
             player.getHandle().playerConnection.sendPacket(packet);

@@ -13,7 +13,6 @@ import org.bukkit.Bukkit;
 import org.bukkit.craftbukkit.v1_13_R1.CraftServer;
 import org.bukkit.craftbukkit.v1_13_R1.entity.CraftPlayer;
 import org.bukkit.craftbukkit.v1_13_R1.inventory.CraftItemStack;
-import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.HandlerList;

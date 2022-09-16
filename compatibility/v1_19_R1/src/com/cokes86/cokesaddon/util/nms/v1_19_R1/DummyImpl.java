@@ -3,8 +3,6 @@ package com.cokes86.cokesaddon.util.nms.v1_19_R1;
 import com.cokes86.cokesaddon.util.nms.IDummy;
 import com.mojang.authlib.GameProfile;
 import daybreak.abilitywar.AbilityWar;
-import daybreak.abilitywar.utils.base.minecraft.nms.IHologram;
-import daybreak.abilitywar.utils.base.minecraft.nms.NMS;
 import daybreak.abilitywar.utils.base.minecraft.nms.v1_19_R1.network.EmptyNetworkHandler;
 import daybreak.abilitywar.utils.base.minecraft.nms.v1_19_R1.network.EmptyNetworkManager;
 import net.minecraft.network.protocol.EnumProtocolDirection;
@@ -43,15 +41,12 @@ public class DummyImpl extends EntityPlayer implements IDummy {
     }
 
     private final JavaPlugin plugin = AbilityWar.getPlugin();
-    private final IHologram hologram;
     private double damages = 0;
     private final EmptyNetworkManager networkManager;
-    private final Player origin;
 
     public DummyImpl(final MinecraftServer server, final WorldServer world, final Location location, final Player player) {
         super(server, world, createProfile(player), null);
         this.gameMode.changeGameModeForPlayer(EnumGamemode.SURVIVAL);
-        this.hologram = NMS.newHologram(world.getWorld(), ((Entity) this).getX(), ((Entity) this).getY() + 2, ((Entity) this).getZ(), player.getDisplayName());
         try {
             this.networkManager = new EmptyNetworkManager(EnumProtocolDirection.CLIENTBOUND);
             this.connection = new EmptyNetworkHandler(server, networkManager, this);
@@ -68,12 +63,11 @@ public class DummyImpl extends EntityPlayer implements IDummy {
         }.runTaskLater(AbilityWar.getPlugin(), 2L);
         ((Entity) this).setPos(location.getX(), location.getY(), location.getZ());
         this.spawnInvulnerableTime = 0;
-        this.origin = player;
     }
 
     @Override
     public void tick() {
-        if (!isAlive() || hologram.isUnregistered() || !plugin.isEnabled()) {
+        if (!isAlive() || !plugin.isEnabled()) {
             remove();
             return;
         }
@@ -83,7 +77,6 @@ public class DummyImpl extends EntityPlayer implements IDummy {
     @Override
     public void addDamage(final double damage) {
         this.damages += damage;
-        updateHologram();
     }
 
     @Override
@@ -96,20 +89,12 @@ public class DummyImpl extends EntityPlayer implements IDummy {
         final PlayerConnection playerConnection = ((CraftPlayer) player).getHandle().connection;
         playerConnection.send(new PacketPlayOutPlayerInfo(EnumPlayerInfoAction.ADD_PLAYER, this));
         playerConnection.send(new PacketPlayOutNamedEntitySpawn(this));
-        hologram.display(player);
         new BukkitRunnable() {
             @Override
             public void run() {
                 playerConnection.send(new PacketPlayOutPlayerInfo(EnumPlayerInfoAction.REMOVE_PLAYER, DummyImpl.this));
             }
         }.runTaskLater(AbilityWar.getPlugin(), 50L);
-    }
-
-    private void updateHologram() {
-        if (hologram.isUnregistered()) {
-            return;
-        }
-        hologram.setText(origin.getDisplayName());
     }
 
     private double floor(final double a) {
@@ -136,9 +121,6 @@ public class DummyImpl extends EntityPlayer implements IDummy {
     public void remove() {
         ((Entity) this).discard();
         getLevel().getChunkSource().removeEntity(this);
-        if (!hologram.isUnregistered()) {
-            hologram.unregister();
-        }
         final PacketPlayOutEntityDestroy packet = new PacketPlayOutEntityDestroy(((Entity) this).getId());
         for (CraftPlayer player : ((CraftServer) Bukkit.getServer()).getOnlinePlayers()) {
             player.getHandle().connection.send(packet);

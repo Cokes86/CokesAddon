@@ -30,6 +30,7 @@ import org.bukkit.scheduler.BukkitRunnable;
 import java.util.*;
 import java.util.Map.Entry;
 
+@SuppressWarnings("all")
 public class StealthImpl implements Listener, IStealth {
     private static final DataWatcherObject<Byte> BYTE_DATA_WATCHER_OBJECT;
     private static final List<com.mojang.datafixers.util.Pair<EnumItemSlot, ItemStack>> NULL_PAIR_LIST = Arrays.asList(
