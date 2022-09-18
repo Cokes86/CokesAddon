@@ -1,9 +1,8 @@
-package com.cokes86.cokesaddon.util;
+package com.cokes86.cokesaddon.util.timer;
 
+import com.cokes86.cokesaddon.util.CokesUtil;
 import daybreak.abilitywar.AbilityWar;
-import daybreak.abilitywar.ability.AbilityBase.AbilityTimer;
 import daybreak.abilitywar.game.AbstractGame.Participant;
-import daybreak.abilitywar.game.AbstractGame.Participant.ActionbarNotification.ActionbarChannel;
 import daybreak.abilitywar.utils.base.TimeUtil;
 import daybreak.abilitywar.utils.library.SoundLib;
 import org.bukkit.Bukkit;
@@ -14,10 +13,7 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
 
-import java.util.Objects;
-
-public class InvincibilityTimer extends AbilityTimer implements Listener {
-    private final ActionbarChannel channel;
+public class InvincibilityTimer extends NoticeTimeTimer implements Listener {
     private final Participant participant;
     private final boolean attackable;
 
@@ -28,21 +24,13 @@ public class InvincibilityTimer extends AbilityTimer implements Listener {
      * @param attackable 무적 중 공격 가능 여부
      */
     public InvincibilityTimer(Participant participant, int time, boolean attackable) {
-        Objects.requireNonNull(participant.getAbility()).super(time);
-        this.channel = participant.actionbar().newChannel();
+        super(participant, String.format("§e무적%s", (attackable ? "" : "/공격불가")), time);
         this.participant = participant;
         this.attackable = attackable;
     }
 
     public InvincibilityTimer(Participant participant, int time) {
         this(participant, time, true);
-    }
-
-    public InvincibilityTimer(Participant participant) {
-        Objects.requireNonNull(participant.getAbility()).super();
-        this.channel = participant.actionbar().newChannel();
-        this.participant = participant;
-        this.attackable = true;
     }
 
     @Override
@@ -53,10 +41,9 @@ public class InvincibilityTimer extends AbilityTimer implements Listener {
 
     @Override
     protected void run(int count) {
-        String attack = attackable ? "" : "/공격불능";
-        channel.update(String.format("§e무적%s§f: %s", attack, TimeUtil.parseTimeAsString(getFixedCount())));
+        super.run(count);
         if (count == (getMaximumCount()/2) || (getFixedCount() <= 5 && getFixedCount() >= 1)) {
-            participant.getPlayer().sendMessage(String.format("§e무적%s§f: %s", attack, TimeUtil.parseTimeAsString(getFixedCount())));
+            participant.getPlayer().sendMessage(String.format("§e무적%s§f: %s", (attackable ? "" : "/공격불가"), TimeUtil.parseTimeAsString(getFixedCount())));
             SoundLib.BLOCK_NOTE_BLOCK_HARP.playSound(participant.getPlayer());
         }
         onInvincibilityRun(count);
@@ -64,12 +51,14 @@ public class InvincibilityTimer extends AbilityTimer implements Listener {
 
     @Override
     protected void onEnd() {
+        super.onEnd();
         HandlerList.unregisterAll(this);
         onInvincibilityEnd();
     }
 
     @Override
     protected void onSilentEnd() {
+        super.onSilentEnd();
         HandlerList.unregisterAll(this);
         onInvincibilitySilentEnd();
     }

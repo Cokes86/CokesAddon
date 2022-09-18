@@ -19,6 +19,7 @@ import net.minecraft.server.network.PlayerConnection;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityLiving;
+import net.minecraft.world.entity.player.EntityHuman;
 import net.minecraft.world.level.EnumGamemode;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
@@ -36,7 +37,7 @@ public class DummyImpl extends EntityPlayer implements IDummy {
 
     private static GameProfile createProfile(final Player player) {
         final GameProfile profile = new GameProfile(UUID.randomUUID(), player.getDisplayName());
-        profile.getProperties().put("textures", ((CraftPlayer)player).getHandle().getProfile().getProperties().get("textures").iterator().next());
+        profile.getProperties().put("textures", ((EntityHuman)((CraftPlayer)player).getHandle()).getProfile().getProperties().get("textures").iterator().next());
         return profile;
     }
 

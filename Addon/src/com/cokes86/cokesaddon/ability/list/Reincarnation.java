@@ -5,7 +5,7 @@ import com.cokes86.cokesaddon.event.CEntityDamageEvent;
 import com.cokes86.cokesaddon.util.AttributeUtil;
 import com.cokes86.cokesaddon.util.CokesUtil;
 import com.cokes86.cokesaddon.util.FunctionalInterfaces;
-import com.cokes86.cokesaddon.util.InvincibilityTimer;
+import com.cokes86.cokesaddon.util.timer.InvincibilityTimer;
 import daybreak.abilitywar.ability.AbilityManifest;
 import daybreak.abilitywar.ability.AbilityManifest.Rank;
 import daybreak.abilitywar.ability.AbilityManifest.Species;

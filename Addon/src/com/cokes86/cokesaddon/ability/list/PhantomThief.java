@@ -3,7 +3,7 @@ package com.cokes86.cokesaddon.ability.list;
 import com.cokes86.cokesaddon.ability.CokesAbility;
 import com.cokes86.cokesaddon.util.CokesUtil;
 import com.cokes86.cokesaddon.util.FunctionalInterfaces;
-import com.cokes86.cokesaddon.util.InvincibilityTimer;
+import com.cokes86.cokesaddon.util.timer.InvincibilityTimer;
 import com.cokes86.cokesaddon.util.nms.IDummy;
 import com.cokes86.cokesaddon.util.nms.NMSUtil;
 import daybreak.abilitywar.ability.AbilityFactory.AbilityRegistration;
