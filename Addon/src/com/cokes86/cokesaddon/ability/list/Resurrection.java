@@ -3,16 +3,15 @@ package com.cokes86.cokesaddon.ability.list;
 import com.cokes86.cokesaddon.ability.CokesAbility;
 import com.cokes86.cokesaddon.event.CEntityDamageEvent;
 import com.cokes86.cokesaddon.util.AttributeUtil;
+import com.cokes86.cokesaddon.util.CokesUtil;
 import com.cokes86.cokesaddon.util.FunctionalInterfaces;
 import daybreak.abilitywar.ability.AbilityManifest;
 import daybreak.abilitywar.ability.AbilityManifest.Rank;
 import daybreak.abilitywar.ability.AbilityManifest.Species;
 import daybreak.abilitywar.ability.SubscribeEvent;
 import daybreak.abilitywar.game.AbstractGame.Participant;
-import daybreak.abilitywar.utils.base.minecraft.nms.NMS;
 import daybreak.abilitywar.utils.library.SoundLib;
 import org.bukkit.entity.Entity;
-import org.bukkit.entity.Projectile;
 import org.bukkit.potion.PotionEffect;
 
 @AbilityManifest(name = "부활", rank = Rank.S, species = Species.DEMIGOD, explain = {
@@ -27,36 +26,25 @@ public class Resurrection extends CokesAbility {
 		super(arg0);
 	}
 
-	public void clearPotionEffect() {
-		for (PotionEffect e : getPlayer().getActivePotionEffects()) {
-			getPlayer().removePotionEffect(e.getType());
-		}
-	}
-
 	@SubscribeEvent
 	public void onEntityDamage(CEntityDamageEvent e) {
 		if (!resurrection) {
 			if (e.getEntity().equals(getPlayer())) {
-				double health = getPlayer().getHealth();
-				double damage = e.getFinalDamage();
-				if (health - damage <= 0) {
+				if (getPlayer().getHealth() - e.getFinalDamage() <= 0) {
 					e.setDamage(0);
 					getPlayer().setFireTicks(0);
 					SoundLib.ITEM_TOTEM_USE.playSound(getPlayer());
-					clearPotionEffect();
+					for (PotionEffect effect : getPlayer().getActivePotionEffects()) {
+						getPlayer().removePotionEffect(effect.getType());
+					}
 					getPlayer().setHealth(AttributeUtil.getMaxHealth(getPlayer()));
 					resurrection = true;
 				}
 			}
 		} else {
-			Entity damager = e.getDamager();
+			Entity damager = CokesUtil.getDamager(e.getDamager());
 			if (damager == null) return;
-			if (NMS.isArrow(damager)) {
-				Projectile arrow = (Projectile) damager;
-				if (arrow.getShooter() instanceof Entity) {
-					damager = (Entity) arrow.getShooter();
-				}
-			}
+
 			if (damager.equals(getPlayer())) {
 				e.setDamage(e.getDamage() + BONUS_DAMAGE.getValue());
 			}

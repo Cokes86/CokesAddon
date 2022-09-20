@@ -57,7 +57,7 @@ public class Reincarnation extends CokesAbility {
 		@Override
 		public void onInvincibilityRun(int arg0) {
 			getPlayer().setHealth(1);
-			ac.update("히트횟수: " + (hitted >= hit.getValue() ? "§a" + hitted : hitted) + "/ " + hit.getValue());
+			ac.update((hitted >= hit.getValue() ? "§a" + hitted : hitted) + "/ " + hit.getValue());
 
 			if (arg0 % 5 == 0) {
 				for (Location l : Circle.iteratorOf(getPlayer().getLocation(), 3, 3 * 6).iterable()) {
@@ -76,6 +76,7 @@ public class Reincarnation extends CokesAbility {
 				double max_Health = AttributeUtil.getMaxHealth(getPlayer());
 				double return_heal = Math.min(max_Health, respawn.getValue() + max_Health * (hitted - hit.getValue()) * heal.getValue() / 100.0);
 				getPlayer().setHealth(return_heal);
+				SoundLib.ITEM_TOTEM_USE.playSound(getPlayer());
 			} else {
 				getPlayer().setHealth(0);
 			}
@@ -138,6 +139,8 @@ public class Reincarnation extends CokesAbility {
 				hitted += 1;
 				if (hitted == hit.getValue()) {
 					SoundLib.ENTITY_PLAYER_LEVELUP.playSound(getPlayer());
+				} else if (hitted == hit.getValue()/5 || hitted == hit.getValue()*2/5 || hitted == hit.getValue()*3/5 || hitted == hit.getValue()*4/5) {
+					SoundLib.ENTITY_EXPERIENCE_ORB_PICKUP.playSound(getPlayer());
 				}
 			}
 		}

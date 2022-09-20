@@ -30,9 +30,9 @@ public class EnchantArrow extends CokesAbility {
 	private static final Config<Double> DAMAGE = Config.of(EnchantArrow.class, "damage", 8.5, FunctionalInterfaces.positive(),
 			"# 인챈트 스택 당 상승할 대미지 증가량",
 			"# 기본값: 8.5 (%)");
-	private static final Config<Integer> RISK = Config.of(EnchantArrow.class, "risk", 1, FunctionalInterfaces.positive(),
+	private static final Config<Double> RISK = Config.of(EnchantArrow.class, "risk", 1.5, FunctionalInterfaces.positive(),
 			"# 인챈트 스택이 없는 상태에서 적중 실패 시 받는 대미지",
-			"# 기본값: 1");
+			"# 기본값: 1.5");
 	private static final Config<Integer> MAX_STACK = Config.of(EnchantArrow.class, "max-stack", 9, FunctionalInterfaces.positive(),
 			"# 인챈트 스택의 최대치",
 			"# 기본값: 9");

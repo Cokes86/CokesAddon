@@ -18,7 +18,7 @@ import java.util.List;
 
 @AbilityManifest(name = "나 홀로 외길", rank = Rank.B, species = Species.HUMAN, explain = {
         "블럭을 밟을 때 마다 1스택이 오릅니다.",
-        "스택이 100개 오를 때 마다 상대에게 주는 대미지가 1 증가합니다.",
+        "100스택 당 상대에게 주는 대미지가 1 증가합니다.",
         "밟은 블럭에 대해서는 1분간 스택이 다시 쌓이지 않습니다."
 })
 public class LonelyRoad extends CokesAbility {

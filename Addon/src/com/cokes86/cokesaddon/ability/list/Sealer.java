@@ -3,6 +3,7 @@ package com.cokes86.cokesaddon.ability.list;
 import com.cokes86.cokesaddon.ability.CokesAbility;
 import com.cokes86.cokesaddon.effect.list.Seal;
 import com.cokes86.cokesaddon.event.CEntityDamageEvent;
+import com.cokes86.cokesaddon.util.CokesUtil;
 import com.cokes86.cokesaddon.util.FunctionalInterfaces;
 import daybreak.abilitywar.AbilityWar;
 import daybreak.abilitywar.ability.AbilityBase;
@@ -25,7 +26,6 @@ import org.bukkit.Material;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
-import org.bukkit.entity.Projectile;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 
@@ -37,7 +37,8 @@ import java.util.Set;
 		"철괴로 상대방을 우클릭할 시 상대방의 능력을 $[duration]간 비활성화시킵니다. $[cool]",
 		"이미 비활성화되어있는 능력에겐 이 능력이 발동하지 않습니다.",
 		"봉인한 능력의 등급에 따라 자신에게 각종 효과를 $[duration]간 부여합니다.",
-		"§eC 등급§f: 나약함1 | §bB 등급§f: 재생1 | §aA 등급§f: 힘1 | §dS 등급§f: 힘2 | §6L 등급§f: 힘2, 저항1",
+		"§eC 등급§f: 나약함1 | §bB 등급§f: 재생1 | §aA 등급§f: 힘1",
+		"§dS 등급§f: 힘2 | §6L 등급§f, §cSPECIAL 등급§f: 힘2, 저항1",
 		"§7특정 능력을 봉인하면 어떤 일이?!"
 })
 @NotAvailable({AbstractTripleMix.class})
@@ -144,7 +145,9 @@ public class Sealer extends CokesAbility implements TargetHandler {
 					PotionEffects.DAMAGE_RESISTANCE.addPotionEffect(getPlayer(), duration.getValue()*20, 0, true);
 					break;
 				case 6:
-					getPlayer().sendMessage( Rank.SPECIAL.getRankName()+" §f봉인! 뭘 줘야해???");
+					getPlayer().sendMessage( Rank.SPECIAL.getRankName()+" §f봉인! 힘2, 저항1 버프를 부여합니다.");
+					PotionEffects.INCREASE_DAMAGE.addPotionEffect(getPlayer(), duration.getValue()*20, 1, true);
+					PotionEffects.DAMAGE_RESISTANCE.addPotionEffect(getPlayer(), duration.getValue()*20, 0, true);
 					break;
 			}
 		}
@@ -166,14 +169,8 @@ public class Sealer extends CokesAbility implements TargetHandler {
 
 		@EventHandler
 		public void onEntityDamage(CEntityDamageEvent e) {
-			if (e.getDamager() == null) return;
-			Entity attacker = e.getDamager();
-			if (attacker instanceof Projectile) {
-				Projectile projectile = (Projectile) attacker;
-				if (projectile.getShooter() instanceof Entity) {
-					attacker = (Entity) projectile.getShooter();
-				}
-			}
+			Entity attacker = CokesUtil.getDamager(e.getDamager());
+			if (attacker == null) return;
 
 			if (attacker.equals(getPlayer()) && e.getEntity().equals(target.getPlayer()) && synergy.contains(target.getPlayer()) && isRunning()) {
 				final double damage = e.getDamage() * 0.2;
