@@ -65,7 +65,7 @@ public class Vennominon extends CokesSynergy implements ActiveHandler {
 
     private int venom = 0;
     private final NoticeTimeTimer groggy = new NoticeTimeTimer(getParticipant(), "§7그로기", GROGGY.getValue());
-    private final HashMap<Participant, com.cokes86.cokesaddon.synergy.list.Vennominon.Venom> venomMap = new HashMap<>();
+    private final HashMap<Participant, Venom> venomMap = new HashMap<>();
     private final Predicate<Entity> predicate = entity -> {
         if (entity.equals(getPlayer())) return false;
         if (entity instanceof Player) {
@@ -102,7 +102,7 @@ public class Vennominon extends CokesSynergy implements ActiveHandler {
             int health = 0;
             for (Player player : LocationUtil.getNearbyEntities(Player.class, getPlayer().getLocation(), RANGE.getValue(), RANGE.getValue(), predicate)) {
                 Participant participant = getGame().getParticipant(player.getPlayer());
-                com.cokes86.cokesaddon.synergy.list.Vennominon.Venom venomTimer = venomMap.remove(participant);
+                Venom venomTimer = venomMap.remove(participant);
                 if (venomTimer == null) continue;
                 health += venomTimer.stack;
                 venomTimer.stop(true);
@@ -124,9 +124,9 @@ public class Vennominon extends CokesSynergy implements ActiveHandler {
             if (!groggy.isRunning()) {
                 for (Player player : LocationUtil.getNearbyEntities(Player.class, getPlayer().getLocation(), RANGE.getValue(), RANGE.getValue(), predicate)) {
                     Participant participant = getGame().getParticipant(player.getPlayer());
-                    com.cokes86.cokesaddon.synergy.list.Vennominon.Venom venomTimer = venomMap.get(participant);
+                    Venom venomTimer = venomMap.get(participant);
                     if (venomTimer == null) {
-                        venomTimer = new com.cokes86.cokesaddon.synergy.list.Vennominon.Venom(participant);
+                        venomTimer = new Venom(participant);
                         venomMap.put(participant, venomTimer);
                     }
                     venomTimer.addStack();
