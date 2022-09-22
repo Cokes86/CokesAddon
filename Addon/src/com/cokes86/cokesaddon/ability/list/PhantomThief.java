@@ -121,12 +121,7 @@ public class PhantomThief extends CokesAbility implements ActiveHandler {
                 phantom.remove();
             }
             phantom = NMSUtil.createDummy(getPlayer().getLocation(), getPlayer());
-            phantom.getBukkitEntity().getInventory().setItemInMainHand(getPlayer().getInventory().getItemInMainHand());
-            phantom.getBukkitEntity().getInventory().setItemInOffHand(getPlayer().getInventory().getItemInOffHand());
-            phantom.getBukkitEntity().getInventory().setHelmet(getPlayer().getInventory().getHelmet());
-            phantom.getBukkitEntity().getInventory().setChestplate(getPlayer().getInventory().getChestplate());
-            phantom.getBukkitEntity().getInventory().setLeggings(getPlayer().getInventory().getLeggings());
-            phantom.getBukkitEntity().getInventory().setBoots(getPlayer().getInventory().getBoots());
+            phantom.getBukkitEntity().getInventory().setStorageContents(getPlayer().getInventory().getStorageContents());
             for (Participant participant : getGame().getParticipants()) {
                 phantom.display(participant.getPlayer());
             }

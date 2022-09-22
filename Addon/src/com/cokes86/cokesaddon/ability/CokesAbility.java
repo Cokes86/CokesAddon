@@ -36,23 +36,23 @@ public class CokesAbility extends AbilityBase {
 		}
 
 		public static <T> Config<T> of(Class<? extends CokesAbility> aClass, String name, T value, String[] description, Predicate<T> predicate) {
-			return of(aClass, name, value, description, predicate, Object::toString);
+			return of(aClass, name, value, description, predicate, FunctionalInterfaces.toStrings());
 		}
 
 		public static <T> Config<T> of(Class<? extends CokesAbility> aClass, String name, T value, String[] description, Function<T, String> function) {
-			return of(aClass, name, value, description, FunctionalInterfaces.ALWAYS, function);
+			return of(aClass, name, value, description, FunctionalInterfaces.always(), function);
 		}
 
 		public static <T> Config<T> of(Class<? extends CokesAbility> aClass, String name, T value, String... description) {
-			return of(aClass, name, value, description, FunctionalInterfaces.ALWAYS, Object::toString);
+			return of(aClass, name, value, description, FunctionalInterfaces.always(), FunctionalInterfaces.toStrings());
 		}
 
 		public static <T> Config<T> of(Class<? extends CokesAbility> aClass, String name, T value, Predicate<T> predicate, String... description) {
-			return of(aClass, name, value, description, predicate, Object::toString);
+			return of(aClass, name, value, description, predicate, FunctionalInterfaces.toStrings());
 		}
 
 		public static <T> Config<T> of(Class<? extends CokesAbility> aClass, String name, T value, Function<T, String> function, String... description) {
-			return of(aClass, name, value, description, FunctionalInterfaces.ALWAYS, function);
+			return of(aClass, name, value, description, FunctionalInterfaces.always(), function);
 		}
 
 		public static <T> Config<T> of(Class<? extends CokesAbility> aClass, String name, T value, Predicate<T> predicate, Function<T, String> function, String... description) {

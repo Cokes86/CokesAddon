@@ -33,6 +33,7 @@ public class LonelyRoad extends CokesAbility {
     public void onEntityDamage(CEntityDamageEvent e) {
         Entity damager = CokesUtil.getDamager(e.getDamager());
         if (damager != null && damager.equals(getPlayer())) {
+            //noinspection IntegerDivisionInFloatingPointContext
             e.setDamage(e.getDamage() + (stack / 100));
         }
     }

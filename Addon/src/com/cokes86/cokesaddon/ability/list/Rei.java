@@ -15,20 +15,19 @@ import daybreak.abilitywar.ability.Tips.Level;
 import daybreak.abilitywar.ability.Tips.Stats;
 import daybreak.abilitywar.config.enums.CooldownDecrease;
 import daybreak.abilitywar.game.AbstractGame.Participant;
-import daybreak.abilitywar.utils.base.language.korean.KoreanUtil.Josa;
 import daybreak.abilitywar.utils.base.minecraft.entity.health.event.PlayerSetHealthEvent;
 import daybreak.abilitywar.utils.base.minecraft.nms.NMS;
 import daybreak.abilitywar.utils.library.SoundLib;
 import org.bukkit.GameMode;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
-import org.bukkit.entity.Projectile;
 
 @AbilityManifest(name = "레이", rank = Rank.L, species = Species.HUMAN, explain = {
-		"쿨타임이 아닐 때 상대방을 공격할 시 최대 체력의 $[cost]%를 코스트로",
-		"상대에게 주는 대미지가 $[damage]% 증가합니다.",
-		"자신의 체력이 0이 되었을 시 그 공격을 무효로 하고 체력이 $[respawn] 됩니다. $[cool]",
-		"코스트로 지불할 체력이 부족한 경우 코스트를 소비하지 않습니다."
+		"§7패시브 §8- §c영혼의 검성§f: 근접 공격 시 최대 체력의 $[COST]%를 소비하고",
+		"  상대에게 주는 대미지가 §a$[DAMAGE]% 증가합니다.",
+		"  치명적인 대미지를 입었을 경우, 그 공격을 무효로 하고",
+		"  $[RESPAWN]의 체력으로 §b부활홥니다. $[COOLDOWN]",
+		"  쿨타임동안, 또는 소비할 체력이 없을 경우 <§c영혼의 검성§f>은 발동하지 않습니다."
 })
 @Tips(tip = {
 		"추가적인 공격력이 더해져 강한 공격력을 가진 능력",
@@ -37,17 +36,24 @@ import org.bukkit.entity.Projectile;
 }, strong= {
 		@Description(explain = { "공격력이 강해 상대방에게 더욱 큰 대미지를 줄 수 있다." }, subject = "강한 공격력")
 }, weak = {
-		@Description(explain = { "체력이 높을 수록 그만큼 디메리트역시 커진다." }, subject = "자신의 높은 체력")
+		@Description(explain = { "고정적인 체력 손해로 장기전으로 갈 수록 불리해진다." }, subject = "고정적인 체력 지불")
 },
 stats = @Stats(offense = Level.NINE, survival = Level.FIVE, crowdControl = Level.ZERO, mobility = Level.ZERO, utility = Level.THREE), difficulty = Difficulty.NORMAL)
 public class Rei extends CokesAbility {
-	private static final Config<Double> damage = Config.of(Rei.class, "추가대미지", 85.0, FunctionalInterfaces.positive());
-	private static final Config<Double> cost = Config.of(Rei.class, "코스트(%)", 4.5, FunctionalInterfaces.positive());
-	private static final Config<Integer> cool = Config.of(Rei.class, "쿨타임", 100, FunctionalInterfaces.positive(), FunctionalInterfaces.COOLDOWN);
-	private static final Config<Integer> respawn = Config.of(Rei.class, "부활체력", 4, FunctionalInterfaces.positive(),
-			FunctionalInterfaces.addJosa(Josa.이가));
+	private static final Config<Double> DAMAGE = Config.of(Rei.class, "damage-increment", 75.0, FunctionalInterfaces.positive(),
+			"# 영혼의 검성으로 증가하는 대미지",
+			"# 기본값: 75.0 (%)");
+	private static final Config<Double> COST = Config.of(Rei.class, "coast", 4.5, FunctionalInterfaces.positive(),
+			"# 영혼의 검성으로 소모할 체력",
+			"# 기본값: 4.5 (%)");
+	private static final Config<Integer> COOLDOWN = Config.of(Rei.class, "cooldown", 100, FunctionalInterfaces.positive(), FunctionalInterfaces.COOLDOWN,
+			"# 영혼의 검성 쿨타임",
+			"# 기본값: 100 (초)");
+	private static final Config<Integer> RESPAWN = Config.of(Rei.class, "respawn-health", 4, FunctionalInterfaces.positive(),
+			"# 영혼의 검성 중 치명적인 대미지를 받을 시 부활 체력",
+			"# 기본값: 4");
 
-	private final Cooldown cooldown = new Cooldown(cool.getValue(), CooldownDecrease._75);
+	private final Cooldown cooldown = new Cooldown(COOLDOWN.getValue(), CooldownDecrease._75);
 
 	public Rei(Participant participant) {
 		super(participant);
@@ -57,28 +63,22 @@ public class Rei extends CokesAbility {
 	public void onEntityDamage(CEntityDamageEvent e) {
 
 		Entity damager = e.getDamager();
-		if (damager != null && NMS.isArrow(damager)) {
-			Projectile arrow = (Projectile) e.getDamager();
-			if (arrow.getShooter() instanceof Entity) {
-				damager = (Entity) arrow.getShooter();
-			}
-		}
+		if (damager == null) return;
 
 		if (e.getEntity().equals(getPlayer()) && !cooldown.isRunning() && !e.isCancelled()) {
 			double damage = e.getFinalDamage();
 			if (getPlayer().getHealth() - damage <= 0) {
 				e.setDamage(0);
-				getPlayer().setHealth(respawn.getValue());
+				getPlayer().setHealth(RESPAWN.getValue());
 				cooldown.start();
 				SoundLib.ENTITY_FIREWORK_ROCKET_LAUNCH.playSound(getPlayer());
 			}
 		}
 
-		if (damager != null && e.getEntity() instanceof Player && !e.getEntity().equals(getPlayer()) && damager.equals(getPlayer()) && !cooldown.isRunning() && !e.isCancelled()) {
-			e.setDamage(e.getDamage() * (1 + damage.getValue() / 100.0));
+		if (e.getEntity() instanceof Player && !e.getEntity().equals(getPlayer()) && damager.equals(getPlayer()) && !cooldown.isRunning() && !e.isCancelled()) {
 			final double maxHealth = AttributeUtil.getMaxHealth(getPlayer()), health = getPlayer().getHealth();
 			final float absorption = NMS.getAbsorptionHearts(getPlayer());
-			final double damage = maxHealth * cost.getValue() / 100.0f;
+			final double damage = maxHealth * COST.getValue() / 100.0f;
 			if (getPlayer().getGameMode().equals(GameMode.SURVIVAL) || getPlayer().getGameMode().equals(GameMode.ADVENTURE)) {
 				if (absorption >= damage) {
 					NMS.setAbsorptionHearts(getPlayer(), (float) (absorption - damage));
@@ -89,6 +89,7 @@ public class Rei extends CokesAbility {
 						getPlayer().setHealth(Math.max(0.0, health - temp));
 					}
 				}
+				e.setDamage(e.getDamage() * (1 + DAMAGE.getValue() / 100.0));
 			}
 		}
 	}
@@ -97,7 +98,7 @@ public class Rei extends CokesAbility {
 	private void onPlayerSetHealth(PlayerSetHealthEvent e) {
 		if (e.getPlayer().equals(getPlayer()) && !cooldown.isRunning() && !e.isCancelled() && e.getHealth() <= 0) {
 			e.setCancelled(true);
-			getPlayer().setHealth(respawn.getValue());
+			getPlayer().setHealth(RESPAWN.getValue());
 			cooldown.start();
 			SoundLib.ENTITY_FIREWORK_ROCKET_LAUNCH.playSound(getPlayer());
 		}

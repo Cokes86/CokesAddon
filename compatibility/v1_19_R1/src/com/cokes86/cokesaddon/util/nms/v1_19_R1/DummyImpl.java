@@ -32,7 +32,7 @@ import org.bukkit.scheduler.BukkitRunnable;
 
 import java.util.UUID;
 
-@SuppressWarnings("all")
+@SuppressWarnings("RedundantCast")
 public class DummyImpl extends EntityPlayer implements IDummy {
 
     private static GameProfile createProfile(final Player player) {

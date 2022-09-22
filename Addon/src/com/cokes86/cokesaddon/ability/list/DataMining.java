@@ -208,7 +208,7 @@ public class DataMining extends CokesAbility implements ActiveHandler {
 					Mix mix = (Mix) participant.getAbility();
 					if (mix.hasSynergy()) {
 						abilityName = "§e"+mix.getSynergy().getDisplayName();
-					} else {
+					} else if (mix.getFirst() != null && mix.getSecond() != null) {
 						abilityName = "§f"+mix.getFirst().getDisplayName()+" + "+mix.getSecond().getDisplayName();
 					}
 				}
@@ -228,7 +228,7 @@ public class DataMining extends CokesAbility implements ActiveHandler {
 						Mix mix = (Mix) participant.getAbility();
 						if (mix.hasSynergy()) {
 							abilityName = "§e"+mix.getSynergy().getDisplayName();
-						} else {
+						} else if (mix.getFirst() != null && mix.getSecond() != null) {
 							abilityName = "§f"+mix.getFirst().getDisplayName()+" + "+mix.getSecond().getDisplayName();
 						}
 					}

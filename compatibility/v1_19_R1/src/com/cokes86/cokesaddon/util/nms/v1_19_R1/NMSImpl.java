@@ -155,6 +155,7 @@ public class NMSImpl implements INMS {
         Bukkit.getOnlinePlayers().forEach(pl -> pl.showPlayer(AbilityWar.getPlugin(), p));
     }
 
+    @SuppressWarnings("ConstantConditions")
     @Override
     public IDummy createDummy(Location location, Player player) {
         return new DummyImpl(((CraftServer) Bukkit.getServer()).getServer(), ((CraftWorld) location.getWorld()).getHandle(), location, player);
