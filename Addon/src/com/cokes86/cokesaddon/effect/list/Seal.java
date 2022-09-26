@@ -12,7 +12,7 @@ import daybreak.abilitywar.utils.library.SoundLib;
 import org.bukkit.Location;
 import org.bukkit.entity.ArmorStand;
 
-@EffectManifest(displayName = "§6능력 봉인", name = "능력봉인", method = ApplicationMethod.UNIQUE_LONGEST, type = {
+@EffectManifest(displayName = "§6비활성화", name = "비활성화", method = ApplicationMethod.UNIQUE_LONGEST, type = {
         EffectType.ABILITY_RESTRICTION
 },  description = {
         "자신의 능력이 비활성화됩니다."

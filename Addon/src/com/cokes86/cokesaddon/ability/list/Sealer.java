@@ -34,22 +34,30 @@ import java.util.Map;
 import java.util.Set;
 
 @AbilityManifest(name = "봉인자", rank = Rank.L, species = Species.HUMAN, explain = {
-		"철괴로 상대방을 우클릭할 시 상대방의 능력을 $[duration]간 비활성화시킵니다. $[cool]",
-		"이미 비활성화되어있는 능력에겐 이 능력이 발동하지 않습니다.",
-		"봉인한 능력의 등급에 따라 자신에게 각종 효과를 $[duration]간 부여합니다.",
-		"§eC 등급§f: 나약함1 | §bB 등급§f: 재생1 | §aA 등급§f: 힘1",
-		"§dS 등급§f: 힘2 | §6L 등급§f, §cSPECIAL 등급§f: 힘2, 저항1",
-		"§7특정 능력을 봉인하면 어떤 일이?!"
+		"§7철괴 우클릭 §8- §6봉인§f: 보고있는 플레이어에게 $[SEAL_DURATION]간 §6비활성화§f를 부여합니다. $[COOLDOWN]",
+		"  이미 §6비활성화§f되어있는 플레이어에겐 효과가 발동하지 않습니다.",
+		"  또한, §6비활성화§f된 능력의 등급에 따라 자신에게 효과를 $[BUFF_DURATION]간 부여합니다.",
+		"  §eC 등급§f: 나약함1 | §bB 등급§f: 재생1 | §aA 등급§f: 힘1",
+		"  §dS 등급§f: 힘2 | §6L 등급§f, §cSPECIAL 등급§f: 힘2, 저항1",
+		"§7특정 능력을 비활성화하면 어떤 일이?!",
+		"§7상태이상 §8- §6비활성화§f: 상대방의 능력을 비활성화합니다."
 })
 @NotAvailable({AbstractTripleMix.class})
 public class Sealer extends CokesAbility implements TargetHandler {
-	private static final Config<Integer> cool = Config.of(Sealer.class, "쿨타임", 60, FunctionalInterfaces.positive(), FunctionalInterfaces.COOLDOWN);
-	private static final Config<Integer> duration = Config.of(Sealer.class, "지속시간", 7, FunctionalInterfaces.positive(), FunctionalInterfaces.TIME);
+	private static final Config<Integer> COOLDOWN = Config.of(Sealer.class, "cooldown", 60, FunctionalInterfaces.positive(), FunctionalInterfaces.COOLDOWN,
+			"# 봉인 쿨타임",
+			"# 기본값: 60 (초)");
+	private static final Config<Integer> SEAL_DURATION = Config.of(Sealer.class, "seal-duration", 7, FunctionalInterfaces.positive(), FunctionalInterfaces.TIME,
+			"# 비활성화 지속시간",
+			"# 기본값: 7 (초)");
+	private static final Config<Integer> BUFF_DURATION = Config.of(Sealer.class, "buff-duration", 5, FunctionalInterfaces.positive(), FunctionalInterfaces.TIME,
+			"# 봉인 후 효과 지속시간",
+			"# 기본값: 5 (초)");
 
 	private final Set<Player> synergy = new HashSet<>();
 	private final Map<Rank, Integer> rank = ImmutableMap.<Rank, Integer>builder().put(Rank.C, 1).put(Rank.B, 2).put(Rank.A, 3).put(Rank.S, 4).put(Rank.L, 5).put(Rank.SPECIAL, 6).build();
 
-	private final Cooldown c = new Cooldown(cool.getValue(), CooldownDecrease._50);
+	private final Cooldown c = new Cooldown(COOLDOWN.getValue(), CooldownDecrease._50);
 	private final SealTimer t = new SealTimer();
 
 	public Sealer(Participant participant) {
@@ -62,7 +70,10 @@ public class Sealer extends CokesAbility implements TargetHandler {
 			if (entity instanceof Player) {
 				final Player p = (Player) entity;
 				final Participant target = getGame().getParticipant(p);
-				t.start(target);
+				if (target.getAbility() != null && !target.getAbility().isRestricted()) {
+					Seal.apply(target, TimeUnit.SECONDS, SEAL_DURATION.getValue());
+					t.start(target);
+				}
 			}
 		}
 	}
@@ -71,7 +82,7 @@ public class Sealer extends CokesAbility implements TargetHandler {
 		private Participant target;
 
 		public SealTimer() {
-			super(duration.getValue(), c);
+			super(SEAL_DURATION.getValue(), c);
 		}
 
 		public boolean start(Participant target) {
@@ -88,13 +99,13 @@ public class Sealer extends CokesAbility implements TargetHandler {
 				Mix mix = participant.getAbility();
 				if (mix == null) {
 					this.stop(true);
-					getPlayer().sendMessage("해당 플레이어의 능력이 존재하지 않습니다.");
+					getPlayer().sendMessage("[봉인자] 해당 플레이어의 능력이 존재하지 않습니다.");
 					c.setCount(0);
 					return;
 				}
 				if (!mix.hasAbility() || mix.isRestricted()) {
 					this.stop(true);
-					getPlayer().sendMessage("해당 플레이어의 능력이 존재하지 않습니다.");
+					getPlayer().sendMessage("[봉인자] 해당 플레이어의 능력이 존재하지 않습니다.");
 					c.setCount(0);
 					return;
 				}
@@ -110,44 +121,44 @@ public class Sealer extends CokesAbility implements TargetHandler {
 				AbilityBase ability = target.getAbility();
 				if (ability == null || ability.isRestricted()) {
 					this.stop(true);
-					getPlayer().sendMessage("해당 플레이어의 능력이 존재하지 않습니다.");
+					getPlayer().sendMessage("[봉인자] 해당 플레이어의 능력이 존재하지 않습니다.");
 					c.setCount(0);
 					return;
 				}
 				rankNum = rank.getOrDefault(ability.getRank(), 0);
 			}
 
-			Seal.apply(target, TimeUnit.TICKS, duration.getValue()*20);
+			final int duration = BUFF_DURATION.getValue() * 20;
 			switch(rankNum){
 				case 100:
-					getPlayer().sendMessage("시너지 봉인! 대미지가 80% 감소하는 대신 방어를 무시하고 공격합니다!");
+					getPlayer().sendMessage("[봉인자] 시너지 봉인! 대미지가 80% 감소하는 대신 방어를 무시하고 공격합니다!");
 					synergy.add(target.getPlayer());
 					break;
 				case 1:
-					getPlayer().sendMessage( Rank.C.getRankName()+" §f봉인! 나약함1 버프를 부여합니다.");
-					PotionEffects.WEAKNESS.addPotionEffect(getPlayer(), duration.getValue()*20, 0, true);
+					getPlayer().sendMessage( "[봉인자] " + Rank.C.getRankName()+" §f봉인! 나약함1 버프를 부여합니다.");
+					PotionEffects.WEAKNESS.addPotionEffect(getPlayer(), duration, 0, true);
 					break;
 				case 2:
-					getPlayer().sendMessage( Rank.B.getRankName()+" §f봉인! 재생2 버프를 부여합니다.");
-					PotionEffects.REGENERATION.addPotionEffect(getPlayer(), duration.getValue()*20, 1, true);
+					getPlayer().sendMessage( "[봉인자] " + Rank.B.getRankName()+" §f봉인! 재생2 버프를 부여합니다.");
+					PotionEffects.REGENERATION.addPotionEffect(getPlayer(), duration, 1, true);
 					break;
 				case 3:
-					getPlayer().sendMessage( Rank.A.getRankName()+" §f봉인! 힘1 버프를 부여합니다.");
-					PotionEffects.INCREASE_DAMAGE.addPotionEffect(getPlayer(), duration.getValue()*20, 0, true);
+					getPlayer().sendMessage( "[봉인자] " + Rank.A.getRankName()+" §f봉인! 힘1 버프를 부여합니다.");
+					PotionEffects.INCREASE_DAMAGE.addPotionEffect(getPlayer(), duration, 0, true);
 					break;
 				case 4:
-					getPlayer().sendMessage( Rank.S.getRankName()+" §f봉인! 힘2 버프를 부여합니다.");
-					PotionEffects.INCREASE_DAMAGE.addPotionEffect(getPlayer(), duration.getValue()*20, 1, true);
+					getPlayer().sendMessage( "[봉인자] " + Rank.S.getRankName()+" §f봉인! 힘2 버프를 부여합니다.");
+					PotionEffects.INCREASE_DAMAGE.addPotionEffect(getPlayer(), duration, 1, true);
 					break;
 				case 5:
-					getPlayer().sendMessage( Rank.L.getRankName()+" §f봉인! 힘2, 저항1 버프를 부여합니다.");
-					PotionEffects.INCREASE_DAMAGE.addPotionEffect(getPlayer(), duration.getValue()*20, 1, true);
-					PotionEffects.DAMAGE_RESISTANCE.addPotionEffect(getPlayer(), duration.getValue()*20, 0, true);
+					getPlayer().sendMessage( "[봉인자] " + Rank.L.getRankName()+" §f봉인! 힘2, 저항1 버프를 부여합니다.");
+					PotionEffects.INCREASE_DAMAGE.addPotionEffect(getPlayer(), duration, 1, true);
+					PotionEffects.DAMAGE_RESISTANCE.addPotionEffect(getPlayer(), duration, 0, true);
 					break;
 				case 6:
-					getPlayer().sendMessage( Rank.SPECIAL.getRankName()+" §f봉인! 힘2, 저항1 버프를 부여합니다.");
-					PotionEffects.INCREASE_DAMAGE.addPotionEffect(getPlayer(), duration.getValue()*20, 1, true);
-					PotionEffects.DAMAGE_RESISTANCE.addPotionEffect(getPlayer(), duration.getValue()*20, 0, true);
+					getPlayer().sendMessage( "[봉인자] " + Rank.SPECIAL.getRankName()+" §f봉인! 힘2, 저항1 버프를 부여합니다.");
+					PotionEffects.INCREASE_DAMAGE.addPotionEffect(getPlayer(), duration, 1, true);
+					PotionEffects.DAMAGE_RESISTANCE.addPotionEffect(getPlayer(), duration, 0, true);
 					break;
 			}
 		}

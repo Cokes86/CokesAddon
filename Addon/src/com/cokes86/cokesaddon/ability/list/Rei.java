@@ -25,9 +25,9 @@ import org.bukkit.entity.Player;
 @AbilityManifest(name = "레이", rank = Rank.L, species = Species.HUMAN, explain = {
 		"§7패시브 §8- §c영혼의 검성§f: 근접 공격 시 최대 체력의 $[COST]%를 소비하고",
 		"  상대에게 주는 대미지가 §a$[DAMAGE]% 증가합니다.",
-		"  치명적인 대미지를 입었을 경우, 그 공격을 무효로 하고",
+		"  §c치명적인 대미지§f를 입었을 경우, 그 공격을 §b무효§f로 하고",
 		"  $[RESPAWN]의 체력으로 §b부활홥니다. $[COOLDOWN]",
-		"  쿨타임동안, 또는 소비할 체력이 없을 경우 <§c영혼의 검성§f>은 발동하지 않습니다."
+		"  §c쿨타임§f동안, 또는 소비할 체력이 없을 경우 <§c영혼의 검성§f>은 발동하지 않습니다."
 })
 @Tips(tip = {
 		"추가적인 공격력이 더해져 강한 공격력을 가진 능력",

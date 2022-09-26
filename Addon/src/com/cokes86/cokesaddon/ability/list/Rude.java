@@ -26,12 +26,11 @@ import java.util.Objects;
 import java.util.function.Predicate;
 
 @AbilityManifest(name = "진상", rank = AbilityManifest.Rank.A, species = AbilityManifest.Species.HUMAN, explain = {
-        "철괴 우클릭 시 1초마다 $[RUDE_RANGE]블럭 내 모든 플레이어의",
-        "인벤토리를 뒤엎어버린 후, 1의 관통 대미지를 줍니다.",
-        "이는 $[RUDE_DURATION]간 반복되며, 이미 한 번 뒤엎은 플레이어가 있다면",
-        "더이상 뒤엎지 않습니다.",
-        "지속시간동안 이동속도가 매우 느려지지만, 받는 대미지가 $[DAMAGE]% 감소합니다 $[RUDE_COOLDOWN]",
-        "갑옷과, 양 손의 아이템은 뒤엎지 않습니다."
+        "§7철괴 우클릭 §8- §c뒤집어 엎기§f: 1초마다 $[RUDE_RANGE]블럭 내 모든 플레이어의",
+        "  인벤토리를 뒤엎어버린 후, 1의 관통 대미지를 주며 $[RUDE_DURATION]회 반복합니다. $[RUDE_COOLDOWN]",
+        "  이미 한 번 뒤엎은 플레이어가 있다면 더이상 뒤엎지 않습니다.",
+        "  지속시간동안 이동속도가 매우 느려지지만, 받는 대미지가 $[DAMAGE]% 감소합니다.",
+        "  갑옷과, 양 손의 아이템은 뒤엎지 않습니다."
 })
 public class Rude extends CokesAbility implements ActiveHandler {
     private static final Config<Integer> RUDE_RANGE = Config.of(Rude.class, "범위", 10, FunctionalInterfaces.positive());

@@ -85,6 +85,9 @@ public class AddonAbilityFactory {
 
 		//1.9.2
 		registerAbility(PhantomThief.class);
+
+		//1.9.3
+		registerAbility(LonelyRoad.class);
 	}
 
 	public static void registerAbility(Class<? extends CokesAbility> clazz) {

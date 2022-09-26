@@ -18,18 +18,17 @@ import org.bukkit.entity.Player;
 import java.text.DecimalFormat;
 
 @AbilityManifest(name = "여왕", rank = AbilityManifest.Rank.A, species = AbilityManifest.Species.HUMAN, explain = {
-		/*"상대방을 철괴로 우클릭시 상대방의 남은 체력의 절반만큼",
-		"최대체력이 증가하고 그 수치의 $[multiply]배만큼의 체력을 회복합니다. $[cool]",
-		"능력을 사용할 때 마다, 최대체력이 게임 설정 초깃값으로 수정된 후 증가합니다.",
-		"철괴 좌클릭시, 자신의 최대체력을 수치로 확인할 수 있습니다."*/
-		"철괴 우클릭 - "
+		"§7철괴 우클릭 §8- §c여왕의 품격§f: 바라보는 대상의 체력의 반만큼",
+		"  자신 최대 체력에 추가하고, 그 수치의 $[MULTIPLY]배만큼의 체력을 회복합니다. $[COOLDOWN]",
+		"  재사용시 그 전에 추가되었던 최대 체력은 사라지고 새로 추가됩니다.",
+		"§7철괴 좌클릭 §8- §c상태 관리§f: 자신의 최대 체력의 수치를 확인합니다."
 })
 public class Queen extends CokesAbility implements ActiveHandler, TargetHandler {
-	private static final Config<Integer> cool = Config.of(Queen.class, "쿨타임", 120, FunctionalInterfaces.positive(), FunctionalInterfaces.COOLDOWN);
-	private static final Config<Double> multiply = Config.of(Queen.class, "회복배율", 1.0, FunctionalInterfaces.greaterThanOrEqual(0.0));
+	private static final Config<Integer> COOLDOWN = Config.of(Queen.class, "쿨타임", 120, FunctionalInterfaces.positive(), FunctionalInterfaces.COOLDOWN);
+	private static final Config<Double> MULTIPLY = Config.of(Queen.class, "회복배율", 1.0, FunctionalInterfaces.greaterThanOrEqual(0.0));
 	private final DecimalFormat df = new DecimalFormat("0.##");
 	private final double defaultHealth = AttributeUtil.getMaxHealth(getPlayer());
-	private final Cooldown cooldown = new Cooldown(cool.getValue());
+	private final Cooldown cooldown = new Cooldown(COOLDOWN.getValue());
 
 	public Queen(Participant arg0) {
 		super(arg0);
@@ -43,7 +42,7 @@ public class Queen extends CokesAbility implements ActiveHandler, TargetHandler 
 				double plus = target.getHealth() / 2;
 
 				AttributeUtil.setMaxHealth(getPlayer(), defaultHealth+plus);
-				Healths.setHealth(getPlayer(), getPlayer().getHealth() + (plus*multiply.getValue()));
+				Healths.setHealth(getPlayer(), getPlayer().getHealth() + (plus* MULTIPLY.getValue()));
 				cooldown.start();
 			}
 		}

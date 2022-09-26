@@ -14,7 +14,6 @@ import daybreak.abilitywar.game.AbstractGame.Participant;
 import daybreak.abilitywar.game.AbstractGame.Participant.ActionbarNotification.ActionbarChannel;
 import daybreak.abilitywar.utils.base.color.RGB;
 import daybreak.abilitywar.utils.base.concurrent.TimeUnit;
-import daybreak.abilitywar.utils.base.language.korean.KoreanUtil.Josa;
 import daybreak.abilitywar.utils.base.math.LocationUtil;
 import daybreak.abilitywar.utils.base.math.geometry.Circle;
 import daybreak.abilitywar.utils.base.minecraft.entity.health.event.PlayerSetHealthEvent;
@@ -29,25 +28,32 @@ import org.bukkit.event.entity.EntityRegainHealthEvent;
 import java.util.List;
 
 @AbilityManifest(name = "리인카네이션", rank = Rank.L, species = Species.OTHERS, explain = {
-		"자신이 죽을 위기에 처했을 때, 이를 무시하고 체력이 1로 고정됩니다. $[cooldown]",
-		"지속시간 $[duration]동안 상대방에게 주는 대미지가 $[damage]% 감소합니다.",
-		"지속시간이 종료 시 상대방을 $[hit]번 공격에 성공했을 경우 자신의 체력이 $[respawn] 되어 부활하고,",
-		"이후 추가 타격마다 전체 체력의 $[heal]%씩 누적되어 추가적으로 회복합니다.",
-		"하지만 타격 횟수를 채우지 못하였을 경우, 사망하게 됩니다.",
+		"§7패시브 §8- §5환생§f: 치명적인 대미지를 입었을 시, 이를 무시하고 체력이 1로 고정됩니다.",
+		"  $[DURATION]동안 상대에게 주는 대미지가 0으로 바뀌는 대신",
+		"  $[HIT_PREDICATE]번 이상 공격에 성공했을 경우 §b부활합니다.",
+		"  §7부활 체력: $[RESPAWN_HEALTH] + 최대 체력의 $[RESPAWN_PERCENTAGE]% × 초과 타격횟수",
 		"[아이디어 제공자 §bSato207§f]"
 })
 public class Reincarnation extends CokesAbility {
-	public static final Config<Integer> duration = Config.of(Reincarnation.class, "지속시간", 25, FunctionalInterfaces.positive(), FunctionalInterfaces.TIME);
-	public static final Config<Integer> cooldown = Config.of(Reincarnation.class, "쿨타임", 600, FunctionalInterfaces.positive(), FunctionalInterfaces.COOLDOWN);
-	public static final Config<Integer> damage = Config.of(Reincarnation.class, "감소대미지(%)", 50, FunctionalInterfaces.positive());
-	public static final Config<Integer> hit = Config.of(Reincarnation.class, "타격횟수", 5, FunctionalInterfaces.positive());
-	public static final Config<Integer> heal = Config.of(Reincarnation.class, "회복수치량(%)", 5, FunctionalInterfaces.positive());
-	public static final Config<Integer> respawn = Config.of(Reincarnation.class, "회복량", 2, FunctionalInterfaces.positive(),
-			FunctionalInterfaces.addJosa(Josa.이가));
+	public static final Config<Integer> DURATION = Config.of(Reincarnation.class, "duration", 20, FunctionalInterfaces.positive(), FunctionalInterfaces.TIME,
+			"# 환생 지속시간",
+			"# 기본값: 20 (초)");
+	public static final Config<Integer> COOLDOWN = Config.of(Reincarnation.class, "cooldown", 600, FunctionalInterfaces.positive(), FunctionalInterfaces.COOLDOWN,
+			"# 환생 쿨타임",
+			"# 기본값: 600 (초)");
+	public static final Config<Integer> HIT_PREDICATE = Config.of(Reincarnation.class, "hit-predicate", 5, FunctionalInterfaces.positive(),
+			"# 환생 중 공격 횟수 조건",
+			"# 기본값: 5 (회)");
+	public static final Config<Double> RESPAWN_PRECENTAGE = Config.of(Reincarnation.class, "respawn-health-percentage", 5d, FunctionalInterfaces.positive(),
+			"# 환생 성공 시 회복하는 최대 체력의 비율",
+			"# 기본값: 5.0 (%)");
+	public static final Config<Double> RESPAWN_HEALTH = Config.of(Reincarnation.class, "respawn-health", 2d, FunctionalInterfaces.positive(),
+			"# 환생 성공 시 회복하는 고정 체력",
+			"# 기본값: 2");
 	private final ActionbarChannel ac = newActionbarChannel();
 	private int hitted = 0;
-	private final Cooldown cool = new Cooldown(cooldown.getValue());
-	private final AbilityTimer reincarnation = new InvincibilityTimer(getParticipant(), duration.getValue() * 20) {
+	private final Cooldown cool = new Cooldown(COOLDOWN.getValue());
+	private final AbilityTimer reincarnation = new InvincibilityTimer(getParticipant(), DURATION.getValue() * 20) {
 
 		public void onInvincibilityStart() {
 			List<Player> nearby = LocationUtil.getNearbyEntities(Player.class, getPlayer().getLocation(), 5, 5, null);
@@ -57,7 +63,7 @@ public class Reincarnation extends CokesAbility {
 		@Override
 		public void onInvincibilityRun(int arg0) {
 			getPlayer().setHealth(1);
-			ac.update((hitted >= hit.getValue() ? "§a" + hitted : hitted) + "/ " + hit.getValue());
+			ac.update((hitted >= HIT_PREDICATE.getValue() ? "§a" + hitted : hitted) + "/ " + HIT_PREDICATE);
 
 			if (arg0 % 5 == 0) {
 				for (Location l : Circle.iteratorOf(getPlayer().getLocation(), 3, 3 * 6).iterable()) {
@@ -72,9 +78,9 @@ public class Reincarnation extends CokesAbility {
 
 		@Override
 		public void onInvincibilityEnd() {
-			if (hitted >= hit.getValue()) {
+			if (hitted >= HIT_PREDICATE.getValue()) {
 				double max_Health = AttributeUtil.getMaxHealth(getPlayer());
-				double return_heal = Math.min(max_Health, respawn.getValue() + max_Health * (hitted - hit.getValue()) * heal.getValue() / 100.0);
+				double return_heal = Math.min(max_Health, RESPAWN_HEALTH.getValue() + max_Health * (hitted - HIT_PREDICATE.getValue()) * RESPAWN_PRECENTAGE.getValue() / 100.0);
 				getPlayer().setHealth(return_heal);
 				SoundLib.ITEM_TOTEM_USE.playSound(getPlayer());
 			} else {
@@ -117,7 +123,7 @@ public class Reincarnation extends CokesAbility {
 		if (damager != null && e.getEntity() instanceof Player && damager.equals(getPlayer())) {
 			Player target = (Player) e.getEntity();
 			if (reincarnation.isRunning() && getGame().isParticipating(target) && !e.isCancelled()) {
-				e.setDamage(e.getDamage() * (damage.getValue() / 100.0D));
+				e.setDamage(0);
 			}
 		}
 	}
@@ -137,9 +143,9 @@ public class Reincarnation extends CokesAbility {
 			Player target = (Player) e.getEntity();
 			if (reincarnation.isRunning() && getGame().isParticipating(target) && !e.isCancelled()) {
 				hitted += 1;
-				if (hitted == hit.getValue()) {
+				if (hitted == HIT_PREDICATE.getValue()) {
 					SoundLib.ENTITY_PLAYER_LEVELUP.playSound(getPlayer());
-				} else if (hitted == hit.getValue()/5 || hitted == hit.getValue()*2/5 || hitted == hit.getValue()*3/5 || hitted == hit.getValue()*4/5) {
+				} else if (hitted == HIT_PREDICATE.getValue()/5 || hitted == HIT_PREDICATE.getValue()*2/5 || hitted == HIT_PREDICATE.getValue()*3/5 || hitted == HIT_PREDICATE.getValue()*4/5) {
 					SoundLib.ENTITY_EXPERIENCE_ORB_PICKUP.playSound(getPlayer());
 				}
 			}
