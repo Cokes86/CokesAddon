@@ -75,9 +75,9 @@ public class Vennominaga extends CokesSynergy {
         return true;
     };
 
-    @SubscribeEvent
+    @SubscribeEvent(priority = 999)
     public void onEntityDamage(EntityDamageEvent e) {
-        if (e.getEntity().equals(getPlayer())) {
+        if (e.getEntity().equals(getPlayer()) && getPlayer().getHealth() - e.getFinalDamage() <= 0) {
             int health = 0;
             for (Player player : LocationUtil.getNearbyEntities(Player.class, getPlayer().getLocation(), RANGE.getValue(), RANGE.getValue(), predicate)) {
                 Participant participant = getGame().getParticipant(player.getPlayer());

@@ -20,15 +20,15 @@ import org.bukkit.potion.PotionEffect;
 })
 public class Resurrection extends CokesAbility {
 	private static final Config<Double> BONUS_DAMAGE = Config.of(Resurrection.class, "추가대미지", 2.0, FunctionalInterfaces.positive());
-	private boolean resurrection = false;
+	private boolean isResurrection = false;
 
 	public Resurrection(Participant arg0) {
 		super(arg0);
 	}
 
-	@SubscribeEvent
-	public void onEntityDamage(CEntityDamageEvent e) {
-		if (!resurrection) {
+	@SubscribeEvent(priority = 999)
+	public void onBeforeDeath(CEntityDamageEvent e) {
+		if (!isResurrection) {
 			if (e.getEntity().equals(getPlayer())) {
 				if (getPlayer().getHealth() - e.getFinalDamage() <= 0) {
 					e.setDamage(0);
@@ -38,10 +38,15 @@ public class Resurrection extends CokesAbility {
 						getPlayer().removePotionEffect(effect.getType());
 					}
 					getPlayer().setHealth(AttributeUtil.getMaxHealth(getPlayer()));
-					resurrection = true;
+					isResurrection = true;
 				}
 			}
-		} else {
+		}
+	}
+
+	@SubscribeEvent
+	public void onEntityDamage(CEntityDamageEvent e) {
+		if (isResurrection) {
 			Entity damager = CokesUtil.getDamager(e.getDamager());
 			if (damager == null) return;
 

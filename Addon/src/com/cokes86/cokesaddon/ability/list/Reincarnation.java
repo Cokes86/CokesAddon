@@ -109,7 +109,7 @@ public class Reincarnation extends CokesAbility {
 		}
 	}
 
-	@SubscribeEvent
+	@SubscribeEvent(priority = 999)
 	public void onEntityDamage(CEntityDamageEvent e) {
 		if (e.getEntity().equals(getPlayer())) {
 			if (!reincarnation.isRunning() && getPlayer().getHealth() - e.getFinalDamage() <= 0 && !cool.isRunning() && !e.isCancelled()) {
@@ -135,7 +135,7 @@ public class Reincarnation extends CokesAbility {
 		}
 	}
 
-	@SubscribeEvent(priority = 999, eventPriority = EventPriority.MONITOR)
+	@SubscribeEvent(priority = 9999, eventPriority = EventPriority.MONITOR)
 	public void onEntityDamage2(CEntityDamageEvent e) {
 		Entity damager = CokesUtil.getDamager(e.getDamager());
 

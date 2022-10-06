@@ -73,6 +73,7 @@ public class Sealer extends CokesAbility implements TargetHandler {
 				if (target.getAbility() != null && !target.getAbility().isRestricted()) {
 					Seal.apply(target, TimeUnit.SECONDS, SEAL_DURATION.getValue());
 					t.start(target);
+					c.start();
 				}
 			}
 		}

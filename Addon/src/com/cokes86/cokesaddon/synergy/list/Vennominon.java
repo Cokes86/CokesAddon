@@ -1,5 +1,6 @@
 package com.cokes86.cokesaddon.synergy.list;
 
+import com.cokes86.cokesaddon.event.CEntityDamageEvent;
 import com.cokes86.cokesaddon.synergy.CokesSynergy;
 import com.cokes86.cokesaddon.util.CokesUtil;
 import com.cokes86.cokesaddon.util.FunctionalInterfaces;
@@ -96,9 +97,14 @@ public class Vennominon extends CokesSynergy implements ActiveHandler {
         return false;
     }
 
-    @SubscribeEvent
-    public void onEntityDamage(EntityDamageEvent e) {
-        if (e.getEntity().equals(getPlayer()) && !groggy.isRunning()) {
+
+
+    @SubscribeEvent(priority = 999)
+    public void onEntityDamage(CEntityDamageEvent e) {
+        Entity damager = e.getDamager();
+        if (damager == null) return;
+
+        if (e.getEntity().equals(getPlayer()) && !groggy.isRunning() && getPlayer().getHealth() - e.getFinalDamage() <= 0) {
             int health = 0;
             for (Player player : LocationUtil.getNearbyEntities(Player.class, getPlayer().getLocation(), RANGE.getValue(), RANGE.getValue(), predicate)) {
                 Participant participant = getGame().getParticipant(player.getPlayer());

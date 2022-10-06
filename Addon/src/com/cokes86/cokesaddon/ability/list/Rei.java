@@ -59,9 +59,8 @@ public class Rei extends CokesAbility {
 		super(participant);
 	}
 
-	@SubscribeEvent
-	public void onEntityDamage(CEntityDamageEvent e) {
-
+	@SubscribeEvent(priority = 999)
+	public void onBeforeDeath(CEntityDamageEvent e) {
 		Entity damager = e.getDamager();
 		if (damager == null) return;
 
@@ -74,6 +73,13 @@ public class Rei extends CokesAbility {
 				SoundLib.ENTITY_FIREWORK_ROCKET_LAUNCH.playSound(getPlayer());
 			}
 		}
+	}
+
+	@SubscribeEvent
+	public void onEntityDamage(CEntityDamageEvent e) {
+
+		Entity damager = e.getDamager();
+		if (damager == null) return;
 
 		if (e.getEntity() instanceof Player && !e.getEntity().equals(getPlayer()) && damager.equals(getPlayer()) && !cooldown.isRunning() && !e.isCancelled()) {
 			final double maxHealth = AttributeUtil.getMaxHealth(getPlayer()), health = getPlayer().getHealth();
