@@ -87,8 +87,8 @@ public class Emily extends CokesAbility implements ActiveHandler {
             "# 기본값: 1.5"
     }, FunctionalInterfaces.positive());
     private static final Config<Double> ALCHEMY_CAPSULE_DAMAGE = Config.of(Emily.class, "알케미_캡슐_대미지", 5.0, FunctionalInterfaces.positive());
-    private static final Config<Double> ALCHEMY_CAPSULE_AREA_RANGE = Config.of(Emily.class, "알케미_캡슐_에리어_범위", 6.5, FunctionalInterfaces.positive());
-    private static final Config<Double> ALCHEMY_AREA_EXPLOSION_DAMAGE = Config.of(Emily.class, "알케미_에리어_폭발_대미지", 5.0, FunctionalInterfaces.positive());
+    private static final Config<Double> ALCHEMY_CAPSULE_AREA_RANGE = Config.of(Emily.class, "알케미_캡슐_에리어_범위", 5.5, FunctionalInterfaces.positive());
+    private static final Config<Double> ALCHEMY_AREA_EXPLOSION_DAMAGE = Config.of(Emily.class, "알케미_에리어_폭발_대미지", 3.5, FunctionalInterfaces.positive());
     private static final Config<Double> ALCHEMY_AREA_BONUS_DAMAGE = Config.of(Emily.class, "알케미_에리어_화상_추가대미지", 3.0, FunctionalInterfaces.positive());
 
     private final Cooldown cooldown = new Cooldown(ALCHEMY_CAPSULE_COOL.getValue(), CooldownDecrease._25);

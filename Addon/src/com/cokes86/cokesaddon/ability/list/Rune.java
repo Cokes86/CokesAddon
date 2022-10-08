@@ -31,12 +31,13 @@ import java.util.Random;
 import java.util.function.Predicate;
 
 @AbilityManifest(name = "룬", rank = Rank.A, species = Species.HUMAN, explain = {
-		"철괴 우클릭시 자신 주위 $[range]블럭 이내 랜덤한 1명에게 1의 관통 데미지를 줍니다.",
-		"이 행위는 0.25초 간격으로 $[damage]번 반복합니다. $[cool]"})
+		"철괴 우클릭시 자신 주위 $[RANGE]블럭 이내 랜덤한 1명에게 $[DAMAGE]의 관통 데미지를 줍니다.",
+		"이 행위는 0.25초 간격으로 $[COUNT]번 반복합니다. $[COOLDOWN]"})
 public class Rune extends CokesAbility implements ActiveHandler {
-	public static Config<Integer> damage = Config.of(Rune.class, "반복횟수", 7, FunctionalInterfaces.positive());
-	public static Config<Integer> cool = Config.of(Rune.class, "쿨타임", 60, FunctionalInterfaces.positive(), FunctionalInterfaces.COOLDOWN);
-	public static Config<Integer> range = Config.of(Rune.class, "범위", 5, FunctionalInterfaces.positive());
+	public static final Config<Integer> COUNT = Config.of(Rune.class, "repeat-count", 7, FunctionalInterfaces.positive());
+	public static final Config<Integer> COOLDOWN = Config.of(Rune.class, "cooldown", 60, FunctionalInterfaces.positive(), FunctionalInterfaces.COOLDOWN);
+	public static final Config<Integer> RANGE = Config.of(Rune.class, "range", 5, FunctionalInterfaces.positive());
+	public static final Config<Double> DAMAGE = Config.of(Rune.class, "damage", 2d, FunctionalInterfaces.positive());
 
 	private final Predicate<Entity> predicate = entity -> {
 		if (entity.equals(getPlayer())) return false;
@@ -58,8 +59,8 @@ public class Rune extends CokesAbility implements ActiveHandler {
 		return true;
 	};
 
-	private final Cooldown c = new Cooldown(cool.getValue());
-	private final Duration d = new Duration(damage.getValue(), c) {
+	private final Cooldown c = new Cooldown(COOLDOWN.getValue());
+	private final Duration d = new Duration(COUNT.getValue(), c) {
 		public void damageFixedWithoutKnockback(Player target, float damage) {
 			double knockback = AttributeUtil.getKnockbackResistance(target);
 			AttributeUtil.setKnockbackResistance(target, 1);
@@ -69,16 +70,16 @@ public class Rune extends CokesAbility implements ActiveHandler {
 
 		@Override
 		protected void onDurationProcess(int seconds) {
-			List<Player> ps = LocationUtil.getNearbyEntities(Player.class, getPlayer().getLocation(), range.getValue(), range.getValue(), predicate);
+			List<Player> ps = LocationUtil.getNearbyEntities(Player.class, getPlayer().getLocation(), RANGE.getValue(), RANGE.getValue(), predicate);
 			if (ps.size() > 0) {
 				int a = new Random().nextInt(ps.size());
 				Player target = ps.get(a);
-				damageFixedWithoutKnockback(target, 1);
+				damageFixedWithoutKnockback(target, DAMAGE.getValue().floatValue());
 				SoundLib.XYLOPHONE.playInstrument(getPlayer(), new Note(1, Note.Tone.C, false));
 				SoundLib.XYLOPHONE.playInstrument(target, new Note(1, Note.Tone.C, false));
 			}
 
-			for (Location l : Circle.iteratorOf(getPlayer().getLocation(), range.getValue(), range.getValue() * 9).iterable()) {
+			for (Location l : Circle.iteratorOf(getPlayer().getLocation(), RANGE.getValue(), RANGE.getValue() * 9).iterable()) {
 				l.setY(LocationUtil.getFloorYAt(Objects.requireNonNull(l.getWorld()), getPlayer().getLocation().getY(), l.getBlockX(), l.getBlockZ()) + 0.1);
 				ParticleLib.REDSTONE.spawnParticle(l, RGB.of(0, 179, 255));
 			}

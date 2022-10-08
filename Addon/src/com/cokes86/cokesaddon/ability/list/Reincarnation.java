@@ -18,6 +18,7 @@ import daybreak.abilitywar.utils.base.math.LocationUtil;
 import daybreak.abilitywar.utils.base.math.geometry.Circle;
 import daybreak.abilitywar.utils.base.minecraft.entity.health.event.PlayerSetHealthEvent;
 import daybreak.abilitywar.utils.library.ParticleLib;
+import daybreak.abilitywar.utils.library.PotionEffects;
 import daybreak.abilitywar.utils.library.SoundLib;
 import org.bukkit.Location;
 import org.bukkit.entity.Entity;
@@ -29,7 +30,7 @@ import java.util.List;
 
 @AbilityManifest(name = "리인카네이션", rank = Rank.L, species = Species.OTHERS, explain = {
 		"§7패시브 §8- §5환생§f: 치명적인 대미지를 입었을 시, 이를 무시하고 체력이 1로 고정됩니다.",
-		"  $[DURATION]동안 상대에게 주는 대미지가 0으로 바뀌는 대신",
+		"  $[DURATION]동안 상대에게 주는 대미지가 0으로 바뀌는 대신 신속1을 부여하고",
 		"  $[HIT_PREDICATE]번 이상 공격에 성공했을 경우 §b부활합니다.",
 		"  §7부활 체력: $[RESPAWN_HEALTH] + 최대 체력의 $[RESPAWN_PERCENTAGE]% × 초과 타격횟수",
 		"[아이디어 제공자 §bSato207§f]"
@@ -38,7 +39,7 @@ public class Reincarnation extends CokesAbility {
 	public static final Config<Integer> DURATION = Config.of(Reincarnation.class, "duration", 20, FunctionalInterfaces.positive(), FunctionalInterfaces.TIME,
 			"# 환생 지속시간",
 			"# 기본값: 20 (초)");
-	public static final Config<Integer> COOLDOWN = Config.of(Reincarnation.class, "cooldown", 600, FunctionalInterfaces.positive(), FunctionalInterfaces.COOLDOWN,
+	public static final Config<Integer> COOLDOWN = Config.of(Reincarnation.class, "cooldown", 450, FunctionalInterfaces.positive(), FunctionalInterfaces.COOLDOWN,
 			"# 환생 쿨타임",
 			"# 기본값: 600 (초)");
 	public static final Config<Integer> HIT_PREDICATE = Config.of(Reincarnation.class, "hit-predicate", 5, FunctionalInterfaces.positive(),
@@ -74,6 +75,8 @@ public class Reincarnation extends CokesAbility {
 					ParticleLib.REDSTONE.spawnParticle(l, new RGB(140, 2, 120));
 				}
 			}
+
+			PotionEffects.SPEED.addPotionEffect(getPlayer(), 30, 0, true);
 		}
 
 		@Override
@@ -90,7 +93,7 @@ public class Reincarnation extends CokesAbility {
 			cool.start();
 			ac.update(null);
 		}
-	};
+	}.setPeriod(TimeUnit.TICKS, 1);
 
 	public Reincarnation(Participant arg0) {
 		super(arg0);

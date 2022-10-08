@@ -36,7 +36,7 @@ import java.util.Iterator;
 import java.util.function.Predicate;
 
 @AbilityManifest(name = "엘바", rank = Rank.B, species = Species.OTHERS, explain = {
-		"§7활 들고 F키 §8- §a마법의 화살§f: 활이 비주류 손에 있는 한 마법의 화살이 전방으로 발사됩니다.",
+		"§7활 들기 §8- §a마법의 화살§f: 활이 손에 있는 한 마법의 화살이 전방으로 발사됩니다.",
 		"  이는 $[speed]틱의 간격으로 자동으로 발사되며, $[damage]의 대미지를 줍니다.",
 		"  한번에 최대 $[maxarrow]발까지 발사되며, 다 소비할 경우 자동으로 재장전합니다.",
 		"  마법의 화살은 대미지를 주거나 블럭에 닿을 시 소멸하며, 플렉터가 튕겨낼 수 없습니다.",
@@ -98,9 +98,10 @@ public class Elva extends CokesAbility {
 			Location startArrow = getPlayer().getLocation().clone().add(velocity.multiply(.25)).add(0, getPlayer().getEyeHeight(), 0);
 
 			ItemStack off = getPlayer().getInventory().getItemInOffHand();
+			ItemStack main = getPlayer().getInventory().getItemInMainHand();
 
 			if (!reload.isRunning()) {
-				if (off.getType().equals(Material.BOW) && arrow > 0) {
+				if ((off.getType().equals(Material.BOW) || main.getType().equals(Material.BOW)) && arrow > 0) {
 					new Bullet(getPlayer(), startArrow, velocity, color).start();
 					arrow -= 1;
 					SoundLib.ENTITY_ARROW_SHOOT.playSound(getPlayer());

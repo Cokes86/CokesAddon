@@ -40,7 +40,7 @@ public class Ovisni extends CokesAbility implements ActiveHandler {
 	public static final Config<Integer> COOLDOWN_CONFIG = Config.of(Ovisni.class, "쿨타임", 30, FunctionalInterfaces.positive(), FunctionalInterfaces.COOLDOWN);
 	public static final Config<Integer> MAX_COUNTER_CONFIG = Config.of(Ovisni.class, "최대카운터", 7, FunctionalInterfaces.positive());
 	public static final Config<Integer> DELAY = Config.of(Ovisni.class, "지속딜레이", 10, FunctionalInterfaces.positive(), FunctionalInterfaces.TIME);
-	public static final Config<Integer> MAX_DAMAGE_HIT = Config.of(Ovisni.class, "최대_맹독_타격_횟수", 12, FunctionalInterfaces.positive());
+	public static final Config<Integer> MAX_DAMAGE_HIT = Config.of(Ovisni.class, "최대_맹독_타격_횟수", 14, FunctionalInterfaces.positive());
 
 	private final Map<Participant, OvisniStack> stackMap = new ConcurrentHashMap<>();
 

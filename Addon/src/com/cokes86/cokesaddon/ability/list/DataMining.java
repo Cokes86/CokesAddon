@@ -4,7 +4,10 @@ import com.cokes86.cokesaddon.ability.CokesAbility;
 import com.cokes86.cokesaddon.event.CEntityDamageEvent;
 import com.cokes86.cokesaddon.util.FunctionalInterfaces;
 import daybreak.abilitywar.ability.*;
-import daybreak.abilitywar.ability.Tips.*;
+import daybreak.abilitywar.ability.Tips.Description;
+import daybreak.abilitywar.ability.Tips.Difficulty;
+import daybreak.abilitywar.ability.Tips.Level;
+import daybreak.abilitywar.ability.Tips.Stats;
 import daybreak.abilitywar.ability.decorator.ActiveHandler;
 import daybreak.abilitywar.ability.event.AbilityActiveSkillEvent;
 import daybreak.abilitywar.game.AbstractGame.Participant;
@@ -12,10 +15,10 @@ import daybreak.abilitywar.game.AbstractGame.Participant.ActionbarNotification.A
 import daybreak.abilitywar.game.list.mix.Mix;
 import daybreak.abilitywar.game.list.mix.triplemix.AbstractTripleMix;
 import daybreak.abilitywar.utils.base.concurrent.TimeUnit;
+import daybreak.abilitywar.utils.base.minecraft.nms.IHologram;
 import daybreak.abilitywar.utils.base.minecraft.nms.NMS;
 import org.bukkit.Location;
 import org.bukkit.Material;
-import org.bukkit.entity.ArmorStand;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Projectile;
 
@@ -57,7 +60,7 @@ import java.util.Random;
 public class DataMining extends CokesAbility implements ActiveHandler {
 	private static final Config<Double> damageUp = Config.of(DataMining.class, "최대주는대미지성장치", 1.1, FunctionalInterfaces.positive());
 	private static final Config<Double> defenseUp = Config.of(DataMining.class, "최대받는대미지감소성장치", 25.00, FunctionalInterfaces.positive(), "#단위: %");
-	private static final Config<Integer> player_value = Config.of(DataMining.class, "인원별_스택치", 4, FunctionalInterfaces.positive());
+	private static final Config<Integer> player_value = Config.of(DataMining.class, "인원별_스택치", 6, FunctionalInterfaces.positive());
 	private static final Config<Integer> duration = Config.of(DataMining.class, "자동스택추가주기", 60, FunctionalInterfaces.positive(), FunctionalInterfaces.TIME);
 	private final DecimalFormat df = new DecimalFormat("0.##");
 	private int damage_count = 0;
@@ -186,7 +189,7 @@ public class DataMining extends CokesAbility implements ActiveHandler {
 	}
 
 	private class Scanning extends AbilityTimer {
-		private final ArmorStand hologram;
+		private final IHologram hologram;
 		private final Participant participant;
 
 		public Scanning(Participant participant) {
@@ -194,12 +197,7 @@ public class DataMining extends CokesAbility implements ActiveHandler {
 			this.participant = participant;
 
 			final Location location = participant.getPlayer().getLocation();
-			this.hologram = participant.getPlayer().getWorld().spawn(location.clone().add(0, 2.2, 0), ArmorStand.class);
-			hologram.setVisible(false);
-			hologram.setGravity(false);
-			hologram.setInvulnerable(true);
-			NMS.removeBoundingBox(hologram);
-			hologram.setCustomNameVisible(true);
+			this.hologram = NMS.newHologram(getPlayer().getWorld(), getPlayer().getLocation().clone().add(0,2.2,0));
 
 			String abilityName = "-";
 			if (participant.getAbility() != null) {
@@ -213,14 +211,15 @@ public class DataMining extends CokesAbility implements ActiveHandler {
 					}
 				}
 			}
-			hologram.setCustomName(abilityName + "  §c♥"+(int)participant.getPlayer().getHealth());
+			hologram.setText(abilityName + "  §c♥"+(int)participant.getPlayer().getHealth());
+			hologram.display(getPlayer());
 			setPeriod(TimeUnit.TICKS, 1);
 			start();
 		}
 
 		@Override
 		protected void run(int count) {
-			if (hologram.isValid()) {
+			if (!hologram.isUnregistered()) {
 				String abilityName = "-";
 				if (participant.getAbility() != null) {
 					abilityName = "§f"+participant.getAbility().getDisplayName();
@@ -233,7 +232,7 @@ public class DataMining extends CokesAbility implements ActiveHandler {
 						}
 					}
 				}
-				hologram.setCustomName(abilityName + "  §c♥"+(int)participant.getPlayer().getHealth());
+				hologram.setText(abilityName + "  §c♥"+(int)participant.getPlayer().getHealth());
 				hologram.teleport(participant.getPlayer().getLocation().clone().add(0,2.2,0));
 			}
 
@@ -242,12 +241,12 @@ public class DataMining extends CokesAbility implements ActiveHandler {
 
 		@Override
 		protected void onEnd() {
-			hologram.remove();
+			hologram.unregister();
 		}
 
 		@Override
 		protected void onSilentEnd() {
-			hologram.remove();
+			hologram.unregister();
 		}
 	}
 }

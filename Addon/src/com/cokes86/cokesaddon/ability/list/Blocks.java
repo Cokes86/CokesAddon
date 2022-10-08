@@ -34,7 +34,7 @@ import java.util.Objects;
 @AbilityManifest(name = "블럭", rank = Rank.A, species = Species.OTHERS, explain = {
 		"철괴 우클릭시 자신의 상태를 변화시킵니다. 자신의 상태에따라 추가효과를 얻습니다.",
 		"§7돌 §f: 받는 대미지가 $[stone]% 감소합니다.",
-		"  곡괭이로 자신이 공격받을 시 그 재료로 만든 검의 데미지를 받습니다.",
+		"  곡괭이로 자신이 공격받을 시 그 재료로 만든 검의 대미지의 1.25배만큼 줍니다.",
 		"  이때, 효율은 날카로움 취급을 받으며, 공속에 영향을 받지 않습니다.",
 		"§6모래 §f: 낙하 대미지를 입지 않습니다. 피해를 입을 시 $[inv]초간 무적상태가 되어 무적상태에선 넉백당하지 않습니다.",
 		"§f유리 §f: 받는 대미지가 $[glass]% 증가합니다. 유리상태동안 자신은 블라인드 버프를 얻습니다. 또한 스킬의 대상이 되지 않습니다.",
@@ -213,9 +213,9 @@ public class Blocks extends CokesAbility implements ActiveHandler {
 
 						int level = i.getEnchantmentLevel(Enchantment.DIG_SPEED);
 						if (level > 0) {
-							e.setDamage(damage + (level + 1) * 0.5);
+							e.setDamage((damage + (level + 1) * 0.5) * 1.25);
 						} else {
-							e.setDamage(damage);
+							e.setDamage(damage  * 1.25);
 						}
 					} else {
 						e.setDamage(e.getDamage() * (100.0 - stone.getValue()) / 100);
