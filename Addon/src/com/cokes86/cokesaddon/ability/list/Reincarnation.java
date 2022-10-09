@@ -45,7 +45,7 @@ public class Reincarnation extends CokesAbility {
 	public static final Config<Integer> HIT_PREDICATE = Config.of(Reincarnation.class, "hit-predicate", 5, FunctionalInterfaces.positive(),
 			"# 환생 중 공격 횟수 조건",
 			"# 기본값: 5 (회)");
-	public static final Config<Double> RESPAWN_PRECENTAGE = Config.of(Reincarnation.class, "respawn-health-percentage", 5d, FunctionalInterfaces.positive(),
+	public static final Config<Double> RESPAWN_PERCENTAGE = Config.of(Reincarnation.class, "respawn-health-percentage", 5d, FunctionalInterfaces.positive(),
 			"# 환생 성공 시 회복하는 최대 체력의 비율",
 			"# 기본값: 5.0 (%)");
 	public static final Config<Double> RESPAWN_HEALTH = Config.of(Reincarnation.class, "respawn-health", 2d, FunctionalInterfaces.positive(),
@@ -83,7 +83,7 @@ public class Reincarnation extends CokesAbility {
 		public void onInvincibilityEnd() {
 			if (hitted >= HIT_PREDICATE.getValue()) {
 				double max_Health = AttributeUtil.getMaxHealth(getPlayer());
-				double return_heal = Math.min(max_Health, RESPAWN_HEALTH.getValue() + max_Health * (hitted - HIT_PREDICATE.getValue()) * RESPAWN_PRECENTAGE.getValue() / 100.0);
+				double return_heal = Math.min(max_Health, RESPAWN_HEALTH.getValue() + max_Health * (hitted - HIT_PREDICATE.getValue()) * RESPAWN_PERCENTAGE.getValue() / 100.0);
 				getPlayer().setHealth(return_heal);
 				SoundLib.ITEM_TOTEM_USE.playSound(getPlayer());
 			} else {
@@ -118,7 +118,7 @@ public class Reincarnation extends CokesAbility {
 			if (!reincarnation.isRunning() && getPlayer().getHealth() - e.getFinalDamage() <= 0 && !cool.isRunning() && !e.isCancelled()) {
 				e.setDamage(0);
 				getPlayer().setHealth(1);
-				reincarnation.setPeriod(TimeUnit.TICKS, 1).start();
+				reincarnation.start();
 			}
 		}
 

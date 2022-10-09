@@ -18,7 +18,7 @@ import java.util.Iterator;
 import java.util.List;
 
 @AbilityManifest(name = "블랙 패더", rank = AbilityManifest.Rank.A, species = AbilityManifest.Species.OTHERS, explain = {
-        "§7공격 시 §8- §c검은 날개§f: 상대방을 공격할 시 주는 대미지가 ($[DAMAGE] + 게임 내 존재하는 §7블랙 패더 카운터§f * $[DAMAGE_UPGRADE])%로 변경됩니다.",
+        "§7공격 시 §8- §c검은 날개§f: 상대방을 공격할 시 주는 대미지가 ($[DAMAGE] + 게임 내 존재하는 §7블랙 패더 카운터§f × $[DAMAGE_UPGRADE])%로 변경됩니다.",
         "  이후 상대방에게 §7블랙 패더 카운터§f를 1 상승시킵니다.",
         "  이는 $[DURATION]간 유지됩니다.",
         "§7플래이어 사망 시 §8- §c검은 잔해§f: 가지고 있던 §7블랙 패더 카운터§f를 전부 제거하고",

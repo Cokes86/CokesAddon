@@ -13,7 +13,7 @@ import java.util.List;
 
 @AbilityManifest(name = "아인", rank = AbilityManifest.Rank.A, species = AbilityManifest.Species.HUMAN, explain = {
         "§7패시브 §8- §c망각 지대§f: $[PERIOD]마다 주변 $[RANGE]블럭 이내 능력자가 쿨타임이 작동중일 때,",
-        "  그 쿨타임을 $[INCREASE] 증가시킵키다. $[COOL]"
+        "  그 쿨타임을 $[INCREASE] 증가시킵키다."
 }, summarize = {
         "자신 주변 능력자의 §c쿨타임§f을 §e느리게§f 흐르게 합니다."
 })
