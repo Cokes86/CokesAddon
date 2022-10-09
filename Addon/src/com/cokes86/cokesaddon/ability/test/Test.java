@@ -10,10 +10,12 @@ import daybreak.abilitywar.ability.SubscribeEvent;
 import daybreak.abilitywar.ability.decorator.ActiveHandler;
 import daybreak.abilitywar.game.AbstractGame;
 import daybreak.abilitywar.utils.annotations.Beta;
+import daybreak.abilitywar.utils.base.concurrent.TimeUnit;
 import daybreak.abilitywar.utils.base.minecraft.damage.Damages;
 import daybreak.abilitywar.utils.base.minecraft.entity.health.Healths;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
+import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
 
 @AbilityManifest(name = "코크스테스트",rank = AbilityManifest.Rank.SPECIAL, species = AbilityManifest.Species.SPECIAL)
 @Beta
@@ -29,11 +31,17 @@ public class Test extends CokesAbility implements ActiveHandler {
 
     @SubscribeEvent
     public void onEntityDamage(CEntityDamageEvent e) {
-        if (e.getEntity() instanceof Player) {
-            getPlayer().sendMessage("damage: "+e.getDamage());
-            getPlayer().sendMessage("cause: "+e.getCause().name());
-            if (e.getDamager() != null) getPlayer().sendMessage("damager: "+e.getDamager().getName());
-            getPlayer().sendMessage("finalDamage: "+e.getFinalDamage());
+        if (e.getCause() == DamageCause.VOID) return;
+        Player target = (Player) e.getEntity();
+        if (!e.isCancelled()) {
+            new AbilityTimer(1) {
+                public void run(int arg0) {
+                    if (!target.isDead() && Damages.canDamage(target, getPlayer(), DamageCause.VOID, 1f)) {
+                        target.setNoDamageTicks(0);
+                        NMSUtil.damageVoid(target, 1f);
+                    }
+                }
+            }.setPeriod(TimeUnit.TICKS, 1).start();
         }
     }
 
