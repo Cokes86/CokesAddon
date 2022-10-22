@@ -40,9 +40,9 @@ import org.bukkit.entity.Player;
 },
 stats = @Stats(offense = Level.NINE, survival = Level.FIVE, crowdControl = Level.ZERO, mobility = Level.ZERO, utility = Level.THREE), difficulty = Difficulty.NORMAL)
 public class Rei extends CokesAbility {
-	private static final Config<Double> DAMAGE = Config.of(Rei.class, "damage-increment", 75.0, FunctionalInterfaces.positive(),
+	private static final Config<Double> DAMAGE = Config.of(Rei.class, "damage-increment", 65.0, FunctionalInterfaces.positive(),
 			"# 영혼의 검성으로 증가하는 대미지",
-			"# 기본값: 75.0 (%)");
+			"# 기본값: 65.0 (%)");
 	private static final Config<Double> COST = Config.of(Rei.class, "coast", 4.5, FunctionalInterfaces.positive(),
 			"# 영혼의 검성으로 소모할 체력",
 			"# 기본값: 4.5 (%)");

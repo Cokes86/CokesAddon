@@ -1,8 +1,8 @@
 package com.cokes86.cokesaddon.ability.list;
 
 import com.cokes86.cokesaddon.ability.CokesAbility;
+import com.cokes86.cokesaddon.effect.list.Suffle;
 import com.cokes86.cokesaddon.event.CEntityDamageEvent;
-import com.cokes86.cokesaddon.util.AttributeUtil;
 import com.cokes86.cokesaddon.util.FunctionalInterfaces;
 import daybreak.abilitywar.ability.AbilityManifest;
 import daybreak.abilitywar.ability.SubscribeEvent;
@@ -10,33 +10,31 @@ import daybreak.abilitywar.ability.decorator.ActiveHandler;
 import daybreak.abilitywar.game.AbstractGame;
 import daybreak.abilitywar.game.module.DeathManager;
 import daybreak.abilitywar.game.team.interfaces.Teamable;
+import daybreak.abilitywar.utils.base.concurrent.TimeUnit;
 import daybreak.abilitywar.utils.base.math.LocationUtil;
-import daybreak.abilitywar.utils.base.random.Random;
+import daybreak.abilitywar.utils.base.minecraft.damage.Damages;
 import daybreak.abilitywar.utils.library.PotionEffects;
 import daybreak.abilitywar.utils.library.SoundLib;
 import org.bukkit.Material;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
-import org.bukkit.inventory.ItemStack;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
-import java.util.Objects;
 import java.util.function.Predicate;
 
 @AbilityManifest(name = "진상", rank = AbilityManifest.Rank.A, species = AbilityManifest.Species.HUMAN, explain = {
-        "§7철괴 우클릭 §8- §c뒤집어 엎기§f: 1초마다 $[RUDE_RANGE]블럭 내 모든 플레이어의",
-        "  인벤토리를 뒤엎어버린 후, 1의 관통 대미지를 주며 $[RUDE_DURATION]회 반복합니다. $[RUDE_COOLDOWN]",
-        "  이미 한 번 뒤엎은 플레이어가 있다면 더이상 뒤엎지 않습니다.",
+        "§7철괴 우클릭 §8- §c뒤집어 엎기§f: 1초마다 $[RUDE_RANGE]블럭 내 모든 플레이어에게",
+        "  §3셔플§f을 5초간 부여하고, 1의 관통 대미지를 주며 $[RUDE_DURATION]회 반복합니다. $[RUDE_COOLDOWN]",
         "  지속시간동안 이동속도가 매우 느려지지만, 받는 대미지가 $[DAMAGE]% 감소합니다.",
-        "  갑옷과, 양 손의 아이템은 뒤엎지 않습니다."
+        "§7상태이상 §8- §3셔플§f: 양손과 갑옷을 제외한 모든 인벤토리가 뒤섞이며, 위치를 조정할 수 없습니다.",
+        "  상태이상이 사라지면, 상태이상이 적용되기 전으로 돌아갑니다."
 })
 public class Rude extends CokesAbility implements ActiveHandler {
-    private static final Config<Integer> RUDE_RANGE = Config.of(Rude.class, "범위", 10, FunctionalInterfaces.positive());
-    private static final Config<Integer> RUDE_DURATION = Config.of(Rude.class, "지속시간", 5, FunctionalInterfaces.positive(), FunctionalInterfaces.TIME);
+    private static final Config<Integer> RUDE_RANGE = Config.of(Rude.class, "범위", 5, FunctionalInterfaces.positive());
+    private static final Config<Integer> RUDE_DURATION = Config.of(Rude.class, "지속시간", 4, FunctionalInterfaces.positive(), FunctionalInterfaces.TIME);
     private static final Config<Integer> RUDE_COOLDOWN = Config.of(Rude.class, "쿨타임", 60, FunctionalInterfaces.positive(), FunctionalInterfaces.COOLDOWN);
-    private static final Config<Integer> DAMAGE = Config.of(Rude.class, "받는_대미지_감소량(%)", 20, FunctionalInterfaces.between(0, 100, false));
+    private static final Config<Integer> DAMAGE = Config.of(Rude.class, "받는_대미지_감소량(%)", 10, FunctionalInterfaces.between(0, 100, false));
     private final Cooldown cooldown = new Cooldown(RUDE_COOLDOWN.getValue());
     private final RudeDuration duration = new RudeDuration();
 
@@ -83,17 +81,9 @@ public class Rude extends CokesAbility implements ActiveHandler {
 
     private class RudeDuration extends Duration {
         private final List<Player> inventory = new ArrayList<>();
-        private double knockback;
-        private final ItemStack nullItemStack = new ItemStack(Material.AIR);
-        final Random random = new Random();
 
         public RudeDuration() {
             super(RUDE_DURATION.getValue(), cooldown);
-        }
-
-        @Override
-        protected void onDurationStart() {
-            knockback = AttributeUtil.getKnockbackResistance(getPlayer());
         }
 
         @Override
@@ -103,8 +93,9 @@ public class Rude extends CokesAbility implements ActiveHandler {
             for (Player player : LocationUtil.getNearbyEntities(Player.class, getPlayer().getLocation(), range, range, predicate)) {
                 if (!inventory.contains(player)) {
                     inventory.add(player);
-                    shuffleInventory(player);
+                    Suffle.apply(getGame().getParticipant(player), TimeUnit.SECONDS, 5);
                 }
+                Damages.damageFixed(player, getPlayer(), 1);
             }
             SoundLib.ENTITY_DRAGON_FIREBALL_EXPLODE.playSound(getPlayer().getLocation());
         }
@@ -118,43 +109,7 @@ public class Rude extends CokesAbility implements ActiveHandler {
         @Override
         protected void onDurationSilentEnd() {
             inventory.clear();
-            AttributeUtil.setKnockbackResistance(getPlayer(), knockback);
             PotionEffects.SLOW.removePotionEffect(getPlayer());
-        }
-
-        private void shuffleInventory(Player player) {
-            List<ItemStack> items = new ArrayList<>(Arrays.asList(player.getInventory().getContents()));
-            items.remove(player.getInventory().getHelmet());
-            items.remove(player.getInventory().getChestplate());
-            items.remove(player.getInventory().getLeggings());
-            items.remove(player.getInventory().getBoots());
-            items.remove(player.getInventory().getItemInOffHand());
-            items.removeIf(Objects::isNull);
-            items = new ArrayList<>(items);
-            int mainhand = player.getInventory().getHeldItemSlot();
-            List<Integer> index = getRandomNumber(items.size(), mainhand);
-
-            for (int a = 0; a < 36; a++) {
-                if (a==mainhand) continue;
-                if (index.contains(a)) {
-                    ItemStack pickes = random.pick(items);
-                    player.getInventory().setItem(a, pickes);
-                    items.remove(pickes);
-                } else {
-                    player.getInventory().setItem(a, nullItemStack);
-                }
-            }
-        }
-
-        private List<Integer> getRandomNumber(int count, int ignore) {
-            List<Integer> result = new ArrayList<>();
-            while (result.size() < count) {
-                int a = random.nextInt(36);
-                if (!result.contains(a) && ignore != a) {
-                    result.add(a);
-                }
-            }
-            return result;
         }
     }
 }

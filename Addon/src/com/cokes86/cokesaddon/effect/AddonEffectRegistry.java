@@ -21,6 +21,7 @@ public class AddonEffectRegistry {
         registerEffect(Nightmare.class);
         registerEffect(Seal.class);
         registerEffect(Warp.class);
+        registerEffect(Suffle.class);
     }
 
     public static <T extends Effect> void registerEffect(Class<T> effect) {
