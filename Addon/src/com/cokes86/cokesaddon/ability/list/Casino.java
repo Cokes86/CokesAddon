@@ -182,7 +182,7 @@ public class Casino extends CokesAbility implements ActiveHandler {
         }
         if (attacker.equals(getPlayer())) {
             if (effects.get(Effects.DAMAGE_INCREMENT)) {
-                e.setDamage(e.getDamage()+ DAMAGE_INCREMENT_VALUE.getValue());
+                e.setDamage(e.getDamage() + DAMAGE_INCREMENT_VALUE.getValue());
             }
             if (effects.get(Effects.BLEED)) {
                 if (predicate.test(e.getEntity()) && getGame().isParticipating(e.getEntity().getUniqueId())) {
@@ -206,27 +206,6 @@ public class Casino extends CokesAbility implements ActiveHandler {
         if (event.getEntity().getShooter().equals(getPlayer()) && effects.get(Effects.NO_CRITICAL) && NMS.isArrow(event.getEntity())) {
             NMSUtil.setCritical(event.getEntity(), false);
         }
-    }
-
-    private Player getFarthestEntity(Location center, Predicate<Entity> predicate) {
-        double distance = Double.MIN_VALUE;
-        Player current = null;
-
-        Location centerLocation = center.clone();
-        if (center.getWorld() == null)
-            return null;
-        for (Entity e : center.getWorld().getEntities()) {
-            if (e instanceof Player) {
-                Player entity = (Player) e;
-                double compare = centerLocation.distanceSquared(entity.getLocation());
-                if (compare > distance && (predicate == null || predicate.test(entity))) {
-                    distance = compare;
-                    current = entity;
-                }
-            }
-        }
-
-        return current;
     }
 
     private enum Effects {

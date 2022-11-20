@@ -6,7 +6,6 @@ import com.mojang.authlib.properties.Property;
 import daybreak.abilitywar.AbilityWar;
 import daybreak.abilitywar.game.AbstractGame.Participant;
 import daybreak.abilitywar.utils.base.collect.Pair;
-import io.netty.channel.ChannelOutboundHandlerAdapter;
 import net.minecraft.server.v1_13_R1.*;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
@@ -24,10 +23,6 @@ import java.lang.reflect.Field;
 import java.util.*;
 
 public class NMSImpl implements INMS {
-    private final Set<UUID> hideSet = new HashSet<>();
-
-    private final Map<UUID, Pair<CraftPlayer, ChannelOutboundHandlerAdapter>> channelHandlers = new HashMap<>();
-
     @Override
     public void setCritical(Entity arrow, boolean critical) {
         if (!(arrow instanceof Arrow)) throw new IllegalArgumentException("arrow must be an instance of Arrow");

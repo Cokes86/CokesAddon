@@ -16,7 +16,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-@SuppressWarnings("unused")
 public class AddonSynergyFactory {
     protected static final Map<String, Class<? extends CokesSynergy>> synergies = new HashMap<>();
 
@@ -45,6 +44,9 @@ public class AddonSynergyFactory {
         //1.9.3
         registerSynergy(Ovisni.class, Ovisni.class, Vennominon.class);
         registerSynergy(Vennominon.class, Vennominon.class, Vennominaga.class);
+
+        //1.10.0
+        registerSynergy(Summoner.class, Summoner.class, RealSummoner.class);
     }
 
     public static void registerSynergy(Class<? extends AbilityBase> first, Class<? extends AbilityBase> second, Class<? extends CokesSynergy> synergy) {

@@ -53,7 +53,8 @@ import java.util.function.Predicate;
 })
 public class Reisen extends CokesAbility implements ActiveHandler {
     private static final Config<Integer> MADNESS_ENHANCE_PREDICATE = Config.of(Reisen.class, "광기를_다루는_자.강화_조건", 25, FunctionalInterfaces.positive());
-    private static final Config<Integer> MADNESS_ENHANCE_PERIOD_DECREASE = Config.of(Reisen.class, "광기를_다루는_자.강화_주기_감소치(%)", 50, FunctionalInterfaces.between(0, 100, false));
+    private static final Config<Integer> MADNESS_ENHANCE_PERIOD_DECREASE = Config.of(Reisen.class, "광기를_다루는_자.강화_주기_감소치(%)", 50,
+            FunctionalInterfaces.<Integer>positive().and(FunctionalInterfaces.lower(100.0)));
     private static final Config<Integer> MADNESS_PERIOD = Config.of(Reisen.class, "광기를_다루는_자.주기", 20, FunctionalInterfaces.positive(), FunctionalInterfaces.TIME);
     private static final Config<Integer> MADNESS_RANGE = Config.of(Reisen.class, "광기를_다루는_자.범위", 5, FunctionalInterfaces.positive());
 
@@ -64,7 +65,7 @@ public class Reisen extends CokesAbility implements ActiveHandler {
     private static final Config<Integer> EYES_DURATION = Config.of(Reisen.class, "광기의_눈동자.지속시간", 10, FunctionalInterfaces.positive(), FunctionalInterfaces.TIME);
     private static final Config<Integer> EYES_COOLDOWN = Config.of(Reisen.class, "광기의_눈동자.쿨타임", 10, FunctionalInterfaces.positive(), FunctionalInterfaces.COOLDOWN);
     private static final Config<Integer> EYES_ENHANCE_PREDICATE = Config.of(Reisen.class, "광기의_눈동자.강화_조건", 35, FunctionalInterfaces.positive());
-    private static final Config<Integer> EYES_ENHANCE_COOLDOWN_DECREASE = Config.of(Reisen.class, "광기의_눈동자.강화_쿨타임_감소치(%)", 50, FunctionalInterfaces.between(0, 100, false));
+    private static final Config<Integer> EYES_ENHANCE_COOLDOWN_DECREASE = Config.of(Reisen.class, "광기의_눈동자.강화_쿨타임_감소치(%)", 50, FunctionalInterfaces.<Integer>positive().and(FunctionalInterfaces.lower(100.0)));
 
     public Reisen(AbstractGame.Participant arg0) {
         super(arg0);

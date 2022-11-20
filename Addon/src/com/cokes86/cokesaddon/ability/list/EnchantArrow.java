@@ -35,7 +35,7 @@ public class EnchantArrow extends CokesAbility {
 			"# 기본값: 1.0");
 	private static final Config<Integer> MAX_STACK = Config.of(EnchantArrow.class, "max-stack", 7, FunctionalInterfaces.positive(),
 			"# 인챈트 스택의 최대치",
-			"# 기본값: 9");
+			"# 기본값: 7");
 	private static final Config<Integer> MAX_STACK_UP = Config.of(EnchantArrow.class, "max-increase-stack", 3, FunctionalInterfaces.positive(),
 			"# 인챈트 스택의 최대 증가량",
 			"# 기본값: 3");

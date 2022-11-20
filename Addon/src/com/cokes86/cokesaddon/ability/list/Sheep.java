@@ -33,7 +33,8 @@ public class Sheep extends CokesAbility {
     private static final Config<Double> DAMAGE = Config.of(Sheep.class, "damage", 150.0, FunctionalInterfaces.positive(),
             "# 불, 용암, 마그마블럭으로 인해 받는 대미지 감소량",
             " # 기본값: 150.0 (%)");
-    private static final Config<Double> DAMAGE_REDUCE = Config.of(Sheep.class, "damage_reduce", 15.0, FunctionalInterfaces.between(0.0, 100.0, false),
+    private static final Config<Double> DAMAGE_REDUCE = Config.of(Sheep.class, "damage_reduce", 15.0,
+            FunctionalInterfaces.<Double>positive().and(FunctionalInterfaces.lower(100.0)),
             "# 이를 제외한 모든 대미지 감소량",
             " # 기본값: 15.0 (%)");
 

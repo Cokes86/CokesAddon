@@ -3,8 +3,6 @@ package com.cokes86.cokesaddon.util.nms.v1_16_R1;
 import com.cokes86.cokesaddon.util.nms.IDummy;
 import com.mojang.authlib.GameProfile;
 import daybreak.abilitywar.AbilityWar;
-import daybreak.abilitywar.utils.base.minecraft.nms.IHologram;
-import daybreak.abilitywar.utils.base.minecraft.nms.NMS;
 import daybreak.abilitywar.utils.base.minecraft.nms.v1_16_R1.network.EmptyNetworkHandler;
 import daybreak.abilitywar.utils.base.minecraft.nms.v1_16_R1.network.EmptyNetworkManager;
 import net.minecraft.server.v1_16_R1.PacketPlayOutPlayerInfo.EnumPlayerInfoAction;
@@ -95,10 +93,6 @@ public class DummyImpl extends EntityPlayer implements IDummy {
                 playerConnection.sendPacket(new PacketPlayOutPlayerInfo(EnumPlayerInfoAction.REMOVE_PLAYER, DummyImpl.this));
             }
         }.runTaskLater(AbilityWar.getPlugin(), 50L);
-    }
-
-    private double floor(final double a) {
-        return Math.floor(a * 1000) / 1000;
     }
 
     @Override

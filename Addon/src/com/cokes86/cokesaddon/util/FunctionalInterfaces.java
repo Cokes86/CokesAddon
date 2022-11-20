@@ -40,13 +40,6 @@ public class FunctionalInterfaces {
         return t -> t.doubleValue() == equal.doubleValue();
     }
 
-    public static @NotNull <T extends Number> Predicate<T> between(T a, T b, boolean equals) {
-        Predicate<T> one = upper(a).and(lower(b));
-        Predicate<T> two = upper(b).and(lower(a));
-        Predicate<T> three = equals((T) ZERO).and(t -> equals);
-        return one.or(two).or(three);
-    }
-
     public static @NotNull <T> Predicate<T> always() {
         return t -> true;
     }

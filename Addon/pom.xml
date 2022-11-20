@@ -11,6 +11,14 @@
 
     <artifactId>Addon</artifactId>
     <version>${revision}</version>
+    
+    <repositories>
+    	<repository>
+			<id>in-project</id>
+    		<name>custom jars</name>
+    		<url>file://lib</url>
+		</repository>
+    </repositories>
 
     <dependencies>
         <dependency>

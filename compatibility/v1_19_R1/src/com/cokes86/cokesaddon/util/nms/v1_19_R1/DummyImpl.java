@@ -98,10 +98,6 @@ public class DummyImpl extends EntityPlayer implements IDummy {
         }.runTaskLater(AbilityWar.getPlugin(), 50L);
     }
 
-    private double floor(final double a) {
-        return Math.floor(a * 1000) / 1000;
-    }
-
     @Override
     public CraftPlayer getBukkitEntity() {
         return super.getBukkitEntity();

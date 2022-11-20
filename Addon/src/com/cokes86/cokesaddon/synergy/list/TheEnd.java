@@ -42,7 +42,7 @@ import java.util.function.Predicate;
 })
 public class TheEnd extends CokesSynergy implements ActiveHandler {
 	public static final Config<Integer> du = Config.of(TheEnd.class, "지속시간", 40, Config.Condition.TIME);
-	public static final Config<Double> reduce = Config.of(TheEnd.class, "감소대미지(%)", 50.0, FunctionalInterfaces.between(0.0, 100.0, false));
+	public static final Config<Double> reduce = Config.of(TheEnd.class, "감소대미지(%)", 50.0, FunctionalInterfaces.<Double>positive().and(FunctionalInterfaces.lower(100.0)));
 	private final Map<Participant, ActionbarChannel> acs = new HashMap<>();
 	private final Predicate<Entity> predicate = entity -> {
 		if (entity.equals(getPlayer())) return false;

@@ -24,7 +24,6 @@ import daybreak.abilitywar.utils.base.minecraft.nms.NMS;
 import org.bukkit.Material;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
-import org.bukkit.event.entity.EntityDamageEvent;
 
 import java.util.HashMap;
 import java.util.function.Predicate;
@@ -66,6 +65,7 @@ public class Vennominon extends CokesSynergy implements ActiveHandler {
 
     private int venom = 0;
     private final NoticeTimeTimer groggy = new NoticeTimeTimer(getParticipant(), "§7그로기", GROGGY.getValue());
+    private final KingOfVenom kOfVenom = new KingOfVenom();
     private final HashMap<Participant, Venom> venomMap = new HashMap<>();
     private final Predicate<Entity> predicate = entity -> {
         if (entity.equals(getPlayer())) return false;
@@ -97,8 +97,6 @@ public class Vennominon extends CokesSynergy implements ActiveHandler {
         return false;
     }
 
-
-
     @SubscribeEvent(priority = 999)
     public void onEntityDamage(CEntityDamageEvent e) {
         Entity damager = e.getDamager();
@@ -115,6 +113,13 @@ public class Vennominon extends CokesSynergy implements ActiveHandler {
             }
             Healths.setHealth(getPlayer(), health / 3.0);
             groggy.start();
+        }
+    }
+
+    @Override
+    public void onUpdate(Update update) {
+        if (update == Update.RESTRICTION_CLEAR) {
+            kOfVenom.start();
         }
     }
 

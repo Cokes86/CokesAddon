@@ -75,7 +75,7 @@ public class ReiBurningSoul extends CokesSynergy implements ActiveHandler {
             "# 수거로 획득 가능한 최대 버닝 소울의 개수", "# 기본값: 5(개)");
     private static final Config<Integer> DAMAGE_INCREMENT_PREDICATE = Config.of(ReiBurningSoul.class, "damage-increment-predicate", 5, Condition.TIME,
             "# 발화 시간에 따른 추가 대미지 조건", "# 기본값: 5(초)");
-    private static final Config<Double> SOUL_LIBERATION_COST = Config.of(ReiBurningSoul.class, "soul-liveration-cost", 10d, FunctionalInterfaces.between(0d,100d,false),
+    private static final Config<Double> SOUL_LIBERATION_COST = Config.of(ReiBurningSoul.class, "soul-liveration-cost", 10d, FunctionalInterfaces.<Double>positive().and(FunctionalInterfaces.lower(100.0)),
             "# 영혼 해방 시 필요한 체력 코스트", "# 기본값: 10.0(%)");
     private static final Config<Integer> TEMPORARY_SOUL_DURATION = Config.of(ReiBurningSoul.class, "temporary-soul-duration", 7, Condition.TIME,
             "# 임시 버닝 소울의 지속시간", "# 기본값: 7(초)");

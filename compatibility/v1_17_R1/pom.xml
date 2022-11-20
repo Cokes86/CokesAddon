@@ -16,7 +16,7 @@
         <maven.compiler.source>16</maven.compiler.source>
         <maven.compiler.target>16</maven.compiler.target>
         <jdk.version>16</jdk.version>
-        <jdk>C:\coding_module\jdk16</jdk>
+        <jdk>/usr/lib/jvm/jdk-16.0.2</jdk>
     </properties>
 
     <dependencies>

@@ -28,7 +28,6 @@ public class CokesCommand {
             }
 
             private void sendCommandHelp(CommandSender sender, String command, int page) {
-                final int maxPage = 1;
                 if (page == 1) {
                     sender.sendMessage(new String[]{
                             Formatter.formatTitle(ChatColor.GOLD, ChatColor.YELLOW, "능력자 전쟁 코크스 애드온"),

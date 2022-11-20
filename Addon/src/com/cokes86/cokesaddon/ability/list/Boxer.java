@@ -9,6 +9,9 @@ import daybreak.abilitywar.ability.AbilityManifest.Rank;
 import daybreak.abilitywar.ability.AbilityManifest.Species;
 import daybreak.abilitywar.ability.SubscribeEvent;
 import daybreak.abilitywar.ability.decorator.TargetHandler;
+import daybreak.abilitywar.ability.event.AbilityActiveSkillEvent;
+import daybreak.abilitywar.ability.event.AbilityPreActiveSkillEvent;
+import daybreak.abilitywar.ability.event.AbilityPreTargetEvent;
 import daybreak.abilitywar.game.AbstractGame.Participant;
 import daybreak.abilitywar.game.AbstractGame.Participant.ActionbarNotification.ActionbarChannel;
 import daybreak.abilitywar.game.manager.effect.Stun;
@@ -18,6 +21,8 @@ import daybreak.abilitywar.utils.base.concurrent.TimeUnit;
 import daybreak.abilitywar.utils.base.math.LocationUtil;
 import daybreak.abilitywar.utils.base.minecraft.damage.Damages;
 import daybreak.abilitywar.utils.library.item.EnchantLib;
+
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.enchantments.Enchantment;
@@ -65,59 +70,78 @@ public class Boxer extends CokesAbility implements TargetHandler {
 
     private static final String prefix = "[§b권투선수§f] ";
 
-    //공격, 확률 컨피그
-    private static final Config<Double> JAP_DAMAGE_DECREMENT_PERCENTAGE = Config.of(Boxer.class, "jap-damage-decrement-percentage", 15.0,
-            FunctionalInterfaces.between(0.0,100.0,false),
+    // 공격, 확률 컨피그
+    private static final Config<Double> JAP_DAMAGE_DECREMENT_PERCENTAGE = Config.of(Boxer.class,
+            "jap-damage-decrement-percentage", 15.0,
+            FunctionalInterfaces.<Double>positive().and(FunctionalInterfaces.lower(100.0)),
             "# 잽 공격 시 근거리 대미지 감소량", "# 기본값: 15.0 (%)");
-    private static final Config<Double> STRAIGHT_DAMAGE_PERCENTAGE = Config.of(Boxer.class, "straight-damage-percentage", 125.0,
+    private static final Config<Double> STRAIGHT_DAMAGE_PERCENTAGE = Config.of(Boxer.class,
+            "straight-damage-percentage", 125.0,
             FunctionalInterfaces.positive(),
             "# 스트레이트 공격 시 검 비례 대미지", "# 기본값: 125.0 (%)");
-    private static final Config<Double> COUNTER_DAMAGE_PERCENTAGE = Config.of(Boxer.class, "counter-damage-percentage", 95.0,
+    private static final Config<Double> COUNTER_DAMAGE_PERCENTAGE = Config.of(Boxer.class, "counter-damage-percentage",
+            95.0,
             FunctionalInterfaces.positive(),
             "# 카운터 공격 시 검 비례 대미지", "# 기본값: 95.0 (%)");
-    private static final Config<Double> COUNTER_THORN_PERCENTAGE = Config.of(Boxer.class, "counter-thorn-percentage", 60.0,
-            FunctionalInterfaces.between(0.0,100.0,true),
+    private static final Config<Double> COUNTER_THORN_PERCENTAGE = Config.of(Boxer.class, "counter-thorn-percentage",
+            60.0,
+            FunctionalInterfaces.<Double>positive().and(FunctionalInterfaces.lower(100.0)),
             "# 카운터 공격 시 최근 받는 대미지의 반사 대미지", "# 기본값: 60.0 (%)");
-    private static final Config<Double> UPPER_DAMAGE_PERCENTAGE = Config.of(Boxer.class, "upper-damage-percentage", 100.0,
+    private static final Config<Double> UPPER_DAMAGE_PERCENTAGE = Config.of(Boxer.class, "upper-damage-percentage",
+            100.0,
             FunctionalInterfaces.positive(),
             "# 어퍼 공격 시 검 비례 대미지", "# 기본값: 100.0 (%)");
     private static final Config<Double> UPPER_STUN_PERCENTAGE = Config.of(Boxer.class, "upper-stun-percentage", 30.0,
-            FunctionalInterfaces.between(0.0,100.0,true),
+            FunctionalInterfaces.<Double>positive().and(FunctionalInterfaces.lower(100.0)),
             "# 어퍼 공격 시 기절 확률", "# 기본값: 30.0 (%)");
-    private static final Config<Double> DUCKING_DEFENCE_PERCENTAGE = Config.of(Boxer.class, "ducking-defence-percentage", 50.0,
+    private static final Config<Double> DUCKING_DEFENCE_PERCENTAGE = Config.of(Boxer.class,
+            "ducking-defence-percentage", 50.0,
             FunctionalInterfaces.positive(),
             "# 더킹 사용 시 대미지 감소량", "# 기본값: 50.0 (%)");
 
-    //쿨타임 컨피그
-    private static final Config<Integer> STRAIGHT_COOLDOWN = Config.of(Boxer.class, "straight-cooldown", 5, FunctionalInterfaces.positive(), FunctionalInterfaces.COOLDOWN,
+    // 쿨타임 컨피그
+    private static final Config<Integer> STRAIGHT_COOLDOWN = Config.of(Boxer.class, "straight-cooldown", 5,
+            FunctionalInterfaces.positive(), FunctionalInterfaces.COOLDOWN,
             "# 스트레이트 쿨타임", "# 기본값: 5 (초)");
-    private static final Config<Integer> COUNTER_COOLDOWN = Config.of(Boxer.class, "counter-cooldown", 7, FunctionalInterfaces.positive(), FunctionalInterfaces.COOLDOWN,
+    private static final Config<Integer> COUNTER_COOLDOWN = Config.of(Boxer.class, "counter-cooldown", 7,
+            FunctionalInterfaces.positive(), FunctionalInterfaces.COOLDOWN,
             "# 카운터 쿨타임", "# 기본값: 7 (초)");
-    private static final Config<Integer> UPPER_COOLDOWN = Config.of(Boxer.class, "upper-cooldown", 10, FunctionalInterfaces.positive(), FunctionalInterfaces.COOLDOWN,
+    private static final Config<Integer> UPPER_COOLDOWN = Config.of(Boxer.class, "upper-cooldown", 10,
+            FunctionalInterfaces.positive(), FunctionalInterfaces.COOLDOWN,
             "# 어퍼 쿨타임", "# 기본값: 10 (초)");
-    private static final Config<Integer> DUCKING_COOLDOWN = Config.of(Boxer.class, "ducking-cooldown", 20, FunctionalInterfaces.positive(), FunctionalInterfaces.COOLDOWN,
+    private static final Config<Integer> DUCKING_COOLDOWN = Config.of(Boxer.class, "ducking-cooldown", 20,
+            FunctionalInterfaces.positive(), FunctionalInterfaces.COOLDOWN,
             "# 더킹 쿨타임", "# 기본값: 20 (초)");
 
-    //더킹 댐감 컨피그
-    private static final Config<Double> DUCKING_DAMAGE_DECREMENT = Config.of(Boxer.class, "ducking-damage-decrement", 0.5, FunctionalInterfaces.positive(),
+    // 더킹 댐감 컨피그
+    private static final Config<Double> DUCKING_DAMAGE_DECREMENT = Config.of(Boxer.class, "ducking-damage-decrement",
+            0.5, FunctionalInterfaces.positive(),
             "# 더킹 이후 연계되는 스킬 대미지 감소량", "# 기본값: 0.5");
 
-    //콤비네이션 추가 컨피그
-    private static final Config<Double> COMBINATION_STRAIGHT_DAMAGE_INCREMENT = Config.of(Boxer.class, "combination.straight.damage-increment", 20.0, FunctionalInterfaces.positive(),
+    // 콤비네이션 추가 컨피그
+    private static final Config<Double> COMBINATION_STRAIGHT_DAMAGE_INCREMENT = Config.of(Boxer.class,
+            "combination.straight.damage-increment", 20.0, FunctionalInterfaces.positive(),
             "# 스트레이트 콤비네이션 대미지 증가량", "# 기본값: 20.0 (%p)");
-    private static final Config<Double> COMBINATION_COUNTER_DAMAGE_INCREMENT = Config.of(Boxer.class, "combination.counter.damage-increment", 20.0, FunctionalInterfaces.positive(),
+    private static final Config<Double> COMBINATION_COUNTER_DAMAGE_INCREMENT = Config.of(Boxer.class,
+            "combination.counter.damage-increment", 20.0, FunctionalInterfaces.positive(),
             "# 카운터 콤비네이션 대미지 증가량", "# 기본값: 20.0 (%p)");
-    private static final Config<Double> COMBINATION_COUNTER_THORN_INCREMENT = Config.of(Boxer.class, "combination.counter.thorn-increment", 5.0, FunctionalInterfaces.positive(),
+    private static final Config<Double> COMBINATION_COUNTER_THORN_INCREMENT = Config.of(Boxer.class,
+            "combination.counter.thorn-increment", 5.0, FunctionalInterfaces.positive(),
             "# 카운터 콤비네이션 반사 대미지 증가량", "# 기본값: 5.0 (%p)");
-    private static final Config<Double> COMBINATION_UPPER_DAMAGE_INCREMENT = Config.of(Boxer.class, "combination.upper.damage-increment", 20.0, FunctionalInterfaces.positive(),
+    private static final Config<Double> COMBINATION_UPPER_DAMAGE_INCREMENT = Config.of(Boxer.class,
+            "combination.upper.damage-increment", 20.0, FunctionalInterfaces.positive(),
             "# 어퍼 콤비네이션 대미지 증가량", "# 기본값: 20.0 (%p)");
-    private static final Config<Double> COMBINATION_UPPER_STUN_INCREMENT = Config.of(Boxer.class, "combination.upper.stun-increment", 15.0, FunctionalInterfaces.positive(),
+    private static final Config<Double> COMBINATION_UPPER_STUN_INCREMENT = Config.of(Boxer.class,
+            "combination.upper.stun-increment", 15.0, FunctionalInterfaces.positive(),
             "# 어퍼 콤비네이션 기절 확률 증가량", "# 기본값: 15.0 (%p)");
-    private static final Config<Double> COMBINATION_JPH_STUN_INCREMENT = Config.of(Boxer.class, "combination.jap-punch-hook.stun-increment", 20.0, FunctionalInterfaces.positive(),
+    private static final Config<Double> COMBINATION_JPH_STUN_INCREMENT = Config.of(Boxer.class,
+            "combination.jap-punch-hook.stun-increment", 20.0, FunctionalInterfaces.positive(),
             "# 잽, 펀치, 훅! 콤비네이션 기절 확률 증가량", "# 기본값: 20.0 (%p)");
-    private static final Config<Double> COMBINATION_FIND_GAP_DAMAGE_INCREMENT = Config.of(Boxer.class, "combination.find-gap.damage-increment", 15.0, FunctionalInterfaces.positive(),
+    private static final Config<Double> COMBINATION_FIND_GAP_DAMAGE_INCREMENT = Config.of(Boxer.class,
+            "combination.find-gap.damage-increment", 15.0, FunctionalInterfaces.positive(),
             "# 빈틈 발견! 콤비네이션 대미지 증가량", "# 기본값: 15.0 (%p)");
-    private static final Config<Double> COMBINATION_FIND_GAP_STUN_INCREMENT = Config.of(Boxer.class, "combination.find-gap.stun-increment", 25.0, FunctionalInterfaces.positive(),
+    private static final Config<Double> COMBINATION_FIND_GAP_STUN_INCREMENT = Config.of(Boxer.class,
+            "combination.find-gap.stun-increment", 25.0, FunctionalInterfaces.positive(),
             "# 빈틈 발견! 콤비네이션 기절 확률 증가량", "# 기본값: 25.0 (%p)");
 
     private final Cooldown straight_cooldown = new Cooldown(STRAIGHT_COOLDOWN.getValue(), "스트레이트");
@@ -131,17 +155,21 @@ public class Boxer extends CokesAbility implements TargetHandler {
     private long latest = 0;
 
     private final Predicate<Entity> predicate = entity -> {
-        if (entity.equals(getPlayer())) return false;
+        if (entity.equals(getPlayer()))
+            return false;
         if (entity instanceof Player) {
             if (!getGame().isParticipating(entity.getUniqueId())
-                    || (getGame() instanceof DeathManager.Handler && ((DeathManager.Handler) getGame()).getDeathManager().isExcluded(entity.getUniqueId()))
+                    || (getGame() instanceof DeathManager.Handler
+                            && ((DeathManager.Handler) getGame()).getDeathManager().isExcluded(entity.getUniqueId()))
                     || !getGame().getParticipant(entity.getUniqueId()).attributes().TARGETABLE.getValue()) {
                 return false;
             }
             if (getGame() instanceof Teamable) {
                 final Teamable teamGame = (Teamable) getGame();
-                final Participant entityParticipant = teamGame.getParticipant(entity.getUniqueId()), participant = getParticipant();
-                return !teamGame.hasTeam(entityParticipant) || !teamGame.hasTeam(participant) || (!teamGame.getTeam(entityParticipant).equals(teamGame.getTeam(participant)));
+                final Participant entityParticipant = teamGame.getParticipant(entity.getUniqueId()),
+                        participant = getParticipant();
+                return !teamGame.hasTeam(entityParticipant) || !teamGame.hasTeam(participant)
+                        || (!teamGame.getTeam(entityParticipant).equals(teamGame.getTeam(participant)));
             }
         }
         return true;
@@ -156,12 +184,15 @@ public class Boxer extends CokesAbility implements TargetHandler {
         super(arg0);
     }
 
-    @SubscribeEvent  // 잽, 더킹 댐감
+    @SubscribeEvent // 잽, 더킹 댐감
     public void onCEntityDamage(CEntityDamageEvent e) {
-        if (e.getDamager() != null && e.getDamager().equals(getPlayer()) && getGame().isParticipating(e.getEntity().getUniqueId())) {
-            if (e.getCause() == DamageCause.MAGIC) return;
+        if (e.getDamager() != null && e.getDamager().equals(getPlayer())
+                && getGame().isParticipating(e.getEntity().getUniqueId())) {
+            if (e.getCause() == DamageCause.MAGIC)
+                return;
             e.setDamage(e.getDamage() * (1 - JAP_DAMAGE_DECREMENT_PERCENTAGE.getValue() / 100.0));
-            skillTimer.setParticipant(getGame().getParticipant(e.getEntity().getUniqueId())).addCombination('L').start();
+            skillTimer.setParticipant(getGame().getParticipant(e.getEntity().getUniqueId())).addCombination('L')
+                    .start();
         }
 
         if (e.getEntity().equals(getPlayer()) && getGame().isParticipating(e.getDamager().getUniqueId())) {
@@ -172,24 +203,32 @@ public class Boxer extends CokesAbility implements TargetHandler {
         }
     }
 
-    @Override  //스트레이트
+    @Override // 스트레이트
     public void TargetSkill(Material material, LivingEntity livingEntity) {
         final long current = System.currentTimeMillis();
-        if (swords.contains(material) && skillTimer.isAbleSkill() && livingEntity.equals(skillTimer.participant.getPlayer()) && !straight_cooldown.isCooldown() && current - latest >= 250) {
+        final AbilityPreTargetEvent preEvent = new AbilityPreTargetEvent(this, material, livingEntity);
+        Bukkit.getPluginManager().callEvent(preEvent);
+        if (!preEvent.isCancelled() && swords.contains(material) && skillTimer.isAbleSkill()
+                && livingEntity.equals(skillTimer.participant.getPlayer()) && !straight_cooldown.isCooldown()
+                && current - latest >= 250) {
             float sword = SwordDamage.valueOf(material.name()).getDamage();
             int sharpness = getPlayer().getInventory().getItemInMainHand().getEnchantmentLevel(Enchantment.DAMAGE_ALL);
             skillTimer.addCombination('R').start();
 
             double percentage = STRAIGHT_DAMAGE_PERCENTAGE.getValue();
-            if (skillTimer.combination.size() >= 3 && CokesUtil.xor_encoding(skillTimer.getRecentCombination(3), 0x415701).equals("坍坒坓")) {
+            if (skillTimer.combination.size() >= 3
+                    && CokesUtil.xor_encoding(skillTimer.getRecentCombination(3), 0x415701).equals("坍坒坓")) {
                 percentage += COMBINATION_STRAIGHT_DAMAGE_INCREMENT.getValue();
                 getPlayer().sendMessage(prefix + "스트레이트 콤비네이션!");
-                getPlayer().sendMessage(prefix + "대미지 + "+ COMBINATION_STRAIGHT_DAMAGE_INCREMENT.getValue()+"%p");
+                getPlayer().sendMessage(prefix + "대미지 + " + COMBINATION_STRAIGHT_DAMAGE_INCREMENT.getValue() + "%p");
             }
-            float damage = (float) (EnchantLib.getDamageWithSharpnessEnchantment(sword, sharpness) * percentage / 100.0);
+            float damage = (float) (EnchantLib.getDamageWithSharpnessEnchantment(sword, sharpness) * percentage
+                    / 100.0);
             skillTimer.participant.getPlayer().setNoDamageTicks(0);
-            Damages.damageMagic(skillTimer.participant.getPlayer(), getPlayer(), false, damage - (skillTimer.ducking ? DUCKING_DAMAGE_DECREMENT.getValue().floatValue() : 0));
-            skillTimer.participant.getPlayer().setVelocity(skillTimer.participant.getPlayer().getLocation().getDirection().clone().multiply(-2.5));
+            Damages.damageMagic(skillTimer.participant.getPlayer(), getPlayer(), false,
+                    damage - (skillTimer.ducking ? DUCKING_DAMAGE_DECREMENT.getValue().floatValue() : 0));
+            skillTimer.participant.getPlayer().setVelocity(
+                    skillTimer.participant.getPlayer().getLocation().getDirection().clone().multiply(-2.5));
 
             skillTimer.setDucking(false);
             straight_cooldown.start();
@@ -200,97 +239,130 @@ public class Boxer extends CokesAbility implements TargetHandler {
     @SubscribeEvent // 카운터
     public void onPlayerSwapHandItems(PlayerSwapHandItemsEvent e) {
         final long current = System.currentTimeMillis();
-        if (e.getOffHandItem() != null && swords.contains(e.getOffHandItem().getType()) && e.getPlayer().equals(getPlayer())) {
-            Material sword_material = e.getOffHandItem().getType();
-            ItemStack sword_itemstack = e.getOffHandItem();
-            e.setCancelled(true);
+        if (e.getOffHandItem() != null && swords.contains(e.getOffHandItem().getType())
+                && e.getPlayer().equals(getPlayer())) {
             LivingEntity entity = LocationUtil.getEntityLookingAt(LivingEntity.class, getPlayer(), 6, predicate);
+            final AbilityPreTargetEvent preEvent = new AbilityPreTargetEvent(this, e.getOffHandItem().getType(),
+                    entity);
+            Bukkit.getPluginManager().callEvent(preEvent);
+            if (!preEvent.isCancelled()) {
+                Material sword_material = e.getOffHandItem().getType();
+                ItemStack sword_itemstack = e.getOffHandItem();
+                e.setCancelled(true);
 
-            if (entity != null && skillTimer.isAbleSkill() && !counter_cooldown.isCooldown() && entity.equals(skillTimer.participant.getPlayer()) && current - latest >= 250) {
-                float sword = SwordDamage.valueOf(sword_material.name()).getDamage();
-                int sharpness = sword_itemstack.getEnchantmentLevel(Enchantment.DAMAGE_ALL);
-                skillTimer.addCombination('F').start();
+                if (entity != null && skillTimer.isAbleSkill() && !counter_cooldown.isCooldown()
+                        && entity.equals(skillTimer.participant.getPlayer()) && current - latest >= 250) {
+                    float sword = SwordDamage.valueOf(sword_material.name()).getDamage();
+                    int sharpness = sword_itemstack.getEnchantmentLevel(Enchantment.DAMAGE_ALL);
+                    skillTimer.addCombination('F').start();
 
-                double damage_percentage = COUNTER_DAMAGE_PERCENTAGE.getValue();
-                double thorn_percentage = COUNTER_THORN_PERCENTAGE.getValue();
-                if (skillTimer.combination.size() >= 3 && CokesUtil.xor_encoding(skillTimer.getRecentCombination(3), 0x27f9a5).equals("里臨泥")) {
-                    damage_percentage += COMBINATION_COUNTER_DAMAGE_INCREMENT.getValue();
-                    thorn_percentage += COMBINATION_COUNTER_THORN_INCREMENT.getValue();
-                    getPlayer().sendMessage(prefix + "카운터 콤비네이션!");
-                    getPlayer().sendMessage(prefix + "대미지 + "+ COMBINATION_COUNTER_DAMAGE_INCREMENT.getValue()+"%p, 반사대미지 + "+ COMBINATION_COUNTER_THORN_INCREMENT.getValue()+"%p");
+                    double damage_percentage = COUNTER_DAMAGE_PERCENTAGE.getValue();
+                    double thorn_percentage = COUNTER_THORN_PERCENTAGE.getValue();
+                    if (skillTimer.combination.size() >= 3
+                            && CokesUtil.xor_encoding(skillTimer.getRecentCombination(3), 0x27f9a5).equals("里臨泥")) {
+                        damage_percentage += COMBINATION_COUNTER_DAMAGE_INCREMENT.getValue();
+                        thorn_percentage += COMBINATION_COUNTER_THORN_INCREMENT.getValue();
+                        getPlayer().sendMessage(prefix + "카운터 콤비네이션!");
+                        getPlayer().sendMessage(prefix + "대미지 + " + COMBINATION_COUNTER_DAMAGE_INCREMENT.getValue()
+                                + "%p, 반사대미지 + " + COMBINATION_COUNTER_THORN_INCREMENT.getValue() + "%p");
+                    }
+
+                    skillTimer.participant.getPlayer().setNoDamageTicks(0);
+                    float damage = (float) (EnchantLib.getDamageWithSharpnessEnchantment(sword, sharpness)
+                            * damage_percentage / 100.0);
+                    Damages.damageMagic(skillTimer.participant.getPlayer(), getPlayer(), false,
+                            damage - (skillTimer.ducking ? DUCKING_DAMAGE_DECREMENT.getValue().floatValue() : 0));
+                    skillTimer.participant.getPlayer().setNoDamageTicks(0);
+                    Damages.damageMagic(skillTimer.participant.getPlayer(), getPlayer(), true,
+                            (float) (thorn * thorn_percentage / 100.0f));
+
+                    skillTimer.setDucking(false);
+                    counter_cooldown.start();
+                    latest = current;
                 }
-
-                skillTimer.participant.getPlayer().setNoDamageTicks(0);
-                float damage = (float) (EnchantLib.getDamageWithSharpnessEnchantment(sword, sharpness) * damage_percentage / 100.0);
-                Damages.damageMagic(skillTimer.participant.getPlayer(), getPlayer(), false, damage - (skillTimer.ducking ? DUCKING_DAMAGE_DECREMENT.getValue().floatValue() : 0));
-                skillTimer.participant.getPlayer().setNoDamageTicks(0);
-                Damages.damageMagic(skillTimer.participant.getPlayer(), getPlayer(), true, (float) (thorn * thorn_percentage / 100.0f));
-
-                skillTimer.setDucking(false);
-                counter_cooldown.start();
-                latest = current;
             }
         }
+
     }
 
     @SubscribeEvent // 어퍼
     public void onPlayerDropItem(PlayerDropItemEvent e) {
         final long current = System.currentTimeMillis();
         if (swords.contains(e.getItemDrop().getItemStack().getType()) && e.getPlayer().equals(getPlayer())) {
-            ItemStack sword_itemstack = e.getItemDrop().getItemStack();
-            Material sword_material = sword_itemstack.getType();
-            e.setCancelled(true);
             LivingEntity entity = LocationUtil.getEntityLookingAt(LivingEntity.class, getPlayer(), 6, predicate);
+            final AbilityPreTargetEvent preEvent = new AbilityPreTargetEvent(this, e.getItemDrop().getItemStack().getType(), entity);
+            Bukkit.getPluginManager().callEvent(preEvent);
+            if (!preEvent.isCancelled()) {
+                ItemStack sword_itemstack = e.getItemDrop().getItemStack();
+                Material sword_material = sword_itemstack.getType();
+                e.setCancelled(true);
 
-            if (entity != null && skillTimer.isAbleSkill() && !upper_cooldown.isCooldown() && entity.equals(skillTimer.participant.getPlayer()) && current - latest >= 250) {
-                float sword = SwordDamage.valueOf(sword_material.name()).getDamage();
-                int sharpness = sword_itemstack.getEnchantmentLevel(Enchantment.DAMAGE_ALL);
-                skillTimer.addCombination('Q').start();
+                if (entity != null && skillTimer.isAbleSkill() && !upper_cooldown.isCooldown()
+                        && entity.equals(skillTimer.participant.getPlayer()) && current - latest >= 250) {
+                    float sword = SwordDamage.valueOf(sword_material.name()).getDamage();
+                    int sharpness = sword_itemstack.getEnchantmentLevel(Enchantment.DAMAGE_ALL);
+                    skillTimer.addCombination('Q').start();
 
-                double damage_percentage = UPPER_DAMAGE_PERCENTAGE.getValue();
-                double stun_percentage = UPPER_STUN_PERCENTAGE.getValue();
-                if (skillTimer.combination.size() >= 3 && CokesUtil.xor_encoding(skillTimer.getRecentCombination(3), 0x565673).equals("嘿嘠嘢")) {
-                    damage_percentage += COMBINATION_UPPER_DAMAGE_INCREMENT.getValue();
-                    stun_percentage += COMBINATION_UPPER_STUN_INCREMENT.getValue();
-                    getPlayer().sendMessage(prefix + "어퍼 콤비네이션!");
-                    getPlayer().sendMessage(prefix + "대미지 + "+ COMBINATION_UPPER_DAMAGE_INCREMENT.getValue()+"%p, 기절 확률 + "+ COMBINATION_UPPER_STUN_INCREMENT.getValue()+"%p");
+                    double damage_percentage = UPPER_DAMAGE_PERCENTAGE.getValue();
+                    double stun_percentage = UPPER_STUN_PERCENTAGE.getValue();
+                    if (skillTimer.combination.size() >= 3
+                            && CokesUtil.xor_encoding(skillTimer.getRecentCombination(3), 0x565673).equals("嘿嘠嘢")) {
+                        damage_percentage += COMBINATION_UPPER_DAMAGE_INCREMENT.getValue();
+                        stun_percentage += COMBINATION_UPPER_STUN_INCREMENT.getValue();
+                        getPlayer().sendMessage(prefix + "어퍼 콤비네이션!");
+                        getPlayer().sendMessage(prefix + "대미지 + " + COMBINATION_UPPER_DAMAGE_INCREMENT.getValue()
+                                + "%p, 기절 확률 + " + COMBINATION_UPPER_STUN_INCREMENT.getValue() + "%p");
+                    }
+                    if (skillTimer.combination.size() >= 3
+                            && CokesUtil.xor_encoding(skillTimer.getRecentCombination(3), 0xb1117e).equals("ᄲᄬᄯ")) {
+                        stun_percentage += COMBINATION_JPH_STUN_INCREMENT.getValue();
+                        getPlayer().sendMessage(prefix + "잽, 펀치, 훅!");
+                        getPlayer()
+                                .sendMessage(prefix + "기절 확률 + " + COMBINATION_UPPER_STUN_INCREMENT.getValue() + "%p");
+                    }
+
+                    if (skillTimer.combination.size() >= 4
+                            && CokesUtil.xor_encoding(skillTimer.getRecentCombination(4), 0xceb510).equals("땜땂땃땁")) {
+                        stun_percentage += COMBINATION_FIND_GAP_STUN_INCREMENT.getValue();
+                        damage_percentage += COMBINATION_FIND_GAP_DAMAGE_INCREMENT.getValue();
+                        getPlayer().sendMessage(prefix + "빈틈 발견!");
+                        getPlayer()
+                                .sendMessage(prefix + "대미지 + " + COMBINATION_FIND_GAP_STUN_INCREMENT.getValue() + "%p");
+                        getPlayer()
+                                .sendMessage(
+                                        prefix + "기절 확률 + " + COMBINATION_FIND_GAP_STUN_INCREMENT.getValue() + "%p");
+                    }
+
+                    skillTimer.participant.getPlayer().setNoDamageTicks(0);
+                    float damage = (float) (EnchantLib.getDamageWithSharpnessEnchantment(sword, sharpness)
+                            * damage_percentage / 100.0);
+                    Damages.damageMagic(skillTimer.participant.getPlayer(), getPlayer(), false,
+                            damage - (skillTimer.ducking ? DUCKING_DAMAGE_DECREMENT.getValue().floatValue() : 0));
+
+                    double chance = new Random().nextDouble() * 99;
+                    if (chance <= stun_percentage) {
+                        Stun.apply(skillTimer.participant, TimeUnit.SECONDS, 1);
+                    }
+
+                    skillTimer.setDucking(false);
+                    upper_cooldown.start();
+                    latest = current;
                 }
-                if (skillTimer.combination.size() >= 3 && CokesUtil.xor_encoding(skillTimer.getRecentCombination(3), 0xb1117e).equals("ᄲᄬᄯ")) {
-                    stun_percentage += COMBINATION_JPH_STUN_INCREMENT.getValue();
-                    getPlayer().sendMessage(prefix + "잽, 펀치, 훅!");
-                    getPlayer().sendMessage(prefix + "기절 확률 + "+ COMBINATION_UPPER_STUN_INCREMENT.getValue()+"%p");
-                }
-
-                if (skillTimer.combination.size() >= 4 && CokesUtil.xor_encoding(skillTimer.getRecentCombination(4), 0xceb510).equals("땜땂땃땁")) {
-                    stun_percentage += COMBINATION_FIND_GAP_STUN_INCREMENT.getValue();
-                    damage_percentage += COMBINATION_FIND_GAP_DAMAGE_INCREMENT.getValue();
-                    getPlayer().sendMessage(prefix + "빈틈 발견!");
-                    getPlayer().sendMessage(prefix + "대미지 + "+ COMBINATION_FIND_GAP_STUN_INCREMENT.getValue()+"%p");
-                    getPlayer().sendMessage(prefix + "기절 확률 + "+ COMBINATION_FIND_GAP_STUN_INCREMENT.getValue()+"%p");
-                }
-
-                skillTimer.participant.getPlayer().setNoDamageTicks(0);
-                float damage = (float) (EnchantLib.getDamageWithSharpnessEnchantment(sword, sharpness) * damage_percentage / 100.0);
-                Damages.damageMagic(skillTimer.participant.getPlayer(), getPlayer(), false, damage - (skillTimer.ducking ? DUCKING_DAMAGE_DECREMENT.getValue().floatValue() : 0));
-
-                double chance = new Random().nextDouble() * 99;
-                if (chance <= stun_percentage) {
-                    Stun.apply(skillTimer.participant, TimeUnit.SECONDS, 1);
-                }
-
-                skillTimer.setDucking(false);
-                upper_cooldown.start();
-                latest = current;
             }
         }
     }
 
-    @SubscribeEvent  //더킹
+    @SubscribeEvent // 더킹
     public void onPlayerToggleSneak(PlayerToggleSneakEvent e) {
-        if (e.getPlayer().equals(getPlayer()) && e.isSneaking()) {
+        final AbilityPreActiveSkillEvent preEvent = new AbilityPreActiveSkillEvent(this, null, null);
+        Bukkit.getPluginManager().callEvent(preEvent);
+        if (!preEvent.isCancelled() && e.getPlayer().equals(getPlayer()) && e.isSneaking()) {
             if (skillTimer.isAbleSkill() && !ducking_cooldown.isCooldown()) {
                 skillTimer.addCombination('S').setDucking(true).start();
                 ducking_cooldown.start();
+
+                final AbilityActiveSkillEvent event = new AbilityActiveSkillEvent(this, null, null);
+                Bukkit.getPluginManager().callEvent(event);
             }
         }
     }
@@ -301,7 +373,8 @@ public class Boxer extends CokesAbility implements TargetHandler {
         private boolean ducking = false;
         private final ActionbarChannel channel = newActionbarChannel();
         private final DecimalFormat format = new DecimalFormat("0.##");
-        public SkillTimer(){
+
+        public SkillTimer() {
             super(40);
             setPeriod(TimeUnit.TICKS, 1);
         }
@@ -349,7 +422,7 @@ public class Boxer extends CokesAbility implements TargetHandler {
             if (count <= 20 && ducking) {
                 ducking = false;
             }
-            channel.update("스킬 사용 가능 시간 : §c"+format.format(count/20.0)+"초");
+            channel.update("스킬 사용 가능 시간 : §c" + format.format(count / 20.0) + "초");
         }
 
         @Override
@@ -372,6 +445,7 @@ public class Boxer extends CokesAbility implements TargetHandler {
         WOODEN_SWORD(4), STONE_SWORD(5), IRON_SWORD(6), GOLDEN_SWORD(4), DIAMOND_SWORD(7), NETHERITE_SWORD(8);
 
         private final int damage;
+
         public int getDamage() {
             return damage;
         }

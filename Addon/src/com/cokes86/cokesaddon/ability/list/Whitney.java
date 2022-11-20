@@ -80,10 +80,12 @@ public class Whitney extends CokesAbility implements ActiveHandler {
             "# 5중첩 대미지 증가랑",
             "# 기본값: 3");
 
-    private static final Config<Double> DEFENCE = Config.of(Whitney.class, "defence", 20.0, FunctionalInterfaces.between(0.0, 100.0, false),
+    private static final Config<Double> DEFENCE = Config.of(Whitney.class, "defence", 20.0,
+            FunctionalInterfaces.<Double>positive().and(FunctionalInterfaces.lower(100.0)),
             "# 6중첩 대미지 감소랑",
             "# 기본값: 20.0 (%)");
-    private static final Config<Double> VAMPIRE = Config.of(Whitney.class, "vampire", 15.0, FunctionalInterfaces.between(0.0, 100.0, true),
+    private static final Config<Double> VAMPIRE = Config.of(Whitney.class, "vampire", 15.0,
+            FunctionalInterfaces.<Double>positive().and(FunctionalInterfaces.lower(100.0)),
             "# 4중첩 흡혈량",
             "# 기본값: 15.0 (%)");
 

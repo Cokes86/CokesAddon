@@ -57,6 +57,7 @@ public class Vennominaga extends CokesSynergy {
     }
 
     private final HashMap<Participant, Venom> venomMap = new HashMap<>();
+    private final GodOfVenom gOfVenom = new GodOfVenom();
     private final Predicate<Entity> predicate = entity -> {
         if (entity.equals(getPlayer())) return false;
         if (entity instanceof Player) {
@@ -106,6 +107,13 @@ public class Vennominaga extends CokesSynergy {
                 }
                 venomTimer.addStack();
             }
+        }
+    }
+
+    @Override
+    public void onUpdate(Update update) {
+        if (update == Update.RESTRICTION_CLEAR) {
+            gOfVenom.start();
         }
     }
 

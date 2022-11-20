@@ -51,7 +51,7 @@ summarize = {
 		"돌상태는 상대방이 곡괭이가 있지 않는 이상 늘 대미지 감소"
 }, stats = @Tips.Stats(offense = Tips.Level.ZERO, survival = Tips.Level.EIGHT, crowdControl = Tips.Level.ZERO, mobility = Tips.Level.ZERO, utility = Tips.Level.EIGHT), difficulty = Tips.Difficulty.EASY)
 public class Blocks extends CokesAbility implements ActiveHandler {
-	private static final Config<Integer> stone = Config.of(Blocks.class, "돌_받는대미지감소량(%)", 20, FunctionalInterfaces.between(0, 100, false));
+	private static final Config<Integer> stone = Config.of(Blocks.class, "돌_받는대미지감소량(%)", 20, FunctionalInterfaces.<Integer>positive().and(FunctionalInterfaces.lower(100)));
 	private static final Config<Integer> glass = Config.of(Blocks.class, "유리_받는대미지_증가량(%)", 100, FunctionalInterfaces.positive());
 	private static final Config<Integer> inv = Config.of(Blocks.class, "모래_무적시간", 6, FunctionalInterfaces.positive(), "단위: 틱");
 	private Condition condition = Condition.STONE;
@@ -68,7 +68,7 @@ public class Blocks extends CokesAbility implements ActiveHandler {
 			armorStand.setArms(false);
 			armorStand.setGravity(false);
 			armorStand.setVisible(false);
-			if (ServerVersion.getVersion() >= 10 && ServerVersion.getVersion() <= 16) {
+			if (ServerVersion.getVersion() >= 10) {
 				armorStand.setInvulnerable(true);
 			}
 			NMS.removeBoundingBox(armorStand);

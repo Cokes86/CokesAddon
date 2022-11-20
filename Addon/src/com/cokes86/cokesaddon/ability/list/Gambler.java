@@ -10,28 +10,40 @@ import daybreak.abilitywar.ability.SubscribeEvent;
 import daybreak.abilitywar.ability.decorator.ActiveHandler;
 import daybreak.abilitywar.game.AbstractGame.Participant;
 import daybreak.abilitywar.game.AbstractGame.Participant.ActionbarNotification.ActionbarChannel;
-import daybreak.abilitywar.utils.base.TimeUtil;
+import daybreak.abilitywar.utils.base.collect.Pair;
+import daybreak.abilitywar.utils.library.SoundLib;
+
 import org.bukkit.Material;
+import org.bukkit.Note;
+import org.bukkit.Note.Tone;
 
 @AbilityManifest(name = "겜블러", rank = Rank.B, species = Species.HUMAN, explain = {
-		"§7패시브 §8- §c인생은 한방§f: 매 $[PERIOD]마다 받는 대미지와 주는 대미지가",
-		"  $[MIN]%에서 $[MAX]% 사이로 랜덤하게 변경됩니다.",
-		"§7철괴 우클릭 §8- §c밑장빼기§f: 게임 중 단 한 번만 사용 가능합니다.",
-		"  <§c인생은 한방§f>에서 정해진 비율을 $[PERIOD] 연장합니다.",
+		"§7패시브 §8- §b겜블§f: 매 $[GM_PERIOD]마다 받는 대미지와 주는 대미지가",
+		"  $[MIN]% ~ $[MAX]% 사이로 랜덤하게 변경됩니다.",
+		"§7철괴 우클릭 §8- §c패널티 다이스§f: §b겜블§f의 주기가 반으로 감소됩니다.",
+		"  다만, §b겜블§f로 수치가 랜덤하게 변경되지 아니하고",
+		"  능력 사용 시점 수치의 $[PD_PENALTY]%만큼 안좋은 쪽으로 증감합니다.",
+		"  두 스탯 중 하나라도 최악으로 치닿게 되면 종료됩니다 $[PD_COOLDOWN]",
 		"[아이디어 제공자 §bRainStar_§f]"
 })
 public class Gambler extends CokesAbility implements ActiveHandler {
-	private static final Config<Integer> PERIOD = Config.of(Gambler.class, "period", 15, FunctionalInterfaces.positive(), FunctionalInterfaces.TIME,
-			"# 인생은 한방에서 바뀌는 주기 / 밑장빼기 연장 시간",
-			"# 기본값: 15(초)");
+	private static final Config<Integer> GM_PERIOD = Config.of(Gambler.class, "period", 10, FunctionalInterfaces.positive(), FunctionalInterfaces.TIME,
+			"# 겜블 주기",
+			"# 기본값: 10(초)");
 	private static final Config<Integer> VALUE1 = Config.of(Gambler.class, "value-1", 75, FunctionalInterfaces.positive(),
-			"# 인생은 한방 최소/최대치 값 중 하나",
+			"# 겜블 최소/최대치 값 중 하나",
 			"# 두 숫자중 작은 값이 최소치, 큰 값이 최대치로 자동 변경됩니다.",
 			"# 기본값: 75(%) 최소 / 150(%) 최대");
 	private static final Config<Integer> VALUE2 = Config.of(Gambler.class, "value-2", 150, FunctionalInterfaces.positive(),
-			"# 인생은 한방 최소/최대치 값 중 하나",
+			"# 겜블 최소/최대치 값 중 하나",
 			"# 두 숫자중 작은 값이 최소치, 큰 값이 최대치로 자동 변경됩니다.",
 			"# 기본값: 75(%) 최소 / 150(%) 최대");
+	private static final Config<Integer> PD_PENALTY = Config.of(Gambler.class, "penalty", 10, FunctionalInterfaces.positive(),
+			"# 패널티 다이스로 안좋은 쪽으로 증감될 수치",
+			"# 기본값: 10(%)");
+	private static final Config<Integer> PD_COOLDOWN = Config.of(Gambler.class, "cooldown", 60, FunctionalInterfaces.positive(), FunctionalInterfaces.COOLDOWN,
+			"# 패널티 다이스 쿨타임",
+			"# 기본값: 15(초)");
 
 	private static final int MIN, MAX;
 
@@ -45,18 +57,35 @@ public class Gambler extends CokesAbility implements ActiveHandler {
 		}
 	}
 
-	private int go = 1;
+	private boolean penaltyDice = false;
+	private Pair<Integer, Integer> penaltyDiceInitial = Pair.of(0, 0);
+
+	private final Cooldown cooldown = new Cooldown(PD_COOLDOWN.getValue().intValue());
 
 	private int give = 0; // 주는 대미지
 	private int receive = 0; // 받는 대미지
 
 	private final ActionbarChannel ac = newActionbarChannel();
-	private final AbilityTimer passive = new AbilityTimer(PERIOD.getValue()) {
+	private final AbilityTimer passive = new AbilityTimer(GM_PERIOD.getValue()) {
 
 		@Override
 		protected void onStart() {
-			if (go == 0) {
-				go = -1;
+			if (penaltyDice) {
+				give -= penaltyDiceInitial.getLeft() * PD_PENALTY.getValue()/100;
+				receive += penaltyDiceInitial.getRight() * PD_PENALTY.getValue()/100;
+				if (give <= MIN) {
+					give = MIN;
+					penaltyDice = false;
+					passive.setMaximumCount(GM_PERIOD.getValue());
+					passive.setCount(GM_PERIOD.getValue());
+					cooldown.start();
+				} else if (receive >= MAX) {
+					receive = MAX;
+					penaltyDice = false;
+					passive.setMaximumCount(GM_PERIOD.getValue());
+					passive.setCount(GM_PERIOD.getValue());
+					cooldown.start();
+				}
 			} else {
 				give = MIN + (int) ((MAX - MIN) * Math.random());
 				receive = MIN + (int) ((MAX - MIN) * Math.random());
@@ -64,17 +93,21 @@ public class Gambler extends CokesAbility implements ActiveHandler {
 		}
 
 		@Override
-		protected void run(int Count) {
-			String giver = (give > 100 ? "§a" : (give < 100 ? "§c" : ""));
-			String receiver = (receive > 100 ? "§c" : (receive < 100 ? "§a" : ""));
-			String cool = go == 0 ? "" : " §a|§f 남은 시간: " + TimeUtil.parseTimeAsString(getCount());
+		protected void run(int count) {
+			String givePrefix = (give > 100 ? "§a" : (give < 100 ? "§c" : ""));
+			String receivePrefix = (receive > 100 ? "§c" : (receive < 100 ? "§a" : ""));
+			String penaltyDicePrefix = penaltyDice ? "§l" : "";
+			ac.update("주는 대미지: " + givePrefix + penaltyDicePrefix + give + "%§r §a|§f 받는 대미지: " + receivePrefix + penaltyDicePrefix + receive+"%");
 
-			ac.update("주는 대미지: " + giver + give + "% §a|§f 받는 대미지: " + receiver + receive + "%§f" + cool);
+			if (count <= 5 && count >= 1) {
+				SoundLib.PIANO.playInstrument(getPlayer(), Note.natural(0, Tone.C));
+			}
 		}
 
 		@Override
 		protected void onEnd() {
 			passive.start();
+			SoundLib.PIANO.playInstrument(getPlayer(), Note.natural(1, Tone.G));
 		}
 	};
 
@@ -91,12 +124,13 @@ public class Gambler extends CokesAbility implements ActiveHandler {
 
 	@Override
 	public boolean ActiveSkill(Material mt, ClickType ct) {
-		if (mt.equals(Material.IRON_INGOT) && ct.equals(ClickType.RIGHT_CLICK)) {
-			if (go == 1) {
-				go = 0;
-				getPlayer().sendMessage("자신이 지금 적용받고 있는 비율을 연장합니다.");
-				return true;
-			}
+		if (mt.equals(Material.IRON_INGOT) && ct.equals(ClickType.RIGHT_CLICK) && !cooldown.isCooldown() && !penaltyDice) {
+			penaltyDice = true;
+			passive.setMaximumCount(GM_PERIOD.getValue()/2);
+			passive.setCount(GM_PERIOD.getValue()/2);
+			getPlayer().sendMessage("[갬블러] 패널티 다이스를 발동합니다.");
+			penaltyDiceInitial = Pair.of(give, receive);
+			return true;
 		}
 		return false;
 	}

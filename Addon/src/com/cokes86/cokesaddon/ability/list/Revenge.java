@@ -57,6 +57,7 @@ public class Revenge extends CokesAbility {
 						if (!target.isDead() && Damages.canDamage(target, getPlayer(), DamageCause.VOID, (float) magicfixed_damage)) {
 							target.setNoDamageTicks(0);
 							NMSUtil.damageVoid(target, (float) magicfixed_damage);
+							target.setNoDamageTicks(9);
 						}
 					}
 				}.setInitialDelay(TimeUnit.TICKS, 1).setPeriod(TimeUnit.TICKS, 1).start();

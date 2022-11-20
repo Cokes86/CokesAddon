@@ -17,7 +17,6 @@ import daybreak.abilitywar.game.list.mix.triplemix.AbstractTripleMix;
 import daybreak.abilitywar.utils.base.concurrent.TimeUnit;
 import daybreak.abilitywar.utils.base.minecraft.nms.IHologram;
 import daybreak.abilitywar.utils.base.minecraft.nms.NMS;
-import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Projectile;
@@ -196,7 +195,6 @@ public class DataMining extends CokesAbility implements ActiveHandler {
 			super();
 			this.participant = participant;
 
-			final Location location = participant.getPlayer().getLocation();
 			this.hologram = NMS.newHologram(getPlayer().getWorld(), getPlayer().getLocation().clone().add(0,2.2,0));
 
 			String abilityName = "-";

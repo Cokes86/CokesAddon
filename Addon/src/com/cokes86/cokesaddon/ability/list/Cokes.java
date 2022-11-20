@@ -39,11 +39,8 @@ import java.util.function.Predicate;
         "  총 5개의 슬롯이 돌아가며, 각 슬롯마다 효과를 $[LEFT_DURATION]간 부여합니다.",
         "  2개 이상의 같은 슬롯일 경우, 이 효과로 버프 효과가 아닌 것은 최대 3회 중첩,",
         "  버프는 2단계까지만 중첩됩니다.",
-        "  <C>: 주는 대미지 0.75 증가.",
-        "  <O>: 받는 대미지 0.5 감소.",
-        "  <K>: 회복량 0.125배 증가.",
-        "  <E>: 재생 버프",
-        "  <S>: 저항 버프"
+        "  <C>: 주는 대미지 0.75 증가. / <O>: 받는 대미지 0.5 감소.",
+        "  <K>: 회복량 0.125배 증가. / <E>: 재생 버프 / <S>: 저항 버프"
 })
 public class Cokes extends CokesAbility implements ActiveHandler {
     private static final Config<Integer> RIGHT_COOL = Config.of(Cokes.class, "이펙트_쿨타임", 60, FunctionalInterfaces.positive(), FunctionalInterfaces.COOLDOWN);

@@ -142,13 +142,13 @@ public class Emily extends CokesAbility implements ActiveHandler {
     }
 
     public static Vector getForwardVector(Location location) {
-        float yaw = location.getYaw(), pitch = location.getPitch();
-        double radYaw = Math.toRadians(yaw), radPitch = Math.toRadians(pitch);
-        double cosPitch = FastMath.cos(radPitch);
+        final float yaw = location.getYaw(), pitch = location.getPitch();
+        final double radYaw = Math.toRadians(yaw), radPitch = Math.toRadians(pitch);
+        final double cosPitch = FastMath.cos(radPitch);
 
-        double x = -FastMath.sin(radYaw) * cosPitch;
-        double y = -FastMath.sin(radPitch);
-        double z = FastMath.cos(radYaw) * cosPitch;
+        final double x = -FastMath.sin(radYaw) * cosPitch;
+        final double y = -FastMath.sin(radPitch);
+        final double z = FastMath.cos(radYaw) * cosPitch;
 
         return new Vector(x, y, z).normalize();
     }

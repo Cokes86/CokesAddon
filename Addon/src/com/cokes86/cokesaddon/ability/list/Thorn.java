@@ -68,7 +68,7 @@ public class Thorn extends CokesAbility implements ActiveHandler {
 				}
 			} else if (!e.getDamager().equals(getPlayer()) && e.getEntity() instanceof Player) {
 				Random random = new Random();
-				if (random.nextDouble() < PERCENTAGE.getValue()) {
+				if (random.nextDouble() < PERCENTAGE.getValue().doubleValue()) {
 					double dam = e.getDamage();
 					((LivingEntity)e.getEntity()).damage((dam * MELEE_DAMAGE.getValue() / 100.0), getPlayer());
 					SoundLib.PIANO.playInstrument(e.getEntity().getLocation(), new Note(1, Tone.F, false));
