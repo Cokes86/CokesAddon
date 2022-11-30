@@ -150,7 +150,7 @@ public class Kevin extends CokesAbility implements ActiveHandler {
 
         @EventHandler
         public void onPlayerMove(PlayerMoveEvent e) {
-            if (e.getTo().distance(center) <= 5 && getGame().isParticipating(e.getPlayer()) && participant == null) {
+            if (e.getTo().distance(center) <= 5 && getGame().isParticipating(e.getPlayer()) && participant == null && !e.getPlayer().equals(getPlayer())) {
                 participant = getGame().getParticipant(e.getPlayer());
                 playerDetected += 1;
                 for (Participant participant : getGame().getParticipants()) {

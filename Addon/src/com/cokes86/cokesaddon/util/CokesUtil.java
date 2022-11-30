@@ -5,6 +5,7 @@ import daybreak.abilitywar.utils.library.MaterialX;
 import daybreak.google.common.base.Strings;
 import daybreak.google.common.collect.ImmutableSet;
 import daybreak.google.common.collect.ImmutableSet.Builder;
+
 import org.bukkit.Material;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Projectile;
@@ -43,7 +44,6 @@ public class CokesUtil {
                 }
             }
         }
-
         return attacker;
     }
 }

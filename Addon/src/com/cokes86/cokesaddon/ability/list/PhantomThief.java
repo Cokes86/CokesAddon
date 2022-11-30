@@ -106,20 +106,20 @@ public class PhantomThief extends CokesAbility implements ActiveHandler {
         if (target.getAbility() != null) {
             if (target.getAbility().hasSynergy()) {
                 int lowRank = 99, highRank = 0;
-                int myRank1 = SynergyFactory.getSynergyBase(target.getAbility().getSynergy().getRegistration()).getLeft().getManifest().rank().ordinal();
-                int myRank2 = SynergyFactory.getSynergyBase(target.getAbility().getSynergy().getRegistration()).getRight().getManifest().rank().ordinal();
+                int myRank1 = 6-SynergyFactory.getSynergyBase(target.getAbility().getSynergy().getRegistration()).getLeft().getManifest().rank().ordinal();
+                int myRank2 = 6-SynergyFactory.getSynergyBase(target.getAbility().getSynergy().getRegistration()).getRight().getManifest().rank().ordinal();
 
                 List<AbilityRegistration> returnAbilities = new ArrayList<>();
                 for (AbilityRegistration abilityRegistration : SynergyFactory.getSynergies()) {
-                    int checkRank1 = SynergyFactory.getSynergyBase(abilityRegistration).getLeft().getManifest().rank().ordinal();
-                    int checkRank2 = SynergyFactory.getSynergyBase(abilityRegistration).getRight().getManifest().rank().ordinal();
+                    int checkRank1 = 6-SynergyFactory.getSynergyBase(abilityRegistration).getLeft().getManifest().rank().ordinal();
+                    int checkRank2 = 6-SynergyFactory.getSynergyBase(abilityRegistration).getRight().getManifest().rank().ordinal();
 
                     if (checkRank1 + checkRank2 < lowRank) lowRank = checkRank1 + checkRank2;
                     if (checkRank1 + checkRank2 > highRank) highRank = checkRank1 + checkRank2;
                 }
                 for (AbilityRegistration abilityRegistration : SynergyFactory.getSynergies()) {
-                    int checkRank1 = SynergyFactory.getSynergyBase(abilityRegistration).getLeft().getManifest().rank().ordinal();
-                    int checkRank2 = SynergyFactory.getSynergyBase(abilityRegistration).getRight().getManifest().rank().ordinal();
+                    int checkRank1 = 6-SynergyFactory.getSynergyBase(abilityRegistration).getLeft().getManifest().rank().ordinal();
+                    int checkRank2 = 6-SynergyFactory.getSynergyBase(abilityRegistration).getRight().getManifest().rank().ordinal();
                     if (myRank1 + myRank2 == lowRank && checkRank1 + checkRank2 >= highRank - 3) {
                         returnAbilities.add(abilityRegistration);
                     } else if (myRank1 + myRank2 < checkRank1 + checkRank2){
@@ -131,10 +131,10 @@ public class PhantomThief extends CokesAbility implements ActiveHandler {
 
                 try {
                     target.getAbility().setSynergy(newOne);
-                    target.getPlayer().sendMessage("[팬텀 시프] 능력이 재배정되었습니다. 당신의 능력은 §e"+newOne.getManifest().name()+"§f입니다.");
-                    getPlayer().sendMessage(String.format("[팬텀 시프] §e%s§f님의 능력을 재배정하였습니다.", target.getPlayer().getDisplayName()));
+                    target.getPlayer().sendMessage("[팬텀 시프] 시너지 능력이 재배정되었습니다. 당신의 시너지 능력은 §e"+newOne.getManifest().name()+"§f입니다.");
+                    getPlayer().sendMessage(String.format("[팬텀 시프] §e%s§f님의 시너지 능력을 재배정하였습니다.", target.getPlayer().getDisplayName()));
                     if (myRank1 + myRank2 == lowRank) {
-                        getPlayer().sendMessage(String.format("[팬텀 시프] §e%s§f님의 능력이 §eC등급§f이기에 <%s구제§f>하였습니다.",
+                        getPlayer().sendMessage(String.format("[팬텀 시프] §e%s§f님의 능력의 등급이 가장 낮았기에 <%s구제§f>하였습니다.",
                                 target.getPlayer().getDisplayName(),
                                 "§"+newOne.getManifest().rank().getRankName().charAt(1)));
                     }
@@ -159,8 +159,8 @@ public class PhantomThief extends CokesAbility implements ActiveHandler {
                     AbilityRegistration newOne = new Random().pick(returnAbilities);
 
                     try {
-                        targetMix.setAbility(newOne, targetMix.getSecond().getRegistration());
-                        target.getPlayer().sendMessage("[팬텀 시프] 첫번째 능력이 재배정되었습니다. 당신의 능력은 §e"+newOne.getManifest().name()+"§f입니다.");
+                        targetMix.setFirst(newOne);
+                        target.getPlayer().sendMessage("[팬텀 시프] 첫번째 능력이 재배정되었습니다. 당신의 첫번째 능력은 §e"+newOne.getManifest().name()+"§f입니다.");
                         getPlayer().sendMessage(String.format("[팬텀 시프] §e%s§f님의 첫번째 능력을 재배정하였습니다.", target.getPlayer().getDisplayName()));
                         if (rank == Rank.C) {
                             getPlayer().sendMessage(String.format("[팬텀 시프] §e%s§f님의 첫번째 능력이 §eC등급§f이기에 <%s구제§f>하였습니다.",
@@ -187,8 +187,8 @@ public class PhantomThief extends CokesAbility implements ActiveHandler {
                     AbilityRegistration newOne = new Random().pick(returnAbilities);
 
                     try {
-                        targetMix.setAbility(targetMix.getFirst().getRegistration(), newOne);
-                        target.getPlayer().sendMessage("[팬텀 시프] 두번째 능력이 재배정되었습니다. 당신의 능력은 §e"+newOne.getManifest().name()+"§f입니다.");
+                        targetMix.setSecond(newOne);
+                        target.getPlayer().sendMessage("[팬텀 시프] 두번째 능력이 재배정되었습니다. 당신의 두번째 능력은 §e"+newOne.getManifest().name()+"§f입니다.");
                         getPlayer().sendMessage(String.format("[팬텀 시프] §e%s§f님의 두번째 능력을 재배정하였습니다.", target.getPlayer().getDisplayName()));
                         if (rank == Rank.C) {
                             getPlayer().sendMessage(String.format("[팬텀 시프] §e%s§f님의 두번째 능력이 §eC등급§f이기에 <%s구제§f>하였습니다.",

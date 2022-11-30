@@ -68,7 +68,7 @@ public class Ovisni extends CokesAbility implements ActiveHandler {
 					cooldownTimer.start();
 					return true;
 				} else {
-					getPlayer().sendMessage("§2맹독 카운터§f를 가진 플레이어가 존재하지 않습니다.");
+					getPlayer().sendMessage("§2맹독§f을 가진 플레이어가 존재하지 않습니다.");
 				}
 			} else if (clickType == ClickType.LEFT_CLICK) {
 				getPlayer().sendMessage("§e===== §2맹독§f 수치 §e=====");

@@ -201,7 +201,7 @@ public class Mir extends CokesAbility implements ActiveHandler {
 		if (e.getRightClicked().equals(armorStand)) e.setCancelled(true);
 	}
 
-	enum Element {
+	private enum Element {
 		IFRIT("§c이프리트",MaterialX.REDSTONE_BLOCK.getMaterial(), RGB.of(255, 1, 1), RANGE_IFRIT.getValue()),
 		SHADE("§7셰이드",MaterialX.COAL_BLOCK.getMaterial(), RGB.of(1, 1, 1), RANGE_SHADE.getValue()),
 		THUNDERBIRD("§b썬더버드",MaterialX.LAPIS_BLOCK.getMaterial(), RGB.of(1, 1, 255), RANGE_THUNDER.getValue()),

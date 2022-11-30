@@ -384,8 +384,8 @@ public class Boxer extends CokesAbility implements TargetHandler {
             return this;
         }
 
-        public SkillTimer addCombination(char c) {
-            combination.add(c);
+        public SkillTimer addCombination(char combinationInitial) {
+            combination.add(combinationInitial);
             return this;
         }
 

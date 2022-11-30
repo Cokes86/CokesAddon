@@ -1,6 +1,5 @@
 package com.cokes86.cokesaddon.synergy.list;
 
-import com.cokes86.cokesaddon.event.CEntityDamageEvent;
 import com.cokes86.cokesaddon.synergy.CokesSynergy;
 import com.cokes86.cokesaddon.util.FunctionalInterfaces;
 import daybreak.abilitywar.ability.AbilityManifest;
@@ -15,44 +14,52 @@ import daybreak.abilitywar.utils.base.minecraft.damage.Damages;
 import daybreak.abilitywar.utils.base.minecraft.nms.NMS;
 import daybreak.abilitywar.utils.library.ParticleLib;
 import daybreak.abilitywar.utils.library.SoundLib;
+
+import java.util.Arrays;
+
 import org.bukkit.Material;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.attribute.AttributeInstance;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Projectile;
+import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityShootBowEvent;
 import org.bukkit.event.entity.ProjectileHitEvent;
 
 @AbilityManifest(name = "사신의 화살", rank = AbilityManifest.Rank.S, species = AbilityManifest.Species.GOD, explain = {
-		"매 $[duration]마다 사신의 낫이 1개씩 충전됩니다. (최대 5회)",
-		"철괴 우클릭 시 죽음의 화살을 장전하며, 발사할 수 있습니다. $[cool]",
+		"매 $[DURATION]마다 사신의 낫이 1개씩 충전됩니다. (최대 5회)",
+		"철괴 우클릭 시 죽음의 화살을 장전하며, 발사할 수 있습니다. $[COOLDOWN]",
 		"죽음의 화살을 맞은 엔티티는 사신의 낫의 개수에 따라 최대체력에 비례한 관통 대미지를 줍니다.",
-		"1개: $[damage1]%, 2개: $[damage2]%, 3개: $[damage3]%, 4개: $[damage4]%, 5개: $[damage5]%"
+		"1개: $[DAMAGE1]%, 2개: $[DAMAGE2]%, 3개: $[DAMAGE3]%, 4개: $[DAMAGE4]%, 5개: $[DAMAGE5]%"
 })
 public class ReaperArrow extends CokesSynergy implements ActiveHandler {
-	private static final Config<Integer> duration = Config.of(ReaperArrow.class, "충전시간", 60, Config.Condition.TIME);
-	private static final Config<Integer> cool = Config.of(ReaperArrow.class, "쿨타임", 60, Config.Condition.COOLDOWN);
-	private static final Config<Double> damage1 = Config.of(ReaperArrow.class, "체력비례대미지.1스택", 10.0, FunctionalInterfaces.greaterThanOrEqual(0.0).and(FunctionalInterfaces.lessThanOrEqual(100.0)));
-	private static final Config<Double> damage2 = Config.of(ReaperArrow.class, "체력비례대미지.2스택", 25.0, FunctionalInterfaces.greaterThanOrEqual(0.0).and(FunctionalInterfaces.lessThanOrEqual(100.0)));
-	private static final Config<Double> damage3 = Config.of(ReaperArrow.class, "체력비례대미지.3스택", 50.0, FunctionalInterfaces.greaterThanOrEqual(0.0).and(FunctionalInterfaces.lessThanOrEqual(100.0)));
-	private static final Config<Double> damage4 = Config.of(ReaperArrow.class, "체력비례대미지.4스택", 75.0, FunctionalInterfaces.greaterThanOrEqual(0.0).and(FunctionalInterfaces.lessThanOrEqual(100.0)));
-	private static final Config<Double> damage5 = Config.of(ReaperArrow.class, "체력비례대미지.5스택", 95.0, FunctionalInterfaces.greaterThanOrEqual(0.0).and(FunctionalInterfaces.lessThanOrEqual(100.0)));
-	private static final double[] stackDamage;
+	private static final Config<Integer> DURATION = Config.of(ReaperArrow.class, "charge-time", 60, Config.Condition.TIME,
+			"# 사신의 낫이 충전되는 시간",
+			"# 기본값 : 60 (초)");
+	private static final Config<Integer> COOLDOWN = Config.of(ReaperArrow.class, "cooldown", 60, Config.Condition.COOLDOWN,
+	"# 쿨타임",
+	"# 기본값 : 60 (초)");
+	private static final Config<Double> VALUE_1 = Config.of(ReaperArrow.class, "damage-value1", 10.0, FunctionalInterfaces.greaterThanOrEqual(0.0).and(FunctionalInterfaces.lessThanOrEqual(100.0)));
+	private static final Config<Double> VALUE_2 = Config.of(ReaperArrow.class, "damage-value2", 25.0, FunctionalInterfaces.greaterThanOrEqual(0.0).and(FunctionalInterfaces.lessThanOrEqual(100.0)));
+	private static final Config<Double> VALUE_3 = Config.of(ReaperArrow.class, "damage-value3", 50.0, FunctionalInterfaces.greaterThanOrEqual(0.0).and(FunctionalInterfaces.lessThanOrEqual(100.0)));
+	private static final Config<Double> VALUE_4 = Config.of(ReaperArrow.class, "damage-value4", 75.0, FunctionalInterfaces.greaterThanOrEqual(0.0).and(FunctionalInterfaces.lessThanOrEqual(100.0)));
+	private static final Config<Double> VALUE_5 = Config.of(ReaperArrow.class, "damage-value5", 95.0, FunctionalInterfaces.greaterThanOrEqual(0.0).and(FunctionalInterfaces.lessThanOrEqual(100.0)));
+
+	private static final double DAMAGE1, DAMAGE2, DAMAGE3, DAMAGE4, DAMAGE5;
 
 	static {
-		if (damage1.getValue() > damage2.getValue() || damage2.getValue() > damage3.getValue() || damage3.getValue() > damage4.getValue() || damage4.getValue() > damage5.getValue()) {
-			damage1.setValue(damage1.getDefaultValue());
-			damage2.setValue(damage2.getDefaultValue());
-			damage3.setValue(damage3.getDefaultValue());
-			damage4.setValue(damage4.getDefaultValue());
-			damage5.setValue(damage5.getDefaultValue());
-		}
-		stackDamage = new double[]{damage1.getValue(), damage2.getValue(), damage3.getValue(), damage4.getValue(), damage5.getValue()};
+		double[] stackDamage = {VALUE_1.getValue(), VALUE_2.getValue(), VALUE_3.getValue(), VALUE_4.getValue(), VALUE_5.getValue()};
+		Arrays.sort(stackDamage);
+		DAMAGE1 = stackDamage[0];
+		DAMAGE2 = stackDamage[1];
+		DAMAGE3 = stackDamage[2];
+		DAMAGE4 = stackDamage[3];
+		DAMAGE5 = stackDamage[4];
 	}
 
 	private final AbstractGame.Participant.ActionbarNotification.ActionbarChannel ac = newActionbarChannel();
 	private final RGB rgb = RGB.of(1, 1, 1);
-	private final Cooldown cooldown = new Cooldown(cool.getValue());
+	private final Cooldown cooldown = new Cooldown(COOLDOWN.getValue());
 	private boolean ready = false;
 	private Projectile reaperArrow = null;
 	private final AbilityTimer effect = new AbilityTimer() {
@@ -68,8 +75,8 @@ public class ReaperArrow extends CokesSynergy implements ActiveHandler {
 				return;
 			}
 
-			int reloadCount = Wreck.isEnabled(GameManager.getGame()) ? (int) (Wreck.calculateDecreasedAmount(20) * duration.getValue()) : duration.getValue();
-			if (reloadCount == 0) reloadCount = (int) (0.2 * duration.getValue());
+			int reloadCount = Wreck.isEnabled(GameManager.getGame()) ? (int) (Wreck.calculateDecreasedAmount(20) * DURATION.getValue()) : DURATION.getValue();
+			if (reloadCount == 0) reloadCount = (int) (0.2 * DURATION.getValue());
 			if (arg % reloadCount == 0) {
 				if (stack >= 5) return;
 				stack++;
@@ -112,14 +119,15 @@ public class ReaperArrow extends CokesSynergy implements ActiveHandler {
 	}
 
 	@SubscribeEvent
-	public void onCEntityDamage(CEntityDamageEvent e) {
+	public void onCEntityDamage(EntityDamageByEntityEvent e) {
 		if (e.getDamager() != null && e.getDamager().equals(reaperArrow) && e.getEntity() instanceof LivingEntity) {
 			LivingEntity entity = (LivingEntity) e.getEntity();
 			e.setCancelled(true);
 			AttributeInstance attribute = entity.getAttribute(Attribute.GENERIC_MAX_HEALTH);
 			if (attribute != null) {
 				double max_Health = attribute.getValue();
-				Damages.damageFixed(entity, getPlayer(), (float) (max_Health * stackDamage[stack - 1]));
+				double percentage = stack == 5 ? DAMAGE5 : (stack == 4 ? DAMAGE4 : (stack == 3 ? DAMAGE3 : (stack == 2 ? DAMAGE2 : (stack == 1 ? DAMAGE1 : 0))));
+				Damages.damageFixed(entity, getPlayer(), (float) (max_Health * ((percentage)/100.0f)));
 				stack = 0;
 			}
 		}

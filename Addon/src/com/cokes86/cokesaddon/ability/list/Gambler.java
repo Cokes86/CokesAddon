@@ -43,7 +43,7 @@ public class Gambler extends CokesAbility implements ActiveHandler {
 			"# 기본값: 10(%)");
 	private static final Config<Integer> PD_COOLDOWN = Config.of(Gambler.class, "cooldown", 60, FunctionalInterfaces.positive(), FunctionalInterfaces.COOLDOWN,
 			"# 패널티 다이스 쿨타임",
-			"# 기본값: 15(초)");
+			"# 기본값: 60(초)");
 
 	private static final int MIN, MAX;
 

@@ -121,8 +121,6 @@ public class Blocks extends CokesAbility implements ActiveHandler {
 			case RESTRICTION_SET:
 				PotionEffects.INVISIBILITY.removePotionEffect(getPlayer());
 				Objects.requireNonNull(getPlayer().getAttribute(Attribute.GENERIC_KNOCKBACK_RESISTANCE)).setBaseValue(knockback);
-				break;
-			default:
 		}
 	}
 

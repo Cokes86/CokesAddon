@@ -76,7 +76,6 @@ public class Fish extends CokesAbility implements ActiveHandler {
 				up++;
 				if (up % 20 == 0 && moisture < 10) {
 					moisture++;
-					actionbarChannel.update("§b" + Strings.repeat("●", moisture) + "§7" + Strings.repeat("○", 10 - moisture));
 				}
 				PotionEffects.WATER_BREATHING.addPotionEffect(getPlayer(), 21, 0, true);
 			} else {
@@ -88,15 +87,15 @@ public class Fish extends CokesAbility implements ActiveHandler {
 					PotionEffects.SLOW.addPotionEffect(getPlayer(), 21, 0, true);
 					count++;
 					if (count % 60 == 0) {
-						if (moisture > 0) {
-							moisture--;
-							actionbarChannel.update("§b" + Strings.repeat("●", moisture) + "§7" + Strings.repeat("○", 10 - moisture));
-						} else {
+						moisture--;
+						if (moisture < 0) {
 							Damages.damageFixed(getPlayer(), getPlayer(), 1);
+							moisture = 0;
 						}
 					}
 				}
 			}
+			actionbarChannel.update("§b" + Strings.repeat("●", moisture) + "§7" + Strings.repeat("○", 10 - moisture));
 		}
 	};
 

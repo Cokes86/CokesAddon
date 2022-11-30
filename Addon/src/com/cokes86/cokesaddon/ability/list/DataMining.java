@@ -152,7 +152,7 @@ public class DataMining extends CokesAbility implements ActiveHandler {
 		int result = 0;
 		for (Participant participant : getGame().getParticipants()) {
 			if (participant.getAbility()!=null) {
-				daybreak.abilitywar.ability.AbilityBase ability = participant.getAbility();
+				AbilityBase ability = participant.getAbility();
 				if (ability instanceof Mix) {
 					Mix mix = (Mix) ability;
 					if (!(mix.getFirst() instanceof ActiveHandler && mix.getSecond() instanceof ActiveHandler)) {
@@ -168,9 +168,8 @@ public class DataMining extends CokesAbility implements ActiveHandler {
 
 	@SubscribeEvent
 	public void onEntityDamage(CEntityDamageEvent e) {
-
 		if (e.getEntity().equals(getPlayer())) {
-			e.setDamage(e.getDamage() * (1 - defenseUp.getValue()*2 / max_count * defense_count));
+			e.setDamage(e.getDamage() * (1 - (defenseUp.getValue()*2 / max_count * defense_count)/100.0));
 		}
 
 		Entity attacker = e.getDamager();
@@ -232,6 +231,11 @@ public class DataMining extends CokesAbility implements ActiveHandler {
 				}
 				hologram.setText(abilityName + "  §c♥"+(int)participant.getPlayer().getHealth());
 				hologram.teleport(participant.getPlayer().getLocation().clone().add(0,2.2,0));
+				if (NMS.isInvisible(participant.getPlayer())) {
+					hologram.hide(getPlayer());
+				} else {
+					hologram.display(getPlayer());
+				}
 			}
 
 			super.run(count);
