@@ -1,0 +1,7 @@
+#NOTE: This is a Maven Resolver internal implementation file, its format can be changed without prior notice.
+#Tue Sep 06 19:43:50 KST 2022
+minecraft-server-1.19.2-R0.1-SNAPSHOT.pom>=
+minecraft-server-1.19.2-R0.1-SNAPSHOT-maps-mojang.txt>=
+minecraft-server-1.19.2-R0.1-SNAPSHOT-maps-spigot-members.csrg>=
+minecraft-server-1.19.2-R0.1-SNAPSHOT-maps-spigot.csrg>=
+minecraft-server-1.19.2-R0.1-SNAPSHOT.jar>=

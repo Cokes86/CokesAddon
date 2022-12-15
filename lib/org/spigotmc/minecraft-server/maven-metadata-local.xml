@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<metadata>
+  <groupId>org.spigotmc</groupId>
+  <artifactId>minecraft-server</artifactId>
+  <versioning>
+    <versions>
+      <version>1.19.2-R0.1-SNAPSHOT</version>
+      <version>1.17.1-R0.1-SNAPSHOT</version>
+      <version>1.16.5-SNAPSHOT</version>
+    </versions>
+    <lastUpdated>20220906105015</lastUpdated>
+  </versioning>
+</metadata>

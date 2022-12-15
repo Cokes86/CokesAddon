@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<metadata modelVersion="1.1.0">
+  <groupId>org.bukkit</groupId>
+  <artifactId>bukkit</artifactId>
+  <version>1.19.2-R0.1-SNAPSHOT</version>
+  <versioning>
+    <snapshot>
+      <localCopy>true</localCopy>
+    </snapshot>
+    <lastUpdated>20220906102241</lastUpdated>
+    <snapshotVersions>
+      <snapshotVersion>
+        <classifier>shaded</classifier>
+        <extension>jar</extension>
+        <value>1.19.2-R0.1-SNAPSHOT</value>
+        <updated>20220906102241</updated>
+      </snapshotVersion>
+      <snapshotVersion>
+        <extension>jar</extension>
+        <value>1.19.2-R0.1-SNAPSHOT</value>
+        <updated>20220906102241</updated>
+      </snapshotVersion>
+      <snapshotVersion>
+        <extension>pom</extension>
+        <value>1.19.2-R0.1-SNAPSHOT</value>
+        <updated>20220906102241</updated>
+      </snapshotVersion>
+    </snapshotVersions>
+  </versioning>
+</metadata>
