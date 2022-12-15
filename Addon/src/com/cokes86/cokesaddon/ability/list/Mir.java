@@ -190,7 +190,7 @@ public class Mir extends CokesAbility implements ActiveHandler {
 
 		if (damager != null && element == Element.THUNDERBIRD && armorStand != null && damager.equals(getPlayer()) && getPlayer().getLocation().subtract(armorStand.getLocation().clone().add(0, -5, 0)).length() <= element.range) {
 			if (!e.getEntity().equals(armorStand)) {
-				e.setDamage(e.getDamage() * DAMAGE_INCREMENT.getValue());
+				e.setDamage(e.getDamage() * DAMAGE_INCREMENT.getValue() / 100.0);
 				e.getEntity().getWorld().strikeLightningEffect(e.getEntity().getLocation());
 			}
 		}

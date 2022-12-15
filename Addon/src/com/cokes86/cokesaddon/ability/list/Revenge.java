@@ -5,6 +5,8 @@ import com.cokes86.cokesaddon.event.CEntityDamageEvent;
 import com.cokes86.cokesaddon.util.CokesUtil;
 import com.cokes86.cokesaddon.util.FunctionalInterfaces;
 import com.cokes86.cokesaddon.util.nms.NMSUtil;
+
+import daybreak.abilitywar.AbilityWar;
 import daybreak.abilitywar.ability.AbilityManifest;
 import daybreak.abilitywar.ability.AbilityManifest.Rank;
 import daybreak.abilitywar.ability.AbilityManifest.Species;
@@ -13,13 +15,19 @@ import daybreak.abilitywar.game.AbstractGame.Participant;
 import daybreak.abilitywar.game.AbstractGame.Participant.ActionbarNotification.ActionbarChannel;
 import daybreak.abilitywar.utils.base.concurrent.TimeUnit;
 import daybreak.abilitywar.utils.base.minecraft.damage.Damages;
-import daybreak.abilitywar.utils.base.minecraft.nms.NMS;
+
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.HandlerList;
+import org.bukkit.event.Listener;
+import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
 
 import java.text.DecimalFormat;
+import java.util.HashMap;
 
 @AbilityManifest(name = "복수", rank = Rank.A, species = Species.HUMAN, explain = {
 		"상대방을 공격할 시 최근에 플레이어에게 받았던 대미지의 $[PERCENTAGE]% 만큼의",
@@ -30,6 +38,7 @@ public class Revenge extends CokesAbility {
 	private final DecimalFormat df = new DecimalFormat("0.##");
 	private double magicfixed_damage = 0;
 	private final ActionbarChannel ac = newActionbarChannel();
+	private final HashMap<Player, AdditionalHit> map = new HashMap<>();
 
 	public Revenge(Participant participant) {
 		super(participant);
@@ -44,23 +53,66 @@ public class Revenge extends CokesAbility {
 	@SubscribeEvent
 	public void onEntityDamage(CEntityDamageEvent e) {
 		if (e.getDamager() == null) return;
-		if (e.getEntity().equals(getPlayer()) && (e.getDamager() instanceof Player || NMS.isArrow(e.getDamager()))) {
-			magicfixed_damage = e.getFinalDamage() * PERCENTAGE.getValue() / 100;
+		Entity damager = CokesUtil.getDamager(e.getDamager());
+		if (e.getEntity().equals(getPlayer()) && damager instanceof Player) {
+			magicfixed_damage = e.getFinalDamage() * PERCENTAGE.getValue() / 100.0;
 			ac.update(ChatColor.BLUE + " 고정 대미지 : " + df.format(magicfixed_damage));
 		} else {
-			Entity damager = CokesUtil.getDamager(e.getDamager());
 			if (e.getCause() == DamageCause.VOID) return;
-			Player target = (Player) e.getEntity();
-			if (damager.equals(getPlayer()) && e.getEntity() instanceof Player && !e.getEntity().equals(getPlayer()) && !e.isCancelled()) {
-				new AbilityTimer(1) {
-					public void run(int arg0) {
-						if (!target.isDead() && Damages.canDamage(target, getPlayer(), DamageCause.VOID, (float) magicfixed_damage)) {
-							target.setNoDamageTicks(0);
-							NMSUtil.damageVoid(target, (float) magicfixed_damage);
-							target.setNoDamageTicks(9);
-						}
-					}
-				}.setInitialDelay(TimeUnit.TICKS, 1).setPeriod(TimeUnit.TICKS, 1).start();
+			if (damager.equals(getPlayer()) && e.getEntity() instanceof Player && !e.getEntity().equals(getPlayer())) {
+				Player target = (Player) e.getEntity();
+				if (map.containsKey(target)) {
+					e.setCancelled(true);
+				} else {
+					AdditionalHit hit = new AdditionalHit(target, magicfixed_damage);
+					hit.start();
+					map.put(target, hit);
+				}
+			}
+		}
+	}
+
+	private class AdditionalHit extends AbilityTimer implements Listener {
+		private final Player player;
+		private final double damage;
+		public AdditionalHit(Player player, double damage) {
+			super(10);
+			this.player = player;
+			this.damage = damage;
+			setPeriod(TimeUnit.TICKS, 1);
+		}
+
+		public void onStart() {
+			if (!player.isDead() && Damages.canDamage(player, getPlayer(), DamageCause.VOID, damage)) {
+				player.setNoDamageTicks(0);
+				NMSUtil.damageVoid(player, (float) magicfixed_damage);
+			} else {
+				this.stop(true);
+			}
+			Bukkit.getPluginManager().registerEvents(this, AbilityWar.getPlugin());
+		}
+
+		@Override
+		public void run(int a) {
+			if (player.getNoDamageTicks() == 0) {
+				this.stop(false);
+			}
+		}
+
+		public void onEnd() {
+			HandlerList.unregisterAll(this);
+			map.remove(player);
+		}
+
+		public void onSilentEnd() {
+			HandlerList.unregisterAll(this);
+			map.remove(player);
+		}
+
+		@EventHandler
+		public void onEntityDamage(EntityDamageEvent e) {
+			if (e.getEntity().equals(player) && isRunning()) {
+				e.setCancelled(true);
 			}
 		}
 	}

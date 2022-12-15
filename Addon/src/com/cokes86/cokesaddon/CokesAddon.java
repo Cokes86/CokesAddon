@@ -5,18 +5,24 @@ import com.cokes86.cokesaddon.ability.CokesAbility;
 import com.cokes86.cokesaddon.command.CokesCommand;
 import com.cokes86.cokesaddon.effect.AddonEffectRegistry;
 import com.cokes86.cokesaddon.event.CEntityDamageEvent;
-import com.cokes86.cokesaddon.gamemode.disguiseparty.DisguiseParty;
-import com.cokes86.cokesaddon.gamemode.tailcatch.TailCatch;
+import com.cokes86.cokesaddon.game.edible.roulette.Roulette;
+import com.cokes86.cokesaddon.game.gamemode.disguiseparty.DisguiseParty;
+import com.cokes86.cokesaddon.game.gamemode.tailcatch.TailCatch;
 import com.cokes86.cokesaddon.synergy.AddonSynergyFactory;
 import com.cokes86.cokesaddon.synergy.CokesSynergy;
 import daybreak.abilitywar.addon.Addon;
 import daybreak.abilitywar.addon.AddonLoader;
 import daybreak.abilitywar.game.Category;
 import daybreak.abilitywar.game.GameManager;
+import daybreak.abilitywar.game.Category.GameCategory;
 import daybreak.abilitywar.game.event.GameCreditEvent;
+import daybreak.abilitywar.game.event.GameStartEvent;
+import daybreak.abilitywar.game.event.InvincibilityStatusChangeEvent;
+import daybreak.abilitywar.game.list.blind.BlindAbilityWar;
 import daybreak.abilitywar.game.list.mix.AbstractMix;
 import daybreak.abilitywar.game.manager.GameFactory;
 import daybreak.abilitywar.utils.base.Messager;
+
 import org.bukkit.Bukkit;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -97,11 +103,30 @@ public class CokesAddon extends Addon implements Listener {
 		if (!event.isCancelled()) Bukkit.getPluginManager().callEvent(new CEntityDamageEvent(e));
 	}
 
+	private Roulette roulette;
+
+	@EventHandler
+	public void onGameStart(GameStartEvent e) {
+		if (e.getGame() instanceof BlindAbilityWar) return;
+		roulette = new Roulette(e.getGame());
+	}
+
+	@EventHandler
+	public void onInvincibilityStatusChange(InvincibilityStatusChangeEvent e) {
+		if (GameFactory.getByCategory(GameCategory.DEBUG).contains(e.getGame().getRegistration())) {
+			if (e.getNewStatus()) {
+				roulette.pause();
+			} else {
+				roulette.resume();
+			}
+		}
+	}
+
 	public static File getAddonFile(String name) {
 		return new File("plugins/AbilityWar/Addon/CokesAddon/"+name);
 	}
 
-	static class ConfigLoader implements Runnable {
+	private static class ConfigLoader implements Runnable {
 		@Override
 		public void run() {
 			CokesAbility.config.update();
@@ -109,7 +134,7 @@ public class CokesAddon extends Addon implements Listener {
 		}
 	}
 
-	class OtherAddonLoader implements Runnable {
+	private class OtherAddonLoader implements Runnable {
 		@Override
 		public void run() {
 			try {

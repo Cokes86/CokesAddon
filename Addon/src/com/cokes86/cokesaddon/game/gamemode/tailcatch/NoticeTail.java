@@ -1,4 +1,4 @@
-package com.cokes86.cokesaddon.gamemode.tailcatch;
+package com.cokes86.cokesaddon.game.gamemode.tailcatch;
 
 import daybreak.abilitywar.game.AbstractGame.GameUpdate;
 import daybreak.abilitywar.game.AbstractGame.Observer;

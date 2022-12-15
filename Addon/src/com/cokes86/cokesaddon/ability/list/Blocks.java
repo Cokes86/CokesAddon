@@ -174,7 +174,25 @@ public class Blocks extends CokesAbility implements ActiveHandler {
 				e.setCancelled(true);
 			} else {
 				if (condition.equals(Condition.STONE)) {
-					e.setDamage(e.getDamage() * (100.0 - stone.getValue()) / 100);
+					if (e.getDamager() instanceof Player) {
+						Player damager = (Player) e.getDamager();
+						ItemStack i = damager.getInventory().getItemInMainHand();
+						Material mainhand = i.getType();
+						Pickaxe p = Pickaxe.getPickaxe(mainhand);
+						if (p != null) {
+							double damage = p.getDamage();
+							int level = i.getEnchantmentLevel(Enchantment.DIG_SPEED);
+							if (level > 0) {
+								e.setDamage((damage + (level + 1) * 0.5) * 1.25);
+							} else {
+								e.setDamage(damage  * 1.25);
+							}
+						} else {
+							e.setDamage(e.getDamage() * (100.0 - stone.getValue()) / 100);
+						}
+					} else {
+						e.setDamage(e.getDamage() * (100.0 - stone.getValue()) / 100.0);
+					}
 				} else if (condition.equals(Condition.SAND)) {
 					if (e.getCause().equals(DamageCause.FALL)) {
 						e.setCancelled(true);
@@ -194,29 +212,6 @@ public class Blocks extends CokesAbility implements ActiveHandler {
 						getPlayer().setVelocity(vec);
 						Bukkit.getScheduler().runTaskLater(AbilityWar.getPlugin(), () -> getPlayer().setVelocity(vec),
 								1L);
-					}
-				}
-			}
-		}
-
-		if (e.getEntity().equals(getPlayer())) {
-			if (e.getDamager() instanceof Player) {
-				Player damager = (Player) e.getDamager();
-				if (condition.equals(Condition.STONE)) {
-					ItemStack i = damager.getInventory().getItemInMainHand();
-					Material mainhand = i.getType();
-					Pickaxe p = Pickaxe.getPickaxe(mainhand);
-					if (p != null) {
-						double damage = p.getDamage();
-
-						int level = i.getEnchantmentLevel(Enchantment.DIG_SPEED);
-						if (level > 0) {
-							e.setDamage((damage + (level + 1) * 0.5) * 1.25);
-						} else {
-							e.setDamage(damage  * 1.25);
-						}
-					} else {
-						e.setDamage(e.getDamage() * (100.0 - stone.getValue()) / 100);
 					}
 				}
 			}

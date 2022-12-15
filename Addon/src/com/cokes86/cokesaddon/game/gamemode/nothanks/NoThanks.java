@@ -1,4 +1,4 @@
-package com.cokes86.cokesaddon.gamemode.nothanks;
+package com.cokes86.cokesaddon.game.gamemode.nothanks;
 
 import java.util.Collection;
 import java.util.Collections;

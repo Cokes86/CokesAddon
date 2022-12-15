@@ -1,4 +1,4 @@
-package com.cokes86.cokesaddon.gamemode.disguiseparty;
+package com.cokes86.cokesaddon.game.gamemode.disguiseparty;
 
 import com.cokes86.cokesaddon.util.nms.NMSUtil;
 import daybreak.abilitywar.AbilityWar;

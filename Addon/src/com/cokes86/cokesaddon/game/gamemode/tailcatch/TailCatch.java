@@ -1,4 +1,4 @@
-package com.cokes86.cokesaddon.gamemode.tailcatch;
+package com.cokes86.cokesaddon.game.gamemode.tailcatch;
 
 import com.cokes86.cokesaddon.CokesAddon;
 import com.cokes86.cokesaddon.util.AttributeUtil;
