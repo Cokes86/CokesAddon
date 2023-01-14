@@ -90,7 +90,8 @@ public class AddonAbilityFactory {
 		registerAbility(LonelyRoad.class);
 
 		//1.10.0
-		registerTestAbility(Dual.class);
+		registerAbility(Dual.class);
+		registerAbility(EnergyTaker.class);
 	}
 
 	public static void registerAbility(Class<? extends CokesAbility> clazz) {

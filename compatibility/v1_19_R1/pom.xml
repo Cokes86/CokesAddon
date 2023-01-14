@@ -16,7 +16,7 @@
         <maven.compiler.source>17</maven.compiler.source>
         <maven.compiler.target>17</maven.compiler.target>
         <jdk.version>17</jdk.version>
-        <jdk>/usr/lib/jvm/jdk-17.0.2</jdk>
+        <jdk>/home/codespace/java/17.0.5-ms</jdk>
     </properties>
 
     <dependencies>

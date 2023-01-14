@@ -1,4 +1,4 @@
-package com.cokes86.cokesaddon.game.edible.roulette.wizard;
+package com.cokes86.cokesaddon.game.module.roulette.wizard;
 
 import daybreak.abilitywar.utils.base.logging.Logger;
 import daybreak.abilitywar.utils.base.minecraft.item.builder.ItemBuilder;
@@ -16,7 +16,7 @@ import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.Plugin;
 
-import com.cokes86.cokesaddon.game.edible.roulette.Roulette;
+import com.cokes86.cokesaddon.game.module.roulette.Roulette;
 
 public abstract class RouletteWizard {
     static final Logger logger = Logger.getLogger(RouletteWizard.class.getName());

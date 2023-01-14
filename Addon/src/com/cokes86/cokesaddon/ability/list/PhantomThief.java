@@ -208,19 +208,20 @@ public class PhantomThief extends CokesAbility implements ActiveHandler {
     }
 
     private class PhantomShow extends Duration implements Listener {
-        private final IDummy phantom;
+        private IDummy phantom;
 
         public PhantomShow() {
             super(60, cooldown);
             setPeriod(TimeUnit.TICKS, 1);
-            phantom = NMSUtil.createDummy(getPlayer().getLocation(), getPlayer());
         }
 
         @Override
         protected void onDurationStart() {
             if (phantom != null) {
                 phantom.remove();
+                phantom = null;
             }
+            phantom = NMSUtil.createDummy(getPlayer().getLocation(), getPlayer());
             phantom.getBukkitEntity().getInventory().setStorageContents(getPlayer().getInventory().getStorageContents());
             for (Participant participant : getGame().getParticipants()) {
                 phantom.display(participant.getPlayer());
@@ -235,6 +236,7 @@ public class PhantomThief extends CokesAbility implements ActiveHandler {
             phantom.remove();
             NMSUtil.showPlayer(getParticipant());
             getParticipant().attributes().TARGETABLE.setValue(true);
+            phantom = null;
             HandlerList.unregisterAll(this);
         }
 
@@ -243,6 +245,7 @@ public class PhantomThief extends CokesAbility implements ActiveHandler {
             phantom.remove();
             NMSUtil.showPlayer(getParticipant());
             getParticipant().attributes().TARGETABLE.setValue(true);
+            phantom = null;
             HandlerList.unregisterAll(this);
         }
 
@@ -252,13 +255,13 @@ public class PhantomThief extends CokesAbility implements ActiveHandler {
         @EventHandler
         public void onEntityDamage(EntityDamageByEntityEvent e) {
             Entity damagerEntity = CokesUtil.getDamager(e.getDamager());
-            if (e.getEntity().getUniqueId().equals(phantom.getUniqueID()) && !damagerEntity.equals(getPlayer()) && getGame().isParticipating(damagerEntity.getUniqueId())) {
+            if (phantom != null && e.getEntity().getUniqueId().equals(phantom.getUniqueID()) && !damagerEntity.equals(getPlayer()) && getGame().isParticipating(damagerEntity.getUniqueId())) {
                 Participant damager = getGame().getParticipant(damagerEntity.getUniqueId());
                 damager.getPlayer().damage(DAMAGE.getValue(), getPlayer());
-                phantomShow.stop(false);
                 phantom.remove();
                 setNewAbility(damager);
                 e.setDamage(0);
+                phantomShow.stop(false);
             }
         }
     }

@@ -154,7 +154,7 @@ public class ReiBurningSoul extends CokesSynergy implements ActiveHandler {
     @SubscribeEvent
     public void onCEntityDamage(CEntityDamageEvent e) {
         if (damageCauseList.contains(e.getCause())) { //타오르는 영혼[화염피해 추댐]
-            e.setDamage(e.getDamage() * (1 + burningSoul.getTotalBurningSoul()* FIRE_DAMAGE_INCREMENT.getValue()));
+            e.setDamage(e.getDamage() * (1 + burningSoul.getTotalBurningSoul()*FIRE_DAMAGE_INCREMENT.getValue()/100.0));
         }
 
         //라스트 버닝

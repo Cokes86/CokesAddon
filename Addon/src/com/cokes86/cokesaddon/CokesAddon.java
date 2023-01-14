@@ -5,19 +5,16 @@ import com.cokes86.cokesaddon.ability.CokesAbility;
 import com.cokes86.cokesaddon.command.CokesCommand;
 import com.cokes86.cokesaddon.effect.AddonEffectRegistry;
 import com.cokes86.cokesaddon.event.CEntityDamageEvent;
-import com.cokes86.cokesaddon.game.edible.roulette.Roulette;
 import com.cokes86.cokesaddon.game.gamemode.disguiseparty.DisguiseParty;
 import com.cokes86.cokesaddon.game.gamemode.tailcatch.TailCatch;
+import com.cokes86.cokesaddon.game.module.roulette.Roulette;
 import com.cokes86.cokesaddon.synergy.AddonSynergyFactory;
 import com.cokes86.cokesaddon.synergy.CokesSynergy;
 import daybreak.abilitywar.addon.Addon;
 import daybreak.abilitywar.addon.AddonLoader;
 import daybreak.abilitywar.game.Category;
 import daybreak.abilitywar.game.GameManager;
-import daybreak.abilitywar.game.Category.GameCategory;
 import daybreak.abilitywar.game.event.GameCreditEvent;
-import daybreak.abilitywar.game.event.GameStartEvent;
-import daybreak.abilitywar.game.event.InvincibilityStatusChangeEvent;
 import daybreak.abilitywar.game.list.blind.BlindAbilityWar;
 import daybreak.abilitywar.game.list.mix.AbstractMix;
 import daybreak.abilitywar.game.manager.GameFactory;
@@ -81,6 +78,19 @@ public class CokesAddon extends Addon implements Listener {
 		configLoader.run();
 	}
 
+	/*
+	@EventHandler
+    public void onGameReady(GameReadyEvent e) {
+		if (e.getGame() instanceof BlindAbilityWar) return;
+		if (e.getGame() instanceof MixBlindGame) return;
+		if (e.getGame().getClass().getAnnotation(Category.class) != null) {
+			if (e.getGame().getClass().getAnnotation(Category.class).value() == GameCategory.GAME) {
+				e.getGame().addModule(new Roulette(e.getGame()));
+			}
+		}
+	}
+	 */
+
 	public static boolean isLoadAddon(String name) {
 		return loaded.get(name) != null;
 	}
@@ -93,6 +103,8 @@ public class CokesAddon extends Addon implements Listener {
 				e.addCredit("§c믹스! §c코크스 애드온§f에서 새로운 시너지 " + AddonSynergyFactory.nameValues().size() + "개가 추가되었습니다!");
 			}
 			e.addCredit("§c코크스 애드온 §f제작자 : Cokes_86  [§7디스코드 §f: Cokes_86#9329]");
+
+			if (!(e.getGame() instanceof BlindAbilityWar)) e.getGame().addModule(new Roulette(e.getGame()));
 		}
 	}
 
@@ -101,25 +113,6 @@ public class CokesAddon extends Addon implements Listener {
 		if (GameManager.isGameRunning() && e.getCause() == DamageCause.VOID) return;
 		CEntityDamageEvent event = new CEntityDamageEvent(e);
 		if (!event.isCancelled()) Bukkit.getPluginManager().callEvent(new CEntityDamageEvent(e));
-	}
-
-	private Roulette roulette;
-
-	@EventHandler
-	public void onGameStart(GameStartEvent e) {
-		if (e.getGame() instanceof BlindAbilityWar) return;
-		roulette = new Roulette(e.getGame());
-	}
-
-	@EventHandler
-	public void onInvincibilityStatusChange(InvincibilityStatusChangeEvent e) {
-		if (GameFactory.getByCategory(GameCategory.DEBUG).contains(e.getGame().getRegistration())) {
-			if (e.getNewStatus()) {
-				roulette.pause();
-			} else {
-				roulette.resume();
-			}
-		}
 	}
 
 	public static File getAddonFile(String name) {

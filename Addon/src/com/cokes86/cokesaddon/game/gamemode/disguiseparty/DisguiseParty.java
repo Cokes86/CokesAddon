@@ -241,7 +241,6 @@ public class DisguiseParty extends AbstractGame implements Winnable {
             case 12: {
                 Bukkit.broadcastMessage("§a목표§f: "+target.getPlayer().getName());
                 SoundLib.ENTITY_ARROW_HIT_PLAYER.broadcastSound();
-                NMSUtil.addSkinData(target.getPlayer().getUniqueId());
                 break;
             }
 
@@ -250,6 +249,7 @@ public class DisguiseParty extends AbstractGame implements Winnable {
                 Bukkit.broadcastMessage("§c술래§f는 30초간 눈을 감습니다. 눈이 떠지면 플레이어를 때려서 진짜를 찾으세요!");
                 new HideTimer().start();
                 for (DisguiseParticipant participant : getParticipants()) {
+                    NMSUtil.addSkinData(participant.getPlayer().getUniqueId());
                     hideNameTag(participant.getPlayer());
                     if (participant.equals(tag) || participant.equals(target)) continue;
                     participant.getPlayer().sendMessage("§a목표§f "+target.getPlayer().getName()+"으로 변장합니다. 최대한 속이세요!");

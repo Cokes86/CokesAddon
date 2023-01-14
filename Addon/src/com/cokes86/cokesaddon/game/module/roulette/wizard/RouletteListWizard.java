@@ -1,4 +1,4 @@
-package com.cokes86.cokesaddon.game.edible.roulette.wizard;
+package com.cokes86.cokesaddon.game.module.roulette.wizard;
 
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
@@ -8,8 +8,8 @@ import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.Plugin;
 
-import com.cokes86.cokesaddon.game.edible.roulette.Roulette;
-import com.cokes86.cokesaddon.game.edible.roulette.RouletteConfig.SettingObject;
+import com.cokes86.cokesaddon.game.module.roulette.Roulette;
+import com.cokes86.cokesaddon.game.module.roulette.RouletteConfig.SettingObject;
 
 import daybreak.abilitywar.config.wizard.setter.Setter;
 

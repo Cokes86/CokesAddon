@@ -25,9 +25,9 @@ import java.util.List;
         "밟은 블럭에 대해서는 $[COOLDOWN]간 스택이 다시 쌓이지 않습니다."
 })
 public class LonelyRoad extends CokesAbility {
-    private static final Config<Integer> STACK_BLOCK = Config.of(LonelyRoad.class, "stack-block", 75, FunctionalInterfaces.positive(),
+    private static final Config<Integer> STACK_BLOCK = Config.of(LonelyRoad.class, "stack-block", 125, FunctionalInterfaces.positive(),
             "# 대미지가 상승하기 위해 밟아야할 블럭의 수",
-            "# 기본값: 75 (블럭)");
+            "# 기본값: 125 (블럭)");
     private static final Config<Integer> COOLDOWN = Config.of(LonelyRoad.class, "cooldown", 60, FunctionalInterfaces.TIME,
             "# 밟은 블럭이 다시 측정되기위한 대기시간",
             "# 기본값: 60 (초)");
@@ -59,6 +59,7 @@ public class LonelyRoad extends CokesAbility {
             for (BlockData data : blockData) {
                 if (data.equals(tempBlockData)) return;
             }
+            if (down.isEmpty()) return;
             blockData.add(tempBlockData);
             tempBlockData.start();
             channel.update(String.format("%s스택", stack));

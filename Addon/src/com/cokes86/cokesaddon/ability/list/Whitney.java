@@ -118,7 +118,7 @@ public class Whitney extends CokesAbility implements ActiveHandler {
             }
         }
 
-        if (damager.equals(getPlayer()) && e.getEntity() instanceof Player) {
+        if (damager.equals(getPlayer()) && e.getEntity() instanceof Player && !e.isCancelled()) {
             if (timer.getStack() >= 3) {
                 Bleed.apply(getGame(), (Player)e.getEntity(), TimeUnit.SECONDS, BLEEDING.getValue());
             }

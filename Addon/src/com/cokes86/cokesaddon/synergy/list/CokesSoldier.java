@@ -43,7 +43,7 @@ import java.util.function.Predicate;
         "§7금괴 우클릭 §8- §e§l사단장 방문§f: §e§l사단장님§f이 부대를 방문해 군기를 잡습니다.",
         "  장성에 대한 경례곡이 모두에게 울려퍼지며, 울려퍼지는동안 자신은",
         "  움직일 수 없는 대신 모든 대미지가 99% 감소합니다. $[SALUTE_COOLDOWN]",
-        "§8[§7HIDDEN§8] §c군기교육대§f: 무슨 일이 일어났길레 군기교육대로 끌려갔나요?"
+        "§8[§7HIDDEN§8] §c군기교육대§f: 무슨 일이 일어났길래 군기교육대로 끌려갔나요?"
 })
 @Materials(materials = {Material.GOLD_INGOT, Material.IRON_INGOT})
 public class CokesSoldier extends CokesSynergy implements ActiveHandler {

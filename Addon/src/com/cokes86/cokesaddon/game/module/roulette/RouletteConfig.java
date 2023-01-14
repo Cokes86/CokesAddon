@@ -1,4 +1,4 @@
-package com.cokes86.cokesaddon.game.edible.roulette;
+package com.cokes86.cokesaddon.game.module.roulette;
 
 import com.google.common.collect.Table;
 import com.google.common.collect.Tables;

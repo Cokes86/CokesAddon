@@ -1,6 +1,6 @@
-package com.cokes86.cokesaddon.game.edible.roulette.list;
+package com.cokes86.cokesaddon.game.module.roulette.list;
 
-import com.cokes86.cokesaddon.game.edible.roulette.RouletteEffect;
+import com.cokes86.cokesaddon.game.module.roulette.RouletteEffect;
 
 import daybreak.abilitywar.game.AbstractGame.Participant;
 

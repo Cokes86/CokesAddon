@@ -23,7 +23,7 @@ import org.bukkit.Note.Tone;
 		"§7철괴 우클릭 §8- §c패널티 다이스§f: §b겜블§f의 주기가 반으로 감소됩니다.",
 		"  다만, §b겜블§f로 수치가 랜덤하게 변경되지 아니하고",
 		"  능력 사용 시점 수치의 $[PD_PENALTY]%만큼 안좋은 쪽으로 증감합니다.",
-		"  두 스탯 중 하나라도 최악으로 치닿게 되면 종료됩니다 $[PD_COOLDOWN]",
+		"  두 스탯 중 하나라도 최악으로 치닿게 되면 종료됩니다. $[PD_COOLDOWN]",
 		"[아이디어 제공자 §bRainStar_§f]"
 })
 public class Gambler extends CokesAbility implements ActiveHandler {

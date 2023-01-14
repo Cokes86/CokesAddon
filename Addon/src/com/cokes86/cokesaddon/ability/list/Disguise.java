@@ -2,6 +2,7 @@ package com.cokes86.cokesaddon.ability.list;
 
 import com.cokes86.cokesaddon.ability.CokesAbility;
 import com.cokes86.cokesaddon.event.CEntityDamageEvent;
+import com.cokes86.cokesaddon.util.AttributeUtil;
 import com.cokes86.cokesaddon.util.FunctionalInterfaces;
 import com.cokes86.cokesaddon.util.nms.NMSUtil;
 import daybreak.abilitywar.ability.AbilityManifest;
@@ -161,6 +162,12 @@ public class Disguise extends CokesAbility implements ActiveHandler {
 					NMSUtil.reloadPlayerData(getPlayer());
 				}
 				cooldown.start();
+			}
+		}
+
+		if (e.getEntity().equals(target.getPlayer()) && damager.equals(getPlayer())) {
+			if (e.getDamage() >= AttributeUtil.getMaxHealth(getPlayer())) {
+				e.setDamage(AttributeUtil.getMaxHealth(getPlayer()) * reflect.getValue() / 100.0);
 			}
 		}
 	}
