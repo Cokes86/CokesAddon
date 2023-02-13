@@ -1,24 +1,25 @@
 package com.cokes86.cokesaddon.game.module.roulette;
 
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
 
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.event.EventHandler;
+
 import com.cokes86.cokesaddon.CokesAddon;
 import com.cokes86.cokesaddon.game.module.roulette.RouletteConfig.SettingObject;
-import com.cokes86.cokesaddon.game.module.roulette.list.*;
 
 import daybreak.abilitywar.game.AbstractGame;
 import daybreak.abilitywar.game.AbstractGame.GameTimer;
 import daybreak.abilitywar.game.AbstractGame.Participant;
-import daybreak.abilitywar.game.event.GameEndEvent;
 import daybreak.abilitywar.game.event.GameStartEvent;
+import daybreak.abilitywar.game.event.InvincibilityStatusChangeEvent;
 import daybreak.abilitywar.game.module.Invincibility;
 import daybreak.abilitywar.game.module.ListenerModule;
 import daybreak.abilitywar.game.module.ModuleBase;
 import daybreak.abilitywar.game.module.Invincibility.Observer;
+import daybreak.abilitywar.utils.base.collect.Pair;
 import daybreak.abilitywar.utils.base.concurrent.TimeUnit;
 import daybreak.abilitywar.utils.base.minecraft.nms.NMS;
 import daybreak.abilitywar.utils.base.random.Random;
@@ -26,15 +27,9 @@ import daybreak.abilitywar.utils.library.SoundLib;
 
 @ModuleBase(Roulette.class)
 public class Roulette implements ListenerModule {
-    private final HashSet<RouletteEffect> effects = new HashSet<>();
+    private final List<Pair<RouletteEffect, Integer>> effects = new ArrayList<>();
+    private int maxPriority = 0;
     public static final RouletteConfig config = new RouletteConfig(CokesAddon.getAddonFile("CokesRoulette.yml"));
-    private static final SettingObject<Integer> period = config.new SettingObject<>("period", 45);
-
-    private static final SettingObject<Boolean> teleport = config.new SettingObject<>("roulette.teleport", true);
-    private static final SettingObject<Boolean> rank = config.new SettingObject<>("roulette.show-rank", true);
-    private static final SettingObject<Boolean> species = config.new SettingObject<>("roulette.show-species", true);
-
-    public static final List<SettingObject<?>> list = new ArrayList<>();
 
     private final AbstractGame abstractGame;
 
@@ -42,23 +37,25 @@ public class Roulette implements ListenerModule {
 
     public Roulette(AbstractGame game) {
         this.abstractGame = game;
+        config.update();
 
-        for (Participant participant : game.getParticipants()) {
-            if (teleport.getValue()) {
-                for (Participant participant2 : game.getParticipants()) {
-                    if (!participant.equals(participant2)) {
-                        effects.add(new Teleport(participant, participant2));
-                    }
+        for (Pair<Class<? extends RouletteEffect>, SettingObject<Integer> > effect : RouletteRegister.getMapPairs()) {
+            if (effect.getRight().getValue() > 0) {
+                try {
+                    int tmp = maxPriority + effect.getRight().getValue();
+                    effects.add(Pair.of(effect.getLeft().getConstructor().newInstance(), tmp));
+                    maxPriority = tmp;
+                } catch (Exception e) {
+                    System.out.println("[CokesAddon] 룰렛 모듈 등록 중 오류가 발생했습니다. : "+effect.getLeft().getClass());
                 }
             }
-            if(species.getValue()) effects.add(new ShowSpecies(participant));
-            if(rank.getValue()) effects.add(new ShowRank(participant));
         }
     }
 
     private boolean start() {
         if (timer == null || !timer.isRunning()) {
             this.timer = new RouletteTimer();
+            Bukkit.broadcastMessage("§a룰렛 게임 모듈이 활성화되었습니다.");
             return timer.start();
         }
         return false;
@@ -79,6 +76,7 @@ public class Roulette implements ListenerModule {
 
     @EventHandler
     public void onGameStart(GameStartEvent e) {
+        start();
         if (e.getGame().hasModule(this.getClass()) && !isRunning()) {
             Invincibility invincibility = e.getGame().getModule(Invincibility.class);
             if (invincibility != null) {
@@ -93,16 +91,15 @@ public class Roulette implements ListenerModule {
                         stop();
                     }
                 });
-            } else {
-                start();
             }
         }
     }
 
     @EventHandler
-    public void onGameEnd(GameEndEvent e) {
-        if (e.getGame().hasModule(this.getClass()) && isRunning()) {
-            stop();
+    public void onInvincibilityStatusChange(InvincibilityStatusChangeEvent e) {
+        if (e.getGame().hasModule(this.getClass())) {
+            if (e.getNewStatus()) stop();
+            else start();
         }
     }
 
@@ -124,7 +121,7 @@ public class Roulette implements ListenerModule {
 
         private class PeriodTimer extends GameTimer {
             public PeriodTimer() {
-                abstractGame.super(TaskType.REVERSE, period.getValue());
+                abstractGame.super(TaskType.REVERSE, RouletteRegister.getRoulletPeriod());
             }
 
             public void onEnd() {
@@ -143,25 +140,39 @@ public class Roulette implements ListenerModule {
             };
             private final Random random = new Random();
             private RouletteEffect effect;
+            private Participant target;
 
             public NoticeTimer() {
                 abstractGame.super(TaskType.REVERSE, 20);
-                setPeriod(TimeUnit.TICKS, 10);
+                setPeriod(TimeUnit.TICKS, 2);
             }
 
             public void run(int arg0) {
                 if (arg0 > 5) {
-                    effect = random.pick(effects.toArray(new RouletteEffect[] {}));
-                    for (Participant participant : abstractGame.getParticipants()) {
-                        NMS.sendTitle(participant.getPlayer(), "", random.pick(chatColors)+effect.rouletteName(),0,20,0);
+                    target = random.pick(getGame().getParticipants().toArray(new Participant[]{}));
+                    int a = random.nextInt(maxPriority);
+                    for (int i = 0 ; i < effects.size(); i++) {
+                        int min = effects.get(i).getRight();
+                        int max = i == effects.size()-1 ? maxPriority : effects.get(i+1).getRight();
+                        if (a >= min && a < max) {
+                            effect = effects.get(i).getLeft();
+                            break;
+                        }
+                    }
+                    for (Participant participant : getGame().getParticipants()) {
+                        NMS.sendTitle(participant.getPlayer(), random.pick(chatColors) + target.getPlayer().getName(), random.pick(chatColors) + RouletteRegister.getEffectName(effect.getClass()),0,20,0);
                         SoundLib.ENTITY_ARROW_HIT_PLAYER.playSound(participant.getPlayer());
                     }
                 }
             }
 
             public void onEnd() {
-                effect.apply();
-                periodTimer.start();
+                if (effect.apply(target)) {
+                    periodTimer.start();
+                    for (Participant participant : abstractGame.getParticipants()) {
+                        NMS.sendTitle(participant.getPlayer(), "", "",0,20,0);
+                    }
+                }
             }
         }
     }

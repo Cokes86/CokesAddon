@@ -19,9 +19,11 @@ import daybreak.abilitywar.ability.AbilityFactory.AbilityRegistration;
 import daybreak.abilitywar.ability.AbilityManifest.*;
 import daybreak.abilitywar.ability.decorator.ActiveHandler;
 import daybreak.abilitywar.ability.decorator.TargetHandler;
+import daybreak.abilitywar.config.Configuration.Settings.DeveloperSettings;
 import daybreak.abilitywar.game.AbstractGame.Participant;
 import daybreak.abilitywar.game.manager.AbilityList;
 import daybreak.abilitywar.game.manager.effect.Stun;
+import daybreak.abilitywar.utils.annotations.Beta;
 import daybreak.abilitywar.utils.base.concurrent.TimeUnit;
 import daybreak.abilitywar.utils.base.minecraft.entity.health.Healths;
 import daybreak.abilitywar.utils.base.random.Random;
@@ -77,6 +79,9 @@ public class Dual extends CokesAbility implements ActiveHandler, TargetHandler {
     private AbilityBase createCharactor() {
         try {
             List<AbilityRegistration> returnAbilities = AbilityList.values().stream().filter(abilityRegistration -> {
+                if (abilityRegistration.getAbilityClass().getAnnotation(Beta.class) != null) {
+                    if (!DeveloperSettings.isEnabled()) return false;
+                }
                 return abilityRegistration.getManifest().rank() == Rank.B || abilityRegistration.getManifest().rank() == Rank.A || abilityRegistration.getManifest().rank() == Rank.S;
             }).collect(Collectors.toList());
             final Random random = new Random();

@@ -3,6 +3,7 @@ package com.cokes86.cokesaddon.game.module.roulette;
 import com.google.common.collect.Table;
 import com.google.common.collect.Tables;
 import com.google.common.collect.TreeBasedTable;
+
 import daybreak.abilitywar.config.Cache;
 import daybreak.abilitywar.config.interfaces.Configurable;
 import daybreak.abilitywar.utils.base.logging.Logger;
@@ -118,16 +119,19 @@ public class RouletteConfig {
 
 	public class SettingObject<T> implements Configurable<T> {
 
-		private final String key, path;
+		private final String key, path, displayName;
 		private final T defaultValue;
 		private final String[] comments;
+		private final Class<? extends RouletteEffect> clazz;
 
-		public SettingObject(String key, T defaultValue, String... comments) {
+		public SettingObject(Class<? extends RouletteEffect> clazz, String displayName, String key, T defaultValue, String... comments) {
 			this.path = checkNotNull(key);
 			this.key = key;
 			this.defaultValue = checkNotNull(defaultValue);
 			this.comments = comments;
-			registerSetting(key.split(".")[0], this);
+			this.clazz = clazz;
+			this.displayName = displayName;
+			registerSetting("roulette", this);
 		}
 
 		@Override
@@ -153,6 +157,14 @@ public class RouletteConfig {
 		@Override
 		public boolean condition(T value) {
 			return true;
+		}
+
+		public String getDisplayName() {
+			return displayName;
+		}
+
+		public Class<? extends RouletteEffect> getRouletteEffectClass() {
+			return clazz;
 		}
 
 		@Override
@@ -213,5 +225,4 @@ public class RouletteConfig {
 		}
 
 	}
-
 }

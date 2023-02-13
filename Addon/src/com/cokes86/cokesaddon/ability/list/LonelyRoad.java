@@ -22,7 +22,8 @@ import java.util.List;
 @AbilityManifest(name = "나 홀로 외길", rank = Rank.B, species = Species.HUMAN, explain = {
         "블럭을 밟을 때 마다 1스택이 오릅니다.",
         "$[STACK_BLOCK]스택 당 상대에게 주는 대미지가 $[DAMAGE] 증가합니다.",
-        "밟은 블럭에 대해서는 $[COOLDOWN]간 스택이 다시 쌓이지 않습니다."
+        "쌓인 스택은 $[COOLDOWN]간 유지되며, 스택이 사라진 순간",
+        "밟았던 블럭에 대해 다시 스택을 올릴 수 있습니다."
 })
 public class LonelyRoad extends CokesAbility {
     private static final Config<Integer> STACK_BLOCK = Config.of(LonelyRoad.class, "stack-block", 125, FunctionalInterfaces.positive(),
@@ -86,11 +87,13 @@ public class LonelyRoad extends CokesAbility {
         @Override
         protected void onEnd() {
             blockData.remove(this);
+            stack--;
         }
 
         @Override
         protected void onSilentEnd() {
             blockData.remove(this);
+            stack--;
         }
 
         @Override

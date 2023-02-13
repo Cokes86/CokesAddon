@@ -153,26 +153,32 @@ public class Emily extends CokesAbility implements ActiveHandler {
         return new Vector(x, y, z).normalize();
     }
 
+    private long latest = 0;
+
     @SubscribeEvent(onlyRelevant = true)
     public void onPlayerSwapHandItems(PlayerSwapHandItemsEvent e) {
         if (e.getOffHandItem() != null && swords.contains(e.getOffHandItem().getType()) && e.getPlayer().equals(getPlayer())) {
-            if (!cooldown.isCooldown()) {
-                new AbilityTimer(7) {
-                    @Override
-                    public void run(int i) {
-                        getPlayer().setVelocity(new Vector(0,0,0));
-                        if (i == getMaximumCount()/2) {
-                            Vector velocity = getForwardVector(getPlayer().getLocation().clone());
-                            Location startArrow = getPlayer().getLocation().clone().add(velocity.multiply(.25)).add(0, getPlayer().getEyeHeight(), 0);
-
-                            new AlchemyCapsule(getPlayer(), startArrow).start();
-                            SoundLib.ENTITY_SPLASH_POTION_THROW.playSound(getPlayer());
-                            cooldown.start();
+            final long current = System.currentTimeMillis();
+            if (current - latest >= 250) {
+                if (!cooldown.isCooldown()) {
+                    new AbilityTimer(7) {
+                        @Override
+                        public void run(int i) {
+                            getPlayer().setVelocity(new Vector(0,0,0));
+                            if (i == getMaximumCount()/2) {
+                                Vector velocity = getForwardVector(getPlayer().getLocation().clone());
+                                Location startArrow = getPlayer().getLocation().clone().add(velocity.multiply(.25)).add(0, getPlayer().getEyeHeight(), 0);
+    
+                                new AlchemyCapsule(getPlayer(), startArrow).start();
+                                SoundLib.ENTITY_SPLASH_POTION_THROW.playSound(getPlayer());
+                                cooldown.start();
+                            }
                         }
-                    }
-                }.setPeriod(TimeUnit.TICKS, 1).start();
-                AbilityActiveSkillEvent event = new AbilityActiveSkillEvent(this, e.getOffHandItem().getType(), null);
-                Bukkit.getPluginManager().callEvent(event);
+                    }.setPeriod(TimeUnit.TICKS, 1).start();
+                    AbilityActiveSkillEvent event = new AbilityActiveSkillEvent(this, e.getOffHandItem().getType(), null);
+                    Bukkit.getPluginManager().callEvent(event);
+                }
+                latest = current;
             }
             e.setCancelled(true);
         }

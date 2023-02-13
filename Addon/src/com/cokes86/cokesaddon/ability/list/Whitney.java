@@ -35,7 +35,7 @@ import org.bukkit.entity.Projectile;
         "지속시간이 끝나거나 6번 중첩 후 쿨타임은 $[COOLDOWN_TWO]로 적용합니다.",
         "* 1회 사용 시: 신속 1단계 부여",
         "* 2회 사용 시: $[RECOVERY_PERIOD]마다 체력 $[RECOVERY] 회복",
-        "* 3회 사용 시: 상대방 공격 시 출혈 $[BLEEDING] 부여",
+        "* 3회 사용 시: 상대방 공격 시 출혈 $[BLEEDING] 부여. §c쿨타임§8: §f2초",
         "* 4회 사용 시: 상대방 공격 시 주었던 최종 대미지의 $[VAMPIRE]% 회복.",
         "* 5회 사용 시: 상대방에게 주는 대미지 $[DAMAGE] 증가",
         "* 6회 사용 시: 상대방에게 받는 대미지 $[DEFENCE]% 감소",
@@ -90,6 +90,7 @@ public class Whitney extends CokesAbility implements ActiveHandler {
             "# 기본값: 15.0 (%)");
 
     private final WhitneyBuffTimer timer = new WhitneyBuffTimer();
+    private final Cooldown bleed_cooldown = new Cooldown(2, "출혈 부여");
 
     public Whitney(Participant arg0) {
         super(arg0);
@@ -119,8 +120,9 @@ public class Whitney extends CokesAbility implements ActiveHandler {
         }
 
         if (damager.equals(getPlayer()) && e.getEntity() instanceof Player && !e.isCancelled()) {
-            if (timer.getStack() >= 3) {
+            if (timer.getStack() >= 3 && !bleed_cooldown.isRunning()) {
                 Bleed.apply(getGame(), (Player)e.getEntity(), TimeUnit.SECONDS, BLEEDING.getValue());
+                bleed_cooldown.start();
             }
             if (timer.getStack() >= 5) {
                 e.setDamage(e.getDamage() * (1 + DAMAGE.getValue()/100.0));

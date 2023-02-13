@@ -71,8 +71,8 @@ public class Sealer extends CokesAbility implements TargetHandler {
 				final Player p = (Player) entity;
 				final Participant target = getGame().getParticipant(p);
 				if (target.getAbility() != null && !target.getAbility().isRestricted()) {
-					Seal.apply(target, TimeUnit.SECONDS, SEAL_DURATION.getValue());
 					t.start(target);
+					Seal.apply(target, TimeUnit.SECONDS, SEAL_DURATION.getValue());
 					c.start();
 				}
 			}

@@ -26,12 +26,12 @@
 	<name>CokesAddon</name>
 
 	<properties>
-		<revision>1.10.0</revision>
+		<revision>1.11.0</revision>
 		<encoding>UTF-8</encoding>
 		<maven.compiler.target>1.8</maven.compiler.target>
 		<maven.compiler.source>1.8</maven.compiler.source>
 		<bukkit-api-version>1.16.5-R0.1-SNAPSHOT</bukkit-api-version>
-		<abilitywar-version>3.2.10</abilitywar-version>
+		<abilitywar-version>3.3.2</abilitywar-version>
 		<addon-groupId>com.cokes86</addon-groupId>
 		<jdk.version>8</jdk.version>
 		<jdk>/home/codespace/java/jdk-8u322-ojdkbuild-linux-x64</jdk>
@@ -44,6 +44,14 @@
 			<url>file:///workspaces/CokesAddon/lib</url>
 		</repository>
 	</repositories>
+
+	<dependencies>
+		<dependency>
+    		<groupId>org.jetbrains</groupId>
+    		<artifactId>annotations</artifactId>
+    		<version>24.0.0</version>
+		</dependency>
+	</dependencies>
 
 	<build>
 		<defaultGoal>clean package</defaultGoal>
