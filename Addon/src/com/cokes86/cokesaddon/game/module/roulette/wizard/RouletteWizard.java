@@ -91,6 +91,9 @@ public abstract class RouletteWizard {
 
 	public ItemStack getIntegerSetting(SettingObject<Integer> settingObject) {
 		ItemStack wool = MaterialX.BLUE_WOOL.createItem();
+		if (settingObject.getValue() <= 0) {
+			wool = MaterialX.RED_WOOL.createItem();
+		}
 		ItemMeta woolMeta = wool.getItemMeta();
 		woolMeta.setDisplayName(ChatColor.WHITE + settingObject.getDisplayName());
 		String[] comments = settingObject.getComments();

@@ -121,7 +121,7 @@ public class EnergyTaker extends CokesAbility implements TargetHandler {
                 case DISTANCE: {
                     Damages.damageArrow(arg1, getPlayer(), DISTANCE_DAMAGE.getValue().floatValue());
                     Predicate<Entity> predicate = entity -> {
-                        if (entity.equals(getPlayer()) || entity.equals(arg1)) return false;
+                        if (entity == null || entity.equals(getPlayer()) || entity.equals(arg1)) return false;
                         if (entity instanceof Player) {
                             if (!getGame().isParticipating(entity.getUniqueId())) return false;
                             if (getGame() instanceof DeathManager.Handler) {

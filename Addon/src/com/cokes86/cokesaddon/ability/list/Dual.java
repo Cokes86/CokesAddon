@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.StringJoiner;
 import java.util.stream.Collectors;
 
+import daybreak.abilitywar.config.Configuration;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.entity.LivingEntity;
@@ -34,14 +35,14 @@ import daybreak.abilitywar.utils.base.random.Random;
     "  능력은 B ~ S 사이에서 배정받습니다.",
     "§7책 우클릭 §8- §c체인지§f: 자신이 운용하는 캐릭터를 바꿉니다.",
     "  단 1초간 움직일 수 없고, 능력이 봉인됩니다.",
-    "$(CHARACTOR_EXPLAIN)"
+    "$(CHARACTER_EXPLAIN)"
 })
 public class Dual extends CokesAbility implements ActiveHandler, TargetHandler {
     private final PairSet<AbilityBase, Double> first, second;
     private boolean usingSecond = false;
 
     @SuppressWarnings("unused")
-    private final Object CHARACTOR_EXPLAIN = new Object() {
+    private final Object CHARACTER_EXPLAIN = new Object() {
         @Override
         public String toString() {
             final StringJoiner joiner = new StringJoiner("\n");
@@ -70,17 +71,20 @@ public class Dual extends CokesAbility implements ActiveHandler, TargetHandler {
 
     public Dual(Participant arg0) {
         super(arg0);
-        first = PairSet.of(createCharactor(), AttributeUtil.getMaxHealth(getPlayer()));
-        second = PairSet.of(createCharactor(), AttributeUtil.getMaxHealth(getPlayer()));
+        first = PairSet.of(createCharacter(), AttributeUtil.getMaxHealth(getPlayer()));
+        second = PairSet.of(createCharacter(), AttributeUtil.getMaxHealth(getPlayer()));
         first.getLeft().setRestricted(isRestricted());
         second.getLeft().setRestricted(isRestricted());
     }
 
-    private AbilityBase createCharactor() {
+    private AbilityBase createCharacter() {
         try {
             List<AbilityRegistration> returnAbilities = AbilityList.values().stream().filter(abilityRegistration -> {
                 if (abilityRegistration.getAbilityClass().getAnnotation(Beta.class) != null) {
                     if (!DeveloperSettings.isEnabled()) return false;
+                }
+                if (Configuration.Settings.isBlacklisted(abilityRegistration.getManifest().name())) {
+                    return false;
                 }
                 return abilityRegistration.getManifest().rank() == Rank.B || abilityRegistration.getManifest().rank() == Rank.A || abilityRegistration.getManifest().rank() == Rank.S;
             }).collect(Collectors.toList());
@@ -88,7 +92,7 @@ public class Dual extends CokesAbility implements ActiveHandler, TargetHandler {
 
             return AbilityBase.create(random.pick(returnAbilities), getParticipant());
         } catch (ReflectiveOperationException e) {
-            return createCharactor();
+            return createCharacter();
         }
     }
 
@@ -137,10 +141,10 @@ public class Dual extends CokesAbility implements ActiveHandler, TargetHandler {
     }
     @Override
     public void TargetSkill(Material arg0, LivingEntity arg1) {
-        if (!usingSecond && first.getLeft() != null && first.getLeft() instanceof TargetHandler && !first.getLeft().isRestricted() && first.getLeft().usesMaterial(arg0)) {
+        if (!usingSecond && first.getLeft() instanceof TargetHandler && !first.getLeft().isRestricted() && first.getLeft().usesMaterial(arg0)) {
             ((TargetHandler) first.getLeft()).TargetSkill(arg0, arg1);
         }
-        else if (usingSecond && second.getLeft() != null && second.getLeft() instanceof TargetHandler && !second.getLeft().isRestricted() && second.getLeft().usesMaterial(arg0)) {
+        else if (usingSecond && second.getLeft() instanceof TargetHandler && !second.getLeft().isRestricted() && second.getLeft().usesMaterial(arg0)) {
            ((TargetHandler) second.getLeft()).TargetSkill(arg0, arg1);
         }
     }

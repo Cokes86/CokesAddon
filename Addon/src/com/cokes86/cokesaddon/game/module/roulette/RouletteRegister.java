@@ -12,9 +12,15 @@ public class RouletteRegister {
     private static final HashMap<String, Pair<Class<? extends RouletteEffect>, SettingObject<Integer>>> map = new HashMap<>();
 
     public static final SettingObject<Boolean> enable = Roulette.config.new SettingObject<>(null, "룰렛 온오프","enable", true,
-		"# 룰렛 모듈 사용 여부");
+            "# 룰렛 모듈 사용 여부");
 
-	public static final SettingObject<Integer> period = Roulette.config.new SettingObject<>(null, "룰렛 발동 주기", "period", 45);
+	public static final SettingObject<Integer> period = Roulette.config.new SettingObject<Integer>(null, "룰렛 발동 주기", "period", 45,
+            "# 단위 : (초)") {
+        @Override
+        public boolean condition(Integer value) {
+            return value > 0;
+        }
+    };
 
 	public static boolean isEnabled() {
 		return enable.getValue();
@@ -25,6 +31,7 @@ public class RouletteRegister {
 	}
 
     static {
+        //1.11.0
         registerRouletteEffect(Teleport.class);
         registerRouletteEffect(ShowRank.class);
         registerRouletteEffect(ShowSpecies.class);
@@ -34,6 +41,10 @@ public class RouletteRegister {
         registerRouletteEffect(HealthRegain.class);
         registerRouletteEffect(HealthDecrease.class);
         registerRouletteEffect(CooldownReset.class);
+
+        //1.11.1
+        registerRouletteEffect(NoAbility.class);
+        registerRouletteEffect(ChangeHealth.class);
     }
 
     public static void registerRouletteEffect(Class<? extends RouletteEffect> effect) {
@@ -41,7 +52,12 @@ public class RouletteRegister {
         if (manifest != null) {
             String name = manifest.name();
             if (!map.containsKey(name)) {
-                SettingObject<Integer> priority = Roulette.config.new SettingObject<>(effect, name, "priority."+effect.getSimpleName().toLowerCase(), manifest.defaultPriority());
+                SettingObject<Integer> priority = Roulette.config.new SettingObject<Integer>(effect, name, "priority."+effect.getSimpleName().toLowerCase(), manifest.defaultPriority()) {
+                    @Override
+                    public boolean condition(Integer integer) {
+                        return integer >= 0;
+                    }
+                };
                 map.put(name, Pair.of(effect, priority));
             }
         }

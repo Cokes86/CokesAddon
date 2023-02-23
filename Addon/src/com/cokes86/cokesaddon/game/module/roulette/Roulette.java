@@ -3,6 +3,9 @@ package com.cokes86.cokesaddon.game.module.roulette;
 import java.util.ArrayList;
 import java.util.List;
 
+import daybreak.abilitywar.game.GameManager;
+import daybreak.abilitywar.game.event.participant.ParticipantDeathEvent;
+import daybreak.abilitywar.game.module.DeathManager;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.event.EventHandler;
@@ -30,6 +33,7 @@ public class Roulette implements ListenerModule {
     private final List<Pair<RouletteEffect, Integer>> effects = new ArrayList<>();
     private int maxPriority = 0;
     public static final RouletteConfig config = new RouletteConfig(CokesAddon.getAddonFile("CokesRoulette.yml"));
+    private final List<Participant> rouletteTarget;
 
     private final AbstractGame abstractGame;
 
@@ -39,6 +43,8 @@ public class Roulette implements ListenerModule {
         this.abstractGame = game;
         config.update();
 
+        rouletteTarget = new ArrayList<>(game.getParticipants());
+
         for (Pair<Class<? extends RouletteEffect>, SettingObject<Integer> > effect : RouletteRegister.getMapPairs()) {
             if (effect.getRight().getValue() > 0) {
                 try {
@@ -46,7 +52,7 @@ public class Roulette implements ListenerModule {
                     effects.add(Pair.of(effect.getLeft().getConstructor().newInstance(), tmp));
                     maxPriority = tmp;
                 } catch (Exception e) {
-                    System.out.println("[CokesAddon] 룰렛 모듈 등록 중 오류가 발생했습니다. : "+effect.getLeft().getClass());
+                    System.out.println("[CokesAddon] 룰렛 모듈 등록 중 오류가 발생했습니다. : "+ effect.getLeft());
                 }
             }
         }
@@ -54,7 +60,7 @@ public class Roulette implements ListenerModule {
 
     private boolean start() {
         if (timer == null || !timer.isRunning()) {
-            this.timer = new RouletteTimer();
+            timer = new RouletteTimer();
             Bukkit.broadcastMessage("§a룰렛 게임 모듈이 활성화되었습니다.");
             return timer.start();
         }
@@ -62,7 +68,7 @@ public class Roulette implements ListenerModule {
     }
 
     private boolean stop() {
-        if (timer != null || timer.isRunning()) {
+        if (timer != null && timer.isRunning()) {
             timer.stop();
             timer = null;
             return true;
@@ -103,9 +109,18 @@ public class Roulette implements ListenerModule {
         }
     }
 
+    @EventHandler
+    public void onParticipantDeath(ParticipantDeathEvent e) {
+        if (e.getParticipant().getGame().hasModule(this.getClass())) {
+            if (e.getParticipant().getGame() instanceof DeathManager.Handler) {
+                rouletteTarget.remove(e.getParticipant());
+            }
+        }
+    }
+
     private class RouletteTimer {
-        private NoticeTimer noticeTimer = new NoticeTimer();
-        private PeriodTimer periodTimer = new PeriodTimer();
+        private final NoticeTimer noticeTimer = new NoticeTimer();
+        private final PeriodTimer periodTimer = new PeriodTimer();
 
         private boolean start() {
             return (!noticeTimer.isRunning() || !periodTimer.isRunning()) && periodTimer.start();
@@ -125,6 +140,12 @@ public class Roulette implements ListenerModule {
             }
 
             public void onEnd() {
+                if (GameManager.getGame().isGameStarted()) {
+                    Invincibility invincibility = ((Invincibility.Handler) GameManager.getGame()).getInvincibility();
+                    if (invincibility.isEnabled()) {
+                        periodTimer.start();
+                    }
+                }
                 noticeTimer.start();
             }
         }
@@ -149,7 +170,7 @@ public class Roulette implements ListenerModule {
 
             public void run(int arg0) {
                 if (arg0 > 5) {
-                    target = random.pick(getGame().getParticipants().toArray(new Participant[]{}));
+                    target = random.pick(rouletteTarget);
                     int a = random.nextInt(maxPriority);
                     for (int i = 0 ; i < effects.size(); i++) {
                         int min = effects.get(i).getRight();
