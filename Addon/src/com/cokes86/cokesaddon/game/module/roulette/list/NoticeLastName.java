@@ -13,10 +13,10 @@ import daybreak.abilitywar.game.list.mix.AbstractMix.MixParticipant;
 public class NoticeLastName extends RouletteEffect {
     @Override
     public boolean apply(Participant participant) {
-        if (participant.hasAbility()) {
+        if (participant.getAbility() != null) {
             if (participant instanceof MixParticipant) {
                 Mix mix = (Mix) participant.getAbility();
-                if (mix.hasSynergy()) {
+                if (mix != null && mix.getSynergy() != null) {
                     Bukkit.broadcastMessage(participant.getPlayer().getName()+"의 능력명 끝글자는 §b"+mix.getSynergy().getName().toCharArray()[mix.getSynergy().getName().length() - 1]+"§f입니다.");
                     return true;
                 }

@@ -6,6 +6,8 @@ import java.util.StringJoiner;
 import java.util.stream.Collectors;
 
 import daybreak.abilitywar.config.Configuration;
+import daybreak.abilitywar.utils.base.minecraft.item.builder.ItemBuilder;
+import daybreak.abilitywar.utils.library.MaterialX;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.entity.LivingEntity;
@@ -33,13 +35,14 @@ import daybreak.abilitywar.utils.base.random.Random;
     "§7패시브 §8- §c듀얼모드§f: 2개의 캐릭터를 운용합니다.",
     "  두 캐릭터는 능력과 체력은 다르나 그 외의 것들은 공유합니다.",
     "  능력은 B ~ S 사이에서 배정받습니다.",
-    "§7책 우클릭 §8- §c체인지§f: 자신이 운용하는 캐릭터를 바꿉니다.",
+    "§7에메랄드 우클릭 §8- §c체인지§f: 자신이 운용하는 캐릭터를 바꿉니다.",
     "  단 1초간 움직일 수 없고, 능력이 봉인됩니다.",
     "$(CHARACTER_EXPLAIN)"
 })
 public class Dual extends CokesAbility implements ActiveHandler, TargetHandler {
     private final PairSet<AbilityBase, Double> first, second;
     private boolean usingSecond = false;
+    private boolean giveEmerald = false;
 
     @SuppressWarnings("unused")
     private final Object CHARACTER_EXPLAIN = new Object() {
@@ -110,6 +113,11 @@ public class Dual extends CokesAbility implements ActiveHandler, TargetHandler {
                 second.setRight(getPlayer().getHealth());
                 Healths.setHealth(getPlayer(), first.getRight());
             }
+
+            if (!giveEmerald) {
+                getPlayer().getInventory().addItem(new ItemBuilder(MaterialX.EMERALD).build());
+                giveEmerald = true;
+            }
         } else if (update == Update.RESTRICTION_SET) {
             second.getLeft().setRestricted(true);
             first.getLeft().setRestricted(true);
@@ -121,7 +129,7 @@ public class Dual extends CokesAbility implements ActiveHandler, TargetHandler {
 
     @Override
 	public boolean usesMaterial(Material material) {
-		return material == Material.BOOK || first.getLeft().usesMaterial(material) || second.getLeft().usesMaterial(material);
+		return material == Material.EMERALD || first.getLeft().usesMaterial(material) || second.getLeft().usesMaterial(material);
 	}
 
     @Override

@@ -8,6 +8,6 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.TYPE)
 public @interface RouletteManifest {
-    public String name();
-    public int defaultPriority() default 6;
+    String name();
+    int defaultPriority() default 6;
 }
