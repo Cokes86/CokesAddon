@@ -14,6 +14,6 @@ public class HealthRegain extends RouletteEffect {
         final double max_health = AttributeUtil.getMaxHealth(participant.getPlayer());
         final double gain = max_health / 5.0;
         Healths.setHealth(participant.getPlayer(), participant.getPlayer().getHealth() + gain);
-        return false;
+        return true;
     }
 }

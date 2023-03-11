@@ -95,22 +95,26 @@ public class Roulette implements ListenerModule {
 
     @EventHandler
     public void onGameStart(GameStartEvent e) {
-        start();
         if (e.getGame().hasModule(this.getClass()) && !isRunning()) {
             Invincibility invincibility = e.getGame().getModule(Invincibility.class);
             if (invincibility != null) {
                 invincibility.attachObserver(new Observer() {
                     @Override
                     public void onEnd() {
-                        start();
+                        Roulette.this.start();
                     }
 
                     @Override
                     public void onStart() {
-                        stop();
+                        Roulette.this.stop();
                     }
                 });
+                Roulette.this.stop();
+            } else {
+                start();
             }
+        } else {
+            start();
         }
     }
 
@@ -201,11 +205,10 @@ public class Roulette implements ListenerModule {
             }
 
             public void onEnd() {
-                if (effect.apply(target)) {
-                    periodTimer.start();
-                    for (Participant participant : abstractGame.getParticipants()) {
-                        NMS.sendTitle(participant.getPlayer(), "", "",0,20,0);
-                    }
+                effect.apply(target);
+                periodTimer.start();
+                for (Participant participant : abstractGame.getParticipants()) {
+                    NMS.sendTitle(participant.getPlayer(), "", "",0,20,0);
                 }
             }
         }
