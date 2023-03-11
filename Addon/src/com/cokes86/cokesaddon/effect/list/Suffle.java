@@ -1,6 +1,7 @@
 package com.cokes86.cokesaddon.effect.list;
 
 import com.cokes86.cokesaddon.effect.AddonEffectRegistry;
+import daybreak.abilitywar.AbilityWar;
 import daybreak.abilitywar.game.AbstractGame;
 import daybreak.abilitywar.game.manager.effect.registry.ApplicationMethod;
 import daybreak.abilitywar.game.manager.effect.registry.EffectManifest;
@@ -8,6 +9,7 @@ import daybreak.abilitywar.game.manager.effect.registry.EffectRegistry;
 import daybreak.abilitywar.utils.base.concurrent.TimeUnit;
 import daybreak.abilitywar.utils.base.minecraft.nms.NMS;
 import daybreak.abilitywar.utils.base.random.Random;
+import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.entity.ArmorStand;
@@ -58,6 +60,7 @@ public class Suffle extends AbstractGame.Effect implements Listener{
     protected void onStart() {
         super.onStart();
         shuffleInventory(participant.getPlayer());
+        Bukkit.getPluginManager().registerEvents(this, AbilityWar.getPlugin());
     }
 
     @Override

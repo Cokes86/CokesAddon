@@ -58,6 +58,19 @@ public class Roulette implements ListenerModule {
         }
     }
 
+    public List<Participant> getParticipantsWithoutEliminater() {
+        ArrayList<Participant> others = new ArrayList<>();
+        for (Participant check : GameManager.getGame().getParticipants()) {
+            if (check.getGame().hasModule(DeathManager.class)) {
+                if (check.getGame().getModule(DeathManager.class).isExcluded(check.getPlayer())) {
+                    continue;
+                }
+            }
+            others.add(check);
+        }
+        return others;
+    }
+
     private boolean start() {
         if (timer == null || !timer.isRunning()) {
             timer = new RouletteTimer();
@@ -180,7 +193,7 @@ public class Roulette implements ListenerModule {
                             break;
                         }
                     }
-                    for (Participant participant : getGame().getParticipants()) {
+                    for (Participant participant : getParticipantsWithoutEliminater()) {
                         NMS.sendTitle(participant.getPlayer(), random.pick(chatColors) + target.getPlayer().getName(), random.pick(chatColors) + RouletteRegister.getEffectName(effect.getClass()),0,20,0);
                         SoundLib.ENTITY_ARROW_HIT_PLAYER.playSound(participant.getPlayer());
                     }

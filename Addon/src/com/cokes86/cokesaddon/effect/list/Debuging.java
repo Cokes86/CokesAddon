@@ -3,6 +3,8 @@ package com.cokes86.cokesaddon.effect.list;
 import com.cokes86.cokesaddon.effect.AddonEffectRegistry;
 import daybreak.abilitywar.AbilityWar;
 import daybreak.abilitywar.game.AbstractGame;
+import daybreak.abilitywar.game.manager.effect.registry.ApplicationMethod;
+import daybreak.abilitywar.game.manager.effect.registry.EffectManifest;
 import daybreak.abilitywar.game.manager.effect.registry.EffectRegistry;
 import daybreak.abilitywar.utils.base.concurrent.TimeUnit;
 import daybreak.abilitywar.utils.base.minecraft.nms.NMS;
@@ -18,6 +20,10 @@ import org.bukkit.event.player.PlayerMoveEvent;
 import java.util.ArrayList;
 import java.util.List;
 
+@EffectManifest(name = "디버깅", displayName = "§4디버깅", method = ApplicationMethod.UNIQUE_IGNORE, description = {
+        "움직임을 제외한 이벤트가 처음 감지될 때 마다 스택이 1 증가합니다.",
+        "  지속시간 종료 시 스택 당 0.25의 대미지를 받습니다."
+})
 public class Debuging extends AbstractGame.Effect implements Listener {
     private final AbstractGame.Participant participant;
     private final ArmorStand hologram;
@@ -29,7 +35,7 @@ public class Debuging extends AbstractGame.Effect implements Listener {
         registration.apply(participant, timeunit, duration);
     }
 
-    protected Debuging(AbstractGame.Participant participant, TimeUnit timeunit, int duration) {
+    public Debuging(AbstractGame.Participant participant, TimeUnit timeunit, int duration) {
         participant.getGame().super(registration, participant, timeunit.toTicks(duration));
         this.participant = participant;
 

@@ -3,16 +3,13 @@ package com.cokes86.cokesaddon.ability.list;
 import com.cokes86.cokesaddon.ability.CokesAbility;
 import com.cokes86.cokesaddon.event.CEntityDamageEvent;
 import com.cokes86.cokesaddon.util.FunctionalInterfaces;
-import com.cokes86.cokesaddon.util.timer.HitHologramTimer;
 import daybreak.abilitywar.AbilityWar;
 import daybreak.abilitywar.ability.AbilityManifest;
-import daybreak.abilitywar.ability.SubscribeEvent;
 import daybreak.abilitywar.ability.decorator.ActiveHandler;
 import daybreak.abilitywar.game.AbstractGame;
 import daybreak.abilitywar.game.manager.effect.registry.EffectRegistry;
 import daybreak.abilitywar.game.manager.effect.registry.EffectType;
 import daybreak.abilitywar.game.module.DeathManager;
-import daybreak.abilitywar.utils.base.concurrent.SimpleTimer.Observer;
 import daybreak.abilitywar.utils.base.concurrent.TimeUnit;
 import daybreak.abilitywar.utils.base.minecraft.nms.NMS;
 import daybreak.abilitywar.utils.base.random.Random;
@@ -29,24 +26,21 @@ import org.bukkit.event.HandlerList;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityRegainHealthEvent;
 
-import java.text.DecimalFormat;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.StringJoiner;
 import java.util.function.Predicate;
 
 @AbilityManifest(name = "코크스", rank = AbilityManifest.Rank.SPECIAL, species = AbilityManifest.Species.SPECIAL, explain = {
-        "§7패시브 §8- §c랜더마이즈§f: 대미지가 0% ~ 200% 사이로 랜덤하게 조정됩니다.",
-        "  100% 이상으로 조정될 확률이 조금 더 높습니다.",
-        "§7철괴 우클릭 §8- §c이펙트 맛 좀 봐라!§f: 무작위 대상에게 무작위 상태이상을 1 ~ $[EFFECT_DURATION]초로 부여합니다. $[RIGHT_COOL]",
+        "도박에 미쳐버린 개발자",
+        "§7철괴 우클릭 §9- §c이펙트 맛 좀 봐라!§f: 무작위 대상에게 무작위 상태이상을 1 ~ $[EFFECT_DURATION]초로 부여합니다. $[RIGHT_COOL]",
         "  이 중 움직임과 관련된 상태이상은 1 ~ $[MOVEMENT_DURATION]초 부여합니다.",
-        "  해당 능력에서 특수 상태이상 §4§n디버깅§f이 등장합니다.",
         "§7철괴 좌클릭 §8- §c화려한 슬롯머신§f: §a슬롯머신 §f하나를 가동합니다. $[LEFT_COOL]",
         "  총 5개의 슬롯이 돌아가며, 각 슬롯마다 효과를 $[LEFT_DURATION]간 부여합니다.",
+        "  2개 이상의 같은 슬롯일 경우, 이 효과로 버프 효과가 아닌 것은 최대 3회 중첩,",
+        "  버프는 2단계까지만 중첩됩니다.",
         "  <C>: 주는 대미지 0.75 증가. / <O>: 받는 대미지 0.5 감소.",
-        "  <K>: 회복량 0.125배 증가. / <E>: 재생 버프 / <S>: 저항 버프",
-        "§c[§4디버깅§c]§f 움직임을 제외한 이벤트가 감지될 때 마다 스택이 1 증가합니다.",
-        "  지속시간 종료 시 스택 당 0.25의 대미지를 받습니다."
+        "  <K>: 회복량 0.125배 증가. / <E>: 재생 버프 / <S>: 저항 버프"
 })
 public class Cokes extends CokesAbility implements ActiveHandler {
     private static final Config<Integer> RIGHT_COOL = Config.of(Cokes.class, "이펙트_쿨타임", 60, FunctionalInterfaces.positive(), FunctionalInterfaces.COOLDOWN);
@@ -75,42 +69,11 @@ public class Cokes extends CokesAbility implements ActiveHandler {
         return true;
     };
 
-    //랜더마이즈
-    private double debugDamage = 1;
-    @SubscribeEvent
-    public void onEntityDamage(CEntityDamageEvent e) {
-        if (e.getDamager() != null && e.getDamager().equals(getPlayer())) {
-            double temp = new Random().nextDouble() * 2;
-            if (temp < 1 && debugDamage < 1) {
-                temp = new Random().nextDouble() * 2;
-            }
-            debugDamage = temp;
-            e.setDamage(e.getDamage() * debugDamage);
-            HitHologramTimer timer = HitHologramTimer.create(this, e.getEntity().getLocation(), "a");
-            timer.attachObserver(new Observer() {
-                @Override
-                public void run(int count) {
-                    if (count <= 20) {
-                        final DecimalFormat format = new DecimalFormat("000");
-                        StringBuilder builder = new StringBuilder();
-                        builder.append(format.format(debugDamage*100));
-                        int index = count <= 5 ? 0 : (count <= 11 ? 1 : (count <= 18 ? 2 : 3));
-                        builder.insert(count, "§k");
-                        String color = debugDamage < 1 ? "§c" : "§a";
-                        timer.getHologram().setText(color+ "§l" + builder + color+"§l%");
-                    }
-                }
-            });
-            timer.start();
-        }
-    }
-
     @Override
     public boolean ActiveSkill(Material material, ClickType clickType) {
         if (material == Material.IRON_INGOT && clickType == ClickType.LEFT_CLICK && !slot.isRunning() && !leftCool.isCooldown()) {
-            slot.start();  //슬롯머신
+            slot.start();
         } else if (material == Material.IRON_INGOT && clickType == ClickType.RIGHT_CLICK && !rightCool.isCooldown()) {
-            //이펙트 맛 좀 봐라
             final Random random = new Random();
 
             AbstractGame.Participant participant = random.pick(getGame().getParticipants().toArray(new AbstractGame.Participant[0]));

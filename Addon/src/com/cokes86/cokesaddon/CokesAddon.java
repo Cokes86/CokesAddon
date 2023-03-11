@@ -48,6 +48,9 @@ public class CokesAddon extends Addon implements Listener {
 
 	@Override
 	public void onEnable() {
+		//Load Effects
+		AddonEffectRegistry.nameValues();
+
 		//Load Addon Ability
 		addon = this;
 		AddonAbilityFactory.nameValues();
@@ -55,9 +58,6 @@ public class CokesAddon extends Addon implements Listener {
 		RouletteRegister.getMapPairs();
 
 		configLoader.run();
-
-		//Load Effects
-		AddonEffectRegistry.nameValues();
 
 		//Check Other Addon
 		CompletableFuture.runAsync(otherAddonLoader);

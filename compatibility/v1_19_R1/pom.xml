@@ -16,7 +16,7 @@
         <maven.compiler.source>17</maven.compiler.source>
         <maven.compiler.target>17</maven.compiler.target>
         <jdk.version>17</jdk.version>
-        <jdk>D:/develope/jdk/17</jdk>
+        <jdk>C:/coding_module/jdk17</jdk>
     </properties>
 
     <dependencies>

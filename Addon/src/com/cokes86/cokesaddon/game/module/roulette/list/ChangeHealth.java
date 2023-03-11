@@ -15,16 +15,8 @@ import java.util.ArrayList;
 public class ChangeHealth extends RouletteEffect {
     @Override
     public boolean apply(AbstractGame.Participant participant) {
-        ArrayList<Participant> others = new ArrayList<>();
-        for (Participant check : participant.getGame().getParticipants()) {
-            if (check.equals(participant)) continue;
-            if (check.getGame().hasModule(DeathManager.class)) {
-                if (check.getGame().getModule(DeathManager.class).isExcluded(check.getPlayer())) {
-                    continue;
-                }
-            }
-            others.add(check);
-        }
+        ArrayList<Participant> others = new ArrayList<>(getParticipantsWithoutEliminater());
+        others.remove(participant);
         if (others.size() == 0) {
             Bukkit.broadcastMessage("체력을 바꿀 플레이어가 없습니다.");
             return true;

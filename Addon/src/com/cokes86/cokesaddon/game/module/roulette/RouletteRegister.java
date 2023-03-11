@@ -45,6 +45,9 @@ public class RouletteRegister {
         //1.11.1
         registerRouletteEffect(NoAbility.class);
         registerRouletteEffect(ChangeHealth.class);
+
+        //1.11.2
+        registerRouletteEffect(Acceleration.class);
     }
 
     public static void registerRouletteEffect(Class<? extends RouletteEffect> effect) {

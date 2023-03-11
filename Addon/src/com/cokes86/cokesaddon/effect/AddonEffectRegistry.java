@@ -22,9 +22,13 @@ public class AddonEffectRegistry {
         registerEffect(Seal.class);
         registerEffect(Warp.class);
         registerEffect(Suffle.class);
+
+        //1.11.2
+        registerEffect(Debuging.class);
     }
 
     public static <T extends Effect> void registerEffect(Class<T> effect) {
+        if (effect.getAnnotation(EffectManifest.class) == null) return;
         effects.put(effect.getAnnotation(EffectManifest.class).name(),effect);
         EffectRegistry.registerEffect(effect);
     }
