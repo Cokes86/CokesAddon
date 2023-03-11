@@ -23,8 +23,8 @@ public class AddonEffectRegistry {
         registerEffect(Warp.class);
         registerEffect(Suffle.class);
 
-        //1.11.2
-        registerEffect(Debuging.class);
+        //1.11.3
+        //registerEffect(Debuging.class);
     }
 
     public static <T extends Effect> void registerEffect(Class<T> effect) {
