@@ -6,6 +6,7 @@ import java.util.StringJoiner;
 import java.util.stream.Collectors;
 
 import daybreak.abilitywar.config.Configuration;
+import daybreak.abilitywar.config.Configuration.Settings;
 import daybreak.abilitywar.utils.base.minecraft.item.builder.ItemBuilder;
 import daybreak.abilitywar.utils.library.MaterialX;
 import org.bukkit.ChatColor;
@@ -74,8 +75,8 @@ public class Dual extends CokesAbility implements ActiveHandler, TargetHandler {
 
     public Dual(Participant arg0) {
         super(arg0);
-        first = PairSet.of(createCharacter(), AttributeUtil.getMaxHealth(getPlayer()));
-        second = PairSet.of(createCharacter(), AttributeUtil.getMaxHealth(getPlayer()));
+        first = PairSet.of(createCharacter(), (double)Settings.getDefaultMaxHealth());
+        second = PairSet.of(createCharacter(), (double)Settings.getDefaultMaxHealth());
         first.getLeft().setRestricted(isRestricted());
         second.getLeft().setRestricted(isRestricted());
     }
@@ -134,7 +135,7 @@ public class Dual extends CokesAbility implements ActiveHandler, TargetHandler {
 
     @Override
     public boolean ActiveSkill(Material arg0, ClickType arg1) {
-        if (arg0 == Material.BOOK && arg1 == ClickType.RIGHT_CLICK) {
+        if (arg0 == Material.EMERALD && arg1 == ClickType.RIGHT_CLICK) {
             Stun.apply(getParticipant(), TimeUnit.TICKS, 40);
             Seal.apply(getParticipant(), TimeUnit.TICKS, 40);
             usingSecond = !usingSecond;
