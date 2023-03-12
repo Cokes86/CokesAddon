@@ -4,6 +4,7 @@ import com.cokes86.cokesaddon.util.CokesUtil;
 import daybreak.abilitywar.AbilityWar;
 import daybreak.abilitywar.game.AbstractGame.Participant;
 import daybreak.abilitywar.utils.base.TimeUtil;
+import daybreak.abilitywar.utils.base.minecraft.entity.health.event.PlayerSetHealthEvent;
 import daybreak.abilitywar.utils.library.SoundLib;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Entity;
@@ -74,6 +75,13 @@ public class InvincibilityTimer extends NoticeTimeTimer implements Listener {
     @EventHandler
     public void onEntityDamage(EntityDamageEvent e) {
         if (e.getEntity().equals(participant.getPlayer())) {
+            e.setCancelled(true);
+        }
+    }
+
+    @EventHandler
+    public void onPlayerSetHealth(PlayerSetHealthEvent e) {
+        if (e.getPlayer().equals(participant.getPlayer())) {
             e.setCancelled(true);
         }
     }

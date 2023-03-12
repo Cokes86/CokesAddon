@@ -84,6 +84,7 @@ public class Roulette implements ListenerModule {
         if (timer != null && timer.isRunning()) {
             timer.stop();
             timer = null;
+            Bukkit.broadcastMessage("§c룰렛 게임 모듈이 비활성화되었습니다.");
             return true;
         }
         return false;

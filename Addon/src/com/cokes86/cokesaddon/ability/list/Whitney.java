@@ -3,6 +3,7 @@ package com.cokes86.cokesaddon.ability.list;
 import com.cokes86.cokesaddon.ability.CokesAbility;
 import com.cokes86.cokesaddon.event.CEntityDamageEvent;
 import com.cokes86.cokesaddon.util.FunctionalInterfaces;
+import com.cokes86.cokesaddon.util.timer.NoticeTimeTimer;
 import daybreak.abilitywar.ability.AbilityManifest;
 import daybreak.abilitywar.ability.AbilityManifest.Rank;
 import daybreak.abilitywar.ability.AbilityManifest.Species;
@@ -90,7 +91,7 @@ public class Whitney extends CokesAbility implements ActiveHandler {
             "# 기본값: 15.0 (%)");
 
     private final WhitneyBuffTimer timer = new WhitneyBuffTimer();
-    private final Cooldown bleed_cooldown = new Cooldown(2, "출혈 부여");
+    private final AbilityTimer bleed_cooldown = new NoticeTimeTimer(getParticipant(), "출혈 부여", 2);
 
     public Whitney(Participant arg0) {
         super(arg0);

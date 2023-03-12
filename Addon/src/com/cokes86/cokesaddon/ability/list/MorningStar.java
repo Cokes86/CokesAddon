@@ -18,7 +18,8 @@ import org.bukkit.Material;
         "검 우클릭 - 테이크 다운: 점프한 상태에서 사용 가능합니다.",
         "  땅으로 내리 꽂으면서 전방 $[TAKE_DOWN_RANGE]블럭 이내 플레이어에게",
         "  $[TAKE_DOWN_DAMAGE]의 근거리 대미지와 기절 $[TAKE_DOWN_STUN_DURATION]를 줍니다. $[TAKE_DOWN_COOLDOWN]",
-        "[어지럼증] "
+        "[어지럼증] ",
+        "[아이디어 제공자 §bRainStar_§f]"
 })
 @Beta
 public class MorningStar extends CokesAbility implements ActiveHandler {

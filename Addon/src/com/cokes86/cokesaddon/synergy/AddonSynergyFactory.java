@@ -7,6 +7,8 @@ import daybreak.abilitywar.ability.AbilityBase;
 import daybreak.abilitywar.ability.AbilityFactory;
 import daybreak.abilitywar.ability.AbilityManifest;
 import daybreak.abilitywar.ability.list.*;
+import daybreak.abilitywar.addon.Addon;
+import daybreak.abilitywar.addon.AddonLoader;
 import daybreak.abilitywar.game.list.mix.synergy.SynergyFactory;
 import daybreak.abilitywar.utils.annotations.Beta;
 import org.jetbrains.annotations.NotNull;
@@ -51,7 +53,13 @@ public class AddonSynergyFactory {
     }
 
     public static void registerSynergy(Class<? extends AbilityBase> first, Class<? extends AbilityBase> second, Class<? extends CokesSynergy> synergy) {
-        if (SynergyFactory.getSynergy(first, second) == null) {
+        if (first == null) {
+            System.out.println("시너지 능력 등록 중 오류가 발생했습니다 [first능력이 null입니다] : "+ synergy.getName());
+        }
+        else if (second == null) {
+            System.out.println("시너지 능력 등록 중 오류가 발생했습니다 [second능력이 null입니다] : "+ synergy.getName());
+        }
+        else if (SynergyFactory.getSynergy(first, second) == null) {
             SynergyFactory.registerSynergy(first, second, synergy);
             if (AbilityFactory.isRegistered(synergy)) {
                 AbilityManifest am = synergy.getAnnotation(AbilityManifest.class);
@@ -69,8 +77,10 @@ public class AddonSynergyFactory {
 
     public static void loadAddonSynergies() {
         if (CokesAddon.isLoadAddon("RainStarAddon")){
-            registerSynergy(Rei.class, getAddonAbilityClass("RainStarAbility.Inferno"), ReiBurningSoul.class);
-            registerSynergy(Revenge.class, getAddonAbilityClass("RainStarAbility.Revenger"), Wasinsangdam.class);
+            Addon rainstar = AddonLoader.getAddon("RainStarAddon");
+            String package_name = getVersionCheck(rainstar.getDescription().getVersion(), "1.7.2") ? "rainstar.abilitywar.ability." :"RainStarAbility.";
+            registerSynergy(Rei.class, getAddonAbilityClass(package_name+"Inferno"), ReiBurningSoul.class);
+            registerSynergy(Revenge.class, getAddonAbilityClass(package_name+"Revenger"), Wasinsangdam.class);
         }
     }
 
@@ -82,5 +92,43 @@ public class AddonSynergyFactory {
             result = null;
         }
         return result;
+    }
+
+    // 현재 버전이 비교할 버전보다 높거나 같으면 true, 작으면 fasle를 리턴
+    private static boolean getVersionCheck(String appVer, String compareVer){
+
+        // 각각의 버전을 split을 통해 String배열에 담습니다.
+        String[] appVerArray = new String[]{};
+        if(!"".equals(appVer) && appVer != null ){
+            appVerArray = appVer.split("\\.");
+        }
+
+        String[] compareVerArray = new String[]{};
+        if(!"".equals(compareVer) && compareVer != null ){
+            compareVerArray = compareVer.split("\\.");
+        }
+
+        // 비교할 버전이 없을 경우 false;
+        if(appVerArray.length == 0 || compareVerArray.length == 0) return false;
+
+        // 비교할 버전들 중 버전 길이가 가장 작은 버전을 구함
+        int minLength = appVerArray.length;
+        if(minLength > compareVerArray.length){
+            minLength = compareVerArray.length;
+        }
+
+        for (int i=0; i<minLength; i++){
+            int appVerSplit = Integer.parseInt(appVerArray[i]);
+            int compareVerSplit = Integer.parseInt(compareVerArray[i]);
+            if(appVerSplit > compareVerSplit){
+                return true;
+            }else if(appVerSplit == compareVerSplit){
+                continue;
+            }else {
+                return false;
+            }
+        }
+
+        return true;
     }
 }

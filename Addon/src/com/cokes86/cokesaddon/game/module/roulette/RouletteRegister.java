@@ -48,6 +48,9 @@ public class RouletteRegister {
 
         //1.11.2
         registerRouletteEffect(Acceleration.class);
+
+        //1.11.4
+        registerRouletteEffect(StunParticipant.class);
     }
 
     public static void registerRouletteEffect(Class<? extends RouletteEffect> effect) {
