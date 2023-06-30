@@ -101,7 +101,7 @@ public class PhantomThief extends CokesAbility implements ActiveHandler {
                             target.getPlayer().getDisplayName(),
                             "§"+newOne.getManifest().rank().getRankName().charAt(1)));
                 }
-                return new InvincibilityTimer(target, 3, true).start();
+                return new InvincibilityTimer(target.getAbility(), 3, true).start();
             } catch (ReflectiveOperationException e) {
                 getPlayer().sendMessage("[팬텀 시프] 능력을 재배정하는 도중 오류가 발생하였습니다.");
                 e.printStackTrace();
@@ -147,7 +147,7 @@ public class PhantomThief extends CokesAbility implements ActiveHandler {
                                 target.getPlayer().getDisplayName(),
                                 "§"+newOne.getManifest().rank().getRankName().charAt(1)));
                     }
-                    return new InvincibilityTimer(target, 3, true).start();
+                    return new InvincibilityTimer(target.getAbility(), 3, true).start();
                 } catch (ReflectiveOperationException e) {
                     getPlayer().sendMessage("[팬텀 시프] 능력을 재배정하는 도중 오류가 발생하였습니다.");
                     e.printStackTrace();
@@ -177,7 +177,7 @@ public class PhantomThief extends CokesAbility implements ActiveHandler {
                                     "§"+newOne.getManifest().rank().getRankName().charAt(1)));
                         }
                         SoundLib.ENTITY_PLAYER_LEVELUP.playSound(target.getPlayer().getLocation());
-                        return new InvincibilityTimer(target, 3, true).start();
+                        return new InvincibilityTimer(target.getAbility(), 3, true).start();
                     } catch (ReflectiveOperationException e) {
                         getPlayer().sendMessage("[팬텀 시프] 능력을 재배정하는 도중 오류가 발생하였습니다.");
                         e.printStackTrace();
@@ -205,7 +205,7 @@ public class PhantomThief extends CokesAbility implements ActiveHandler {
                                     target.getPlayer().getDisplayName(),
                                     "§"+newOne.getManifest().rank().getRankName().charAt(1)));
                         }
-                        return new InvincibilityTimer(target, 3, true).start();
+                        return new InvincibilityTimer(target.getAbility(), 3, true).start();
                     } catch (ReflectiveOperationException e) {
                         getPlayer().sendMessage("[팬텀 시프] 능력을 재배정하는 도중 오류가 발생하였습니다.");
                         e.printStackTrace();

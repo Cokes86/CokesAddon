@@ -108,7 +108,7 @@ public class Blocks extends CokesAbility implements ActiveHandler {
 		}
 	}.setPeriod(TimeUnit.TICKS, 1);
 
-	private final InvincibilityTimer invTimer = new InvincibilityTimer(getParticipant(), TimeUnit.TICKS, inv.getValue());
+	private final InvincibilityTimer invTimer = new InvincibilityTimer(getParticipant().getAbility(), TimeUnit.TICKS, inv.getValue());
 
 	public Blocks(Participant arg0) {
 		super(arg0);

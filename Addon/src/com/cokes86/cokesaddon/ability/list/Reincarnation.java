@@ -32,7 +32,7 @@ import java.util.List;
 @AbilityManifest(name = "리인카네이션", rank = Rank.L, species = Species.OTHERS, explain = {
 		"§7패시브 §8- §5환생§f: 치명적인 대미지를 입었을 시, 이를 무시하고 체력이 1로 고정됩니다.",
 		"  $[DURATION]동안 상대에게 주는 대미지가 0으로 바뀌는 대신 신속1을 부여하고",
-		"  $[HIT_PREDICATE]번 이상 공격에 성공했을 경우 §b부활합니다. $[COODOWN]",
+		"  $[HIT_PREDICATE]번 이상 공격에 성공했을 경우 §b부활합니다. $[COOLDOWN]",
 		"  §7부활 체력: $[RESPAWN_HEALTH] + 최대 체력의 $[RESPAWN_PERCENTAGE]% × 초과 타격횟수",
 		"[아이디어 제공자 §bSato207§f]"
 })
@@ -55,7 +55,7 @@ public class Reincarnation extends CokesAbility {
 	private final ActionbarChannel ac = newActionbarChannel();
 	private int hitted = 0;
 	private final Cooldown cool = new Cooldown(COOLDOWN.getValue());
-	private final InvincibilityTimer reincarnation = new InvincibilityTimer(getParticipant(), TimeUnit.TICKS, DURATION.getValue() * 20) {
+	private final InvincibilityTimer reincarnation = new InvincibilityTimer(this, TimeUnit.TICKS, DURATION.getValue() * 20) {
 
 		public void onInvincibilityStart() {
 			List<Player> nearby = LocationUtil.getNearbyEntities(Player.class, getPlayer().getLocation(), 5, 5, null);

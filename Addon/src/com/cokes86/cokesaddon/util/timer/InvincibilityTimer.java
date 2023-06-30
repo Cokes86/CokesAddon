@@ -2,6 +2,7 @@ package com.cokes86.cokesaddon.util.timer;
 
 import com.cokes86.cokesaddon.util.CokesUtil;
 import daybreak.abilitywar.AbilityWar;
+import daybreak.abilitywar.ability.AbilityBase;
 import daybreak.abilitywar.game.AbstractGame.Participant;
 import daybreak.abilitywar.utils.base.TimeUtil;
 import daybreak.abilitywar.utils.base.concurrent.TimeUnit;
@@ -38,6 +39,17 @@ public class InvincibilityTimer extends NoticeTimeTimer implements Listener {
 
     public InvincibilityTimer(Participant participant, int time) {
         this(participant, time, true);
+    }
+
+    public InvincibilityTimer(AbilityBase base, int time, boolean attackable) {
+        super(base, String.format("§e무적%s", (attackable ? "" : "/공격불가")), time);
+        this.participant = base.getParticipant();
+        this.attackable = attackable;
+    }
+
+    public InvincibilityTimer(AbilityBase base, TimeUnit timeUnit, int time) {
+        this(base, time, true);
+        setPeriod(timeUnit, 1);
     }
 
     @Override
