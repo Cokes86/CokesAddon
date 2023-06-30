@@ -4,7 +4,8 @@ import java.util.Collection;
 import java.util.HashMap;
 
 import com.cokes86.cokesaddon.game.module.roulette.RouletteConfig.SettingObject;
-import com.cokes86.cokesaddon.game.module.roulette.list.*;
+import com.cokes86.cokesaddon.game.module.roulette.effect.RouletteEffect;
+import com.cokes86.cokesaddon.game.module.roulette.effect.list.*;
 
 import daybreak.abilitywar.utils.base.collect.Pair;
 
@@ -43,7 +44,7 @@ public class RouletteRegister {
         registerRouletteEffect(CooldownReset.class);
 
         //1.11.1
-        registerRouletteEffect(NoAbility.class);
+        registerRouletteEffect(SealAndPower.class);
         registerRouletteEffect(ChangeHealth.class);
 
         //1.11.2
@@ -51,6 +52,11 @@ public class RouletteRegister {
 
         //1.11.4
         registerRouletteEffect(StunParticipant.class);
+
+        //1.12.0
+        registerRouletteEffect(Detection.class);
+        registerRouletteEffect(DiceGod.class);
+        registerRouletteEffect(Suprise.class);
     }
 
     public static void registerRouletteEffect(Class<? extends RouletteEffect> effect) {
@@ -77,6 +83,16 @@ public class RouletteRegister {
         for (String string : map.keySet()) {
             if (map.get(string).getLeft().equals(effect)) {
                 return string;
+            }
+        }
+        return "";
+    }
+
+    public static String getEffectDisplay(Class<? extends RouletteEffect> effect) {
+        for (String string : map.keySet()) {
+            if (map.get(string).getLeft().equals(effect)) {
+                String display = map.get(string).getLeft().getAnnotation(RouletteManifest.class).display();
+                return display.equals("") ? string : display;
             }
         }
         return "";

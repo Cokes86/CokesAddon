@@ -1,28 +1,17 @@
 package com.cokes86.cokesaddon.ability.list;
 
-import java.util.Iterator;
-import java.util.List;
-import java.util.StringJoiner;
-import java.util.stream.Collectors;
-
-import daybreak.abilitywar.config.Configuration;
-import daybreak.abilitywar.config.Configuration.Settings;
-import daybreak.abilitywar.utils.base.minecraft.item.builder.ItemBuilder;
-import daybreak.abilitywar.utils.library.MaterialX;
-import org.bukkit.ChatColor;
-import org.bukkit.Material;
-import org.bukkit.entity.LivingEntity;
 import com.cokes86.cokesaddon.ability.CokesAbility;
 import com.cokes86.cokesaddon.effect.list.Seal;
-import com.cokes86.cokesaddon.util.AttributeUtil;
 import com.cokes86.cokesaddon.util.PairSet;
-
 import daybreak.abilitywar.ability.AbilityBase;
-import daybreak.abilitywar.ability.AbilityManifest;
 import daybreak.abilitywar.ability.AbilityFactory.AbilityRegistration;
-import daybreak.abilitywar.ability.AbilityManifest.*;
+import daybreak.abilitywar.ability.AbilityManifest;
+import daybreak.abilitywar.ability.AbilityManifest.Rank;
+import daybreak.abilitywar.ability.AbilityManifest.Species;
 import daybreak.abilitywar.ability.decorator.ActiveHandler;
 import daybreak.abilitywar.ability.decorator.TargetHandler;
+import daybreak.abilitywar.config.Configuration;
+import daybreak.abilitywar.config.Configuration.Settings;
 import daybreak.abilitywar.config.Configuration.Settings.DeveloperSettings;
 import daybreak.abilitywar.game.AbstractGame.Participant;
 import daybreak.abilitywar.game.manager.AbilityList;
@@ -30,7 +19,18 @@ import daybreak.abilitywar.game.manager.effect.Stun;
 import daybreak.abilitywar.utils.annotations.Beta;
 import daybreak.abilitywar.utils.base.concurrent.TimeUnit;
 import daybreak.abilitywar.utils.base.minecraft.entity.health.Healths;
+import daybreak.abilitywar.utils.base.minecraft.item.builder.ItemBuilder;
 import daybreak.abilitywar.utils.base.random.Random;
+import daybreak.abilitywar.utils.library.MaterialX;
+import org.bukkit.ChatColor;
+import org.bukkit.Material;
+import org.bukkit.entity.LivingEntity;
+import org.jetbrains.annotations.NotNull;
+
+import java.util.Iterator;
+import java.util.List;
+import java.util.StringJoiner;
+import java.util.stream.Collectors;
 
 @AbilityManifest(name = "듀얼", rank = Rank.SPECIAL, species = Species.SPECIAL, explain={
     "§7패시브 §8- §c듀얼모드§f: 2개의 캐릭터를 운용합니다.",
@@ -90,6 +90,7 @@ public class Dual extends CokesAbility implements ActiveHandler, TargetHandler {
                 if (Configuration.Settings.isBlacklisted(abilityRegistration.getManifest().name())) {
                     return false;
                 }
+                if (abilityRegistration.getManifest().name().equals("유키")) return false;
                 return abilityRegistration.getManifest().rank() == Rank.B || abilityRegistration.getManifest().rank() == Rank.A || abilityRegistration.getManifest().rank() == Rank.S;
             }).collect(Collectors.toList());
             final Random random = new Random();
@@ -129,6 +130,11 @@ public class Dual extends CokesAbility implements ActiveHandler, TargetHandler {
     }
 
     @Override
+    public @NotNull String getDisplayName() {
+        return "듀얼 ("+first.getLeft().getDisplayName()+" + "+second.getLeft().getName()+")";
+    }
+
+    @Override
 	public boolean usesMaterial(Material material) {
 		return material == Material.EMERALD || first.getLeft().usesMaterial(material) || second.getLeft().usesMaterial(material);
 	}
@@ -136,8 +142,8 @@ public class Dual extends CokesAbility implements ActiveHandler, TargetHandler {
     @Override
     public boolean ActiveSkill(Material arg0, ClickType arg1) {
         if (arg0 == Material.EMERALD && arg1 == ClickType.RIGHT_CLICK) {
-            Stun.apply(getParticipant(), TimeUnit.TICKS, 40);
-            Seal.apply(getParticipant(), TimeUnit.TICKS, 40);
+            Stun.apply(getParticipant(), TimeUnit.TICKS, 20);
+            Seal.apply(getParticipant(), TimeUnit.TICKS, 20);
             usingSecond = !usingSecond;
             return true;
         } else if (!usingSecond && first.getLeft() instanceof ActiveHandler && !first.getLeft().isRestricted() && first.getLeft().usesMaterial(arg0)) {

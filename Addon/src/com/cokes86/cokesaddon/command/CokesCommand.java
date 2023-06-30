@@ -9,10 +9,9 @@ import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 
 public class CokesCommand {
-    Command cokesMain;
 
     public CokesCommand() {
-        cokesMain = new Command() {
+        Command cokesMain = new Command() {
             @Override
             protected boolean onCommand(CommandSender sender, String command, String[] args) {
                 if (args.length > 0) {
@@ -32,8 +31,8 @@ public class CokesCommand {
                     sender.sendMessage(new String[]{
                             Formatter.formatTitle(ChatColor.GOLD, ChatColor.YELLOW, "능력자 전쟁 코크스 애드온"),
                             Formatter.formatCommand(command + " cokes", "abi [능력]", "자신에게 [능력] 능력을 부여합니다. [능력] 중에는 코크스 애드온의 개발 예정 능력도 포함됩니다.", true),
-                            Formatter.formatCommand(command + " cokes", "roulette", "룰렛 모듈관련 설정을 엽니다.", true)
-                        });
+                            Formatter.formatCommand(command + " cokes", "roulette", "룰렛 모듈 관련 명령어 설명을 확인합니다.", true)
+                    });
                 } else {
                     Messager.sendErrorMessage(sender, "존재하지 않는 페이지입니다.");
                 }

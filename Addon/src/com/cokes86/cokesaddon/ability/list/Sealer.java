@@ -1,6 +1,7 @@
 package com.cokes86.cokesaddon.ability.list;
 
 import com.cokes86.cokesaddon.ability.CokesAbility;
+import com.cokes86.cokesaddon.ability.Config;
 import com.cokes86.cokesaddon.effect.list.Seal;
 import com.cokes86.cokesaddon.event.CEntityDamageEvent;
 import com.cokes86.cokesaddon.util.CokesUtil;

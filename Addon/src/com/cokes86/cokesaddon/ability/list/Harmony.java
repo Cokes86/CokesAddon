@@ -1,13 +1,14 @@
 package com.cokes86.cokesaddon.ability.list;
 
 import com.cokes86.cokesaddon.ability.CokesAbility;
+import com.cokes86.cokesaddon.ability.Config;
+import com.cokes86.cokesaddon.util.CokesUtil;
 import com.cokes86.cokesaddon.util.FunctionalInterfaces;
 import daybreak.abilitywar.ability.AbilityBase;
 import daybreak.abilitywar.ability.AbilityManifest;
 import daybreak.abilitywar.ability.AbilityManifest.Rank;
 import daybreak.abilitywar.ability.AbilityManifest.Species;
 import daybreak.abilitywar.game.AbstractGame.Participant;
-import daybreak.abilitywar.game.list.mix.AbstractMix;
 import daybreak.abilitywar.game.list.mix.Mix;
 import daybreak.abilitywar.game.module.DeathManager;
 import daybreak.abilitywar.game.team.interfaces.Teamable;
@@ -35,8 +36,8 @@ import java.util.function.Predicate;
 		"§8[§7HIDDEN§8] §b완벽한 조화§f: 완벽한 조화라는 것은 무엇일까?"
 })
 public class Harmony extends CokesAbility {
-	private static final Config<Integer> duration = Config.of(Harmony.class, "주기", 5, FunctionalInterfaces.positive(), FunctionalInterfaces.TIME);
-	private static final Config<Integer> range = Config.of(Harmony.class, "범위", 10, FunctionalInterfaces.positive());
+	private static final Config<Integer> duration = Config.of(Harmony.class, "period", 5, FunctionalInterfaces.positive(), FunctionalInterfaces.TIME);
+	private static final Config<Integer> range = Config.of(Harmony.class, "range", 10, FunctionalInterfaces.positive());
 	private boolean hidden = false;
 
 	private final Predicate<Entity> predicate = entity -> {
@@ -69,9 +70,9 @@ public class Harmony extends CokesAbility {
 			if (near.size() >= 3) {
 				for (Player p : near) {
 					Participant participant = getGame().getParticipant(p);
-					if (participant instanceof AbstractMix.MixParticipant && getParticipant() instanceof AbstractMix.MixParticipant) {
-						Mix me = ((AbstractMix.MixParticipant) getParticipant()).getAbility();
-						Mix mix = ((AbstractMix.MixParticipant) participant).getAbility();
+					if (participant.getAbility() instanceof Mix && getParticipant().getAbility() instanceof Mix) {
+						Mix me = (Mix) getParticipant().getAbility();
+						Mix mix = (Mix) participant.getAbility();
 
 						if (me != null && me.hasAbility() && (me.getFirst().getClass().equals(Harmony.class) || me.getSecond().getClass().equals(Harmony.class))) {
 							if (mix != null && mix.hasAbility() && !mix.hasSynergy()) {
@@ -147,9 +148,10 @@ public class Harmony extends CokesAbility {
 			}
 
 			for (Player p : near) {
+				CokesUtil.healPlayer(p, enhance ? 1 : 0.5);
 				Healths.setHealth(p, p.getHealth() + (enhance ? 1 : 0.5));
 			}
-			Healths.setHealth(getPlayer(), getPlayer().getHealth() + near.size() / (enhance ? 1.0 : 2.0));
+			CokesUtil.healPlayer(getPlayer(), near.size() / (enhance ? 1.0 : 2.0));
 		}
 	}.setPeriod(TimeUnit.SECONDS, duration.getValue());
 

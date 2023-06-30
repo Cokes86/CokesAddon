@@ -1,19 +1,12 @@
 package com.cokes86.cokesaddon.ability.list;
 
-import java.util.List;
-import org.bukkit.Material;
-import org.bukkit.entity.Entity;
-import org.bukkit.entity.LivingEntity;
-import org.bukkit.entity.Player;
-import org.bukkit.event.entity.EntityDamageByEntityEvent;
-
 import com.cokes86.cokesaddon.ability.CokesAbility;
+import com.cokes86.cokesaddon.ability.Config;
 import com.cokes86.cokesaddon.util.FunctionalInterfaces;
-
 import daybreak.abilitywar.ability.AbilityManifest;
-import daybreak.abilitywar.ability.SubscribeEvent;
 import daybreak.abilitywar.ability.AbilityManifest.Rank;
 import daybreak.abilitywar.ability.AbilityManifest.Species;
+import daybreak.abilitywar.ability.SubscribeEvent;
 import daybreak.abilitywar.ability.decorator.TargetHandler;
 import daybreak.abilitywar.game.AbstractGame.Participant;
 import daybreak.abilitywar.game.AbstractGame.Participant.ActionbarNotification.ActionbarChannel;
@@ -26,6 +19,13 @@ import daybreak.abilitywar.utils.base.random.Random;
 import daybreak.abilitywar.utils.library.PotionEffects;
 import daybreak.google.common.base.Predicate;
 import daybreak.google.common.collect.ImmutableList;
+import org.bukkit.Material;
+import org.bukkit.entity.Entity;
+import org.bukkit.entity.LivingEntity;
+import org.bukkit.entity.Player;
+import org.bukkit.event.entity.EntityDamageByEntityEvent;
+
+import java.util.List;
 
 @AbilityManifest(name = "에너지 테이커", rank = Rank.A, species = Species.HUMAN, explain = {
     "§7패시브 §8- §c테이킹§f: 자신이 최근에 공격받은 대미지의 종류에 따라",

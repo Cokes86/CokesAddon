@@ -1,35 +1,44 @@
 package com.cokes86.cokesaddon.ability.list;
 
 import com.cokes86.cokesaddon.ability.CokesAbility;
+import com.cokes86.cokesaddon.ability.Config;
 import com.cokes86.cokesaddon.util.CokesUtil;
 import com.cokes86.cokesaddon.util.FunctionalInterfaces;
-import com.cokes86.cokesaddon.util.timer.InvincibilityTimer;
 import com.cokes86.cokesaddon.util.nms.IDummy;
 import com.cokes86.cokesaddon.util.nms.NMSUtil;
-import daybreak.abilitywar.ability.AbilityFactory.AbilityRegistration;
+import com.cokes86.cokesaddon.util.timer.InvincibilityTimer;
+import com.cokes86.cokesaddon.util.timer.TimeoutTimer;
 import daybreak.abilitywar.AbilityWar;
+import daybreak.abilitywar.ability.AbilityFactory.AbilityRegistration;
 import daybreak.abilitywar.ability.AbilityManifest;
 import daybreak.abilitywar.ability.AbilityManifest.Rank;
 import daybreak.abilitywar.ability.AbilityManifest.Species;
 import daybreak.abilitywar.ability.NotAvailable;
 import daybreak.abilitywar.ability.decorator.ActiveHandler;
 import daybreak.abilitywar.game.AbstractGame.Participant;
-import daybreak.abilitywar.game.list.mix.Mix;
 import daybreak.abilitywar.game.list.mix.AbstractMix.MixParticipant;
+import daybreak.abilitywar.game.list.mix.Mix;
 import daybreak.abilitywar.game.list.mix.synergy.SynergyFactory;
 import daybreak.abilitywar.game.list.mix.triplemix.AbstractTripleMix;
 import daybreak.abilitywar.game.manager.AbilityList;
 import daybreak.abilitywar.utils.annotations.Beta;
+import daybreak.abilitywar.utils.base.color.RGB;
 import daybreak.abilitywar.utils.base.concurrent.TimeUnit;
+import daybreak.abilitywar.utils.base.math.LocationUtil;
+import daybreak.abilitywar.utils.base.math.geometry.Circle;
 import daybreak.abilitywar.utils.base.random.Random;
-
+import daybreak.abilitywar.utils.library.ParticleLib;
+import daybreak.abilitywar.utils.library.SoundLib;
 import org.bukkit.Bukkit;
+import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.entity.Entity;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.HandlerList;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
+import org.bukkit.event.entity.PlayerDeathEvent;
+import org.bukkit.inventory.ItemStack;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -103,7 +112,7 @@ public class PhantomThief extends CokesAbility implements ActiveHandler {
     }
 
     private boolean setNewAbility(MixParticipant target) {
-        if (target.getAbility() != null) {
+        if (target.getAbility() != null && getParticipant().getAbility() != null) {
             if (target.getAbility().hasSynergy()) {
                 int lowRank = 99, highRank = 0;
                 int myRank1 = 6-SynergyFactory.getSynergyBase(target.getAbility().getSynergy().getRegistration()).getLeft().getManifest().rank().ordinal();
@@ -122,7 +131,7 @@ public class PhantomThief extends CokesAbility implements ActiveHandler {
                     int checkRank2 = 6-SynergyFactory.getSynergyBase(abilityRegistration).getRight().getManifest().rank().ordinal();
                     if (myRank1 + myRank2 == lowRank && checkRank1 + checkRank2 >= highRank - 3) {
                         returnAbilities.add(abilityRegistration);
-                    } else if (myRank1 + myRank2 < checkRank1 + checkRank2){
+                    } else if (myRank1 + myRank2 > checkRank1 + checkRank2){
                         returnAbilities.add(abilityRegistration);
                     }
                 }
@@ -167,6 +176,7 @@ public class PhantomThief extends CokesAbility implements ActiveHandler {
                                     target.getPlayer().getDisplayName(),
                                     "§"+newOne.getManifest().rank().getRankName().charAt(1)));
                         }
+                        SoundLib.ENTITY_PLAYER_LEVELUP.playSound(target.getPlayer().getLocation());
                         return new InvincibilityTimer(target, 3, true).start();
                     } catch (ReflectiveOperationException e) {
                         getPlayer().sendMessage("[팬텀 시프] 능력을 재배정하는 도중 오류가 발생하였습니다.");
@@ -221,32 +231,53 @@ public class PhantomThief extends CokesAbility implements ActiveHandler {
                 phantom.remove();
                 phantom = null;
             }
-            phantom = NMSUtil.createDummy(getPlayer().getLocation(), getPlayer());
+            phantom = NMSUtil.createDummy(getPlayer().getLocation().clone(), getPlayer());
             phantom.getBukkitEntity().getInventory().setStorageContents(getPlayer().getInventory().getStorageContents());
+            phantom.getBukkitEntity().getInventory().setArmorContents(getPlayer().getInventory().getArmorContents());
+            phantom.getBukkitEntity().getInventory().setHeldItemSlot(getPlayer().getInventory().getHeldItemSlot());
             for (Participant participant : getGame().getParticipants()) {
                 phantom.display(participant.getPlayer());
             }
+            phantom.getBukkitEntity().getLocation().setPitch(getPlayer().getLocation().clone().getPitch());
+            phantom.getBukkitEntity().getLocation().setYaw(getPlayer().getLocation().clone().getYaw());
+            phantom.getBukkitEntity().getLocation().setDirection(getPlayer().getLocation().getDirection());
             NMSUtil.hidePlayer(getParticipant());
             getParticipant().attributes().TARGETABLE.setValue(false);
             Bukkit.getPluginManager().registerEvents(this, AbilityWar.getPlugin());
+
+            final RGB rgb = new RGB(51,51,51);
+            for (Location l : Circle.iteratorOf(phantom.getBukkitEntity().getLocation(), 1, 15).iterable()) {
+                l.setY(LocationUtil.getFloorYAt(phantom.getBukkitEntity().getWorld(), l.getY(), l.getBlockX(), l.getBlockZ()));
+                ParticleLib.REDSTONE.spawnParticle(l.clone().add(0,0.1,0), rgb);
+                ParticleLib.REDSTONE.spawnParticle(l.clone().add(0,0.5,0), rgb);
+                ParticleLib.REDSTONE.spawnParticle(l.clone().add(0,1.0,0), rgb);
+                ParticleLib.REDSTONE.spawnParticle(l.clone().add(0,1.5,0), rgb);
+                ParticleLib.REDSTONE.spawnParticle(l.clone().add(0,2.0,0), rgb);
+            }
+            SoundLib.ENTITY_PLAYER_ATTACK_SWEEP.playSound(phantom.getBukkitEntity().getLocation().clone(), 1.0f, 0.1f);
         }
 
         @Override
         protected void onDurationEnd() {
-            phantom.remove();
-            NMSUtil.showPlayer(getParticipant());
-            getParticipant().attributes().TARGETABLE.setValue(true);
-            phantom = null;
-            HandlerList.unregisterAll(this);
+            onDurationSilentEnd();
         }
 
         @Override
         protected void onDurationSilentEnd() {
+            phantom.getBukkitEntity().getInventory().clear();
             phantom.remove();
             NMSUtil.showPlayer(getParticipant());
             getParticipant().attributes().TARGETABLE.setValue(true);
             phantom = null;
             HandlerList.unregisterAll(this);
+
+            armorReset();
+        }
+
+        private void armorReset() {
+            ItemStack[] armor = getPlayer().getInventory().getArmorContents();
+            getPlayer().getInventory().setArmorContents(new ItemStack[]{});
+            TimeoutTimer.start(TimeUnit.TICKS, 1, () -> getPlayer().getInventory().setArmorContents(armor));
         }
 
         @Override
@@ -255,13 +286,22 @@ public class PhantomThief extends CokesAbility implements ActiveHandler {
         @EventHandler
         public void onEntityDamage(EntityDamageByEntityEvent e) {
             Entity damagerEntity = CokesUtil.getDamager(e.getDamager());
-            if (phantom != null && e.getEntity().getUniqueId().equals(phantom.getUniqueID()) && !damagerEntity.equals(getPlayer()) && getGame().isParticipating(damagerEntity.getUniqueId())) {
-                Participant damager = getGame().getParticipant(damagerEntity.getUniqueId());
-                damager.getPlayer().damage(DAMAGE.getValue(), getPlayer());
-                phantom.remove();
-                setNewAbility(damager);
+            if (phantom != null && e.getEntity().getUniqueId().equals(phantom.getUniqueID())) {
                 e.setDamage(0);
-                phantomShow.stop(false);
+                if (getGame().isParticipating(damagerEntity.getUniqueId()) && !damagerEntity.equals(getPlayer())) {
+                    Participant damager = getGame().getParticipant(damagerEntity.getUniqueId());
+                    damager.getPlayer().damage(DAMAGE.getValue(), getPlayer());
+                    phantom.remove();
+                    setNewAbility(damager);
+                    phantomShow.stop(false);
+                }
+            }
+        }
+
+        @EventHandler
+        public void onPlayerDeath(PlayerDeathEvent e) {
+            if (e.getEntity().getUniqueId().equals(phantom.getUniqueID())) {
+                e.setKeepInventory(true);
             }
         }
     }

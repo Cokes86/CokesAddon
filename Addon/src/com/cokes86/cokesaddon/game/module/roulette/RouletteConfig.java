@@ -1,5 +1,6 @@
 package com.cokes86.cokesaddon.game.module.roulette;
 
+import com.cokes86.cokesaddon.game.module.roulette.effect.RouletteEffect;
 import com.google.common.collect.Table;
 import com.google.common.collect.Tables;
 import com.google.common.collect.TreeBasedTable;
@@ -65,8 +66,8 @@ public class RouletteConfig {
 		return configFile;
 	}
 
-	private void registerSetting(String name, SettingObject<?> object) {
-		settings.put(name, object.key, object);
+	private void registerSetting(SettingObject<?> object) {
+		settings.put("roulette", object.key, object);
 	}
 
 	public Table<String, String, SettingObject<?>> getSettings() {
@@ -131,7 +132,7 @@ public class RouletteConfig {
 			this.comments = comments;
 			this.clazz = clazz;
 			this.displayName = displayName;
-			registerSetting("roulette", this);
+			registerSetting(this);
 		}
 
 		@Override

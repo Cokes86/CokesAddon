@@ -1,6 +1,7 @@
 package com.cokes86.cokesaddon.ability.list;
 
 import com.cokes86.cokesaddon.ability.CokesAbility;
+import com.cokes86.cokesaddon.ability.Config;
 import com.cokes86.cokesaddon.event.CEntityDamageEvent;
 import com.cokes86.cokesaddon.util.AttributeUtil;
 import com.cokes86.cokesaddon.util.CokesUtil;
@@ -31,7 +32,7 @@ import java.util.List;
 @AbilityManifest(name = "리인카네이션", rank = Rank.L, species = Species.OTHERS, explain = {
 		"§7패시브 §8- §5환생§f: 치명적인 대미지를 입었을 시, 이를 무시하고 체력이 1로 고정됩니다.",
 		"  $[DURATION]동안 상대에게 주는 대미지가 0으로 바뀌는 대신 신속1을 부여하고",
-		"  $[HIT_PREDICATE]번 이상 공격에 성공했을 경우 §b부활합니다.",
+		"  $[HIT_PREDICATE]번 이상 공격에 성공했을 경우 §b부활합니다. $[COODOWN]",
 		"  §7부활 체력: $[RESPAWN_HEALTH] + 최대 체력의 $[RESPAWN_PERCENTAGE]% × 초과 타격횟수",
 		"[아이디어 제공자 §bSato207§f]"
 })
@@ -50,11 +51,11 @@ public class Reincarnation extends CokesAbility {
 			"# 기본값: 5.0 (%)");
 	public static final Config<Double> RESPAWN_HEALTH = Config.of(Reincarnation.class, "respawn-health", 2d, FunctionalInterfaces.positive(),
 			"# 환생 성공 시 회복하는 고정 체력",
-			"# 기본값: 2");
+			"# 기본값: 2.0");
 	private final ActionbarChannel ac = newActionbarChannel();
 	private int hitted = 0;
 	private final Cooldown cool = new Cooldown(COOLDOWN.getValue());
-	private final AbilityTimer reincarnation = new InvincibilityTimer(getParticipant(), DURATION.getValue() * 20) {
+	private final InvincibilityTimer reincarnation = new InvincibilityTimer(getParticipant(), TimeUnit.TICKS, DURATION.getValue() * 20) {
 
 		public void onInvincibilityStart() {
 			List<Player> nearby = LocationUtil.getNearbyEntities(Player.class, getPlayer().getLocation(), 5, 5, null);
@@ -93,14 +94,14 @@ public class Reincarnation extends CokesAbility {
 			cool.start();
 			ac.update(null);
 		}
-	}.setPeriod(TimeUnit.TICKS, 1);
+	};
 
 	public Reincarnation(Participant arg0) {
 		super(arg0);
 		reincarnation.register();
 	}
 
-	@SubscribeEvent(priority = 6)
+	@SubscribeEvent(priority = 6, eventPriority = EventPriority.HIGHEST)
 	public void onPlayerSetHealth(PlayerSetHealthEvent e) {
 		if (e.getPlayer().equals(getPlayer())) {
 			if (reincarnation.isRunning()) e.setCancelled(true);
@@ -112,7 +113,7 @@ public class Reincarnation extends CokesAbility {
 		}
 	}
 
-	@SubscribeEvent(priority = 999)
+	@SubscribeEvent(priority = 999, eventPriority = EventPriority.HIGHEST)
 	public void onEntityDamage(CEntityDamageEvent e) {
 		if (e.getEntity().equals(getPlayer())) {
 			if (!reincarnation.isRunning() && getPlayer().getHealth() - e.getFinalDamage() <= 0 && !cool.isRunning() && !e.isCancelled()) {
@@ -131,7 +132,7 @@ public class Reincarnation extends CokesAbility {
 		}
 	}
 
-	@SubscribeEvent
+	@SubscribeEvent(eventPriority = EventPriority.MONITOR)
 	public void onEntityRegainHealth(EntityRegainHealthEvent e) {
 		if (e.getEntity().equals(getPlayer()) && reincarnation.isRunning()) {
 			e.setCancelled(true);
@@ -144,7 +145,7 @@ public class Reincarnation extends CokesAbility {
 
 		if (damager != null && e.getEntity() instanceof Player && damager.equals(getPlayer())) {
 			Player target = (Player) e.getEntity();
-			if (reincarnation.isRunning() && getGame().isParticipating(target) && !e.isCancelled()) {
+			if (reincarnation.isRunning() && getGame().isParticipating(target) && !e.isCancelled() && target.getNoDamageTicks() <= 0) {
 				hitted += 1;
 				if (hitted == HIT_PREDICATE.getValue()) {
 					SoundLib.ENTITY_PLAYER_LEVELUP.playSound(getPlayer());

@@ -137,7 +137,8 @@ public class DisguiseParty extends AbstractGame implements Winnable {
                     NMSUtil.changeSkin(entity, entity.getUniqueId());
                     NMSUtil.setPlayerNameTag(entity, entity.getUniqueId());
                     NMSUtil.reloadPlayerData(entity);
-                    setAttackChance(attack_chance--);
+                    attack_chance -= 1;
+                    setAttackChance(attack_chance);
 
                     if (eliminate(entity) && attack_chance < 1) {
                         Bukkit.broadcastMessage("§a목표§f를 끝까지 찾지 못했습니다! 게임을 종료합니다!");

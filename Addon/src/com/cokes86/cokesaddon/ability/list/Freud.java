@@ -1,6 +1,7 @@
 package com.cokes86.cokesaddon.ability.list;
 
 import com.cokes86.cokesaddon.ability.CokesAbility;
+import com.cokes86.cokesaddon.ability.Config;
 import com.cokes86.cokesaddon.event.CEntityDamageEvent;
 import com.cokes86.cokesaddon.util.FunctionalInterfaces;
 import daybreak.abilitywar.AbilityWar;
@@ -25,10 +26,7 @@ import daybreak.abilitywar.utils.base.random.Random;
 import daybreak.abilitywar.utils.library.ParticleLib;
 import daybreak.abilitywar.utils.library.PotionEffects;
 import daybreak.google.common.base.Predicate;
-import org.bukkit.Bukkit;
-import org.bukkit.Location;
-import org.bukkit.Material;
-import org.bukkit.World;
+import org.bukkit.*;
 import org.bukkit.boss.BarColor;
 import org.bukkit.boss.BarStyle;
 import org.bukkit.boss.BossBar;
@@ -61,11 +59,11 @@ import java.util.UUID;
 })
 public class Freud extends CokesAbility implements ActiveHandler {
 	private static final Config<Integer> mana_burn = Config.of(Freud.class, "fire-magic-cost", 30, FunctionalInterfaces.positive(),
-			FunctionalInterfaces.prefix("§c소모 §7: §b"));
+			FunctionalInterfaces.format("§c소모", ChatColor.BLUE));
 	private static final Config<Integer> mana_weakness = Config.of(Freud.class, "weakness-magic-cost", 45, FunctionalInterfaces.positive(),
-			FunctionalInterfaces.prefix("§c소모 §7: §b"));
+			FunctionalInterfaces.format("§c소모", ChatColor.BLUE));
 	private static final Config<Integer> mana_explosion = Config.of(Freud.class, "explosion-magic-cost", 80, FunctionalInterfaces.positive(),
-			FunctionalInterfaces.prefix("§c소모 §7: §b"));
+			FunctionalInterfaces.format("§c소모", ChatColor.BLUE));
 	private static final Config<Integer> damage_burn = Config.of(Freud.class, "fire-damage", 2, FunctionalInterfaces.positive());
 	private static final Config<Integer> damage_weakness = Config.of(Freud.class, "weakness-damage", 3, FunctionalInterfaces.positive());
 	private static final Config<Integer> damage_explosion = Config.of(Freud.class, "explosion-damage", 2, FunctionalInterfaces.positive());

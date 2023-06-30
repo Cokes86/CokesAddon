@@ -1,6 +1,7 @@
 package com.cokes86.cokesaddon.ability.list;
 
 import com.cokes86.cokesaddon.ability.CokesAbility;
+import com.cokes86.cokesaddon.ability.Config;
 import com.cokes86.cokesaddon.event.CEntityDamageEvent;
 import com.cokes86.cokesaddon.util.CokesUtil;
 import com.cokes86.cokesaddon.util.FunctionalInterfaces;
@@ -13,18 +14,15 @@ import daybreak.abilitywar.game.AbstractGame.Participant.ActionbarNotification.A
 import daybreak.abilitywar.utils.base.concurrent.TimeUnit;
 import org.bukkit.entity.Entity;
 
-import java.text.DecimalFormat;
-
 @AbilityManifest(name = "인내심", rank = Rank.B, species = Species.HUMAN, explain = {
-		"매 $[period]마다 상대방에게 주는 대미지가 $[upg]%p씩 상승하며 최대 $[max]%까지 상승합니다.",
+		"매 $[period]초마다 상대방에게 주는 대미지가 $[upg]%p씩 상승하며 최대 $[max]%까지 상승합니다.",
 		"상대방을 공격할 시 이는 0%로 변경됩니다",
 		"[아이디어 제공자 §bRainStar_§f]"
 })
 public class Perseverance extends CokesAbility {
 	private static final Config<Integer> max = Config.of(Perseverance.class, "최대치(%)", 100, FunctionalInterfaces.positive());
 	private static final Config<Integer> upg = Config.of(Perseverance.class, "성장치(%p)", 20, FunctionalInterfaces.positive());
-	private static final Config<Integer> period = Config.of(Perseverance.class, "주기", 90, FunctionalInterfaces.positive(),
-			t -> new DecimalFormat("0.##").format(t/20.0)+"초");
+	private static final Config<Integer> period = Config.of(Perseverance.class, "주기", 90, FunctionalInterfaces.positive(), FunctionalInterfaces.tickToSecond());
 
 	private double give = 0;
 	private final ActionbarChannel ac = newActionbarChannel();

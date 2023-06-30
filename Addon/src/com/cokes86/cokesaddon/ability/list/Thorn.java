@@ -1,6 +1,7 @@
 package com.cokes86.cokesaddon.ability.list;
 
 import com.cokes86.cokesaddon.ability.CokesAbility;
+import com.cokes86.cokesaddon.ability.Config;
 import com.cokes86.cokesaddon.event.CEntityDamageEvent;
 import com.cokes86.cokesaddon.util.FunctionalInterfaces;
 import daybreak.abilitywar.ability.AbilityManifest;
@@ -68,7 +69,7 @@ public class Thorn extends CokesAbility implements ActiveHandler {
 				}
 			} else if (!e.getDamager().equals(getPlayer()) && e.getEntity() instanceof Player) {
 				Random random = new Random();
-				if (random.nextDouble() < PERCENTAGE.getValue().doubleValue()) {
+				if (random.nextDouble() < PERCENTAGE.getValue()) {
 					double dam = e.getDamage();
 					((LivingEntity)e.getEntity()).damage((dam * MELEE_DAMAGE.getValue() / 100.0), getPlayer());
 					SoundLib.PIANO.playInstrument(e.getEntity().getLocation(), new Note(1, Tone.F, false));

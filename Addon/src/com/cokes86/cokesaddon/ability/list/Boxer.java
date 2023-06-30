@@ -1,6 +1,7 @@
 package com.cokes86.cokesaddon.ability.list;
 
 import com.cokes86.cokesaddon.ability.CokesAbility;
+import com.cokes86.cokesaddon.ability.Config;
 import com.cokes86.cokesaddon.event.CEntityDamageEvent;
 import com.cokes86.cokesaddon.util.CokesUtil;
 import com.cokes86.cokesaddon.util.FunctionalInterfaces;
@@ -73,7 +74,7 @@ public class Boxer extends CokesAbility implements TargetHandler {
     // 공격, 확률 컨피그
     private static final Config<Double> JAP_DAMAGE_DECREMENT_PERCENTAGE = Config.of(Boxer.class,
             "jap-damage-decrement-percentage", 15.0,
-            FunctionalInterfaces.<Double>positive().and(FunctionalInterfaces.lower(100.0)),
+            FunctionalInterfaces.chance(false, false),
             "# 잽 공격 시 근거리 대미지 감소량", "# 기본값: 15.0 (%)");
     private static final Config<Double> STRAIGHT_DAMAGE_PERCENTAGE = Config.of(Boxer.class,
             "straight-damage-percentage", 125.0,
@@ -85,14 +86,14 @@ public class Boxer extends CokesAbility implements TargetHandler {
             "# 카운터 공격 시 검 비례 대미지", "# 기본값: 95.0 (%)");
     private static final Config<Double> COUNTER_THORN_PERCENTAGE = Config.of(Boxer.class, "counter-thorn-percentage",
             60.0,
-            FunctionalInterfaces.<Double>positive().and(FunctionalInterfaces.lower(100.0)),
+            FunctionalInterfaces.chance(false, false),
             "# 카운터 공격 시 최근 받는 대미지의 반사 대미지", "# 기본값: 60.0 (%)");
     private static final Config<Double> UPPER_DAMAGE_PERCENTAGE = Config.of(Boxer.class, "upper-damage-percentage",
             100.0,
             FunctionalInterfaces.positive(),
             "# 어퍼 공격 시 검 비례 대미지", "# 기본값: 100.0 (%)");
     private static final Config<Double> UPPER_STUN_PERCENTAGE = Config.of(Boxer.class, "upper-stun-percentage", 30.0,
-            FunctionalInterfaces.<Double>positive().and(FunctionalInterfaces.lower(100.0)),
+            FunctionalInterfaces.chance(false, false),
             "# 어퍼 공격 시 기절 확률", "# 기본값: 30.0 (%)");
     private static final Config<Double> DUCKING_DEFENCE_PERCENTAGE = Config.of(Boxer.class,
             "ducking-defence-percentage", 50.0,
@@ -191,7 +192,7 @@ public class Boxer extends CokesAbility implements TargetHandler {
             if (e.getCause() == DamageCause.MAGIC)
                 return;
             e.setDamage(e.getDamage() * (1 - JAP_DAMAGE_DECREMENT_PERCENTAGE.getValue() / 100.0));
-            skillTimer.setParticipant(getGame().getParticipant(e.getEntity().getUniqueId())).addCombination('L')
+            skillTimer.setParticipant(getGame().getParticipant(e.getEntity().getUniqueId())).addCombination('L').setDucking(false)
                     .start();
         }
 
@@ -213,7 +214,7 @@ public class Boxer extends CokesAbility implements TargetHandler {
                 && current - latest >= 250) {
             float sword = SwordDamage.valueOf(material.name()).getDamage();
             int sharpness = getPlayer().getInventory().getItemInMainHand().getEnchantmentLevel(Enchantment.DAMAGE_ALL);
-            skillTimer.addCombination('R').start();
+            skillTimer.setDucking(false).addCombination('R').start();
 
             double percentage = STRAIGHT_DAMAGE_PERCENTAGE.getValue();
             if (skillTimer.combination.size() >= 3
@@ -230,7 +231,6 @@ public class Boxer extends CokesAbility implements TargetHandler {
             skillTimer.participant.getPlayer().setVelocity(
                     skillTimer.participant.getPlayer().getLocation().getDirection().clone().multiply(-2.5));
 
-            skillTimer.setDucking(false);
             straight_cooldown.start();
             latest = current;
         }
@@ -250,11 +250,10 @@ public class Boxer extends CokesAbility implements TargetHandler {
                 ItemStack sword_itemstack = e.getOffHandItem();
                 e.setCancelled(true);
 
-                if (entity != null && skillTimer.isAbleSkill() && !counter_cooldown.isCooldown()
-                        && entity.equals(skillTimer.participant.getPlayer()) && current - latest >= 250) {
+                if (skillTimer.isAbleSkill() && !counter_cooldown.isCooldown() && entity.equals(skillTimer.participant.getPlayer()) && current - latest >= 250) {
                     float sword = SwordDamage.valueOf(sword_material.name()).getDamage();
                     int sharpness = sword_itemstack.getEnchantmentLevel(Enchantment.DAMAGE_ALL);
-                    skillTimer.addCombination('F').start();
+                    skillTimer.setDucking(false).addCombination('F').start();
 
                     double damage_percentage = COUNTER_DAMAGE_PERCENTAGE.getValue();
                     double thorn_percentage = COUNTER_THORN_PERCENTAGE.getValue();
@@ -276,7 +275,6 @@ public class Boxer extends CokesAbility implements TargetHandler {
                     Damages.damageMagic(skillTimer.participant.getPlayer(), getPlayer(), true,
                             (float) (thorn * thorn_percentage / 100.0f));
 
-                    skillTimer.setDucking(false);
                     counter_cooldown.start();
                     latest = current;
                 }
@@ -297,11 +295,10 @@ public class Boxer extends CokesAbility implements TargetHandler {
                 Material sword_material = sword_itemstack.getType();
                 e.setCancelled(true);
 
-                if (entity != null && skillTimer.isAbleSkill() && !upper_cooldown.isCooldown()
-                        && entity.equals(skillTimer.participant.getPlayer()) && current - latest >= 250) {
+                if (skillTimer.participant != null && skillTimer.isAbleSkill() && !upper_cooldown.isCooldown() && entity.equals(skillTimer.participant.getPlayer()) && current - latest >= 250) {
                     float sword = SwordDamage.valueOf(sword_material.name()).getDamage();
                     int sharpness = sword_itemstack.getEnchantmentLevel(Enchantment.DAMAGE_ALL);
-                    skillTimer.addCombination('Q').start();
+                    skillTimer.setDucking(false).addCombination('Q').start();
 
                     double damage_percentage = UPPER_DAMAGE_PERCENTAGE.getValue();
                     double stun_percentage = UPPER_STUN_PERCENTAGE.getValue();
@@ -344,7 +341,6 @@ public class Boxer extends CokesAbility implements TargetHandler {
                         Stun.apply(skillTimer.participant, TimeUnit.SECONDS, 1);
                     }
 
-                    skillTimer.setDucking(false);
                     upper_cooldown.start();
                     latest = current;
                 }

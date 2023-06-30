@@ -18,6 +18,10 @@ import java.util.Arrays;
 
 public class CokesAbiCommand extends Command {
 
+    public CokesAbiCommand() {
+        super(Condition.OP);
+    }
+
     @Override
     protected boolean onCommand(CommandSender sender, String command, String[] args) {
         if (GameManager.isGameRunning() && sender instanceof Player && GameManager.getGame().isParticipating((Player) sender) && args.length >= 1) {
@@ -38,6 +42,7 @@ public class CokesAbiCommand extends Command {
                     }
                     participant.getAbility().setAbility(class1, class2);
                     Bukkit.broadcastMessage("§e" + sender.getName() + "§a님이 §f" + sender.getName() + "§a님에게 능력을 임의로 부여하였습니다.");
+                    return true;
                 } catch (ReflectiveOperationException e) {
                     Messager.sendErrorMessage(sender, "능력 설정 도중 오류가 발생하였습니다.");
                     if (Configuration.Settings.DeveloperSettings.isEnabled()) e.printStackTrace();
@@ -48,12 +53,12 @@ public class CokesAbiCommand extends Command {
                 return true;
             } else {
                 final String name = String.join(" ", Arrays.copyOfRange(args, 0, args.length));
-                Bukkit.broadcastMessage(name);
                 Class<? extends AbilityBase> class1 = AddonAbilityFactory.getTestAbilityByName(name);
                 AbstractGame.Participant participant = GameManager.getGame().getParticipant((Player) sender);
                 try {
                     participant.setAbility(class1);
                     Bukkit.broadcastMessage("§e" + sender.getName() + "§a님이 §f" + sender.getName() + "§a님에게 능력을 임의로 부여하였습니다.");
+                    return true;
                 } catch (ReflectiveOperationException e) {
                     Messager.sendErrorMessage(sender, "능력 설정 도중 오류가 발생하였습니다.");
                     if (Configuration.Settings.DeveloperSettings.isEnabled()) e.printStackTrace();

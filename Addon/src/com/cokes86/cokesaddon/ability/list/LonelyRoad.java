@@ -1,6 +1,7 @@
 package com.cokes86.cokesaddon.ability.list;
 
 import com.cokes86.cokesaddon.ability.CokesAbility;
+import com.cokes86.cokesaddon.ability.Config;
 import com.cokes86.cokesaddon.event.CEntityDamageEvent;
 import com.cokes86.cokesaddon.util.CokesUtil;
 import com.cokes86.cokesaddon.util.FunctionalInterfaces;
@@ -48,7 +49,7 @@ public class LonelyRoad extends CokesAbility {
         Entity damager = CokesUtil.getDamager(e.getDamager());
         if (damager != null && damager.equals(getPlayer())) {
             //noinspection IntegerDivisionInFloatingPointContext
-            e.setDamage(e.getDamage() + (stack / STACK_BLOCK.getValue().intValue()) * DAMAGE.getValue());
+            e.setDamage(e.getDamage() + (stack / STACK_BLOCK.getValue()) * DAMAGE.getValue());
         }
     }
 

@@ -17,7 +17,7 @@ public class HitHologramTimer extends AbilityTimer {
         return new HitHologramTimer(abilityBase, hitLoc, hologramTitle);
     }
 
-    private HitHologramTimer(@NotNull AbilityBase abilityBase, Location hitLoc, String hologramTitle) {
+    private HitHologramTimer(@NotNull AbilityBase abilityBase, Location hitLoc, String hologramText) {
         abilityBase.super(TaskType.NORMAL, 30);
         setPeriod(TimeUnit.TICKS, 1);
         Random random = new Random();
@@ -25,7 +25,7 @@ public class HitHologramTimer extends AbilityTimer {
                 hitLoc.getX() + (((random.nextDouble() * 2) - 1) * 0.5),
                 hitLoc.getY() + 1.25 + (((random.nextDouble() * 2) - 1) * 0.25),
                 hitLoc.getZ() + (((random.nextDouble() * 2) - 1) * 0.5),
-                hologramTitle);
+                hologramText);
         for (Player player : abilityBase.getPlayer().getWorld().getPlayers()) {
             hologram.display(player);
         }
@@ -48,5 +48,9 @@ public class HitHologramTimer extends AbilityTimer {
 
     public IHologram getHologram() {
         return hologram;
+    }
+
+    public void setText(String newText) {
+        hologram.setText(newText);
     }
 }

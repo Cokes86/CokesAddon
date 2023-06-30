@@ -1,6 +1,7 @@
 package com.cokes86.cokesaddon.ability.list;
 
 import com.cokes86.cokesaddon.ability.CokesAbility;
+import com.cokes86.cokesaddon.ability.Config;
 import com.cokes86.cokesaddon.effect.list.Warp;
 import com.cokes86.cokesaddon.event.CEntityDamageEvent;
 import com.cokes86.cokesaddon.util.FunctionalInterfaces;
@@ -53,8 +54,7 @@ import java.util.function.Predicate;
 })
 public class Reisen extends CokesAbility implements ActiveHandler {
     private static final Config<Integer> MADNESS_ENHANCE_PREDICATE = Config.of(Reisen.class, "광기를_다루는_자.강화_조건", 25, FunctionalInterfaces.positive());
-    private static final Config<Integer> MADNESS_ENHANCE_PERIOD_DECREASE = Config.of(Reisen.class, "광기를_다루는_자.강화_주기_감소치(%)", 50,
-            FunctionalInterfaces.<Integer>positive().and(FunctionalInterfaces.lower(100.0)));
+    private static final Config<Double> MADNESS_ENHANCE_PERIOD_DECREASE = Config.of(Reisen.class, "광기를_다루는_자.강화_주기_감소치(%)", 50.0, FunctionalInterfaces.chance(false, false));
     private static final Config<Integer> MADNESS_PERIOD = Config.of(Reisen.class, "광기를_다루는_자.주기", 20, FunctionalInterfaces.positive(), FunctionalInterfaces.TIME);
     private static final Config<Integer> MADNESS_RANGE = Config.of(Reisen.class, "광기를_다루는_자.범위", 5, FunctionalInterfaces.positive());
 
@@ -65,7 +65,7 @@ public class Reisen extends CokesAbility implements ActiveHandler {
     private static final Config<Integer> EYES_DURATION = Config.of(Reisen.class, "광기의_눈동자.지속시간", 10, FunctionalInterfaces.positive(), FunctionalInterfaces.TIME);
     private static final Config<Integer> EYES_COOLDOWN = Config.of(Reisen.class, "광기의_눈동자.쿨타임", 10, FunctionalInterfaces.positive(), FunctionalInterfaces.COOLDOWN);
     private static final Config<Integer> EYES_ENHANCE_PREDICATE = Config.of(Reisen.class, "광기의_눈동자.강화_조건", 35, FunctionalInterfaces.positive());
-    private static final Config<Integer> EYES_ENHANCE_COOLDOWN_DECREASE = Config.of(Reisen.class, "광기의_눈동자.강화_쿨타임_감소치(%)", 50, FunctionalInterfaces.<Integer>positive().and(FunctionalInterfaces.lower(100.0)));
+    private static final Config<Double> EYES_ENHANCE_COOLDOWN_DECREASE = Config.of(Reisen.class, "광기의_눈동자.강화_쿨타임_감소치(%)", 50.0, FunctionalInterfaces.chance(false, false));
 
     public Reisen(AbstractGame.Participant arg0) {
         super(arg0);
@@ -131,15 +131,15 @@ public class Reisen extends CokesAbility implements ActiveHandler {
     public void addMindShaker(int a) {
         mind_shaker+=a;
         if (mind_shaker >= MADNESS_ENHANCE_PREDICATE.getValue() && !madness_enhance) {
-            passive_timer.setPeriod(TimeUnit.SECONDS, passive_timer.getPeriod()*(100- MADNESS_ENHANCE_PERIOD_DECREASE.getValue())/100);
+            passive_timer.setPeriod(TimeUnit.SECONDS, (int) (passive_timer.getPeriod()*(100- MADNESS_ENHANCE_PERIOD_DECREASE.getValue())/100));
             madness_enhance = true;
             notice.add();
             SoundLib.ENTITY_ENDER_DRAGON_AMBIENT.playSound(getPlayer());
         }
         if (mind_shaker >= EYES_ENHANCE_PREDICATE.getValue() && !eyes_enhance) {
             eyes_enhance = true;
-            eyes_cooldown.setCooldown(EYES_COOLDOWN.getValue() * (100-EYES_ENHANCE_COOLDOWN_DECREASE.getValue())/100);
-            eyes_cooldown.setCount(eyes_cooldown.getCount() * (100-EYES_ENHANCE_COOLDOWN_DECREASE.getValue())/100);
+            eyes_cooldown.setCooldown((int) (EYES_COOLDOWN.getValue() * (100-EYES_ENHANCE_COOLDOWN_DECREASE.getValue())/100));
+            eyes_cooldown.setCount((int) (eyes_cooldown.getCount() * (100-EYES_ENHANCE_COOLDOWN_DECREASE.getValue())/100));
             notice.add();
             SoundLib.ENTITY_ENDER_DRAGON_AMBIENT.playSound(getPlayer());
         }

@@ -1,6 +1,7 @@
 package com.cokes86.cokesaddon.ability.list;
 
 import com.cokes86.cokesaddon.ability.CokesAbility;
+import com.cokes86.cokesaddon.ability.Config;
 import com.cokes86.cokesaddon.event.CEntityDamageEvent;
 import com.cokes86.cokesaddon.util.FunctionalInterfaces;
 import daybreak.abilitywar.ability.*;
@@ -57,10 +58,20 @@ import java.util.Random;
 @NotAvailable(AbstractTripleMix.class)
 @Materials(materials = Material.GOLD_INGOT)
 public class DataMining extends CokesAbility implements ActiveHandler {
-	private static final Config<Double> damageUp = Config.of(DataMining.class, "최대주는대미지성장치", 1.1, FunctionalInterfaces.positive());
-	private static final Config<Double> defenseUp = Config.of(DataMining.class, "최대받는대미지감소성장치", 25.00, FunctionalInterfaces.positive(), "#단위: %");
-	private static final Config<Integer> player_value = Config.of(DataMining.class, "인원별_스택치", 6, FunctionalInterfaces.positive());
-	private static final Config<Integer> duration = Config.of(DataMining.class, "자동스택추가주기", 60, FunctionalInterfaces.positive(), FunctionalInterfaces.TIME);
+	private static final Config<Double> damageUp = Config.of(DataMining.class, "max-damage-increment", 1.1, FunctionalInterfaces.positive(),
+			"마이닝 스택이 최대치일 때 상대에게 주는 대미지 증가량",
+			"기본값: 1.1");
+	private static final Config<Double> defenseUp = Config.of(DataMining.class, "max-receive-damage-decrement", 25.0, FunctionalInterfaces.chance(false, false),
+			"마이닝 스택이 최대치일 때 상대에게 받는 대미지 감소량",
+			"기본값: 25.0 (%)");
+	private static final Config<Integer> player_value = Config.of(DataMining.class, "stack-per-participant", 6, FunctionalInterfaces.positive(),
+			"게임 참가인원수 당 스택의 최대치",
+			"인원이 1명일 경우 최대 마이닝스택이 해당 설정값이며",
+			"인원이 늘수록 배로 늘어납니다.",
+			"기본값: 6");
+	private static final Config<Integer> duration = Config.of(DataMining.class, "auto-stack-increase-duration", 60, FunctionalInterfaces.positive(), FunctionalInterfaces.TIME,
+			"강화학습으로 얻는 스택의 시간",
+			"기본값: 60 (초)");
 	private final DecimalFormat df = new DecimalFormat("0.##");
 	private int damage_count = 0;
 	private int defense_count = 0;
@@ -116,6 +127,7 @@ public class DataMining extends CokesAbility implements ActiveHandler {
 			ac.update("§e마이닝 스택§f: " + (damage_count + defense_count) + " (추가대미지: " + df.format(damage_value) + "  피해감소: " + df.format(defense_value) + "%)");
 			passive.start();
 			for (Participant participant : getGame().getParticipants()) {
+				if (participant.equals(getParticipant())) continue;
 				scanningList.add(new Scanning(participant));
 			}
 		} else {

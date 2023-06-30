@@ -1,8 +1,10 @@
 package com.cokes86.cokesaddon.ability.list;
 
 import com.cokes86.cokesaddon.ability.CokesAbility;
+import com.cokes86.cokesaddon.ability.Config;
 import com.cokes86.cokesaddon.event.CEntityDamageEvent;
 import com.cokes86.cokesaddon.util.FunctionalInterfaces;
+import com.cokes86.cokesaddon.util.timer.InvincibilityTimer;
 import daybreak.abilitywar.AbilityWar;
 import daybreak.abilitywar.ability.AbilityManifest;
 import daybreak.abilitywar.ability.AbilityManifest.Rank;
@@ -51,9 +53,15 @@ summarize = {
 		"돌상태는 상대방이 곡괭이가 있지 않는 이상 늘 대미지 감소"
 }, stats = @Tips.Stats(offense = Tips.Level.ZERO, survival = Tips.Level.EIGHT, crowdControl = Tips.Level.ZERO, mobility = Tips.Level.ZERO, utility = Tips.Level.EIGHT), difficulty = Tips.Difficulty.EASY)
 public class Blocks extends CokesAbility implements ActiveHandler {
-	private static final Config<Integer> stone = Config.of(Blocks.class, "돌_받는대미지감소량(%)", 20, FunctionalInterfaces.<Integer>positive().and(FunctionalInterfaces.lower(100)));
-	private static final Config<Integer> glass = Config.of(Blocks.class, "유리_받는대미지_증가량(%)", 100, FunctionalInterfaces.positive());
-	private static final Config<Integer> inv = Config.of(Blocks.class, "모래_무적시간", 6, FunctionalInterfaces.positive(), "단위: 틱");
+	private static final Config<Double> stone = Config.of(Blocks.class, "receive-damage-decrement", 20d, FunctionalInterfaces.chance(true, false),
+			"돌 상태에서 받는 대미지의 감소량",
+			"기본값: 20.0 (%)");
+	private static final Config<Double> glass = Config.of(Blocks.class, "receive-damage-increment", 100d, FunctionalInterfaces.positive(),
+			"유리 상태에서 받는 대미지의 증가량",
+			"기본값: 100.0 (%)");
+	private static final Config<Integer> inv = Config.of(Blocks.class, "invincibility-duration", 10, FunctionalInterfaces.positive(), FunctionalInterfaces.tickToSecond(),
+			"모래 상태에서 피해를 받았을 시 부여받는 무적 시간",
+			"기본값: 10 (틱)");
 	private Condition condition = Condition.STONE;
 	private final Participant.ActionbarNotification.ActionbarChannel ac = this.newActionbarChannel();
 	private ArmorStand armorStand;
@@ -99,7 +107,8 @@ public class Blocks extends CokesAbility implements ActiveHandler {
 			armorStand.remove();
 		}
 	}.setPeriod(TimeUnit.TICKS, 1);
-	private final AbilityTimer invTimer = new AbilityTimer(inv.getValue()){}.setPeriod(TimeUnit.TICKS, 1);
+
+	private final InvincibilityTimer invTimer = new InvincibilityTimer(getParticipant(), TimeUnit.TICKS, inv.getValue());
 
 	public Blocks(Participant arg0) {
 		super(arg0);
@@ -170,9 +179,7 @@ public class Blocks extends CokesAbility implements ActiveHandler {
 			return;
 		}
 		if (e.getEntity().equals(getPlayer())) {
-			if (invTimer.isRunning()) {
-				e.setCancelled(true);
-			} else {
+			if (!invTimer.isRunning()) {
 				if (condition.equals(Condition.STONE)) {
 					if (e.getDamager() instanceof Player) {
 						Player damager = (Player) e.getDamager();

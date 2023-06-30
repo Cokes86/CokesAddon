@@ -1,6 +1,7 @@
 package com.cokes86.cokesaddon.ability.list;
 
 import com.cokes86.cokesaddon.ability.CokesAbility;
+import com.cokes86.cokesaddon.ability.Config;
 import com.cokes86.cokesaddon.event.CEntityDamageEvent;
 import com.cokes86.cokesaddon.util.FunctionalInterfaces;
 import daybreak.abilitywar.ability.AbilityManifest;
@@ -8,7 +9,6 @@ import daybreak.abilitywar.ability.SubscribeEvent;
 import daybreak.abilitywar.game.AbstractGame;
 import daybreak.abilitywar.game.AbstractGame.Participant.ActionbarNotification.ActionbarChannel;
 import daybreak.abilitywar.game.event.participant.ParticipantDeathEvent;
-import daybreak.abilitywar.utils.base.concurrent.TimeUnit;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Projectile;
 import org.jetbrains.annotations.NotNull;
@@ -37,14 +37,7 @@ public class BlackFeather extends CokesAbility {
             "# 기본값: 15 (초)");
 
     private final List<BlackFeatherCounter> counterList = new ArrayList<>();
-
-    private final AbilityTimer counter = new AbilityTimer() {
-        private final ActionbarChannel channel = newActionbarChannel();
-        @Override
-        protected void run(int count) {
-            channel.update("§7"+ counterList.size());
-        }
-    }.setPeriod(TimeUnit.TICKS, 1);
+    private final ActionbarChannel channel = newActionbarChannel();
 
     public BlackFeather(AbstractGame.Participant arg0) {
         super(arg0);
@@ -53,7 +46,7 @@ public class BlackFeather extends CokesAbility {
     @Override
     protected void onUpdate(Update update) {
         if (update == Update.RESTRICTION_CLEAR) {
-            counter.start();
+            channel.update("§7"+ counterList.size());
         }
     }
 
@@ -100,6 +93,7 @@ public class BlackFeather extends CokesAbility {
             this.participant = BlackFeather.this.getParticipant();
             counterList.add(this);
             start();
+            BlackFeather.this.channel.update("§7"+ counterList.size());
         }
 
         public BlackFeatherCounter(AbstractGame.Participant participant) {
@@ -107,11 +101,19 @@ public class BlackFeather extends CokesAbility {
             this.participant = participant;
             counterList.add(this);
             start();
+            BlackFeather.this.channel.update("§7"+ counterList.size());
         }
 
         @Override
         protected void onEnd() {
             counterList.remove(this);
+            BlackFeather.this.channel.update("§7"+ counterList.size());
+        }
+
+        @Override
+        protected void onSilentEnd() {
+            counterList.remove(this);
+            BlackFeather.this.channel.update("§7"+ counterList.size());
         }
 
         public AbstractGame.Participant getParticipant() {

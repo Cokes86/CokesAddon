@@ -2,7 +2,9 @@ package com.cokes86.cokesaddon.effect.list;
 
 import com.cokes86.cokesaddon.effect.AddonEffectRegistry;
 import daybreak.abilitywar.AbilityWar;
+import daybreak.abilitywar.ability.event.AbilityPreActiveSkillEvent;
 import daybreak.abilitywar.game.AbstractGame;
+import daybreak.abilitywar.game.manager.effect.Stun;
 import daybreak.abilitywar.game.manager.effect.registry.ApplicationMethod;
 import daybreak.abilitywar.game.manager.effect.registry.EffectManifest;
 import daybreak.abilitywar.game.manager.effect.registry.EffectRegistry;
@@ -11,24 +13,16 @@ import daybreak.abilitywar.utils.base.minecraft.nms.NMS;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.entity.ArmorStand;
-import org.bukkit.event.Event;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.HandlerList;
 import org.bukkit.event.Listener;
-import org.bukkit.event.player.PlayerMoveEvent;
-
-import java.util.ArrayList;
-import java.util.List;
 
 @EffectManifest(name = "디버깅", displayName = "§4디버깅", method = ApplicationMethod.UNIQUE_IGNORE, description = {
-        "움직임을 제외한 이벤트가 처음 감지될 때 마다 스택이 1 증가합니다.",
-        "  지속시간 종료 시 스택 당 0.25의 대미지를 받습니다."
+        "액티브 스킬 감지 시 해당 상태이상은 기절로 변합니다.",
 })
 public class Debuging extends AbstractGame.Effect implements Listener {
     private final AbstractGame.Participant participant;
     private final ArmorStand hologram;
-    private int stack = 0;
-    private final List<Event> eventList = new ArrayList<>();
     private static final EffectRegistry.EffectRegistration<Debuging> registration = AddonEffectRegistry.getRegistration(Debuging.class);
 
     public static void apply(AbstractGame.Participant participant, TimeUnit timeunit, int duration) {
@@ -52,11 +46,11 @@ public class Debuging extends AbstractGame.Effect implements Listener {
     }
 
     @EventHandler
-    public void onEvent(Event e) {
-        if (e instanceof PlayerMoveEvent) return;
-        if (eventList.contains(e)) return;
-        stack++;
-        eventList.add(e);
+    public void onAbilityPreActiveSkill(AbilityPreActiveSkillEvent e) {
+        if (e.getParticipant().equals(getParticipant())) {
+            Stun.apply(getParticipant(), TimeUnit.TICKS, getCount());
+            this.stop(true);
+        }
     }
 
     public void onStart() {
@@ -76,7 +70,6 @@ public class Debuging extends AbstractGame.Effect implements Listener {
         HandlerList.unregisterAll(this);
         hologram.remove();
         super.onEnd();
-        participant.getPlayer().damage(stack * 0.25, participant.getPlayer());
     }
 
     @Override

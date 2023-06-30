@@ -1,5 +1,6 @@
 package com.cokes86.cokesaddon.util.timer;
 
+import daybreak.abilitywar.ability.AbilityBase;
 import daybreak.abilitywar.ability.AbilityBase.AbilityTimer;
 import daybreak.abilitywar.game.AbstractGame.Participant;
 import daybreak.abilitywar.game.AbstractGame.Participant.ActionbarNotification.ActionbarChannel;
@@ -17,9 +18,15 @@ public class NoticeTimeTimer extends AbilityTimer {
         this.channel = participant.actionbar().newChannel();
     }
 
+    public NoticeTimeTimer(AbilityBase abilityBase, String prefix, int time) {
+        Objects.requireNonNull(abilityBase).super(time);
+        this.prefix = prefix;
+        this.channel = abilityBase.getParticipant().actionbar().newChannel();
+    }
+
     @Override
     protected void run(int count) {
-        channel.update(prefix+"§f: "+ TimeUtil.parseTimeAsString(count));
+        channel.update(prefix+"§f: "+ TimeUtil.parseTimeAsString(getFixedCount()));
     }
 
     @Override

@@ -1,39 +1,38 @@
 package com.cokes86.cokesaddon.game.module.roulette;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import daybreak.abilitywar.game.GameManager;
-import daybreak.abilitywar.game.event.participant.ParticipantDeathEvent;
-import daybreak.abilitywar.game.module.DeathManager;
-import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
-import org.bukkit.event.EventHandler;
-
 import com.cokes86.cokesaddon.CokesAddon;
 import com.cokes86.cokesaddon.game.module.roulette.RouletteConfig.SettingObject;
-
+import com.cokes86.cokesaddon.game.module.roulette.effect.RouletteEffect;
 import daybreak.abilitywar.game.AbstractGame;
 import daybreak.abilitywar.game.AbstractGame.GameTimer;
 import daybreak.abilitywar.game.AbstractGame.Participant;
+import daybreak.abilitywar.game.GameManager;
 import daybreak.abilitywar.game.event.GameStartEvent;
 import daybreak.abilitywar.game.event.InvincibilityStatusChangeEvent;
+import daybreak.abilitywar.game.module.DeathManager;
 import daybreak.abilitywar.game.module.Invincibility;
+import daybreak.abilitywar.game.module.Invincibility.Observer;
 import daybreak.abilitywar.game.module.ListenerModule;
 import daybreak.abilitywar.game.module.ModuleBase;
-import daybreak.abilitywar.game.module.Invincibility.Observer;
 import daybreak.abilitywar.utils.base.collect.Pair;
 import daybreak.abilitywar.utils.base.concurrent.TimeUnit;
 import daybreak.abilitywar.utils.base.minecraft.nms.NMS;
 import daybreak.abilitywar.utils.base.random.Random;
 import daybreak.abilitywar.utils.library.SoundLib;
+import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
+import org.bukkit.event.EventHandler;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
 
 @ModuleBase(Roulette.class)
 public class Roulette implements ListenerModule {
     private final List<Pair<RouletteEffect, Integer>> effects = new ArrayList<>();
     private int maxPriority = 0;
     public static final RouletteConfig config = new RouletteConfig(CokesAddon.getAddonFile("CokesRoulette.yml"));
-    private final List<Participant> rouletteTarget;
 
     private final AbstractGame abstractGame;
 
@@ -42,8 +41,6 @@ public class Roulette implements ListenerModule {
     public Roulette(AbstractGame game) {
         this.abstractGame = game;
         config.update();
-
-        rouletteTarget = new ArrayList<>(game.getParticipants());
 
         for (Pair<Class<? extends RouletteEffect>, SettingObject<Integer> > effect : RouletteRegister.getMapPairs()) {
             if (effect.getRight().getValue() > 0) {
@@ -58,7 +55,7 @@ public class Roulette implements ListenerModule {
         }
     }
 
-    public List<Participant> getParticipantsWithoutEliminater() {
+    public static List<Participant> getParticipantsWithoutEliminater() {
         ArrayList<Participant> others = new ArrayList<>();
         for (Participant check : GameManager.getGame().getParticipants()) {
             if (check.getGame().hasModule(DeathManager.class)) {
@@ -71,7 +68,23 @@ public class Roulette implements ListenerModule {
         return others;
     }
 
-    private boolean start() {
+    public static List<Participant> getParticipantsWithoutEliminater(Participant... exception) {
+        ArrayList<Participant> others = new ArrayList<>();
+        for (Participant check : GameManager.getGame().getParticipants()) {
+            if (check.getGame().hasModule(DeathManager.class)) {
+                if (check.getGame().getModule(DeathManager.class).isExcluded(check.getPlayer())) {
+                    continue;
+                }
+            }
+            if (Arrays.asList(exception).contains(check)) {
+                continue;
+            }
+            others.add(check);
+        }
+        return others;
+    }
+
+    public boolean start() {
         if (timer == null || !timer.isRunning()) {
             timer = new RouletteTimer();
             Bukkit.broadcastMessage("§a룰렛 게임 모듈이 활성화되었습니다.");
@@ -80,7 +93,7 @@ public class Roulette implements ListenerModule {
         return false;
     }
 
-    private boolean stop() {
+    public boolean stop() {
         if (timer != null && timer.isRunning()) {
             timer.stop();
             timer = null;
@@ -90,7 +103,7 @@ public class Roulette implements ListenerModule {
         return false;
     }
 
-    private boolean isRunning() {
+    public boolean isRunning() {
         return timer != null && timer.isRunning();
     }
 
@@ -110,7 +123,11 @@ public class Roulette implements ListenerModule {
                         Roulette.this.stop();
                     }
                 });
-                Roulette.this.stop();
+                if (invincibility.isEnabled()) {
+                    stop();
+                } else {
+                    start();
+                }
             } else {
                 start();
             }
@@ -124,15 +141,6 @@ public class Roulette implements ListenerModule {
         if (e.getGame().hasModule(this.getClass())) {
             if (e.getNewStatus()) stop();
             else start();
-        }
-    }
-
-    @EventHandler
-    public void onParticipantDeath(ParticipantDeathEvent e) {
-        if (e.getParticipant().getGame().hasModule(this.getClass())) {
-            if (e.getParticipant().getGame() instanceof DeathManager.Handler) {
-                rouletteTarget.remove(e.getParticipant());
-            }
         }
     }
 
@@ -179,29 +187,42 @@ public class Roulette implements ListenerModule {
             };
             private final Random random = new Random();
             private RouletteEffect effect;
-            private Participant target;
+            private Participant[] target;
 
             public NoticeTimer() {
-                abstractGame.super(TaskType.REVERSE, 20);
+                abstractGame.super(TaskType.REVERSE, 25);
                 setPeriod(TimeUnit.TICKS, 2);
             }
 
             public void run(int arg0) {
-                if (arg0 > 5) {
-                    target = random.pick(rouletteTarget);
+                if (arg0 > 10) {
                     int a = random.nextInt(maxPriority);
                     for (int i = 0 ; i < effects.size(); i++) {
-                        int min = effects.get(i).getRight();
-                        int max = i == effects.size()-1 ? maxPriority : effects.get(i+1).getRight();
+                        int min = i == 0 ? 0 : effects.get(i-1).getRight();
+                        int max = effects.get(i).getRight();
                         if (a >= min && a < max) {
                             effect = effects.get(i).getLeft();
                             break;
                         }
                     }
-                    for (Participant participant : getParticipantsWithoutEliminater()) {
-                        NMS.sendTitle(participant.getPlayer(), random.pick(chatColors) + target.getPlayer().getName(), random.pick(chatColors) + RouletteRegister.getEffectName(effect.getClass()),0,20,0);
+
+                    if (effect.requireTarget() > getParticipantsWithoutEliminater().size()) {
+                        run(arg0);
+                        return;
+                    }
+
+                    List<Participant> list = getParticipantsWithoutEliminater();
+                    Collections.shuffle(list);
+                    Participant main = list.get(0);
+
+                    String mainTitle = effect.requireTarget() == 0 ? "전체 플레이어" : main.getPlayer().getName();
+                    for (Participant participant : getGame().getParticipants()) {
+                        NMS.sendTitle(participant.getPlayer(),
+                                random.pick(chatColors) + mainTitle, random.pick(chatColors) + display(RouletteRegister.getEffectDisplay(effect.getClass()), list)
+                                ,0,20,0);
                         SoundLib.ENTITY_ARROW_HIT_PLAYER.playSound(participant.getPlayer());
                     }
+                    target = list.toArray(new Participant[]{});
                 }
             }
 
@@ -213,5 +234,12 @@ public class Roulette implements ListenerModule {
                 }
             }
         }
+    }
+
+    public String display(String display, List<Participant> participants) {
+        for (int i = 0 ; i < participants.size() ; i++) {
+            display.replace("$[player"+i+"]", participants.get(i).getPlayer().getName());
+        }
+        return display;
     }
 }

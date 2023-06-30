@@ -1,6 +1,7 @@
 package com.cokes86.cokesaddon.ability.list;
 
 import com.cokes86.cokesaddon.ability.CokesAbility;
+import com.cokes86.cokesaddon.ability.Config;
 import com.cokes86.cokesaddon.event.CEntityDamageEvent;
 import com.cokes86.cokesaddon.util.CokesUtil;
 import com.cokes86.cokesaddon.util.FunctionalInterfaces;
@@ -18,7 +19,6 @@ import daybreak.google.common.base.Strings;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.Note;
-import org.bukkit.entity.Damageable;
 import org.bukkit.entity.Player;
 import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
 
@@ -27,8 +27,7 @@ import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
 @AbilityManifest(name = "져스틴", rank = AbilityManifest.Rank.L, species = AbilityManifest.Species.HUMAN, explain = {
-        "§7패시브§8 -§c 두가지 인격§f: 약 $[PERIOD] 간격으로 자신의 인격이 뒤바뀝니다.",
-        "  이 주기는 불안정한 인격을 다루기에 최대 50%까지 오차가 발생합니다.",
+        "§7패시브§8 -§c 두가지 인격§f: 약 $[PERIOD]§7±$[PM]§f초 간격으로 자신의 인격이 뒤바뀝니다.",
         "  인격에 따라 각기 다른 효과를 부여받습니다.",
         "  [§b1인격§f] -",
         "  [§52인격§f] 타 플레이어에게 받는 근거리 대미지가 §c$[TWO_PERSON_DAMAGE_INCREASE]% 증가합니다.",
@@ -49,7 +48,7 @@ import java.util.concurrent.ConcurrentHashMap;
     "공통적으로 §7철괴를 우클릭§f하면 인격이 바뀌지만, 다음 주기가 반으로 감소합니다."
 })
 public class Justin extends CokesAbility implements ActiveHandler {
-    private static final Config<Integer> PERIOD = Config.of(Justin.class, "period", 45, FunctionalInterfaces.positive(), FunctionalInterfaces.TIME,
+    private static final Config<Integer> PERIOD = Config.of(Justin.class, "period", 45, FunctionalInterfaces.positive(),
         "# 인격 변경 주기",
         "# 기본값 : 45 (초)");
     private static final Config<Integer> MAX_COUNTER = Config.of(Justin.class, "max-count", 10, FunctionalInterfaces.upper(1),
@@ -65,11 +64,13 @@ public class Justin extends CokesAbility implements ActiveHandler {
         "# 슬래시 1인격 주는 대미지 감소량",
         "# 기본값 : 30.0 (%)");
     private static final Config<Double> GET_THIS_DAMAGE = Config.of(Justin.class, "fix-damage", 2.0, FunctionalInterfaces.positive(),
-        "# 이거나 받아라 2인격 고정 대미지량",
+        "# 이거나 받아라 2인격 관통 대미지량",
         "# 기본값 : 2.0");
     private static final Config<Double> TWO_PERSON_DAMAGE_INCREASE = Config.of(Justin.class, "receive-damage-increment", 20.0, FunctionalInterfaces.positive(),
         "# 두가지 인격 2인격 받는 대미지 증가량",
         "# 기본값 : 20.0 (%)");
+
+    private static final int PM = (int)(PERIOD.getValue() * 0.5);
 
     private static final Set<Material> swords = CokesUtil.getSwords();
     private NormalTimer normalTimer = new NormalTimer(getPlayer(), 0);
@@ -82,8 +83,7 @@ public class Justin extends CokesAbility implements ActiveHandler {
     private final AbilityTimer justinChangeTimer = new AbilityTimer(PERIOD.getValue()*20) {
         @Override
         protected void onStart() {
-            int back = r.nextInt(PERIOD.getValue()*10) - PERIOD.getValue()*5;
-            setCount(getMaximumCount() + back);
+            setCount(getMaximumCount() + (int)(PM * (r.nextDouble()*2 - 1)));
         }
 
         @Override
@@ -116,6 +116,7 @@ public class Justin extends CokesAbility implements ActiveHandler {
         if (swords.contains(material) && clickType.equals(ClickType.RIGHT_CLICK)) {
             if (!madness) {
                 if (normalTimer.isRunning()) {
+                    normalTimer.getDamageable().setNoDamageTicks(0);
                     normalTimer.getDamageable().damage(normalTimer.getDamage(), getPlayer());
                     Location playerLocation = getPlayer().getLocation().clone();
                     normalTimer.getDamageable().setVelocity(normalTimer.getDamageable().getLocation().toVector().subtract(playerLocation.toVector()).normalize().multiply(4.5).setY(0));
@@ -128,6 +129,7 @@ public class Justin extends CokesAbility implements ActiveHandler {
                         stack.startDamage();
                     }
                     stackMap.clear();
+                    return getThisCooldown.start();
                 }
             }
         } else if (material.equals(Material.IRON_INGOT) && clickType.equals(ClickType.RIGHT_CLICK) && !escapeCooldown.isCooldown()) {
@@ -145,7 +147,7 @@ public class Justin extends CokesAbility implements ActiveHandler {
 
     @SubscribeEvent
     public void onEntityDamage(CEntityDamageEvent e) {
-        if (e.getDamager() != null && e.getDamager().equals(getPlayer()) && swords.contains(getPlayer().getInventory().getItemInMainHand().getType()) && !e.getEntity().equals(getPlayer())) {
+        if (e.getDamager() != null && e.getDamager().equals(getPlayer()) && swords.contains(getPlayer().getInventory().getItemInMainHand().getType()) && !e.getEntity().equals(getPlayer()) && e.getEntity() instanceof Player) {
             if (!madness) {
                 if (normalTimer.isRunning()) {
                     normalTimer.stop(false);
@@ -156,7 +158,7 @@ public class Justin extends CokesAbility implements ActiveHandler {
                 double damage = e.getDamage();
                 double decrease = DAMAGE.getValue()/100.0;
                 e.setDamage(damage * ( 1 - decrease ));
-                normalTimer = new NormalTimer((Damageable) e.getEntity(), damage*decrease);
+                normalTimer = new NormalTimer((Player)e.getEntity(), damage*decrease);
                 normalTimer.start();
             } else {
                 if (e.getCause() == DamageCause.MAGIC) return;
@@ -173,8 +175,8 @@ public class Justin extends CokesAbility implements ActiveHandler {
             }
         }
 
-        if (e.getEntity().equals(getPlayer()) && e.getDamager() instanceof Player) {
-            e.setDamage(e.getDamage()*TWO_PERSON_DAMAGE_INCREASE.getValue()/100.0);
+        if (e.getEntity().equals(getPlayer()) && e.getDamager() instanceof Player && madness) {
+            e.setDamage(e.getDamage()*(1 + TWO_PERSON_DAMAGE_INCREASE.getValue()/100.0));
         }
     }
 
@@ -186,17 +188,17 @@ public class Justin extends CokesAbility implements ActiveHandler {
     }
 
     class NormalTimer extends AbilityTimer {
-        private final Damageable damageable;
+        private final Player damageable;
         private final double damage;
 
-        public NormalTimer(Damageable damageable, double damage){
+        public NormalTimer(Player damageable, double damage){
             super(10);
             this.damageable = damageable;
             this.damage = damage;
             setPeriod(TimeUnit.TICKS, 1);
         }
 
-        public Damageable getDamageable() {
+        public Player getDamageable() {
             return damageable;
         }
 

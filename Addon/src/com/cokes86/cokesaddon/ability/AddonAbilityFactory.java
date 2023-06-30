@@ -1,8 +1,7 @@
 package com.cokes86.cokesaddon.ability;
 
 import com.cokes86.cokesaddon.ability.list.*;
-import com.cokes86.cokesaddon.ability.list.PhantomThief;
-import com.cokes86.cokesaddon.ability.test.Test;
+import com.cokes86.cokesaddon.ability.test.*;
 import daybreak.abilitywar.ability.AbilityFactory;
 import daybreak.abilitywar.ability.AbilityManifest;
 import daybreak.abilitywar.game.manager.AbilityList;
@@ -92,6 +91,10 @@ public class AddonAbilityFactory {
 		//1.10.0
 		registerAbility(Dual.class);
 		registerAbility(EnergyTaker.class);
+
+		//2.0.0
+		registerTestAbility(MorningStar.class);
+		registerTestAbility(Reinforce.class);
 	}
 
 	public static void registerAbility(Class<? extends CokesAbility> clazz) {

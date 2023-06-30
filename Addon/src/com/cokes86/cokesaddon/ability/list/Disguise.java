@@ -1,6 +1,7 @@
 package com.cokes86.cokesaddon.ability.list;
 
 import com.cokes86.cokesaddon.ability.CokesAbility;
+import com.cokes86.cokesaddon.ability.Config;
 import com.cokes86.cokesaddon.event.CEntityDamageEvent;
 import com.cokes86.cokesaddon.util.AttributeUtil;
 import com.cokes86.cokesaddon.util.FunctionalInterfaces;
@@ -18,7 +19,6 @@ import daybreak.abilitywar.game.team.interfaces.Teamable;
 import daybreak.abilitywar.utils.base.language.korean.KoreanUtil;
 import daybreak.abilitywar.utils.base.language.korean.KoreanUtil.Josa;
 import daybreak.abilitywar.utils.base.math.LocationUtil;
-import daybreak.abilitywar.utils.base.minecraft.nms.NMS;
 import daybreak.abilitywar.utils.library.SoundLib;
 import daybreak.google.common.base.Predicate;
 import org.bukkit.Material;
@@ -26,7 +26,6 @@ import org.bukkit.Note;
 import org.bukkit.Note.Tone;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
-import org.bukkit.entity.Projectile;
 import org.bukkit.event.player.PlayerQuitEvent;
 
 @AbilityManifest(name = "변장술", rank = Rank.A, species = Species.HUMAN, explain = {
@@ -38,14 +37,14 @@ import org.bukkit.event.player.PlayerQuitEvent;
 		"※ 스킨변경: $[changeSkin], 이름변경: $[changeNameTag]"
 })
 public class Disguise extends CokesAbility implements ActiveHandler {
-	private static final Config<Integer> range = Config.of(Disguise.class, "범위", 7, FunctionalInterfaces.positive());
-	private static final Config<Integer> count = Config.of(Disguise.class, "변장_후_공격받는_횟수", 3, FunctionalInterfaces.positive());
-	private static final Config<Integer> cool = Config.of(Disguise.class, "쿨타임", 180, FunctionalInterfaces.positive(), FunctionalInterfaces.COOLDOWN);
-	private static final Config<Integer> reflect = Config.of(Disguise.class, "반사(%)", 50, FunctionalInterfaces.positive());
-	private static final Config<Boolean> changeSkin = Config.of(Disguise.class, "스킨변경", true, FunctionalInterfaces.ON_OFF,
+	private static final Config<Integer> range = Config.of(Disguise.class, "range", 7, FunctionalInterfaces.positive());
+	private static final Config<Integer> count = Config.of(Disguise.class, "attack-reflect-count", 3, FunctionalInterfaces.positive());
+	private static final Config<Integer> cool = Config.of(Disguise.class, "cooldown", 180, FunctionalInterfaces.positive(), FunctionalInterfaces.COOLDOWN);
+	private static final Config<Integer> reflect = Config.of(Disguise.class, "reflect", 50, FunctionalInterfaces.positive());
+	private static final Config<Boolean> changeSkin = Config.of(Disguise.class, "able-skin-change", true, FunctionalInterfaces.ON_OFF,
 			"# 변장술 사용할 시 변장술의 대상으로 스킨 변경 여부",
 			"# 기본값: true");
-	private static final Config<Boolean> changeNameTag = Config.of(Disguise.class, "이름표변경", true, FunctionalInterfaces.ON_OFF,
+	private static final Config<Boolean> changeNameTag = Config.of(Disguise.class, "able-nametag-change", true, FunctionalInterfaces.ON_OFF,
 			"# 변장술 사용할 시 변장술의 대상으로 닉네임 변경 여부",
 			"# 팀전에선 작동하지 않음",
 			"# 기본값: true");
@@ -136,13 +135,6 @@ public class Disguise extends CokesAbility implements ActiveHandler {
 	@SubscribeEvent
 	public void onEntityDamage(CEntityDamageEvent e) {
 		Entity damager = e.getDamager();
-		if (damager != null && NMS.isArrow(damager)) {
-			Projectile arrow = (Projectile) damager;
-			if (arrow.getShooter() instanceof Entity) {
-				damager = (Entity) arrow.getShooter();
-			}
-		}
-
 		if (e.getEntity().equals(getPlayer()) && target != null && damager instanceof Player && !damager.equals(getPlayer())) {
 			check += 1;
 			SoundLib.BELL.playInstrument(getPlayer(), Note.natural(1, Tone.C));
@@ -165,7 +157,7 @@ public class Disguise extends CokesAbility implements ActiveHandler {
 			}
 		}
 
-		if (e.getEntity().equals(target.getPlayer()) && damager.equals(getPlayer())) {
+		if (e.getEntity().equals(target.getPlayer()) && damager != null && damager.equals(getPlayer())) {
 			if (e.getDamage() >= AttributeUtil.getMaxHealth(getPlayer())) {
 				e.setDamage(AttributeUtil.getMaxHealth(getPlayer()) * reflect.getValue() / 100.0);
 			}

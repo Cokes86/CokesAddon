@@ -1,6 +1,7 @@
 package com.cokes86.cokesaddon.ability.list;
 
 import com.cokes86.cokesaddon.ability.CokesAbility;
+import com.cokes86.cokesaddon.ability.Config;
 import com.cokes86.cokesaddon.event.CEntityDamageEvent;
 import com.cokes86.cokesaddon.util.AttributeUtil;
 import com.cokes86.cokesaddon.util.FunctionalInterfaces;
@@ -70,7 +71,7 @@ public class Rei extends CokesAbility {
 				e.setDamage(0);
 				getPlayer().setHealth(RESPAWN.getValue());
 				cooldown.start();
-				SoundLib.ENTITY_FIREWORK_ROCKET_LAUNCH.playSound(getPlayer());
+				SoundLib.ITEM_TOTEM_USE.playSound(getPlayer());
 			}
 		}
 	}
@@ -106,7 +107,7 @@ public class Rei extends CokesAbility {
 			e.setCancelled(true);
 			getPlayer().setHealth(RESPAWN.getValue());
 			cooldown.start();
-			SoundLib.ENTITY_FIREWORK_ROCKET_LAUNCH.playSound(getPlayer());
+			SoundLib.ITEM_TOTEM_USE.playSound(getPlayer());
 		}
 	}
 }

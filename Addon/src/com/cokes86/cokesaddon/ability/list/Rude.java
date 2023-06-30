@@ -1,6 +1,7 @@
 package com.cokes86.cokesaddon.ability.list;
 
 import com.cokes86.cokesaddon.ability.CokesAbility;
+import com.cokes86.cokesaddon.ability.Config;
 import com.cokes86.cokesaddon.effect.list.Suffle;
 import com.cokes86.cokesaddon.event.CEntityDamageEvent;
 import com.cokes86.cokesaddon.util.FunctionalInterfaces;
@@ -34,8 +35,7 @@ public class Rude extends CokesAbility implements ActiveHandler {
     private static final Config<Integer> RUDE_RANGE = Config.of(Rude.class, "범위", 5, FunctionalInterfaces.positive());
     private static final Config<Integer> RUDE_DURATION = Config.of(Rude.class, "지속시간", 4, FunctionalInterfaces.positive(), FunctionalInterfaces.TIME);
     private static final Config<Integer> RUDE_COOLDOWN = Config.of(Rude.class, "쿨타임", 60, FunctionalInterfaces.positive(), FunctionalInterfaces.COOLDOWN);
-    private static final Config<Integer> DAMAGE = Config.of(Rude.class, "받는_대미지_감소량(%)", 10,
-            FunctionalInterfaces.<Integer>positive().and(FunctionalInterfaces.lower(100.0)));
+    private static final Config<Double> DAMAGE = Config.of(Rude.class, "받는_대미지_감소량(%)", 10d, FunctionalInterfaces.chance(false, false));
     private final Cooldown cooldown = new Cooldown(RUDE_COOLDOWN.getValue());
     private final RudeDuration duration = new RudeDuration();
 

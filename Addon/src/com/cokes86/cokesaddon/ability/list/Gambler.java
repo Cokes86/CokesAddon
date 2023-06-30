@@ -1,6 +1,7 @@
 package com.cokes86.cokesaddon.ability.list;
 
 import com.cokes86.cokesaddon.ability.CokesAbility;
+import com.cokes86.cokesaddon.ability.Config;
 import com.cokes86.cokesaddon.event.CEntityDamageEvent;
 import com.cokes86.cokesaddon.util.FunctionalInterfaces;
 import daybreak.abilitywar.ability.AbilityManifest;
@@ -60,7 +61,7 @@ public class Gambler extends CokesAbility implements ActiveHandler {
 	private boolean penaltyDice = false;
 	private Pair<Integer, Integer> penaltyDiceInitial = Pair.of(0, 0);
 
-	private final Cooldown cooldown = new Cooldown(PD_COOLDOWN.getValue().intValue());
+	private final Cooldown cooldown = new Cooldown(PD_COOLDOWN.getValue());
 
 	private int give = 0; // 주는 대미지
 	private int receive = 0; // 받는 대미지

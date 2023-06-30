@@ -4,6 +4,7 @@ import com.cokes86.cokesaddon.util.CokesUtil;
 import daybreak.abilitywar.AbilityWar;
 import daybreak.abilitywar.game.AbstractGame.Participant;
 import daybreak.abilitywar.utils.base.TimeUtil;
+import daybreak.abilitywar.utils.base.concurrent.TimeUnit;
 import daybreak.abilitywar.utils.base.minecraft.entity.health.event.PlayerSetHealthEvent;
 import daybreak.abilitywar.utils.library.SoundLib;
 import org.bukkit.Bukkit;
@@ -30,6 +31,11 @@ public class InvincibilityTimer extends NoticeTimeTimer implements Listener {
         this.attackable = attackable;
     }
 
+    public InvincibilityTimer(Participant participant, TimeUnit timeUnit, int time) {
+        this(participant, time, true);
+        setPeriod(timeUnit, 1);
+    }
+
     public InvincibilityTimer(Participant participant, int time) {
         this(participant, time, true);
     }
@@ -43,9 +49,11 @@ public class InvincibilityTimer extends NoticeTimeTimer implements Listener {
     @Override
     protected void run(int count) {
         super.run(count);
-        if (count == (getMaximumCount()/2) || (getFixedCount() <= 5 && getFixedCount() >= 1)) {
-            participant.getPlayer().sendMessage(String.format("§e무적%s§f: %s", (attackable ? "" : "/공격불가"), TimeUtil.parseTimeAsString(getFixedCount())));
-            SoundLib.BLOCK_NOTE_BLOCK_HARP.playSound(participant.getPlayer());
+        if (count % (20/this.getPeriod()) == 0) {
+            if (count == (getMaximumCount()/2) || (getFixedCount() <= 5 && getFixedCount() >= 1)) {
+                participant.getPlayer().sendMessage(String.format("§e무적%s§f: %s", (attackable ? "" : "/공격불가"), TimeUtil.parseTimeAsString(getFixedCount())));
+                SoundLib.BLOCK_NOTE_BLOCK_HARP.playSound(participant.getPlayer());
+            }
         }
         onInvincibilityRun(count);
     }

@@ -1,6 +1,7 @@
 package com.cokes86.cokesaddon.ability.list;
 
 import com.cokes86.cokesaddon.ability.CokesAbility;
+import com.cokes86.cokesaddon.ability.Config;
 import com.cokes86.cokesaddon.event.CEntityDamageEvent;
 import com.cokes86.cokesaddon.util.FunctionalInterfaces;
 import daybreak.abilitywar.ability.AbilityManifest;
@@ -106,6 +107,10 @@ public class Poker extends CokesAbility implements ActiveHandler {
 						break;
 					case "Straight":
 						getPlayer().sendMessage("와우! §b스트레이트§f입니다! 다음 공격은 추가적으로 " + (result.getRight()) + "의 대미지를 줍니다.");
+						if (additional > result.getRight()) {
+							getPlayer().sendMessage("이미 받은 §b스트레이트§f의 효과가 더욱 강력하여, 이번 효과는 소멸됩니다.");
+							break;
+						}
 						additional = result.getRight();
 						break;
 					case "Triple":

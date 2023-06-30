@@ -1,6 +1,7 @@
 package com.cokes86.cokesaddon.ability.list;
 
 import com.cokes86.cokesaddon.ability.CokesAbility;
+import com.cokes86.cokesaddon.ability.Config;
 import com.cokes86.cokesaddon.util.FunctionalInterfaces;
 import daybreak.abilitywar.AbilityWar;
 import daybreak.abilitywar.ability.AbilityManifest;
@@ -105,6 +106,7 @@ public class Summoner extends CokesAbility implements ActiveHandler {
 
 		protected void onStart() {
 			Bukkit.getPluginManager().registerEvents(this, AbilityWar.getPlugin());
+			placeItem(currentPage);
 			getPlayer().openInventory(gui);
 		}
 
@@ -174,7 +176,7 @@ public class Summoner extends CokesAbility implements ActiveHandler {
 				stop(false);
 				if (!summon.isRunning()) {
 					cool.start();
-					cool.setCooldown(3);
+					cool.setCount(3);
 				}
 			}
 		}
@@ -182,6 +184,7 @@ public class Summoner extends CokesAbility implements ActiveHandler {
 		@EventHandler
 		private void onQuit(PlayerQuitEvent e) {
 			if (e.getPlayer().getUniqueId().equals(getPlayer().getUniqueId())) stop(false);
+			placeItem(currentPage);
 		}
 
 		@EventHandler

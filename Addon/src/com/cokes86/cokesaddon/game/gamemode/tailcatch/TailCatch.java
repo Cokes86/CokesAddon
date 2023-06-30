@@ -43,7 +43,7 @@ import java.util.List;
 @GameAliases(value = {"꼬잡", "꼬리"})
 public class TailCatch extends Game implements DefaultKitHandler, Winnable, NoticeTail.Handler {
     private final List<Participant> tail = new ArrayList<>();
-    private final NoticeTail noticeTail = addModule(getNoticeTail());
+    private final NoticeTail noticeTail = addModule(new NoticeTail(this));
 
     public TailCatch() throws IllegalArgumentException {
         super(PlayerCollector.EVERY_PLAYER_EXCLUDING_SPECTATORS());
@@ -186,6 +186,7 @@ public class TailCatch extends Game implements DefaultKitHandler, Winnable, Noti
 
                 tail.addAll(getParticipants());
                 Collections.shuffle(tail);
+                noticeTail.updateBossBar();
                 break;
         }
     }

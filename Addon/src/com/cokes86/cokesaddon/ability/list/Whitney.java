@@ -1,7 +1,9 @@
 package com.cokes86.cokesaddon.ability.list;
 
 import com.cokes86.cokesaddon.ability.CokesAbility;
+import com.cokes86.cokesaddon.ability.Config;
 import com.cokes86.cokesaddon.event.CEntityDamageEvent;
+import com.cokes86.cokesaddon.util.CokesUtil;
 import com.cokes86.cokesaddon.util.FunctionalInterfaces;
 import com.cokes86.cokesaddon.util.timer.NoticeTimeTimer;
 import daybreak.abilitywar.ability.AbilityManifest;
@@ -26,9 +28,7 @@ import daybreak.abilitywar.utils.library.PotionEffects;
 import daybreak.abilitywar.utils.library.SoundLib;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
-import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
-import org.bukkit.entity.Projectile;
 
 @AbilityManifest(name = "휘트니", rank = Rank.S, species = Species.HUMAN, explain = {
         "철괴 우클릭시 $[DURATION]간 유지되고 최대 6번 중첩가능한 버프를 부여합니다. $[COOLDOWN_ONE]",
@@ -36,7 +36,7 @@ import org.bukkit.entity.Projectile;
         "지속시간이 끝나거나 6번 중첩 후 쿨타임은 $[COOLDOWN_TWO]로 적용합니다.",
         "* 1회 사용 시: 신속 1단계 부여",
         "* 2회 사용 시: $[RECOVERY_PERIOD]마다 체력 $[RECOVERY] 회복",
-        "* 3회 사용 시: 상대방 공격 시 출혈 $[BLEEDING] 부여. §c쿨타임§8: §f2초",
+        "* 3회 사용 시: 상대방 공격 시 출혈 $[BLEEDING] 부여. $[BLEEDING_COOLDOWN]",
         "* 4회 사용 시: 상대방 공격 시 주었던 최종 대미지의 $[VAMPIRE]% 회복.",
         "* 5회 사용 시: 상대방에게 주는 대미지 $[DAMAGE] 증가",
         "* 6회 사용 시: 상대방에게 받는 대미지 $[DEFENCE]% 감소",
@@ -77,21 +77,22 @@ public class Whitney extends CokesAbility implements ActiveHandler {
     private static final Config<Integer> BLEEDING = Config.of(Whitney.class, "bleeding", 2, FunctionalInterfaces.positive(), FunctionalInterfaces.TIME,
             "# 3중첩 출혈 부여랑",
             "# 기본값: 2 (초)");
-    private static final Config<Integer> DAMAGE = Config.of(Whitney.class, "damage", 3, FunctionalInterfaces.positive(),
-            "# 5중첩 대미지 증가랑",
-            "# 기본값: 3");
+    private static final Config<Integer> BLEEDING_COOLDOWN = Config.of(Whitney.class, "bleeding-cooldown", 3, FunctionalInterfaces.positive(), FunctionalInterfaces.COOLDOWN,
+            "# 3중첩 출혈 부여 쿨타임",
+            "# 기본값: 3 (초)");
 
-    private static final Config<Double> DEFENCE = Config.of(Whitney.class, "defence", 20.0,
-            FunctionalInterfaces.<Double>positive().and(FunctionalInterfaces.lower(100.0)),
+    private static final Config<Double> DAMAGE = Config.of(Whitney.class, "damage", 1.5, FunctionalInterfaces.positive(),
+            "# 5중첩 대미지 증가랑",
+            "# 기본값: 1.5");
+    private static final Config<Double> DEFENCE = Config.of(Whitney.class, "defence", 15.0, FunctionalInterfaces.chance(false, false),
             "# 6중첩 대미지 감소랑",
-            "# 기본값: 20.0 (%)");
-    private static final Config<Double> VAMPIRE = Config.of(Whitney.class, "vampire", 15.0,
-            FunctionalInterfaces.<Double>positive().and(FunctionalInterfaces.lower(100.0)),
-            "# 4중첩 흡혈량",
             "# 기본값: 15.0 (%)");
+    private static final Config<Double> VAMPIRE = Config.of(Whitney.class, "vampire", 12.5, FunctionalInterfaces.chance(false, false),
+            "# 4중첩 흡혈량",
+            "# 기본값: 12.5 (%)");
 
     private final WhitneyBuffTimer timer = new WhitneyBuffTimer();
-    private final AbilityTimer bleed_cooldown = new NoticeTimeTimer(getParticipant(), "출혈 부여", 2);
+    private final AbilityTimer bleed_cooldown = new NoticeTimeTimer(this, "§c출혈 부여 쿨타임", BLEEDING_COOLDOWN.getValue());
 
     public Whitney(Participant arg0) {
         super(arg0);
@@ -110,17 +111,7 @@ public class Whitney extends CokesAbility implements ActiveHandler {
         if (e.getEntity().equals(getPlayer()) && timer.getStack() == 6) {
             e.setDamage(e.getDamage() * (1 - DEFENCE.getValue()/100.0));
         }
-
-        if (e.getDamager() == null) return;
-        Entity damager = e.getDamager();
-        if (damager instanceof Projectile) {
-            Projectile projectile = (Projectile) damager;
-            if (projectile.getShooter() instanceof Entity) {
-                damager = (Entity) projectile.getShooter();
-            }
-        }
-
-        if (damager.equals(getPlayer()) && e.getEntity() instanceof Player && !e.isCancelled()) {
+        if (e.getDamager() != null && e.getDamager().equals(getPlayer()) && e.getEntity() instanceof Player && !e.isCancelled()) {
             if (timer.getStack() >= 3 && !bleed_cooldown.isRunning()) {
                 Bleed.apply(getGame(), (Player)e.getEntity(), TimeUnit.SECONDS, BLEEDING.getValue());
                 bleed_cooldown.start();
@@ -131,26 +122,24 @@ public class Whitney extends CokesAbility implements ActiveHandler {
             if (timer.getStack() >= 4) {
                 final double finaldamage = e.getFinalDamage();
                 double vampire_value = finaldamage * VAMPIRE.getValue() / 100.0;
-                Healths.setHealth(getPlayer(), getPlayer().getHealth() + vampire_value);
+                CokesUtil.vampirePlayer(getPlayer(), vampire_value);
             }
         }
     }
 
     private class WhitneyBuffTimer extends AbilityTimer {
         private int stack = 0;
-        private final Cooldown cooldown_one = new Cooldown(COOLDOWN_ONE.getValue(), 50);
-        private final Cooldown cooldown_two = new Cooldown(COOLDOWN_TWO.getValue(), 50);
-        private final int duration;
+        private final Cooldown defaultCooldown = new Cooldown(COOLDOWN_ONE.getValue(), 50);
+        private final Cooldown lastCooldown = new Cooldown(COOLDOWN_TWO.getValue(), 50);
         private final ActionbarChannel channel = newActionbarChannel();
 
         public WhitneyBuffTimer() {
             super((int) (DURATION.getValue() * 20 * (Wreck.isEnabled(Whitney.this.getGame()) ? Wreck.calculateDecreasedAmount(50) : 1)));
-            this.duration = DURATION.getValue() * 20;
             register();
             if (Settings.getCooldownDecrease() == CooldownDecrease._100) {
-                cooldown_one.setCooldown((int) (COOLDOWN_ONE.getValue() * 0.5));
-                cooldown_two.setCooldown((int) (COOLDOWN_TWO.getValue() * 0.5));
-                this.setMaximumCount((int) (DURATION.getValue() * 20 * 0.5));
+                    defaultCooldown.setCooldown((int) (COOLDOWN_ONE.getValue() * 0.5));
+                    lastCooldown.setCooldown((int) (COOLDOWN_TWO.getValue() * 0.5));
+                    this.setMaximumCount((int) (DURATION.getValue() * 20 * 0.5));
             }
             setPeriod(TimeUnit.TICKS, 1);
         }
@@ -175,7 +164,7 @@ public class Whitney extends CokesAbility implements ActiveHandler {
         protected void onEnd() {
             if (stack < 6) {
                 SoundLib.ENTITY_VILLAGER_NO.playSound(getPlayer());
-                cooldown_two.start();
+                lastCooldown.start();
             }
             stack = 0;
             channel.update(null);
@@ -186,14 +175,14 @@ public class Whitney extends CokesAbility implements ActiveHandler {
         protected void onSilentEnd() {
             if (stack < 6) {
                 SoundLib.ENTITY_VILLAGER_NO.playSound(getPlayer());
-                cooldown_two.start();
+                lastCooldown.start();
             }
             stack = 0;
             channel.update(null);
         }
 
         public boolean isCooldown(){
-            return cooldown_one.isCooldown() || cooldown_two.isCooldown();
+            return defaultCooldown.isCooldown() || lastCooldown.isCooldown();
         }
 
         public boolean start() {
@@ -202,16 +191,16 @@ public class Whitney extends CokesAbility implements ActiveHandler {
                 stack += 1;
                 SoundLib.ENTITY_FOX_TELEPORT.playSound(getPlayer(), 1.0f, 2.0f);
                 if (stack == 1) {
-                    isStart = cooldown_one.start() && super.start();
+                    isStart = defaultCooldown.start() && super.start();
                 } else if (stack == 6) {
-                    this.setCount(duration);
-                    isStart = cooldown_two.start();
+                    this.setCount(getMaximumCount());
+                    isStart = lastCooldown.start();
                 } else if (stack > 6) {
                     stack = 6;
                     getPlayer().sendMessage("§c[!]§f 휘트니의 버프 스택은 최대 6단계까지만 가능합니다.");
                 } else {
-                    this.setCount(duration);
-                    isStart = cooldown_one.start();
+                    this.setCount(getMaximumCount());
+                    isStart = defaultCooldown.start();
                 }
             }
             return isStart;

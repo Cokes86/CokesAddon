@@ -1,6 +1,7 @@
 package com.cokes86.cokesaddon.ability.list;
 
 import com.cokes86.cokesaddon.ability.CokesAbility;
+import com.cokes86.cokesaddon.ability.Config;
 import com.cokes86.cokesaddon.util.CokesUtil;
 import com.cokes86.cokesaddon.util.FunctionalInterfaces;
 import daybreak.abilitywar.AbilityWar;
@@ -15,6 +16,8 @@ import daybreak.abilitywar.game.module.DeathManager;
 import daybreak.abilitywar.game.team.interfaces.Teamable;
 import daybreak.abilitywar.utils.base.color.RGB;
 import daybreak.abilitywar.utils.base.concurrent.TimeUnit;
+import daybreak.abilitywar.utils.base.language.korean.KoreanUtil;
+import daybreak.abilitywar.utils.base.language.korean.KoreanUtil.Josa;
 import daybreak.abilitywar.utils.base.math.FastMath;
 import daybreak.abilitywar.utils.base.math.LocationUtil;
 import daybreak.abilitywar.utils.base.math.geometry.Circle;
@@ -46,27 +49,22 @@ import java.util.*;
 import java.util.function.Predicate;
 
 @AbilityManifest(name= "에밀리", rank= AbilityManifest.Rank.S, species = AbilityManifest.Species.HUMAN, explain = {
-        "§7패시브 §8-§c 알케미 마스터리§f: 각종 캡슐을 가지고 상대방을 혼란시킵니다.",
+        "§7패시브 §8- §c알케미 마스터리§f: 각종 캡슐을 가지고 상대방을 혼란시킵니다.",
         "  자신의§c 알케미 마스터리§f 상태에 따라 능력의 효과가 뒤바뀝니다.",
         "§7검 들고 F키 §8-§c 알케미 캡슐§f: 자신이 바라보고 있는 방향으로 구체를 날려",
-        "  블럭이나 플레이어에 맞출 시§a 알케미 에리어§f를 $[ALCHEMY_CAPSULE_DURATION]간 생성시킵니다.",
+        "  블럭이나 플레이어에 맞출 시 §a알케미 에리어§f를 $[ALCHEMY_CAPSULE_DURATION]간 생성시킵니다.",
         "  구체가 플레이어나 땅의 맞은 위치의 $[ALCHEMY_CAPSULE_AREA_RANGE]블럭 이내 플레이어가 있을 경우 ",
         "  $[ALCHEMY_CAPSULE_DAMAGE]의 대미지를 줍니다. $[ALCHEMY_CAPSULE_COOL]",
         "  사용 시 약간의 경직이 생깁니다.",
-        "§a알케미 에리어§f: 해당 영역에 존재하는 에밀리를 제외한 플레이어",
-        "  §c 알케미 마스터리§f 상태에 따라 아래의 효과를 받습니다.",
-        "  §4화상§f: 에리어에 불장판을 설치합니다. 에밀리는 에리어 내에서 화상 대미지를 입지 않습니다.",
-        "    영역 내 화상 대미지가 $[ALCHEMY_AREA_BONUS_DAMAGE] 증가합니다.",
-        "  §7둔화§f: 0.5초마다 쿨타임이 $[ALCHEMY_AREA_SLOWDOWN_COOL] 증가하고",
-        "    빙결 효과 1.5초를 각 플레이어마다 최대 $[ALCHEMY_AREA_FROST_MAX_COUNT]번 받습니다.",
-        "  §a폭발§f: 1초마다 $[ALCHEMY_AREA_EXPLOSION_DAMAGE]의 대미지를 주는 폭발을 일으킵니다.",
+        "  [§a알케미 에리어§f 효과]",
+        "  $(ALCHEMY_AREA_EFFECT)",
         "§7철괴 우클릭 §8-§c 알케미 체인지§f: 자신의§c 알케미 마스터리§f 상태를 바꿉니다. §c쿨타임 §7: §f0.25초"
 }, summarize = {
         "철괴 우클릭으로 §c알케미 마스터리§f를 변경합니다.",
         "검 들고 F키를 누르면 §c알케미 캡슐§f이 날라가 플레이어, 땅에 맞으면",
         "주변 반경에 대미지를 주고 §c알케미 마스터리§f에 맞는 §a알케미 에리어§f를 만듭니다.",
         "  §4화상§f: 불장판, 영역 내 에밀리 화상대미지 무시",
-        "  §7둔화§f: 0.5초마다 쿨타임 증가, 1.5초마다 빙결 효과 (최대 $[ALCHEMY_AREA_FROST_MAX_COUNT]번)",
+        "  §7둔화§f: 0.5초마다 쿨타임 증가, 1.5초마다 빙결 효과 (빙결은 최대 $[ALCHEMY_AREA_FROST_MAX_COUNT]번)",
         "  §a폭발§f: 1초마다 영역 내 폭발 대미지"
 })
 public class Emily extends CokesAbility implements ActiveHandler {
@@ -105,6 +103,35 @@ public class Emily extends CokesAbility implements ActiveHandler {
 
     private CapsuleMastery capsuleType = null;
 
+    @SuppressWarnings("unused")
+    private final Object ALCHEMY_AREA_EFFECT = new Object() {
+        @Override
+        public String toString() {
+            StringJoiner joiner = new StringJoiner("\n");
+            if (capsuleType == null) {
+                return "§8게임 시작 후 확인해주세요.";
+            }
+            switch(capsuleType) {
+                case FIRE: {
+                    joiner.add("내부는 항상 불타며, 에밀리는 내부에서 화염대미지를 §c받지 않습니다§f.");
+                    joiner.add("  이외의 플레이어는 내부에서 §c받는 화염대미지가 "+ALCHEMY_AREA_BONUS_DAMAGE +" 증가합니다.");
+                    break;
+                }
+                case SLOWDOWN: {
+                    joiner.add("에밀리를 제외한 플레이어는 0.5초마다 쿨타임이 "+ALCHEMY_AREA_SLOWDOWN_COOL+" 증가하고");
+                    joiner.add("  §b§n빙결§f 1.5초를 각 플레이어마다 최대 "+ALCHEMY_AREA_FROST_MAX_COUNT+"번 받습니다.");
+                    break;
+                }
+                case EXPLOSION: {
+                    joiner.add("1초마다 "+ALCHEMY_AREA_EXPLOSION_DAMAGE+"의 대미지를 주는 폭발을 일으킵니다.");
+                    joiner.add("  에밀리는 해당 폭발에 휘말리지 않습니다.");
+                    break;
+                }
+            }
+            return joiner.toString();
+        }
+    };
+
     private final Predicate<Entity> predicate = entity -> {
         if (entity.equals(getPlayer())) return false;
         if (entity instanceof Player) {
@@ -134,6 +161,9 @@ public class Emily extends CokesAbility implements ActiveHandler {
                 capsuleType = capsuleType.next();
                 channel.update("알케미 마스터리: " + capsuleType.getName());
                 alchemyChangeCooldown.start();
+                getPlayer().sendMessage("알케미 마스터리가 "+capsuleType.getName()+ "§f"+KoreanUtil.getJosa(capsuleType.name, Josa.으로로)+" 바뀌었습니다.");
+                getPlayer().sendMessage("[§a알케미 에리어§f 효과]");
+                getPlayer().sendMessage(ALCHEMY_AREA_EFFECT.toString().replaceAll(" {2}", ""));
             }
         }
         return false;
@@ -416,5 +446,11 @@ public class Emily extends CokesAbility implements ActiveHandler {
         public RGB getRGB() { return rgb; }
 
         public abstract CapsuleMastery next();
+
+
+        @Override
+        public String toString() {
+            return name;
+        }
     }
 }

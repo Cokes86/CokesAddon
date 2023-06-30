@@ -4,6 +4,7 @@ import daybreak.abilitywar.utils.base.Formatter;
 import daybreak.abilitywar.utils.base.TimeUtil;
 import daybreak.abilitywar.utils.base.language.korean.KoreanUtil;
 import daybreak.abilitywar.utils.base.language.korean.KoreanUtil.Josa;
+import org.bukkit.ChatColor;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.function.Function;
@@ -52,7 +53,30 @@ public class FunctionalInterfaces {
         return a -> KoreanUtil.addJosa(a.toString(), josa);
     }
 
-    public static <T> Function<T, String> prefix(String prefix) {
-        return a -> prefix + a;
+    public static Function<Integer, String> timeFormat(String prefix, ChatColor timeColor) {
+        return a -> prefix +" §8:§f "+ TimeUtil.parseTimeAsString(a);
+    }
+
+    public static Function<Integer, String> format(String prefix, ChatColor timeColor) {
+        return a -> prefix +" §8:§f "+ a;
+    }
+
+    public static <T extends Number> Function<T, String> tickToSecond() {
+        return a -> String.valueOf(a.doubleValue() / 20.0);
+    }
+
+    /**
+     * 확률
+     * @param includeZero 0을 포함할 것인지
+     * @param includeHundred 100을 포함할 것인지
+     * @return 파라미터를 포함한 Predicate
+     */
+    public static @NotNull Predicate<Double> chance(boolean includeZero, boolean includeHundred) {
+        Predicate<Double> one = positive(), two = lower(100.0), three = equals(0.0), four = equals(100.0);
+
+        Predicate<Double> result = one.and(two);
+        if (includeHundred) result = result.or(four);
+        if (includeZero) result = result.or(three);
+        return result;
     }
 }

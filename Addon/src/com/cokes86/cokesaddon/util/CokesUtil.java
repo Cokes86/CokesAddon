@@ -1,14 +1,20 @@
 package com.cokes86.cokesaddon.util;
 
+import daybreak.abilitywar.utils.base.minecraft.entity.health.Healths;
 import daybreak.abilitywar.utils.base.minecraft.nms.NMS;
 import daybreak.abilitywar.utils.library.MaterialX;
 import daybreak.google.common.base.Strings;
 import daybreak.google.common.collect.ImmutableSet;
 import daybreak.google.common.collect.ImmutableSet.Builder;
-
+import kotlin.ranges.RangesKt;
+import org.bukkit.Bukkit;
 import org.bukkit.Material;
+import org.bukkit.attribute.Attribute;
 import org.bukkit.entity.Entity;
+import org.bukkit.entity.Player;
 import org.bukkit.entity.Projectile;
+import org.bukkit.event.entity.EntityRegainHealthEvent;
+import org.bukkit.event.entity.EntityRegainHealthEvent.RegainReason;
 
 public class CokesUtil {
 
@@ -45,5 +51,21 @@ public class CokesUtil {
             }
         }
         return attacker;
+    }
+
+    public static void healPlayer(Player player, double healamount) {
+        final EntityRegainHealthEvent event = new EntityRegainHealthEvent(player, healamount, RegainReason.CUSTOM);
+        Bukkit.getPluginManager().callEvent(event);
+        if (!event.isCancelled()) {
+            Healths.setHealth(player, player.getHealth() + event.getAmount());
+        }
+    }
+
+    public static void vampirePlayer(Player player, double vampireAmount) {
+        final EntityRegainHealthEvent event = new EntityRegainHealthEvent(player, vampireAmount, RegainReason.CUSTOM);
+        Bukkit.getPluginManager().callEvent(event);
+        if (!event.isCancelled()) {
+            player.setHealth(RangesKt.coerceIn(player.getHealth() + event.getAmount(), 0, player.getAttribute(Attribute.GENERIC_MAX_HEALTH).getValue()));
+        }
     }
 }

@@ -1,25 +1,23 @@
 package com.cokes86.cokesaddon.ability.list;
 
 import com.cokes86.cokesaddon.ability.CokesAbility;
+import com.cokes86.cokesaddon.ability.Config;
 import com.cokes86.cokesaddon.util.FunctionalInterfaces;
 import daybreak.abilitywar.AbilityWar;
 import daybreak.abilitywar.ability.AbilityManifest;
 import daybreak.abilitywar.ability.AbilityManifest.Rank;
 import daybreak.abilitywar.ability.AbilityManifest.Species;
 import daybreak.abilitywar.ability.decorator.ActiveHandler;
-import daybreak.abilitywar.config.Configuration.Settings;
 import daybreak.abilitywar.game.AbstractGame;
 import daybreak.abilitywar.game.AbstractGame.Participant;
 import daybreak.abilitywar.game.AbstractGame.Participant.ActionbarNotification.ActionbarChannel;
 import daybreak.abilitywar.game.module.DeathManager;
 import daybreak.abilitywar.game.team.interfaces.Teamable;
-import daybreak.abilitywar.utils.base.TimeUtil;
 import daybreak.abilitywar.utils.base.concurrent.TimeUnit;
 import daybreak.abilitywar.utils.base.math.LocationUtil;
-import daybreak.abilitywar.utils.library.PotionEffects;
+import daybreak.abilitywar.utils.base.minecraft.damage.Damages;
 import daybreak.google.common.base.Predicate;
 import org.bukkit.Bukkit;
-import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
@@ -28,23 +26,21 @@ import org.bukkit.event.HandlerList;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.PlayerDeathEvent;
 
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
 
 @AbilityManifest(name = "엑시즈", rank = Rank.S, species = Species.HUMAN, explain = {
-		"게임 중 1회에 한하여 철괴 우클릭 시 자신과",
-		"주변 $[range]블럭 이내 플레이어는 게임 스폰으로 이동합니다.",
-		"이후 $[duration] 이내 엑시즈를 잡지 못하였을 시",
-		"스폰으로 이동된 모든 플레이어는 사망하게 됩니다.",
-		"이로 인한 사망으로 인해 부활계 능력은 발동하지 않습니다.",
-		"지속시간동안 스폰으로 이동된 모든 플레이어는",
-		"신속2, 힘1 버프가 상시로 주어집니다."
+		"게임 중 1회에 한하여 철괴 우클릭 시",
+		"주변 $[RANGE]블럭 이내 플레이어는 자신에게 이동합니다.",
+		"이후 자신이 사망할 때 까지 이동된 플레이어는",
+		"$[DOT_DAMAGE_PERIOD]초마다 $[DOT_DAMAGE]의 관통대미지를 받는",
+		"§5저주§f를 부여받습니다."
 })
 public class Xyz extends CokesAbility implements ActiveHandler {
-	private static final Config<Integer> range = Config.of(Xyz.class, "범위", 10, FunctionalInterfaces.positive());
-	private static final Config<Integer> duration = Config.of(Xyz.class, "지속시간", 40, FunctionalInterfaces.positive(), FunctionalInterfaces.TIME);
+	private static final Config<Integer> RANGE = Config.of(Xyz.class, "range", 10, FunctionalInterfaces.positive(),
+			"능력 대상 범위",
+			"기본값: 10 (블럭)");
+	private static final Config<Integer> DOT_DAMAGE_PERIOD = Config.of(Xyz.class, "dot-damage-period", 50, FunctionalInterfaces.positive(), FunctionalInterfaces.tickToSecond());
+	private static final Config<Double> DOT_DAMAGE = Config.of(Xyz.class, "dot-damage", 2.5, FunctionalInterfaces.positive());
 	private final Predicate<Entity> predicate = entity -> {
 		if (entity == null || entity.equals(getPlayer())) return false;
 		if (entity instanceof Player) {
@@ -62,8 +58,7 @@ public class Xyz extends CokesAbility implements ActiveHandler {
 		}
 		return false;
 	};
-	private final XyzTimer xyzTime = new XyzTimer();
-	private List<Player> targets = null;
+	private boolean use = false;
 
 	public Xyz(Participant arg0) throws IllegalStateException {
 		super(arg0);
@@ -71,75 +66,65 @@ public class Xyz extends CokesAbility implements ActiveHandler {
 
 	@Override
 	public boolean ActiveSkill(Material arg0, ClickType arg1) {
-		if (arg0 == Material.IRON_INGOT && arg1 == ClickType.RIGHT_CLICK && targets == null && !xyzTime.isRunning()) {
-			targets = LocationUtil.getNearbyEntities(Player.class, getPlayer().getLocation(), range.getValue(), range.getValue(), predicate);
+		if (arg0 == Material.IRON_INGOT && arg1 == ClickType.RIGHT_CLICK && !use) {
+			List<Player> targets = LocationUtil.getNearbyEntities(Player.class, getPlayer().getLocation(), RANGE.getValue(), RANGE.getValue(), predicate);
 			if (targets.size() != 0) {
-				xyzTime.start();
+				for (Player player : targets) {
+					player.teleport(getPlayer().getLocation());
+					new XyzTimer(getGame().getParticipant(player));
+				}
+				use = !use;
+				return true;
 			} else {
 				getPlayer().sendMessage("주변에 플레이어가 존재하지 않습니다.");
-				targets = null;
 			}
 		}
 		return false;
 	}
 
-	private class XyzTimer extends Duration implements Listener {
-		Location location = Settings.getSpawnLocation().toBukkitLocation();
-		Map<Player, ActionbarChannel> map = new HashMap<>();
-		public XyzTimer() {
-			super(duration.getValue() * 20);
+	private class XyzTimer extends AbilityTimer implements Listener {
+		private final Participant participant;
+		private final ActionbarChannel channel;
+		public XyzTimer(Participant participant) {
+			super();
+			this.participant = participant;
 			Bukkit.getPluginManager().registerEvents(this, AbilityWar.getPlugin());
 			this.setPeriod(TimeUnit.TICKS, 1);
+			this.channel = participant.actionbar().newChannel();
 		}
 
 		@Override
-		protected void onDurationStart() {
-			for (Player p : targets) {
-				p.teleport(location);
-				map.put(p, getGame().getParticipant(p).actionbar().newChannel());
-				p.sendMessage("엑시즈 " + getPlayer().getName() + "님이 당신을 소멸시킬려 합니다.");
-			}
-			getPlayer().teleport(location);
+		protected void onStart() {
+			participant.getPlayer().sendMessage("엑시즈 §e"+getPlayer().getName()+"§f이(가) 당신에게 §5저주§f를 내렸습니다.");
+			participant.getPlayer().sendMessage("§5저주§f는 §e"+getPlayer().getName()+"§f의 사망 시 까지 지속됩니다.");
 		}
 
 		@Override
-		protected void onDurationProcess(int arg0) {
-			int x = (int) getPlayer().getLocation().getX(), y = (int) getPlayer().getLocation().getY(), z = (int) getPlayer().getLocation().getZ();
-			for (Entry<Player, ActionbarChannel> entry : map.entrySet()) {
-				PotionEffects.SPEED.addPotionEffect(entry.getKey(), 30, 1, true);
-				PotionEffects.INCREASE_DAMAGE.addPotionEffect(entry.getKey(), 30, 0, true);
-				entry.getValue().update("남은 시간 : " + TimeUtil.parseTimeAsString(this.getFixedCount()) + " | 위치 x: " + x + " y: " + y + " z: " + z);
+		protected void run(int arg0) {
+			channel.update("§5저주");
+			if (arg0 % DOT_DAMAGE_PERIOD.getValue() == 0) {
+				Damages.damageFixed(participant.getPlayer(), getPlayer(), DOT_DAMAGE.getValue().floatValue());
 			}
 		}
 
 		@Override
-		protected void onDurationEnd() {
+		protected void onEnd() {
 			HandlerList.unregisterAll(this);
-			for (Player p : map.keySet()) {
-				p.setHealth(0.0);
-				map.get(p).unregister();
-			}
-			map.clear();
+			channel.unregister();
 		}
 
 		@Override
-		protected void onDurationSilentEnd() {
+		protected void onSilentEnd() {
 			HandlerList.unregisterAll(this);
-			for (ActionbarChannel channel : map.values()) {
-				channel.unregister();
-			}
-			map.clear();
+			channel.unregister();
 		}
 
 		@EventHandler
 		public void onPlayerDeath(PlayerDeathEvent e) {
 			if (e.getEntity().equals(getPlayer())) {
-				for (Player p : map.keySet()) {
-					p.sendMessage("엑시즈가 사망하였습니다.");
-				}
+				participant.getPlayer().sendMessage("엑시즈가 사망하였습니다.");
 				stop(true);
-			} else map.remove(e.getEntity());
+			}
 		}
-
 	}
 }

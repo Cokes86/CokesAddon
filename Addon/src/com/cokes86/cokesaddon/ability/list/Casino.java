@@ -1,8 +1,10 @@
 package com.cokes86.cokesaddon.ability.list;
 
 import com.cokes86.cokesaddon.ability.CokesAbility;
+import com.cokes86.cokesaddon.ability.Config;
 import com.cokes86.cokesaddon.event.CEntityDamageEvent;
 import com.cokes86.cokesaddon.util.AttributeUtil;
+import com.cokes86.cokesaddon.util.CokesUtil;
 import com.cokes86.cokesaddon.util.FunctionalInterfaces;
 import com.cokes86.cokesaddon.util.nms.NMSUtil;
 import com.google.common.base.Strings;
@@ -18,18 +20,22 @@ import daybreak.abilitywar.game.module.DeathManager;
 import daybreak.abilitywar.game.team.interfaces.Teamable;
 import daybreak.abilitywar.utils.base.concurrent.TimeUnit;
 import daybreak.abilitywar.utils.base.math.LocationUtil;
-import daybreak.abilitywar.utils.base.minecraft.entity.health.Healths;
 import daybreak.abilitywar.utils.base.minecraft.nms.IHologram;
 import daybreak.abilitywar.utils.base.minecraft.nms.NMS;
 import daybreak.abilitywar.utils.base.random.Random;
 import daybreak.abilitywar.utils.library.SoundLib;
 import daybreak.google.common.collect.ImmutableMap;
-import org.bukkit.*;
+import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
+import org.bukkit.Material;
+import org.bukkit.Note;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Projectile;
-import org.bukkit.event.entity.*;
+import org.bukkit.event.entity.EntityDamageEvent;
+import org.bukkit.event.entity.EntityRegainHealthEvent;
+import org.bukkit.event.entity.ProjectileLaunchEvent;
 import org.bukkit.util.Vector;
 
 import java.util.*;
@@ -212,7 +218,7 @@ public class Casino extends CokesAbility implements ActiveHandler {
         DAMAGE_INCREMENT("주는 대미지 "+ DAMAGE_INCREMENT_VALUE + " 증가"),
         WITHER(WITHER_PERIOD+"마다 1의 시듦 대미지 부여"),
         RESISTANCE("받는 대미지 "+DAMAGE_DECREMENT_VALUE+" 감소"),
-        HEAL("체력 "+HEAL_VALUE+" 즉시 회복"),
+        HEAL("체력 "+HEAL_VALUE+" 즉시 흭득"),
         TWIST(TWIST_PERIOD+"마다 시야 뒤틀림"),
         REGAIN("회복량 "+REGAIN_INCREMENT+"배 증가"),
         MAX_HEALTH_DOWN("최대 체력 "+MAX_HEALTH_DECREMENT+" 감소"),
@@ -300,7 +306,7 @@ public class Casino extends CokesAbility implements ActiveHandler {
                             wither.start();
                             break;
                         case HEAL:
-                            Healths.setHealth(getPlayer(), getPlayer().getHealth() + HEAL_VALUE.getValue());
+                            CokesUtil.vampirePlayer(getPlayer(), HEAL_VALUE.getValue());
                             break;
                         case TWIST:
                             aim.start();

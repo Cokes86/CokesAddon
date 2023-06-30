@@ -1,6 +1,7 @@
 package com.cokes86.cokesaddon.ability.list;
 
 import com.cokes86.cokesaddon.ability.CokesAbility;
+import com.cokes86.cokesaddon.ability.Config;
 import com.cokes86.cokesaddon.event.CEntityDamageEvent;
 import com.cokes86.cokesaddon.util.FunctionalInterfaces;
 import daybreak.abilitywar.ability.AbilityManifest;
@@ -93,7 +94,7 @@ public class Unbelief extends CokesAbility implements ActiveHandler {
 				}
 			}
 			if (damager.equals(teammate.getPlayer()) && e.getEntity().equals(getPlayer())) {
-				if (!attackable) {
+				if (!attackable && !e.isCancelled()) {
 					hitted += 1;
 					e.setCancelled(true);
 					damager.sendMessage("팀을 공격할 수 없습니다.");

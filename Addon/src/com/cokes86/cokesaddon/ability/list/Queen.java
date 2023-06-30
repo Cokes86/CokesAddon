@@ -1,7 +1,9 @@
 package com.cokes86.cokesaddon.ability.list;
 
 import com.cokes86.cokesaddon.ability.CokesAbility;
+import com.cokes86.cokesaddon.ability.Config;
 import com.cokes86.cokesaddon.util.AttributeUtil;
+import com.cokes86.cokesaddon.util.CokesUtil;
 import com.cokes86.cokesaddon.util.FunctionalInterfaces;
 import daybreak.abilitywar.ability.AbilityBase;
 import daybreak.abilitywar.ability.AbilityManifest;
@@ -10,7 +12,6 @@ import daybreak.abilitywar.ability.decorator.ActiveHandler;
 import daybreak.abilitywar.ability.decorator.TargetHandler;
 import daybreak.abilitywar.game.AbstractGame.Participant;
 import daybreak.abilitywar.game.event.GameEndEvent;
-import daybreak.abilitywar.utils.base.minecraft.entity.health.Healths;
 import org.bukkit.Material;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
@@ -19,7 +20,7 @@ import java.text.DecimalFormat;
 
 @AbilityManifest(name = "여왕", rank = AbilityManifest.Rank.A, species = AbilityManifest.Species.HUMAN, explain = {
 		"§7철괴 우클릭 §8- §c여왕의 품격§f: 바라보는 대상의 체력의 반만큼",
-		"  자신 최대 체력에 추가하고, 그 수치의 $[MULTIPLY]배만큼의 체력을 회복합니다. $[COOLDOWN]",
+		"  자신 최대 체력에 추가하고, 그 수치의 $[MULTIPLY]배만큼의 체력을 흭득합니다. $[COOLDOWN]",
 		"  재사용시 그 전에 추가되었던 최대 체력은 사라지고 새로 추가됩니다.",
 		"§7철괴 좌클릭 §8- §c상태 관리§f: 자신의 최대 체력의 수치를 확인합니다."
 })
@@ -42,7 +43,7 @@ public class Queen extends CokesAbility implements ActiveHandler, TargetHandler 
 				double plus = target.getHealth() / 2;
 
 				AttributeUtil.setMaxHealth(getPlayer(), defaultHealth+plus);
-				Healths.setHealth(getPlayer(), getPlayer().getHealth() + (plus* MULTIPLY.getValue()));
+				CokesUtil.vampirePlayer(getPlayer(), plus * MULTIPLY.getValue());
 				cooldown.start();
 			}
 		}

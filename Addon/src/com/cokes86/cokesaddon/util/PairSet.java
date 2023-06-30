@@ -2,7 +2,7 @@ package com.cokes86.cokesaddon.util;
 
 import org.jetbrains.annotations.NotNull;
 
-public class PairSet<L, R> implements Cloneable {
+public class PairSet<L, R> {
     public static <L, R> PairSet<L, R> of(@NotNull L left, @NotNull R right) {
         return new PairSet<>(left, right);
     }
