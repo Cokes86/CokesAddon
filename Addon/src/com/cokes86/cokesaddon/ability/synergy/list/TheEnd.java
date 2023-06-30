@@ -80,6 +80,7 @@ public class TheEnd extends CokesSynergy implements ActiveHandler {
 			Bukkit.getPluginManager().registerEvents(this, AbilityWar.getPlugin());
 			this.setPeriod(TimeUnit.TICKS, 1);
 			this.channel = participant.actionbar().newChannel();
+			start();
 		}
 
 		@Override

@@ -91,6 +91,7 @@ public class Xyz extends CokesAbility implements ActiveHandler {
 			Bukkit.getPluginManager().registerEvents(this, AbilityWar.getPlugin());
 			this.setPeriod(TimeUnit.TICKS, 1);
 			this.channel = participant.actionbar().newChannel();
+			start();
 		}
 
 		@Override
