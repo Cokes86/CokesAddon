@@ -101,18 +101,18 @@ public class Boxer extends CokesAbility implements TargetHandler {
             "# 더킹 사용 시 대미지 감소량", "# 기본값: 50.0 (%)");
 
     // 쿨타임 컨피그
-    private static final Config<Integer> STRAIGHT_COOLDOWN = Config.of(Boxer.class, "straight-cooldown", 5,
+    private static final Config<Integer> STRAIGHT_COOLDOWN = Config.of(Boxer.class, "straight-cooldown", 10,
             FunctionalInterfaces.positive(), FunctionalInterfaces.COOLDOWN,
-            "# 스트레이트 쿨타임", "# 기본값: 5 (초)");
-    private static final Config<Integer> COUNTER_COOLDOWN = Config.of(Boxer.class, "counter-cooldown", 7,
+            "# 스트레이트 쿨타임", "# 기본값: 10 (초)");
+    private static final Config<Integer> COUNTER_COOLDOWN = Config.of(Boxer.class, "counter-cooldown", 14,
             FunctionalInterfaces.positive(), FunctionalInterfaces.COOLDOWN,
-            "# 카운터 쿨타임", "# 기본값: 7 (초)");
-    private static final Config<Integer> UPPER_COOLDOWN = Config.of(Boxer.class, "upper-cooldown", 10,
+            "# 카운터 쿨타임", "# 기본값: 14 (초)");
+    private static final Config<Integer> UPPER_COOLDOWN = Config.of(Boxer.class, "upper-cooldown", 20,
             FunctionalInterfaces.positive(), FunctionalInterfaces.COOLDOWN,
-            "# 어퍼 쿨타임", "# 기본값: 10 (초)");
-    private static final Config<Integer> DUCKING_COOLDOWN = Config.of(Boxer.class, "ducking-cooldown", 20,
+            "# 어퍼 쿨타임", "# 기본값: 20 (초)");
+    private static final Config<Integer> DUCKING_COOLDOWN = Config.of(Boxer.class, "ducking-cooldown", 40,
             FunctionalInterfaces.positive(), FunctionalInterfaces.COOLDOWN,
-            "# 더킹 쿨타임", "# 기본값: 20 (초)");
+            "# 더킹 쿨타임", "# 기본값: 40 (초)");
 
     // 더킹 댐감 컨피그
     private static final Config<Double> DUCKING_DAMAGE_DECREMENT = Config.of(Boxer.class, "ducking-damage-decrement",
@@ -229,7 +229,7 @@ public class Boxer extends CokesAbility implements TargetHandler {
             Damages.damageMagic(skillTimer.participant.getPlayer(), getPlayer(), false,
                     damage - (skillTimer.ducking ? DUCKING_DAMAGE_DECREMENT.getValue().floatValue() : 0));
             skillTimer.participant.getPlayer().setVelocity(
-                    skillTimer.participant.getPlayer().getLocation().getDirection().clone().multiply(-2.5));
+                    skillTimer.participant.getPlayer().getLocation().getDirection().clone().multiply(-1.25));
 
             straight_cooldown.start();
             latest = current;

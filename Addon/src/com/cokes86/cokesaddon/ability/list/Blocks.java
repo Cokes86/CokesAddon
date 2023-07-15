@@ -56,10 +56,10 @@ public class Blocks extends CokesAbility implements ActiveHandler {
 	private static final Config<Double> stone = Config.of(Blocks.class, "receive-damage-decrement", 20d, FunctionalInterfaces.chance(true, false),
 			"돌 상태에서 받는 대미지의 감소량",
 			"기본값: 20.0 (%)");
-	private static final Config<Double> glass = Config.of(Blocks.class, "receive-damage-increment", 100d, FunctionalInterfaces.positive(),
+	private static final Config<Double> glass = Config.positive(Blocks.class, "receive-damage-increment", 100d,
 			"유리 상태에서 받는 대미지의 증가량",
 			"기본값: 100.0 (%)");
-	private static final Config<Integer> inv = Config.of(Blocks.class, "invincibility-duration", 10, FunctionalInterfaces.positive(), FunctionalInterfaces.tickToSecond(),
+	private static final Config<Integer> inv = Config.tickToSecond(Blocks.class, "invincibility-duration", 10,
 			"모래 상태에서 피해를 받았을 시 부여받는 무적 시간",
 			"기본값: 10 (틱)");
 	private Condition condition = Condition.STONE;
@@ -108,7 +108,7 @@ public class Blocks extends CokesAbility implements ActiveHandler {
 		}
 	}.setPeriod(TimeUnit.TICKS, 1);
 
-	private final InvincibilityTimer invTimer = new InvincibilityTimer(getParticipant().getAbility(), TimeUnit.TICKS, inv.getValue());
+	private final InvincibilityTimer invTimer = new InvincibilityTimer(this, TimeUnit.TICKS, inv.getValue());
 
 	public Blocks(Participant arg0) {
 		super(arg0);

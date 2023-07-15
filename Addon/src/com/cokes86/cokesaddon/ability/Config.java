@@ -71,6 +71,10 @@ public class Config<T> extends SettingObject<T> {
         return new Config<>(aClass, name, value, description, FunctionalInterfaces.positive(), FunctionalInterfaces.tickToSecond());
     }
 
+    public static <T extends Number> Config<T> positive(Class<? extends AbilityBase> aClass, String name, T value, String... description) {
+        return new Config<>(aClass, name, value, description, FunctionalInterfaces.positive(), FunctionalInterfaces.toStrings());
+    }
+
     public static void update() {
         abilitySettings.update();
         synergySettings.update();

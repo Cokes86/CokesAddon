@@ -23,7 +23,7 @@ public class RouletteMainWizard extends RouletteWizard {
         gui.setItem(0, getBooleanSetting(RouletteRegister.enable));
         gui.setItem(1, DECO);
         gui.setItem(2, getIntegerSetting(RouletteRegister.period));
-        gui.setItem(3, DECO);
+        gui.setItem(3, getBooleanSetting(RouletteRegister.ignoreBlindRoulette));
         gui.setItem(4, new ItemBuilder(MaterialX.HOPPER).displayName("§b룰렛 설정")
         .lore("§f룰렛 별 등장 확률을 설정하는 공간입니다.", "§f숫자가 높을 수록 자주 등장하며, 0이면 등장하지 않습니다.").build());
         getPlayer().openInventory(gui);
@@ -38,6 +38,9 @@ public class RouletteMainWizard extends RouletteWizard {
                 show();
             } else if (e.getRawSlot()==2) {
                 onIntegerClick(RouletteRegister.period, e.getClick());
+                show();
+            } else if (e.getRawSlot()==3) {
+                RouletteRegister.ignoreBlindRoulette.setValue(!RouletteRegister.ignoreBlindRoulette.getValue());
                 show();
             } else if(e.getRawSlot() == 4) {
                 getPlayer().closeInventory();

@@ -13,6 +13,7 @@ import daybreak.abilitywar.game.AbstractGame.Participant;
 import daybreak.abilitywar.game.list.mix.AbstractMix;
 import daybreak.abilitywar.game.list.mix.Mix;
 import daybreak.abilitywar.game.list.mix.synergy.SynergyFactory;
+import daybreak.abilitywar.game.list.mix.synergy.game.SynergyGame.SynergyParticipant;
 import daybreak.abilitywar.game.manager.object.AbilitySelect.AbilityCollector;
 import daybreak.abilitywar.utils.base.minecraft.BroadBar;
 import daybreak.abilitywar.utils.base.random.Random;
@@ -50,6 +51,9 @@ public class Purgatory extends CokesSynergy implements ActiveHandler {
 						Mix mix = (Mix) participant.getAbility();
 						wasSynergy.put(participant, mix.hasSynergy());
 						mix.removeAbility();
+					} else if (participant instanceof SynergyParticipant) {
+						wasSynergy.put(participant, true);
+						participant.removeAbility();
 					} else {
 						participant.removeAbility();
 						wasSynergy.put(participant, false);
@@ -64,16 +68,7 @@ public class Purgatory extends CokesSynergy implements ActiveHandler {
 		}
 
 		protected void onDurationEnd() {
-			bar.unregister();
-			for (Participant participant : getGame().getParticipants()) {
-				try {
-					if (participant instanceof AbstractMix.MixParticipant) {
-						changeAbility((AbstractMix.MixParticipant) participant);
-					} else {
-						participant.setAbility(getRandomAbility());
-					}
-				} catch (Exception ignored) {}
-			}
+			onDurationSilentEnd();
 		}
 
 		protected void onDurationSilentEnd() {
@@ -82,6 +77,8 @@ public class Purgatory extends CokesSynergy implements ActiveHandler {
 				try {
 					if (participant instanceof AbstractMix.MixParticipant) {
 						changeAbility((AbstractMix.MixParticipant) participant);
+					} else if (participant instanceof SynergyParticipant) {
+						participant.setAbility(getRandomSynergy());
 					} else {
 						participant.setAbility(getRandomAbility());
 					}

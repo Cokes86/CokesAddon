@@ -356,8 +356,8 @@ public class ShrineOfGod extends CokesSynergy implements ActiveHandler {
                         if (getGame().isParticipating(damageable.getUniqueId())) {
                             ArmorBroken.apply(getGame().getParticipant(damageable.getUniqueId()), TimeUnit.SECONDS, 10);
                         }
-                        SoundLib.PIANO.playInstrument(getPlayer(), Note.natural(2, Tone.E));
-                        SoundLib.PIANO.playInstrument(damageable.getLocation(), Note.natural(2, Tone.E));
+                        SoundLib.PIANO.playInstrument(getPlayer(), Note.natural(1, Tone.E));
+                        SoundLib.PIANO.playInstrument(damageable.getLocation(), Note.natural(1, Tone.E));
                         stop(false);
                         return;
                     }

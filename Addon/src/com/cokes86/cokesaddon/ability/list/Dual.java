@@ -13,10 +13,12 @@ import daybreak.abilitywar.ability.decorator.TargetHandler;
 import daybreak.abilitywar.config.Configuration;
 import daybreak.abilitywar.config.Configuration.Settings;
 import daybreak.abilitywar.config.Configuration.Settings.DeveloperSettings;
+import daybreak.abilitywar.game.AbstractGame.GameTimer;
 import daybreak.abilitywar.game.AbstractGame.Participant;
 import daybreak.abilitywar.game.manager.AbilityList;
 import daybreak.abilitywar.game.manager.effect.Stun;
 import daybreak.abilitywar.utils.annotations.Beta;
+import daybreak.abilitywar.utils.base.collect.SetUnion;
 import daybreak.abilitywar.utils.base.concurrent.TimeUnit;
 import daybreak.abilitywar.utils.base.minecraft.entity.health.Healths;
 import daybreak.abilitywar.utils.base.minecraft.item.builder.ItemBuilder;
@@ -29,6 +31,7 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.Iterator;
 import java.util.List;
+import java.util.Set;
 import java.util.StringJoiner;
 import java.util.stream.Collectors;
 
@@ -162,5 +165,25 @@ public class Dual extends CokesAbility implements ActiveHandler, TargetHandler {
         else if (usingSecond && second.getLeft() instanceof TargetHandler && !second.getLeft().isRestricted() && second.getLeft().usesMaterial(arg0)) {
            ((TargetHandler) second.getLeft()).TargetSkill(arg0, arg1);
         }
+    }
+
+    public boolean hasAbility() {
+        return (first != null && second != null);
+    }
+
+    @Override
+    public Set<GameTimer> getTimers() {
+        if (hasAbility()) {
+            return SetUnion.union(first.getLeft().getTimers(), second.getLeft().getTimers(), super.getTimers());
+        }
+        return super.getTimers();
+    }
+
+    @Override
+    public Set<GameTimer> getRunningTimers() {
+        if (hasAbility()) {
+            return SetUnion.union(first.getLeft().getRunningTimers(), second.getLeft().getRunningTimers(), super.getRunningTimers());
+        }
+        return super.getRunningTimers();
     }
 }

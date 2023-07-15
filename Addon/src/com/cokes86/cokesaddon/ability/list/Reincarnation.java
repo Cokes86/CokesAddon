@@ -5,7 +5,6 @@ import com.cokes86.cokesaddon.ability.Config;
 import com.cokes86.cokesaddon.event.CEntityDamageEvent;
 import com.cokes86.cokesaddon.util.AttributeUtil;
 import com.cokes86.cokesaddon.util.CokesUtil;
-import com.cokes86.cokesaddon.util.FunctionalInterfaces;
 import com.cokes86.cokesaddon.util.timer.InvincibilityTimer;
 import daybreak.abilitywar.ability.AbilityManifest;
 import daybreak.abilitywar.ability.AbilityManifest.Rank;
@@ -37,19 +36,19 @@ import java.util.List;
 		"[아이디어 제공자 §bSato207§f]"
 })
 public class Reincarnation extends CokesAbility {
-	public static final Config<Integer> DURATION = Config.of(Reincarnation.class, "duration", 20, FunctionalInterfaces.positive(), FunctionalInterfaces.TIME,
+	public static final Config<Integer> DURATION = Config.time(Reincarnation.class, "duration", 20,
 			"# 환생 지속시간",
 			"# 기본값: 20 (초)");
-	public static final Config<Integer> COOLDOWN = Config.of(Reincarnation.class, "cooldown", 450, FunctionalInterfaces.positive(), FunctionalInterfaces.COOLDOWN,
+	public static final Config<Integer> COOLDOWN = Config.cooldown(Reincarnation.class, "cooldown", 450,
 			"# 환생 쿨타임",
-			"# 기본값: 600 (초)");
-	public static final Config<Integer> HIT_PREDICATE = Config.of(Reincarnation.class, "hit-predicate", 5, FunctionalInterfaces.positive(),
+			"# 기본값: 450 (초)");
+	public static final Config<Integer> HIT_PREDICATE = Config.positive(Reincarnation.class, "hit-predicate", 5,
 			"# 환생 중 공격 횟수 조건",
 			"# 기본값: 5 (회)");
-	public static final Config<Double> RESPAWN_PERCENTAGE = Config.of(Reincarnation.class, "respawn-health-percentage", 5d, FunctionalInterfaces.positive(),
+	public static final Config<Double> RESPAWN_PERCENTAGE = Config.positive(Reincarnation.class, "respawn-health-percentage", 5d,
 			"# 환생 성공 시 회복하는 최대 체력의 비율",
 			"# 기본값: 5.0 (%)");
-	public static final Config<Double> RESPAWN_HEALTH = Config.of(Reincarnation.class, "respawn-health", 2d, FunctionalInterfaces.positive(),
+	public static final Config<Double> RESPAWN_HEALTH = Config.positive(Reincarnation.class, "respawn-health", 2d,
 			"# 환생 성공 시 회복하는 고정 체력",
 			"# 기본값: 2.0");
 	private final ActionbarChannel ac = newActionbarChannel();

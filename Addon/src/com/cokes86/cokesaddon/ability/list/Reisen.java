@@ -42,7 +42,7 @@ import java.util.function.Predicate;
         "  §9마인드 쉐이커§f의 수치가 $[MADNESS_ENHANCE_PREDICATE] 이상일 경우 주기가 $[MADNESS_ENHANCE_PERIOD_DECREASE]% 감소합니다.",
         "§7철괴 우클릭 §8- §c광기의 눈동자§f: $[EYES_RANGE]칸 이내 플레이어를 바라보고 사용할 수 있습니다.",
         "  대상을 $[EYES_DURATION]간 액티브, 타겟팅 스킬을 사용할 수 없게 합니다.",
-        "  그리고 자신의 §9마인드 쉐이커§f 수치를 2만큼 상승합니다.",
+        "  그리고 자신의 §9마인드 쉐이커§f 수치를 2만큼 상승합니다. $[EYES_COOLDOWN]",
         "  §9마인드 쉐이커§f의 수치가 $[EYES_ENHANCE_PREDICATE] 이상일 경우 쿨타임이 $[EYES_ENHANCE_COOLDOWN_DECREASE]% 감소합니다.",
         "§7상태이상 §8- §8뒤틀림§f: 멀미 효과를 부여합니다. 멀미 효과가 있는 동안",
         "  상대방을 공격할 시 30%의 확률로 해당 공격이 무효화됩니다."

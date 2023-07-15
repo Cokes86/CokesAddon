@@ -62,6 +62,7 @@ public class TheEnd extends CokesSynergy implements ActiveHandler {
 	public boolean ActiveSkill(Material arg0, ClickType arg1) {
 		if (arg0 == Material.IRON_INGOT && arg1 == ClickType.RIGHT_CLICK && !use) {
 			for (Participant participant : getGame().getParticipants()) {
+				if (participant.equals(getParticipant())) continue;
 				participant.getPlayer().teleport(getPlayer().getLocation());
 				new XyzTimer(getGame().getParticipant(participant.getPlayer()));
 			}

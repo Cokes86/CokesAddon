@@ -57,6 +57,9 @@ public class Aris extends CokesAbility implements ActiveHandler {
 			"# 사슬무덤 쿨타임", "# 기본값: 45 (초)");
 	private static final Config<Integer> MAX_CHAIN_COUNTER = Config.of(Aris.class, "max-chain-counter", 10, FunctionalInterfaces.positive(),
 			"# 체인 사슬 카운터의 최대 보유량", "# 기본값: 10 (개)");
+	private static final Config<Integer> PERIOD = Config.time(Aris.class, "period", 5,
+			"사슬 카운터 상승 주기", "기본값: 5 (초)");
+
 
 	private final Predicate<Entity> predicate = entity -> {
 		if (entity.equals(getPlayer())) return false;
@@ -81,10 +84,10 @@ public class Aris extends CokesAbility implements ActiveHandler {
 	private final Cooldown cooldown = new Cooldown(COOLDOWN.getValue(), CooldownDecrease._50);
 	private CaughtUpTimer duration = new CaughtUpTimer(null);
 	private final AbilityTimer passive = new AbilityTimer() {
-		int count = (int) (Wreck.isEnabled(getGame()) ? 5*20 * Wreck.calculateDecreasedAmount(50) : 5*20);
+		int count = (int) (Wreck.isEnabled(getGame()) ? PERIOD.getValue()*20 * Wreck.calculateDecreasedAmount(50) : PERIOD.getValue()*20);
 		{
 			if (count == 0) {
-				count = 10;
+				count = PERIOD.getValue()*5;
 			}
 		}
 

@@ -40,6 +40,10 @@ public class CokesUtil {
         return "§"+Character.toString(color1).concat(Strings.repeat(repeat, count1)).concat("§"+ color2).concat(Strings.repeat(repeat, count2));
     }
 
+    public static String noticeString(String title, int count) {
+        return title+"§f: "+count;
+    }
+
     public static Entity getDamager(Entity entity) {
         Entity attacker = entity;
         if (attacker != null) {

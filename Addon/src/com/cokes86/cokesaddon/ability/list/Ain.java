@@ -26,8 +26,19 @@ public class Ain extends CokesAbility {
     private static final Config<Integer> PERIOD = Config.of(Ain.class, "period", 3, FunctionalInterfaces.positive(), FunctionalInterfaces.TIME,
             "# 망각 지대 주기", "# 기본값: 3 (초)");
 
+    private final PlaceOfOblivion passive = new PlaceOfOblivion();
+
     public Ain(AbstractGame.Participant arg0) {
         super(arg0);
+    }
+
+    @Override
+    protected void onUpdate(Update update) {
+        if (update == Update.RESTRICTION_CLEAR) {
+            passive.start();
+        } else {
+            passive.stop(true);
+        }
     }
 
     public class PlaceOfOblivion extends AbilityTimer {

@@ -13,7 +13,7 @@ public class RouletteRegister {
     private static final HashMap<String, Pair<Class<? extends RouletteEffect>, SettingObject<Integer>>> map = new HashMap<>();
 
     public static final SettingObject<Boolean> enable = Roulette.config.new SettingObject<>(null, "룰렛 온오프","enable", true,
-            "# 룰렛 모듈 사용 여부");
+            "룰렛 모듈 사용 여부");
 
 	public static final SettingObject<Integer> period = Roulette.config.new SettingObject<Integer>(null, "룰렛 발동 주기", "period", 45,
             "# 단위 : (초)") {
@@ -23,6 +23,10 @@ public class RouletteRegister {
         }
     };
 
+    public static final SettingObject<Boolean> ignoreBlindRoulette = Roulette.config.new SettingObject<>(null, "블라인드 능력자 룰렛 대체","ignore-blind-roulette", false,
+            "블라인드 능력자의 기본 룰렛 대신 해당 룰렛 사용 여부",
+            "AbilityWar 3.3.5 이상의 버전에서만 해당됩니다.");
+
 	public static boolean isEnabled() {
 		return enable.getValue();
 	}
@@ -30,6 +34,10 @@ public class RouletteRegister {
 	public static int getRoulletPeriod() {
 		return period.getValue();
 	}
+
+    public static boolean isIgnoreBlindRoulette() {
+        return ignoreBlindRoulette.getValue();
+    }
 
     static {
         //1.11.0

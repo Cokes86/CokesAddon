@@ -87,10 +87,14 @@ public class CokesAddon extends Addon implements Listener {
 
 	@EventHandler
     public void onGameReady(GameReadyEvent e) {
-		if (e.getGame() instanceof BlindAbilityWar) return;
-		if (e.getGame() instanceof MixBlindGame) return;
 		if (!RouletteRegister.isEnabled()) return;
-		if (e.getGame().getClass().getAnnotation(Category.class) != null) {
+
+		if (e.getGame() instanceof BlindAbilityWar || e.getGame() instanceof MixBlindGame) {
+			if (RouletteRegister.isIgnoreBlindRoulette()) {
+				e.getGame().addModule(new Roulette(e.getGame()));
+			}
+		}
+		else if (e.getGame().getClass().getAnnotation(Category.class) != null) {
 			if (e.getGame().getClass().getAnnotation(Category.class).value() == GameCategory.GAME) {
 				e.getGame().addModule(new Roulette(e.getGame()));
 			}

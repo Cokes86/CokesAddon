@@ -9,6 +9,8 @@ import daybreak.abilitywar.game.AbstractGame.Participant;
 import daybreak.abilitywar.game.GameManager;
 import daybreak.abilitywar.game.event.GameStartEvent;
 import daybreak.abilitywar.game.event.InvincibilityStatusChangeEvent;
+import daybreak.abilitywar.game.list.blind.BlindAbilityWar;
+import daybreak.abilitywar.game.list.mix.blind.MixBlindGame;
 import daybreak.abilitywar.game.module.DeathManager;
 import daybreak.abilitywar.game.module.Invincibility;
 import daybreak.abilitywar.game.module.Invincibility.Observer;
@@ -149,6 +151,12 @@ public class Roulette implements ListenerModule {
         private final PeriodTimer periodTimer = new PeriodTimer();
 
         private boolean start() {
+            if (RouletteRegister.isIgnoreBlindRoulette() && GameManager.isGameRunning() && GameManager.isGameOf(BlindAbilityWar.class)) {
+                ((BlindAbilityWar)GameManager.getGame()).blindRoulette.stop(true);
+            }
+            if (RouletteRegister.isIgnoreBlindRoulette() && GameManager.isGameRunning() && GameManager.isGameOf(MixBlindGame.class)) {
+                ((MixBlindGame)GameManager.getGame()).blindRoulette.stop(true);
+            }
             return (!noticeTimer.isRunning() || !periodTimer.isRunning()) && periodTimer.start();
         }
 
@@ -162,7 +170,18 @@ public class Roulette implements ListenerModule {
 
         private class PeriodTimer extends GameTimer {
             public PeriodTimer() {
-                abstractGame.super(TaskType.REVERSE, RouletteRegister.getRoulletPeriod());
+                abstractGame.super(TaskType.REVERSE, RouletteRegister.getRoulletPeriod() * 20);
+                setPeriod(TimeUnit.TICKS, 1);
+            }
+
+            @Override
+            protected void run(int count) {
+                if (RouletteRegister.isIgnoreBlindRoulette() && GameManager.isGameRunning() && GameManager.isGameOf(BlindAbilityWar.class)) {
+                    if (((BlindAbilityWar)GameManager.getGame()).blindRoulette.isRunning()) ((BlindAbilityWar)GameManager.getGame()).blindRoulette.stop(true);
+                }
+                if (RouletteRegister.isIgnoreBlindRoulette() && GameManager.isGameRunning() && GameManager.isGameOf(MixBlindGame.class)) {
+                    if (((MixBlindGame)GameManager.getGame()).blindRoulette.isRunning()) ((MixBlindGame)GameManager.getGame()).blindRoulette.stop(true);
+                }
             }
 
             public void onEnd() {
@@ -237,9 +256,10 @@ public class Roulette implements ListenerModule {
     }
 
     public String display(String display, List<Participant> participants) {
+        String result = display;
         for (int i = 0 ; i < participants.size() ; i++) {
-            display.replace("$[player"+i+"]", participants.get(i).getPlayer().getName());
+            result = result.replace("$[player"+i+"]", participants.get(i).getPlayer().getName());
         }
-        return display;
+        return result;
     }
 }
