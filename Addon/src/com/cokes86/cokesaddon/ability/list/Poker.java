@@ -103,7 +103,7 @@ public class Poker extends CokesAbility implements ActiveHandler {
 						break;
 					case "Pair":
 						getPlayer().sendMessage("좋습니다! §a페어§f입니다! 재생2 버프를 " + (result.getRight() * 2) + "초간 받습니다.");
-						PotionEffects.REGENERATION.addPotionEffect(getPlayer(), result.getRight() * 40, 0, true);
+						PotionEffects.REGENERATION.addPotionEffect(getPlayer(), result.getRight() * 40, 1, true);
 						break;
 					case "Straight":
 						getPlayer().sendMessage("와우! §b스트레이트§f입니다! 다음 공격은 추가적으로 " + (result.getRight()) + "의 대미지를 줍니다.");
