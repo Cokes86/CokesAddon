@@ -236,6 +236,7 @@ public class Roulette implements ListenerModule {
 
                     String mainTitle = effect.requireTarget() == 0 ? "전체 플레이어" : main.getPlayer().getName();
                     for (Participant participant : getGame().getParticipants()) {
+                        if (!participant.getPlayer().isOnline()) continue;
                         NMS.sendTitle(participant.getPlayer(),
                                 random.pick(chatColors) + mainTitle, random.pick(chatColors) + display(RouletteRegister.getEffectDisplay(effect.getClass()), list)
                                 ,0,20,0);
