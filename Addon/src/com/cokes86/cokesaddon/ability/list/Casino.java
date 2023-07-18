@@ -2,6 +2,7 @@ package com.cokes86.cokesaddon.ability.list;
 
 import com.cokes86.cokesaddon.ability.CokesAbility;
 import com.cokes86.cokesaddon.ability.Config;
+import com.cokes86.cokesaddon.ability.decorate.Lite;
 import com.cokes86.cokesaddon.event.CEntityDamageEvent;
 import com.cokes86.cokesaddon.util.AttributeUtil;
 import com.cokes86.cokesaddon.util.CokesUtil;
@@ -46,6 +47,7 @@ import java.util.function.Predicate;
         "이미 부여한 효과는 다시 나오지 않습니다.",
         "철괴 좌클릭으로 자신에게 부여된 효과를 알 수 있습니다."
 })
+@Lite
 public class Casino extends CokesAbility implements ActiveHandler {
     //쿨타임
     private static final Config<Integer> COOLDOWN = Config.of(Casino.class, "cooldown", 60, FunctionalInterfaces.positive(), FunctionalInterfaces.COOLDOWN,

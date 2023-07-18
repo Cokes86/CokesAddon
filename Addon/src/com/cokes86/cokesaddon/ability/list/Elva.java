@@ -2,6 +2,7 @@ package com.cokes86.cokesaddon.ability.list;
 
 import com.cokes86.cokesaddon.ability.CokesAbility;
 import com.cokes86.cokesaddon.ability.Config;
+import com.cokes86.cokesaddon.ability.decorate.Lite;
 import com.cokes86.cokesaddon.util.FunctionalInterfaces;
 import daybreak.abilitywar.ability.AbilityManifest;
 import daybreak.abilitywar.ability.AbilityManifest.Rank;
@@ -44,6 +45,7 @@ import java.util.function.Predicate;
 		"  일반 화살은 사용할 수 없습니다.",
 		"[아이디어 제공자 §bSato207§f]"
 })
+@Lite
 public class Elva extends CokesAbility {
 	private static final Config<Integer> maxarrow = Config.of(Elva.class, "arrow-value", 200, FunctionalInterfaces.positive());
 	private static final Config<Integer> speed = Config.of(Elva.class, "launch-speed", 4, FunctionalInterfaces.positive(), FunctionalInterfaces.tickToSecond());

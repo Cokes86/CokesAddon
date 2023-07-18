@@ -2,6 +2,7 @@ package com.cokes86.cokesaddon.ability.list;
 
 import com.cokes86.cokesaddon.ability.CokesAbility;
 import com.cokes86.cokesaddon.ability.Config;
+import com.cokes86.cokesaddon.ability.decorate.Lite;
 import com.cokes86.cokesaddon.event.CEntityDamageEvent;
 import com.cokes86.cokesaddon.util.FunctionalInterfaces;
 import daybreak.abilitywar.ability.AbilityManifest;
@@ -26,12 +27,14 @@ import org.bukkit.entity.Projectile;
 import java.util.function.Predicate;
 
 @AbilityManifest(name = "불신", rank = Rank.A, species = Species.HUMAN, explain = {
-		"게임 중 1회에 한해 $[range]칸 이내의 상대방을 바라본 체 철괴로 우클릭 시 불신 전용 2인 팀을 만듭니다.",
-		"팀을 만든 이후 2초간 무적상태가 된 후 팀끼리는 서로 공격할 수 없습니다.",
+		"게임 중 1회에 한해 $[range]칸 이내의 상대방을 바라본 체",
+		"철괴로 우클릭 시 불신 전용 2인 팀을 만듭니다.",
+		"팀을 만든 이후 2초간 §e무적§f, 이후 팀끼리는 서로 공격할 수 없습니다.",
 		"팀을 맺은 상대방이 자신을 $[hit]회 타격할 시 팀이 깨지며",
 		"팀을 맺었던 플레이어에게 주는 대미지가 $[damage] 증가합니다.",
 		"[아이디어 제공자 §bRainStar_§f]"
 })
+@Lite
 public class Unbelief extends CokesAbility implements ActiveHandler {
 	private static final Config<Integer> hit = Config.of(Unbelief.class, "공격횟수", 5, FunctionalInterfaces.positive());
 	private static final Config<Integer> damage = Config.of(Unbelief.class, "추가대미지", 2, FunctionalInterfaces.positive());

@@ -2,6 +2,7 @@ package com.cokes86.cokesaddon.ability.list;
 
 import com.cokes86.cokesaddon.ability.CokesAbility;
 import com.cokes86.cokesaddon.ability.Config;
+import com.cokes86.cokesaddon.ability.decorate.Lite;
 import com.cokes86.cokesaddon.event.CEntityDamageEvent;
 import com.cokes86.cokesaddon.util.CokesUtil;
 import com.cokes86.cokesaddon.util.FunctionalInterfaces;
@@ -34,6 +35,7 @@ import java.util.HashMap;
 		"상대방을 공격할 시 최근에 플레이어에게 받았던 대미지의 $[PERCENTAGE]% 만큼의",
 		"§l고정 대미지§f를 상대방에게 추가적으로 입힙니다.",
 })
+@Lite
 public class Revenge extends CokesAbility {
 	public static final Config<Double> PERCENTAGE = Config.of(Revenge.class, "반사대미지(%)", 40d, FunctionalInterfaces.positive());
 	private final DecimalFormat df = new DecimalFormat("0.##");

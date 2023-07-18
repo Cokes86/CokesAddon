@@ -2,6 +2,7 @@ package com.cokes86.cokesaddon.ability.list;
 
 import com.cokes86.cokesaddon.ability.CokesAbility;
 import com.cokes86.cokesaddon.ability.Config;
+import com.cokes86.cokesaddon.ability.decorate.Lite;
 import com.cokes86.cokesaddon.util.CokesUtil;
 import com.cokes86.cokesaddon.util.FunctionalInterfaces;
 import daybreak.abilitywar.ability.AbilityManifest;
@@ -14,6 +15,7 @@ import org.bukkit.Material;
 		"체력이 $[risk]보다 높은 상태에서 철괴 우클릭 시 체력이 $[risk]가 감소합니다. $[cool]",
 		"이후 자연회복을 제외하고 1초당 1씩, 총 $[duration]만큼의 체력을 회복합니다."
 })
+@Lite
 public class Cutter extends CokesAbility implements ActiveHandler {
 	private static final Config<Integer> cool = Config.of(Cutter.class, "cooldown", 10, FunctionalInterfaces.positive(), FunctionalInterfaces.COOLDOWN,
 			"쿨타임",

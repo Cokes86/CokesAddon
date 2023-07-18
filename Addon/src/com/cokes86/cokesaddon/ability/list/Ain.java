@@ -2,6 +2,7 @@ package com.cokes86.cokesaddon.ability.list;
 
 import com.cokes86.cokesaddon.ability.CokesAbility;
 import com.cokes86.cokesaddon.ability.Config;
+import com.cokes86.cokesaddon.ability.decorate.Lite;
 import com.cokes86.cokesaddon.util.FunctionalInterfaces;
 import daybreak.abilitywar.ability.AbilityManifest;
 import daybreak.abilitywar.game.AbstractGame;
@@ -18,6 +19,7 @@ import java.util.List;
 }, summarize = {
         "자신 주변 능력자의 §c쿨타임§f을 §e느리게§f 흐르게 합니다."
 })
+@Lite
 public class Ain extends CokesAbility {
     private static final Config<Integer> RANGE = Config.of(Ain.class, "range", 5, FunctionalInterfaces.positive(),
             "# 망각 지대 범위", "# 기본값: 5 (블럭)");

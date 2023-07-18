@@ -2,6 +2,7 @@ package com.cokes86.cokesaddon.ability.list;
 
 import com.cokes86.cokesaddon.ability.CokesAbility;
 import com.cokes86.cokesaddon.ability.Config;
+import com.cokes86.cokesaddon.ability.decorate.Lite;
 import com.cokes86.cokesaddon.util.FunctionalInterfaces;
 import daybreak.abilitywar.AbilityWar;
 import daybreak.abilitywar.ability.AbilityManifest;
@@ -44,11 +45,12 @@ import java.util.TreeMap;
 import java.util.function.Predicate;
 
 @AbilityManifest(name = "소환사", rank = Rank.A, species = Species.HUMAN, explain = {
-		"철괴를 우클릭하여 자신을 제외한 참가자 한 명을 선택하여 $[duration] 뒤에 자신의",
-		"위치로 소환합니다. $[cooldown]",
+		"철괴를 우클릭하여 자신을 제외한 참가자 한 명을 선택하여",
+		"$[duration] 뒤에 자신의 위치로 소환합니다. $[cooldown]",
 		"소환되는 위치는 능력을 발동한 시점의 위치입니다.",
 		"플레이어를 선택하지 않은 경우 3초의 쿨타임이 적용됩니다."
 })
+@Lite
 public class Summoner extends CokesAbility implements ActiveHandler {
 	public static Config<Integer> duration = Config.of(Summoner.class, "대기시간", 3, FunctionalInterfaces.positive(), FunctionalInterfaces.TIME);
 	public static Config<Integer> cooldown = Config.of(Summoner.class, "쿨타임", 150, FunctionalInterfaces.positive(), FunctionalInterfaces.COOLDOWN);

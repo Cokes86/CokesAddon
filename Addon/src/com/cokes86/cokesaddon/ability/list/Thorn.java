@@ -2,6 +2,7 @@ package com.cokes86.cokesaddon.ability.list;
 
 import com.cokes86.cokesaddon.ability.CokesAbility;
 import com.cokes86.cokesaddon.ability.Config;
+import com.cokes86.cokesaddon.ability.decorate.Lite;
 import com.cokes86.cokesaddon.event.CEntityDamageEvent;
 import com.cokes86.cokesaddon.util.FunctionalInterfaces;
 import daybreak.abilitywar.ability.AbilityManifest;
@@ -27,6 +28,7 @@ import org.bukkit.entity.Projectile;
 		"또한 근접 공격을 받을 시 $[PERCENTAGE]% 확률로",
 		"대미지의 $[MELEE_DAMAGE]%를 입힙니다. $[COOL]"
 })
+@Lite
 public class Thorn extends CokesAbility implements ActiveHandler {
 	private static final Config<Integer> COOL = Config.of(Thorn.class, "cooldown", 20, FunctionalInterfaces.positive(), FunctionalInterfaces.COOLDOWN);
 	private static final Config<Integer> DURATION = Config.of(Thorn.class, "duration", 5, FunctionalInterfaces.positive(), FunctionalInterfaces.TIME);

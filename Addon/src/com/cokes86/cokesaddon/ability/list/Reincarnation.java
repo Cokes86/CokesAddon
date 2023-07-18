@@ -2,6 +2,7 @@ package com.cokes86.cokesaddon.ability.list;
 
 import com.cokes86.cokesaddon.ability.CokesAbility;
 import com.cokes86.cokesaddon.ability.Config;
+import com.cokes86.cokesaddon.ability.decorate.Lite;
 import com.cokes86.cokesaddon.event.CEntityDamageEvent;
 import com.cokes86.cokesaddon.util.AttributeUtil;
 import com.cokes86.cokesaddon.util.CokesUtil;
@@ -35,6 +36,7 @@ import java.util.List;
 		"  §7부활 체력: $[RESPAWN_HEALTH] + 최대 체력의 $[RESPAWN_PERCENTAGE]% × 초과 타격횟수",
 		"[아이디어 제공자 §bSato207§f]"
 })
+@Lite
 public class Reincarnation extends CokesAbility {
 	public static final Config<Integer> DURATION = Config.time(Reincarnation.class, "duration", 20,
 			"# 환생 지속시간",

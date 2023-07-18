@@ -2,6 +2,7 @@ package com.cokes86.cokesaddon.ability.list;
 
 import com.cokes86.cokesaddon.ability.CokesAbility;
 import com.cokes86.cokesaddon.ability.Config;
+import com.cokes86.cokesaddon.ability.decorate.Lite;
 import com.cokes86.cokesaddon.effect.list.Suffle;
 import com.cokes86.cokesaddon.event.CEntityDamageEvent;
 import com.cokes86.cokesaddon.util.FunctionalInterfaces;
@@ -31,6 +32,7 @@ import java.util.function.Predicate;
         "§7상태이상 §8- §3셔플§f: 양손과 갑옷을 제외한 모든 인벤토리가 뒤섞이며, 위치를 조정할 수 없습니다.",
         "  상태이상이 사라지면, 상태이상이 적용되기 전으로 돌아갑니다."
 })
+@Lite
 public class Rude extends CokesAbility implements ActiveHandler {
     private static final Config<Integer> RUDE_RANGE = Config.of(Rude.class, "범위", 5, FunctionalInterfaces.positive());
     private static final Config<Integer> RUDE_DURATION = Config.of(Rude.class, "지속시간", 4, FunctionalInterfaces.positive(), FunctionalInterfaces.TIME);

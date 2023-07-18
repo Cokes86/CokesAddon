@@ -25,7 +25,7 @@ import org.bukkit.Note.Tone;
 		"  다만, §b겜블§f로 수치가 랜덤하게 변경되지 아니하고",
 		"  능력 사용 시점 수치의 $[PD_PENALTY]%만큼 안좋은 쪽으로 증감합니다.",
 		"  두 스탯 중 하나라도 최악으로 치닿게 되면 종료됩니다. $[PD_COOLDOWN]",
-		"[아이디어 제공자 §bRainStar_§f]"
+		"[아이디어 제공자 §aRainStar_§f]"
 })
 public class Gambler extends CokesAbility implements ActiveHandler {
 	private static final Config<Integer> GM_PERIOD = Config.of(Gambler.class, "period", 10, FunctionalInterfaces.positive(), FunctionalInterfaces.TIME,

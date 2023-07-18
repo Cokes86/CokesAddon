@@ -2,6 +2,7 @@ package com.cokes86.cokesaddon.ability.list;
 
 import com.cokes86.cokesaddon.ability.CokesAbility;
 import com.cokes86.cokesaddon.ability.Config;
+import com.cokes86.cokesaddon.ability.decorate.Lite;
 import com.cokes86.cokesaddon.util.AttributeUtil;
 import com.cokes86.cokesaddon.util.CokesUtil;
 import com.cokes86.cokesaddon.util.FunctionalInterfaces;
@@ -24,6 +25,7 @@ import java.text.DecimalFormat;
 		"  재사용시 그 전에 추가되었던 최대 체력은 사라지고 새로 추가됩니다.",
 		"§7철괴 좌클릭 §8- §c상태 관리§f: 자신의 최대 체력의 수치를 확인합니다."
 })
+@Lite
 public class Queen extends CokesAbility implements ActiveHandler, TargetHandler {
 	private static final Config<Integer> COOLDOWN = Config.of(Queen.class, "쿨타임", 120, FunctionalInterfaces.positive(), FunctionalInterfaces.COOLDOWN);
 	private static final Config<Double> MULTIPLY = Config.of(Queen.class, "회복배율", 1.0, FunctionalInterfaces.greaterThanOrEqual(0.0));

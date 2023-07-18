@@ -2,6 +2,7 @@ package com.cokes86.cokesaddon.ability.list;
 
 import com.cokes86.cokesaddon.ability.CokesAbility;
 import com.cokes86.cokesaddon.ability.Config;
+import com.cokes86.cokesaddon.ability.decorate.Lite;
 import com.cokes86.cokesaddon.event.CEntityDamageEvent;
 import com.cokes86.cokesaddon.util.FunctionalInterfaces;
 import daybreak.abilitywar.ability.AbilityManifest;
@@ -28,6 +29,7 @@ import org.bukkit.event.player.PlayerMoveEvent;
 		"$[duration]간 공중에 날 수 있습니다. $[cool]",
 		"또한 능력 사용 직후 1회에 한해 낙하대미지를 받지 않습니다."
 })
+@Lite
 public class Keily extends CokesAbility implements ActiveHandler {
 	private static final Config<Integer> dura = Config.of(Keily.class, "카운터생성주기", 45, FunctionalInterfaces.positive(), FunctionalInterfaces.TIME);
 	private static final Config<Integer> cool = Config.of(Keily.class, "쿨타임", 45, FunctionalInterfaces.positive(), FunctionalInterfaces.COOLDOWN);

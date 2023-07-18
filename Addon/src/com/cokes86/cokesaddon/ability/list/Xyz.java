@@ -2,6 +2,7 @@ package com.cokes86.cokesaddon.ability.list;
 
 import com.cokes86.cokesaddon.ability.CokesAbility;
 import com.cokes86.cokesaddon.ability.Config;
+import com.cokes86.cokesaddon.ability.decorate.Lite;
 import com.cokes86.cokesaddon.util.FunctionalInterfaces;
 import daybreak.abilitywar.AbilityWar;
 import daybreak.abilitywar.ability.AbilityManifest;
@@ -35,6 +36,7 @@ import java.util.List;
 		"$[DOT_DAMAGE_PERIOD]초마다 $[DOT_DAMAGE]의 관통대미지를 받는",
 		"§5저주§f를 부여받습니다."
 })
+@Lite
 public class Xyz extends CokesAbility implements ActiveHandler {
 	private static final Config<Integer> RANGE = Config.of(Xyz.class, "range", 10, FunctionalInterfaces.positive(),
 			"능력 대상 범위",

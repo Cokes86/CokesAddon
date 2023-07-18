@@ -2,6 +2,7 @@ package com.cokes86.cokesaddon.ability.list;
 
 import com.cokes86.cokesaddon.ability.CokesAbility;
 import com.cokes86.cokesaddon.ability.Config;
+import com.cokes86.cokesaddon.ability.decorate.Lite;
 import com.cokes86.cokesaddon.event.CEntityDamageEvent;
 import com.cokes86.cokesaddon.util.CokesUtil;
 import com.cokes86.cokesaddon.util.FunctionalInterfaces;
@@ -26,6 +27,7 @@ import java.util.List;
         "쌓인 스택은 $[COOLDOWN]간 유지되며, 스택이 사라진 순간",
         "밟았던 블럭에 대해 다시 스택을 올릴 수 있습니다."
 })
+@Lite
 public class LonelyRoad extends CokesAbility {
     private static final Config<Integer> STACK_BLOCK = Config.of(LonelyRoad.class, "stack-block", 125, FunctionalInterfaces.positive(),
             "# 대미지가 상승하기 위해 밟아야할 블럭의 수",

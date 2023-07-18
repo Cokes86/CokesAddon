@@ -2,6 +2,7 @@ package com.cokes86.cokesaddon.ability.list;
 
 import com.cokes86.cokesaddon.ability.CokesAbility;
 import com.cokes86.cokesaddon.ability.Config;
+import com.cokes86.cokesaddon.ability.decorate.Lite;
 import com.cokes86.cokesaddon.event.CEntityDamageEvent;
 import com.cokes86.cokesaddon.util.AttributeUtil;
 import com.cokes86.cokesaddon.util.CokesUtil;
@@ -21,6 +22,7 @@ import org.bukkit.potion.PotionEffect;
 		"치명적인 공격을 받았을 시 모든 체력을 회복하고 모든 버프가 사라집니다.",
 		"그 이후 모든 공격이 상대에게 주는 대미지가 $[BONUS_DAMAGE] 증가합니다."
 })
+@Lite
 public class Resurrection extends CokesAbility {
 	private static final Config<Double> BONUS_DAMAGE = Config.of(Resurrection.class, "additional-damage", 2.0, FunctionalInterfaces.positive());
 	private boolean isResurrection = false;

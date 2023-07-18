@@ -2,6 +2,7 @@ package com.cokes86.cokesaddon.ability.list;
 
 import com.cokes86.cokesaddon.ability.CokesAbility;
 import com.cokes86.cokesaddon.ability.Config;
+import com.cokes86.cokesaddon.ability.decorate.Lite;
 import com.cokes86.cokesaddon.event.CEntityDamageEvent;
 import com.cokes86.cokesaddon.util.FunctionalInterfaces;
 import com.google.common.collect.ImmutableList;
@@ -30,6 +31,7 @@ import java.util.function.Predicate;
         "이를 제외한 모든 대미지가 $[DAMAGE_REDUCE]% 감소합니다.",
         "$[RANGE]블럭 이내 플레이어가 존재할 시, 그 중 가까운 플레이어를 바라보게 시선이 변경됩니다."
 })
+@Lite
 public class Sheep extends CokesAbility {
     private static final Config<Double> DAMAGE = Config.of(Sheep.class, "damage", 150.0, FunctionalInterfaces.positive(),
             "# 불, 용암, 마그마블럭으로 인해 받는 대미지 감소량",

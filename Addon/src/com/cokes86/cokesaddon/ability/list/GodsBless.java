@@ -2,6 +2,7 @@ package com.cokes86.cokesaddon.ability.list;
 
 import com.cokes86.cokesaddon.ability.CokesAbility;
 import com.cokes86.cokesaddon.ability.Config;
+import com.cokes86.cokesaddon.ability.decorate.Lite;
 import com.cokes86.cokesaddon.effect.list.GodOfBreak;
 import com.cokes86.cokesaddon.util.FunctionalInterfaces;
 import daybreak.abilitywar.ability.AbilityManifest;
@@ -21,6 +22,7 @@ import org.bukkit.Material;
 		"  상대방을 살해할 시 공격력이 1 더 추가하고 지속시간을 초기화합니다.",
 		"  지속시간 종료 시 자신이 얻은 공격력의 5배에 달하는 대미지를 받습니다."
 })
+@Lite
 public class GodsBless extends CokesAbility implements ActiveHandler {
 	private static final Config<Integer> duration = Config.of(GodsBless.class, "duration", 15, FunctionalInterfaces.positive(), FunctionalInterfaces.TIME);
 	private static final Config<Integer> rightCool = Config.of(GodsBless.class, "right-cooldown", 60, FunctionalInterfaces.positive(), FunctionalInterfaces.COOLDOWN);

@@ -2,6 +2,7 @@ package com.cokes86.cokesaddon.ability.list;
 
 import com.cokes86.cokesaddon.ability.CokesAbility;
 import com.cokes86.cokesaddon.ability.Config;
+import com.cokes86.cokesaddon.ability.decorate.Lite;
 import com.cokes86.cokesaddon.event.CEntityDamageEvent;
 import com.cokes86.cokesaddon.util.CokesUtil;
 import com.cokes86.cokesaddon.util.FunctionalInterfaces;
@@ -27,6 +28,7 @@ import java.util.Objects;
 		"자신이 쏜 화살은 명중 시 바로 사라집니다.",
 		"[아이디어 제공자 §bRainStar_§f]"
 })
+@Lite
 public class EnchantArrow extends CokesAbility {
 	private static final Config<Double> DAMAGE = Config.of(EnchantArrow.class, "damage", 8.5, FunctionalInterfaces.positive(),
 			"# 인챈트 스택 당 상승할 대미지 증가량",

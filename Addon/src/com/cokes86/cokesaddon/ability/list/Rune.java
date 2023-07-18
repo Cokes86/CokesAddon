@@ -2,6 +2,7 @@ package com.cokes86.cokesaddon.ability.list;
 
 import com.cokes86.cokesaddon.ability.CokesAbility;
 import com.cokes86.cokesaddon.ability.Config;
+import com.cokes86.cokesaddon.ability.decorate.Lite;
 import com.cokes86.cokesaddon.util.AttributeUtil;
 import com.cokes86.cokesaddon.util.FunctionalInterfaces;
 import daybreak.abilitywar.ability.AbilityManifest;
@@ -34,6 +35,7 @@ import java.util.function.Predicate;
 @AbilityManifest(name = "룬", rank = Rank.A, species = Species.HUMAN, explain = {
 		"철괴 우클릭시 자신 주위 $[RANGE]블럭 이내 랜덤한 1명에게 $[DAMAGE]의 관통 데미지를 줍니다.",
 		"이 행위는 0.25초 간격으로 $[COUNT]번 반복합니다. $[COOLDOWN]"})
+@Lite
 public class Rune extends CokesAbility implements ActiveHandler {
 	public static final Config<Integer> COUNT = Config.of(Rune.class, "repeat-count", 7, FunctionalInterfaces.positive());
 	public static final Config<Integer> COOLDOWN = Config.of(Rune.class, "cooldown", 60, FunctionalInterfaces.positive(), FunctionalInterfaces.COOLDOWN);

@@ -60,6 +60,7 @@ public class Roulette implements ListenerModule {
     public static List<Participant> getParticipantsWithoutEliminater() {
         ArrayList<Participant> others = new ArrayList<>();
         for (Participant check : GameManager.getGame().getParticipants()) {
+            if (!check.getPlayer().isOnline()) continue;
             if (check.getGame().hasModule(DeathManager.class)) {
                 if (check.getGame().getModule(DeathManager.class).isExcluded(check.getPlayer())) {
                     continue;
@@ -73,6 +74,7 @@ public class Roulette implements ListenerModule {
     public static List<Participant> getParticipantsWithoutEliminater(Participant... exception) {
         ArrayList<Participant> others = new ArrayList<>();
         for (Participant check : GameManager.getGame().getParticipants()) {
+            if (!check.getPlayer().isOnline()) continue;
             if (check.getGame().hasModule(DeathManager.class)) {
                 if (check.getGame().getModule(DeathManager.class).isExcluded(check.getPlayer())) {
                     continue;

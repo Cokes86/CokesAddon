@@ -1,9 +1,13 @@
 package com.cokes86.cokesaddon.ability;
 
+import com.cokes86.cokesaddon.CokesAddon;
+import com.cokes86.cokesaddon.ability.decorate.Lite;
 import com.cokes86.cokesaddon.ability.list.*;
 import com.cokes86.cokesaddon.ability.test.*;
+import daybreak.abilitywar.AbilityWar;
 import daybreak.abilitywar.ability.AbilityFactory;
 import daybreak.abilitywar.ability.AbilityManifest;
+import daybreak.abilitywar.game.list.lite.LiteAbilities;
 import daybreak.abilitywar.game.manager.AbilityList;
 import daybreak.abilitywar.utils.annotations.Beta;
 
@@ -17,8 +21,6 @@ public class AddonAbilityFactory {
 	protected static final Map<String, Class<? extends CokesAbility>> test_abilities = new HashMap<>();
 
 	static {
-		registerTestAbility(Test.class);
-
 		registerAbility(Seth.class);
 		registerAbility(Ovisni.class);
 		registerAbility(Resurrection.class);
@@ -94,14 +96,23 @@ public class AddonAbilityFactory {
 
 		//2.0.0
 		registerTestAbility(MorningStar.class);
+
+		//test
 		registerTestAbility(Reinforce.class);
+		registerTestAbility(Test.class);
 	}
 
 	public static void registerAbility(Class<? extends CokesAbility> clazz) {
 		if (!abilities.containsValue(clazz)) {
 			AbilityFactory.registerAbility(clazz);
 			if (AbilityFactory.isRegistered(clazz)) {
-				AbilityList.registerAbility(clazz);
+				Lite lite = clazz.getAnnotation(Lite.class);
+				if (lite == null) {
+					AbilityList.registerAbility(clazz);
+				} else if (CokesAddon.getVersionCheck(AbilityWar.getPlugin().getDescription().getVersion(), "3.3.6")) {
+					if (!lite.onlyLite()) AbilityList.registerAbility(clazz);
+					LiteAbilities.registerAbility(clazz);
+				}
 				AbilityManifest am = clazz.getAnnotation(AbilityManifest.class);
 				if (clazz.getAnnotation(Beta.class) == null) abilities.put(am.name(), clazz);
 			} else {
