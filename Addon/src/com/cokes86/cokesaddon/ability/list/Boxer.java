@@ -196,7 +196,7 @@ public class Boxer extends CokesAbility implements TargetHandler {
                     .start();
         }
 
-        if (e.getEntity().equals(getPlayer()) && getGame().isParticipating(e.getDamager().getUniqueId())) {
+        if (e.getDamager() != null && e.getEntity().equals(getPlayer()) && getGame().isParticipating(e.getDamager().getUniqueId())) {
             thorn = (float) e.getFinalDamage();
             if (skillTimer.isRunning() && skillTimer.ducking) {
                 e.setDamage(e.getDamage() * (1 - DUCKING_DEFENCE_PERCENTAGE.getValue() / 100.0));

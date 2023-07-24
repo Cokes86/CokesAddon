@@ -233,6 +233,7 @@ public class Roulette implements ListenerModule {
                     }
 
                     List<Participant> list = getParticipantsWithoutEliminater();
+                    if (list.size()<1) return;
                     Collections.shuffle(list);
                     Participant main = list.get(0);
 

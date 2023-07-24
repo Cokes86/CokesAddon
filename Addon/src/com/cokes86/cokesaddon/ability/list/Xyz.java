@@ -33,7 +33,7 @@ import java.util.List;
 		"게임 중 1회에 한하여 철괴 우클릭 시",
 		"주변 $[RANGE]블럭 이내 플레이어는 자신에게 이동합니다.",
 		"이후 자신이 사망할 때 까지 이동된 플레이어는",
-		"$[DOT_DAMAGE_PERIOD]초마다 $[DOT_DAMAGE]의 관통대미지를 받는",
+		"$[DOT_DAMAGE_PERIOD]마다 $[DOT_DAMAGE]의 관통대미지를 받는",
 		"§5저주§f를 부여받습니다."
 })
 @Lite

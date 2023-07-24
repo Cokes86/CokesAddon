@@ -62,7 +62,7 @@ public class FunctionalInterfaces {
     }
 
     public static <T extends Number> Function<T, String> tickToSecond() {
-        return a -> String.valueOf(a.doubleValue() / 20.0);
+        return a -> (a.doubleValue() / 20.0) +"초";
     }
 
     /**

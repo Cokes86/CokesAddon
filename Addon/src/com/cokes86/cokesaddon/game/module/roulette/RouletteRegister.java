@@ -44,9 +44,9 @@ public class RouletteRegister {
         registerRouletteEffect(Teleport.class);
         registerRouletteEffect(ShowRank.class);
         registerRouletteEffect(ShowSpecies.class);
-        registerRouletteEffect(NoticeFirstName.class);
-        registerRouletteEffect(NoticeLastName.class);
-        registerRouletteEffect(Location.class);
+        registerRouletteEffect(ShowFirstName.class);
+        registerRouletteEffect(ShowLastName.class);
+        registerRouletteEffect(ShowLocation.class);
         registerRouletteEffect(HealthRegain.class);
         registerRouletteEffect(HealthDecrease.class);
         registerRouletteEffect(CooldownReset.class);
@@ -65,6 +65,9 @@ public class RouletteRegister {
         registerRouletteEffect(Detection.class);
         registerRouletteEffect(DiceGod.class);
         registerRouletteEffect(Suprise.class);
+
+        //2.1.0
+        registerRouletteEffect(Incarceration.class);
     }
 
     public static void registerRouletteEffect(Class<? extends RouletteEffect> effect) {

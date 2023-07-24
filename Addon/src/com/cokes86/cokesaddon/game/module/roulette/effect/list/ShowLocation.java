@@ -10,7 +10,7 @@ import com.cokes86.cokesaddon.game.module.roulette.RouletteManifest;
 import daybreak.abilitywar.game.AbstractGame.Participant;
 
 @RouletteManifest(name = "위치 공개")
-public class Location extends RouletteSingleEffect {
+public class ShowLocation extends RouletteSingleEffect {
 
     @Override
     public void effect(Participant participant) {

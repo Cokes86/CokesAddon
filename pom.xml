@@ -9,7 +9,7 @@
 	<packaging>pom</packaging>
 
 	<modules>
-		<module>Addon</module>
+		<module>compatibility/RainStar</module>
 		<module>compatibility/v1_12_R1</module>
 		<module>compatibility/v1_13_R1</module>
 		<module>compatibility/v1_13_R2</module>
@@ -20,8 +20,9 @@
 		<module>compatibility/v1_16_R3</module>
         <module>compatibility/v1_17_R1</module>
 		<module>compatibility/v1_19_R1</module>
+		<module>Addon</module>
 		<module>Jar</module>
-    </modules>
+	</modules>
 
 	<name>CokesAddon</name>
 
@@ -30,7 +31,7 @@
 		<encoding>UTF-8</encoding>
 		<maven.compiler.target>1.8</maven.compiler.target>
 		<maven.compiler.source>1.8</maven.compiler.source>
-		<bukkit-api-version>1.16.5-R0.1-SNAPSHOT</bukkit-api-version>
+		<bukkit-api-version>1.19.2-R0.1-SNAPSHOT</bukkit-api-version>
 		<abilitywar-version>3.3.6</abilitywar-version>
 		<addon-groupId>com.cokes86</addon-groupId>
 		<jdk.version>8</jdk.version>

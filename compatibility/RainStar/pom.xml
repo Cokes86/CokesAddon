@@ -3,28 +3,25 @@
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <parent>
-        <groupId>com.cokes86</groupId>
         <artifactId>CokesAddon</artifactId>
+        <groupId>com.cokes86</groupId>
         <version>${revision}</version>
+        <relativePath>../../pom.xml</relativePath>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
-    <artifactId>Addon</artifactId>
-    <version>${revision}</version>
-    
-    <repositories>
-    	<repository>
-			<id>in-project</id>
-    		<name>custom jars</name>
-    		<url>file://lib</url>
-		</repository>
-    </repositories>
+    <artifactId>RainStar</artifactId>
+
+    <properties>
+        <maven.compiler.source>8</maven.compiler.source>
+        <maven.compiler.target>8</maven.compiler.target>
+    </properties>
 
     <dependencies>
         <dependency>
             <groupId>org.bukkit</groupId>
             <artifactId>craftbukkit</artifactId>
-            <version>${bukkit-api-version}</version>
+            <version>1.12.2-R0.1-SNAPSHOT</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
@@ -34,10 +31,21 @@
             <scope>provided</scope>
         </dependency>
         <dependency>
+            <groupId>org.rainstar</groupId>
+            <artifactId>RainStarAddon</artifactId>
+            <version>1.9.6</version>
+            <scope>compile</scope>
+        </dependency>
+        <dependency>
             <groupId>org.jetbrains</groupId>
             <artifactId>annotations</artifactId>
             <version>LATEST</version>
             <scope>compile</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.cokes86</groupId>
+            <artifactId>Addon</artifactId>
+            <version>${revision}</version>
         </dependency>
     </dependencies>
 
