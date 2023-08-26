@@ -6,6 +6,7 @@ import com.cokes86.cokesaddon.util.FunctionalInterfaces;
 import daybreak.abilitywar.ability.AbilityBase;
 import daybreak.abilitywar.config.ability.AbilitySettings;
 import daybreak.abilitywar.config.ability.AbilitySettings.SettingObject;
+import daybreak.abilitywar.game.list.murdermystery.ability.AbstractJob;
 
 import java.util.function.Function;
 import java.util.function.Predicate;
@@ -15,12 +16,15 @@ public class Config<T> extends SettingObject<T> {
     private final Function<T, String> function;
     private static final AbilitySettings abilitySettings = new AbilitySettings(CokesAddon.getAddonFile("CokesAbility.yml"));
     private static final AbilitySettings synergySettings = new AbilitySettings(CokesAddon.getAddonFile("CokesSynergy.yml"));
+    private static final AbilitySettings mysterySettings = new AbilitySettings(CokesAddon.getAddonFile("CokesMurderMystery.yml"));
 
     private static AbilitySettings getSettings(Class<? extends AbilityBase> aClass) {
         if (CokesAbility.class.isAssignableFrom(aClass)) {
             return abilitySettings;
         } else if (CokesSynergy.class.isAssignableFrom(aClass)) {
             return synergySettings;
+        } else if (AbstractJob.class.isAssignableFrom(aClass)) {
+            return mysterySettings;
         }
         return AbilityBase.abilitySettings;
     }

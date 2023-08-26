@@ -140,7 +140,7 @@ public class Reincarnation extends CokesAbility {
 		}
 	}
 
-	@SubscribeEvent(priority = 9999, eventPriority = EventPriority.MONITOR)
+	@SubscribeEvent(priority = 9999, eventPriority = EventPriority.MONITOR, ignoreCancelled = true)
 	public void onEntityDamage2(CEntityDamageEvent e) {
 		Entity damager = CokesUtil.getDamager(e.getDamager());
 

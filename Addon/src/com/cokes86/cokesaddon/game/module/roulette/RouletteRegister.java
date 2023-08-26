@@ -68,6 +68,7 @@ public class RouletteRegister {
 
         //2.1.0
         registerRouletteEffect(Incarceration.class);
+        registerRouletteEffect(RandomEffect.class);
     }
 
     public static void registerRouletteEffect(Class<? extends RouletteEffect> effect) {

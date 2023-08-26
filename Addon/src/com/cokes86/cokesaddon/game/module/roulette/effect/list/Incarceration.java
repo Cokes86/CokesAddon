@@ -19,7 +19,7 @@ import org.bukkit.event.player.PlayerMoveEvent;
 
 import java.util.Objects;
 
-@RouletteManifest(name = "10초간 10블럭 이내 감금", defaultPriority = 2)
+@RouletteManifest(name = "10초간 10블럭 이내에 감금", defaultPriority = 2)
 public class Incarceration extends RouletteTimerEffect implements Listener {
     private Location center;
     private Participant participant;

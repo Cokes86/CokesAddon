@@ -27,11 +27,11 @@
 	<name>CokesAddon</name>
 
 	<properties>
-		<revision>2.0.6</revision>
+		<revision>2.1.0</revision>
 		<encoding>UTF-8</encoding>
 		<maven.compiler.target>1.8</maven.compiler.target>
 		<maven.compiler.source>1.8</maven.compiler.source>
-		<bukkit-api-version>1.19.2-R0.1-SNAPSHOT</bukkit-api-version>
+		<bukkit-api-version>1.12.2-R0.1-SNAPSHOT</bukkit-api-version>
 		<abilitywar-version>3.3.6</abilitywar-version>
 		<addon-groupId>com.cokes86</addon-groupId>
 		<jdk.version>8</jdk.version>

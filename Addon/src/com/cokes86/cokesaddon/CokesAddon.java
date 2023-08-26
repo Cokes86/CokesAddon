@@ -2,6 +2,7 @@ package com.cokes86.cokesaddon;
 
 import com.cokes86.cokesaddon.ability.AddonAbilityFactory;
 import com.cokes86.cokesaddon.ability.Config;
+import com.cokes86.cokesaddon.ability.murdermystery.CokesMurderMysteryFactory;
 import com.cokes86.cokesaddon.ability.synergy.AddonSynergyFactory;
 import com.cokes86.cokesaddon.command.CokesCommand;
 import com.cokes86.cokesaddon.effect.AddonEffectRegistry;
@@ -66,6 +67,9 @@ public class CokesAddon extends Addon implements Listener {
 		//Load Game Mode
 		GameFactory.registerMode(DisguiseParty.class);  // 변장파티
 		GameFactory.registerMode(TailCatch.class);  // 꼬리잡기
+
+		//register Murder
+		new CokesMurderMysteryFactory();
 
 		//Register Event
 		Bukkit.getPluginManager().registerEvents(this, getPlugin());
