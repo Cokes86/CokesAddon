@@ -1,6 +1,7 @@
 package com.cokes86.cokesaddon.ability.murdermystery.innocent;
 
 import com.cokes86.cokesaddon.ability.Config;
+import daybreak.abilitywar.AbilityWar;
 import daybreak.abilitywar.ability.AbilityManifest;
 import daybreak.abilitywar.ability.AbilityManifest.Rank;
 import daybreak.abilitywar.ability.AbilityManifest.Species;
@@ -8,10 +9,13 @@ import daybreak.abilitywar.ability.SubscribeEvent;
 import daybreak.abilitywar.game.AbstractGame.Participant;
 import daybreak.abilitywar.game.list.murdermystery.Items;
 import daybreak.abilitywar.game.list.murdermystery.MurderMystery;
+import daybreak.abilitywar.game.list.murdermystery.MurderMystery.ArrowKillEvent;
 import daybreak.abilitywar.game.list.murdermystery.ability.AbstractInnocent;
+import daybreak.abilitywar.game.list.murdermystery.ability.AbstractMurderer.MurderEvent;
 import daybreak.abilitywar.utils.base.concurrent.TimeUnit;
 import daybreak.abilitywar.utils.base.math.VectorUtil;
 import daybreak.abilitywar.utils.base.minecraft.nms.NMS;
+import daybreak.abilitywar.utils.library.PotionEffects;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.entity.Entity;
@@ -22,21 +26,30 @@ import org.bukkit.event.block.Action;
 import org.bukkit.event.entity.EntityEvent;
 import org.bukkit.event.player.*;
 import org.bukkit.event.player.PlayerTeleportEvent.TeleportCause;
+import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.util.Vector;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.function.Predicate;
 
 @AbilityManifest(name = "시민: 택시기사", rank = Rank.SPECIAL, species = Species.HUMAN, explain = {
-        "금 좌클릭으로 금 8개를 소모해 활과 화살을 얻을 수 있습니다.",
-        "금 우클릭으로 금 10개를 소모해 5블럭 이내 플레이어를",
-        "자신의 손 위로 태웁니다. $[COOLDOWN]",
-        "$[DURATION]간, 혹은 그 전에 다시 우클릭하는 것으로 내릴 수 있습니다.",
-        "사람을 태우고 있는 동안, 아이템을 바꿀 수 없습니다."
+        "항상 신속1 효과를 받습니다.",
+        "금 좌클릭으로 금 $[ARROW_COST]개를 소모해 활과 화살을 얻을 수 있습니다.",
+        "[택시] 금 우클릭으로 금 $[TAXI_COST]개를 소모해 $[RANGE]블럭 이내 플레이어를",
+        "  $[DURATION]간 신속4와 함께 자신의 손 위로 태웁니다. $[COOLDOWN]",
+        "  중도에 다시 금 우클릭으로 멈출 수 있으며",
+        "  지속동안 자신과 태워진 플레이어는 무적판정을 받습니다.",
+        "  이 동안 본인은 아이템을 바꿀 수 없습니다.",
+        "[부스팅] 금 F키로 10개를 소모해 [택시]로",
+        "  태운 플레이어 수 * 4초간 신속 5를 얻습니다.",
+        "  사용 시 [택시]로 태운 플레이어 수는 리셋됩니다."
 })
 public class TaxiDriver extends AbstractInnocent {
     private static final Config<Integer> COOLDOWN = Config.cooldown(TaxiDriver.class, "cooldown", 10);
     private static final Config<Integer> DURATION = Config.time(TaxiDriver.class, "duration", 5);
+    private static final Config<Integer> ARROW_COST = Config.positive(TaxiDriver.class, "arrow-cost", 8);
+    private static final Config<Integer> TAXI_COST = Config.positive(TaxiDriver.class, "taxi-cost", 5);
+    private static final Config<Integer> RANGE = Config.positive(TaxiDriver.class, "range", 5);
 
     private Entity target = null;
 
@@ -72,6 +85,7 @@ public class TaxiDriver extends AbstractInnocent {
             teleportLocation.add(direction.clone().multiply(-0.5));
             teleportLocation.add(VectorUtil.rotateAroundAxisY(direction.clone(), 90).multiply(0.65));
             target.teleport(teleportLocation, TeleportCause.PLUGIN);
+            PotionEffects.SPEED.addPotionEffect(getPlayer(), 25, 3, true);
             if (target instanceof Player) {
                 final Player targetPlayer = (Player) target;
                 targetPlayer.setGliding(true);
@@ -95,6 +109,17 @@ public class TaxiDriver extends AbstractInnocent {
                 target.setGravity(true);
                 Bukkit.getPluginManager().callEvent(new TaxiEndEvent(target));
                 target = null;
+            }
+        }
+    }.setPeriod(TimeUnit.TICKS, 1);
+
+    boolean boosting = false;
+    private final AbilityTimer passive = new AbilityTimer() {
+        @Override
+        protected void run(int count) {
+            if (!skill.isRunning()) {
+                if (!boosting) PotionEffects.SPEED.addPotionEffect(getPlayer(), 25, 0, true);
+                else PotionEffects.SPEED.addPotionEffect(getPlayer(), 25, 4, true);
             }
         }
     }.setPeriod(TimeUnit.TICKS, 1);
@@ -137,6 +162,62 @@ public class TaxiDriver extends AbstractInnocent {
         }
     }
 
+    @SubscribeEvent(ignoreCancelled = true)
+    public void onMurder(MurderEvent e) {
+        if (skill.isRunning()) {
+            if (e.getTarget().equals(getParticipant()) || e.getTarget().getPlayer().equals(target)) {
+                e.setCancelled(true);
+                new BukkitRunnable() {
+                    @Override
+                    public void run() {
+                        NMS.broadcastEntityEffect(e.getTarget().getPlayer(), (byte) 35);
+                    }
+                }.runTaskLater(AbilityWar.getPlugin(), 3L);
+            }
+        }
+    }
+
+    @SubscribeEvent(ignoreCancelled = true)
+    public void onArrowKill(ArrowKillEvent e) {
+        if (skill.isRunning()) {
+            if (e.getTarget().equals(getParticipant()) || e.getTarget().getPlayer().equals(target)) {
+                e.setCancelled(true);
+                new BukkitRunnable() {
+                    @Override
+                    public void run() {
+                        NMS.broadcastEntityEffect(e.getTarget().getPlayer(), (byte) 35);
+                    }
+                }.runTaskLater(AbilityWar.getPlugin(), 3L);
+            }
+        }
+    }
+
+    int taxing = 0;
+
+    @SubscribeEvent(onlyRelevant = true)
+    public void onPlayerSwapHandItems(PlayerSwapHandItemsEvent e) {
+        final MurderMystery murderMystery = (MurderMystery) getGame();
+        if (Items.isGold(e.getOffHandItem()) && murderMystery.consumeGold(getParticipant(), 10)) {
+            e.setCancelled(true);
+            new AbilityTimer(4 * taxing) {
+                @Override
+                protected void onStart() {
+                    boosting = true;
+                }
+
+                @Override
+                protected void onEnd() {
+                    boosting = false;
+                }
+
+                @Override
+                protected void onSilentEnd() {
+                    boosting = false;
+                }
+            }.start();
+        }
+    }
+
     @Override
     protected void onUpdate(Update update) {
         super.onUpdate(update);
@@ -152,6 +233,7 @@ public class TaxiDriver extends AbstractInnocent {
                     NMS.clearTitle(getPlayer());
                 }
             }.setInitialDelay(TimeUnit.SECONDS, 5).start();
+            passive.start();
         }
     }
 
@@ -162,14 +244,15 @@ public class TaxiDriver extends AbstractInnocent {
         final MurderMystery murderMystery = (MurderMystery) getGame();
         long current = System.currentTimeMillis();
         if (predicate.test(e.getRightClicked()) && e.getPlayer().equals(getPlayer()) && Items.isGold(getPlayer().getInventory().getItemInMainHand()) && !skill.isRunning() && !cooldown.isCooldown() && current - latest >= 250) {
-            if (e.getRightClicked().getLocation().distanceSquared(e.getPlayer().getLocation()) <= 25) {
+            if (e.getRightClicked().getLocation().distanceSquared(e.getPlayer().getLocation()) <= RANGE.getValue() * RANGE.getValue()) {
                 TaxiStartEvent startEvent = new TaxiStartEvent(e.getRightClicked());
                 Bukkit.getPluginManager().callEvent(startEvent);
-                if (!startEvent.isCancelled()  && murderMystery.consumeGold(getParticipant(), 10)) {
+                if (!startEvent.isCancelled()  && murderMystery.consumeGold(getParticipant(), TAXI_COST.getValue())) {
                     this.target = e.getRightClicked();
                     skill.start();
                     e.setCancelled(true);
                     latest = current;
+                    taxing++;
                 } else {
                     getPlayer().sendMessage(String.valueOf(startEvent.cancelMessage));
                 }
@@ -179,21 +262,23 @@ public class TaxiDriver extends AbstractInnocent {
 
     @SubscribeEvent(onlyRelevant = true)
     public void onInteract(PlayerInteractEvent e) {
-        if (e.getAction() == Action.RIGHT_CLICK_AIR || e.getAction() == Action.RIGHT_CLICK_BLOCK) {
-            final MurderMystery murderMystery = (MurderMystery) getGame();
-            long current = System.currentTimeMillis();
-            if (skill.isRunning() && current - latest >= 250) {
-                skill.stop(false);
-                latest = current;
-            }
-        } else if (e.getAction() == Action.LEFT_CLICK_AIR || e.getAction() == Action.LEFT_CLICK_BLOCK) {
-            final MurderMystery murderMystery = (MurderMystery) getGame();
-            if (murderMystery.consumeGold(getParticipant(), 8)) {
-                if (!addArrow()) {
-                    murderMystery.addGold(getParticipant());
-                } else {
-                    if (!hasBow()) {
-                        getPlayer().getInventory().setItem(2, Items.NORMAL_BOW.getStack());
+        if (Items.isGold(e.getPlayer().getInventory().getItemInMainHand())) {
+            if (e.getAction() == Action.RIGHT_CLICK_AIR || e.getAction() == Action.RIGHT_CLICK_BLOCK) {
+                final MurderMystery murderMystery = (MurderMystery) getGame();
+                long current = System.currentTimeMillis();
+                if (skill.isRunning() && current - latest >= 250) {
+                    skill.stop(false);
+                    latest = current;
+                }
+            } else if (e.getAction() == Action.LEFT_CLICK_AIR || e.getAction() == Action.LEFT_CLICK_BLOCK) {
+                final MurderMystery murderMystery = (MurderMystery) getGame();
+                if (murderMystery.consumeGold(getParticipant(), ARROW_COST.getValue())) {
+                    if (!addArrow()) {
+                        murderMystery.addGold(getParticipant());
+                    } else {
+                        if (!hasBow()) {
+                            getPlayer().getInventory().setItem(2, Items.NORMAL_BOW.getStack());
+                        }
                     }
                 }
             }

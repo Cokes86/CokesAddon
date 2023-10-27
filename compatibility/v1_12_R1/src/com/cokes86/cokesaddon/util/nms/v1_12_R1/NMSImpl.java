@@ -20,7 +20,10 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.lang.reflect.Field;
-import java.util.*;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
+import java.util.UUID;
 
 public class NMSImpl implements INMS {
     @Override
@@ -78,8 +81,16 @@ public class NMSImpl implements INMS {
     public void changeSkin(Player player, UUID uuid) {
         if (origin.containsKey(uuid)) {
             CraftPlayer cp = (CraftPlayer) player;
+            EntityPlayer playerHandle = ((CraftPlayer) player).getHandle();
+
+            playerHandle.playerConnection.sendPacket(new PacketPlayOutPlayerInfo(
+                    PacketPlayOutPlayerInfo.EnumPlayerInfoAction.REMOVE_PLAYER, playerHandle));
+
             cp.getProfile().getProperties().removeAll("textures");
             cp.getProfile().getProperties().put("textures", origin.get(uuid).getRight());
+
+            playerHandle.playerConnection.sendPacket(new PacketPlayOutPlayerInfo(
+                    PacketPlayOutPlayerInfo.EnumPlayerInfoAction.ADD_PLAYER, playerHandle));
         }
     }
 
@@ -177,16 +188,14 @@ public class NMSImpl implements INMS {
     }
 
     @Override
-    public void reloadPlayerSkin(Player p) {
-        Bukkit.getOnlinePlayers().forEach(pl ->
-                (((CraftPlayer)pl).getHandle()).playerConnection.sendPacket(new PacketPlayOutPlayerInfo(
-                        PacketPlayOutPlayerInfo.EnumPlayerInfoAction.REMOVE_PLAYER, ((CraftPlayer)pl).getHandle())));
-
-        Bukkit.getOnlinePlayers().forEach(pl ->
-                (((CraftPlayer)pl).getHandle()).playerConnection.sendPacket(new PacketPlayOutPlayerInfo(
-                        PacketPlayOutPlayerInfo.EnumPlayerInfoAction.ADD_PLAYER, ((CraftPlayer)pl).getHandle())));
-
-        Bukkit.getOnlinePlayers().forEach(pl -> pl.hidePlayer(AbilityWar.getPlugin(), p));
-        Bukkit.getOnlinePlayers().forEach(pl -> pl.showPlayer(AbilityWar.getPlugin(), p));
+    public void reloadPlayerSkin(Player player) {
+        EntityPlayer playerHandle = ((CraftPlayer) player).getHandle();
+        Bukkit.getOnlinePlayers().stream().filter(p -> p.getUniqueId() != player.getUniqueId()).forEach(p -> {
+            EntityPlayer cp = ((CraftPlayer)p).getHandle();
+            cp.playerConnection.sendPacket(new PacketPlayOutEntityDestroy(player.getEntityId()));
+            cp.playerConnection.sendPacket(new PacketPlayOutNamedEntitySpawn(playerHandle));
+            p.hidePlayer(AbilityWar.getPlugin(), player);
+            p.showPlayer(AbilityWar.getPlugin(), player);
+        });
     }
 }
