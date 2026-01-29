@@ -25,10 +25,8 @@ public class AddonSynergyFactory {
         registerSynergy(Poker.class, Poker.class, RoyalStraightFlush.class);
         registerSynergy(Xyz.class, Xyz.class, TheEnd.class);
         registerSynergy(Stalker.class, Reincarnation.class, LureOfRoses.class);
-        registerSynergy(Revenge.class, Elva.class, RevengeArrow.class);
         registerSynergy(Aris.class, Assassin.class, AirDisintegration.class);
         registerSynergy(Muse.class, Sealer.class, Purgatory.class);
-        registerSynergy(EnchantArrow.class, EnchantArrow.class, ReaperArrow.class);
         registerSynergy(Rune.class, Zeus.class, SlicingMaelstrom.class);
 
         //1.3.0

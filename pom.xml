@@ -11,15 +11,6 @@
 	<modules>
 		<module>compatibility/RainStar</module>
 		<module>compatibility/v1_12_R1</module>
-		<module>compatibility/v1_13_R1</module>
-		<module>compatibility/v1_13_R2</module>
-		<module>compatibility/v1_14_R1</module>
-		<module>compatibility/v1_15_R1</module>
-		<module>compatibility/v1_16_R1</module>
-		<module>compatibility/v1_16_R2</module>
-		<module>compatibility/v1_16_R3</module>
-        <module>compatibility/v1_17_R1</module>
-		<module>compatibility/v1_19_R1</module>
 		<module>Addon</module>
 		<module>Jar</module>
 	</modules>
@@ -27,15 +18,14 @@
 	<name>CokesAddon</name>
 
 	<properties>
-		<revision>2.1.0</revision>
+		<revision>2.1.2</revision>
 		<encoding>UTF-8</encoding>
 		<maven.compiler.target>1.8</maven.compiler.target>
 		<maven.compiler.source>1.8</maven.compiler.source>
 		<bukkit-api-version>1.12.2-R0.1-SNAPSHOT</bukkit-api-version>
-		<abilitywar-version>3.3.6</abilitywar-version>
+		<abilitywar-version>3.4.5</abilitywar-version>
 		<addon-groupId>com.cokes86</addon-groupId>
 		<jdk.version>8</jdk.version>
-		<jdk>C:/coding_module/jdk</jdk>
 	</properties>
 
 	<dependencies>

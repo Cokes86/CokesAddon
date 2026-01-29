@@ -21,12 +21,12 @@ import java.util.List;
 })
 @Lite
 public class Ain extends CokesAbility {
-    private static final Config<Integer> RANGE = Config.of(Ain.class, "range", 5, FunctionalInterfaces.positive(),
-            "# 망각 지대 범위", "# 기본값: 5 (블럭)");
-    private static final Config<Integer> INCREASE = Config.of(Ain.class, "increase", 1, FunctionalInterfaces.positive(), FunctionalInterfaces.TIME,
-            "# 망각 지대 상대방 쿨타임 증가량", "# 기본값: 1 (초)");
-    private static final Config<Integer> PERIOD = Config.of(Ain.class, "period", 3, FunctionalInterfaces.positive(), FunctionalInterfaces.TIME,
-            "# 망각 지대 주기", "# 기본값: 3 (초)");
+    private static final Config<Integer> RANGE = Config.of(Ain.class, "range", 15, FunctionalInterfaces.positive(),
+            "# 망각 지대 범위", "# 기본값: 15 (블럭)");
+    private static final Config<Integer> INCREASE = Config.of(Ain.class, "increase", 2, FunctionalInterfaces.positive(), FunctionalInterfaces.TIME,
+            "# 망각 지대 상대방 쿨타임 증가량", "# 기본값: 2 (초)");
+    private static final Config<Integer> PERIOD = Config.of(Ain.class, "period", 1, FunctionalInterfaces.positive(), FunctionalInterfaces.TIME,
+            "# 망각 지대 주기", "# 기본값: 1 (초)");
 
     private final PlaceOfOblivion passive = new PlaceOfOblivion();
 

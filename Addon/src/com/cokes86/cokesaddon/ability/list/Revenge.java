@@ -1,5 +1,18 @@
 package com.cokes86.cokesaddon.ability.list;
 
+import java.text.DecimalFormat;
+import java.util.HashMap;
+
+import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
+import org.bukkit.entity.Entity;
+import org.bukkit.entity.Player;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.HandlerList;
+import org.bukkit.event.Listener;
+import org.bukkit.event.entity.EntityDamageEvent;
+import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
+
 import com.cokes86.cokesaddon.ability.CokesAbility;
 import com.cokes86.cokesaddon.ability.Config;
 import com.cokes86.cokesaddon.ability.decorate.Lite;
@@ -17,19 +30,6 @@ import daybreak.abilitywar.game.AbstractGame.Participant;
 import daybreak.abilitywar.game.AbstractGame.Participant.ActionbarNotification.ActionbarChannel;
 import daybreak.abilitywar.utils.base.concurrent.TimeUnit;
 import daybreak.abilitywar.utils.base.minecraft.damage.Damages;
-
-import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
-import org.bukkit.entity.Entity;
-import org.bukkit.entity.Player;
-import org.bukkit.event.EventHandler;
-import org.bukkit.event.HandlerList;
-import org.bukkit.event.Listener;
-import org.bukkit.event.entity.EntityDamageEvent;
-import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
-
-import java.text.DecimalFormat;
-import java.util.HashMap;
 
 @AbilityManifest(name = "복수", rank = Rank.A, species = Species.HUMAN, explain = {
 		"상대방을 공격할 시 최근에 플레이어에게 받았던 대미지의 $[PERCENTAGE]% 만큼의",
@@ -57,7 +57,7 @@ public class Revenge extends CokesAbility {
 	public void onEntityDamage(CEntityDamageEvent e) {
 		if (e.getDamager() == null) return;
 		Entity damager = CokesUtil.getDamager(e.getDamager());
-		if (e.getEntity().equals(getPlayer()) && damager instanceof Player) {
+		if (e.getEntity().equals(getPlayer()) && damager instanceof Player && !damager.equals(getPlayer())) {
 			magicfixed_damage = e.getFinalDamage() * PERCENTAGE.getValue() / 100.0;
 			ac.update(ChatColor.BLUE + " 고정 대미지 : " + df.format(magicfixed_damage));
 		} else {

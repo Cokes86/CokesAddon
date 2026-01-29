@@ -25,13 +25,13 @@
             <scope>provided</scope>
         </dependency>
         <dependency>
-            <groupId>daybreak.abilitywar</groupId>
+            <groupId>local.lib</groupId>
             <artifactId>AbilityWar</artifactId>
             <version>${abilitywar-version}</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
-            <groupId>org.rainstar</groupId>
+            <groupId>local.lib</groupId>
             <artifactId>RainStarAddon</artifactId>
             <version>1.9.6</version>
             <scope>compile</scope>
@@ -39,7 +39,7 @@
         <dependency>
             <groupId>org.jetbrains</groupId>
             <artifactId>annotations</artifactId>
-            <version>LATEST</version>
+            <version>24.0.1</version>
             <scope>compile</scope>
         </dependency>
         <dependency>

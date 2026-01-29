@@ -40,7 +40,7 @@ import java.util.function.Predicate;
 		"해당 추가화살은 인벤토리의 화살 1개를 소비하여 발사합니다.",
 		"추가 화살은 블럭에 닿거나 플레이어가 공격을 받을 시 사라집니다."})
 public class RevengeArrow extends CokesSynergy {
-	private static final Config<Double> multiply = Config.of(RevengeArrow.class, "배율", 1.0, FunctionalInterfaces.positive());
+	private static final Config<Double> multiply = Config.of(RevengeArrow.class, "배율", 2.2, FunctionalInterfaces.positive());
 	private final Predicate<Entity> predicate = entity -> {
 		if (entity.equals(getPlayer())) return false;
 		if (entity instanceof Player) {

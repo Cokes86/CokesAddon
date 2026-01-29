@@ -34,7 +34,7 @@ import org.bukkit.util.Vector;
 import java.util.ArrayList;
 import java.util.List;
 
-@AbilityManifest(name = "케빈", rank = Rank.S, species = Species.HUMAN, explain = {
+@AbilityManifest(name = "케빈", rank = Rank.B, species = Species.HUMAN, explain = {
         "§7철괴 우클릭 §8- §a위치추적기§f: 자신 위치에 반경이 5블럭인 매립형 §a위치추적기§f를 설치합니다. $[COOLDOWN]",
         "  자신을 제외한 플레이어가 §a위치추적기§f를 밟을 시",
         "  $[DURATION]간 그 플레이어의 위치가 전체적으로 공개됩니다.",
@@ -43,9 +43,9 @@ import java.util.List;
         "§7패시브 §8- §c재킹§f: §a위치추적기§f를 밟은 플레이어 수마다 자신이 상대에게 주는 대미지가 $[DAMAGE_INCREMENT] 증가합니다."
 })
 public class Kevin extends CokesAbility implements ActiveHandler {
-    private final Config<Integer> MAX_GPS = Config.of(Kevin.class, "max-gps", 3, FunctionalInterfaces.positive(),
+    private final Config<Integer> MAX_GPS = Config.of(Kevin.class, "max-gps", 5, FunctionalInterfaces.positive(),
             "# 위치추적기의 최대 매립 개수",
-            "# 기본값: 3 (개)");
+            "# 기본값: 5 (개)");
     private final Config<Integer> COOLDOWN = Config.of(Kevin.class, "cooldown", 60, FunctionalInterfaces.positive(), FunctionalInterfaces.COOLDOWN,
             "# 위치추적기 쿨타임",
             "# 기본값: 60 (초)");

@@ -44,7 +44,7 @@ import static org.bukkit.ChatColor.GRAY;
 public class Iris extends CokesAbility implements ActiveHandler {
     private static final Config<Integer> RAINBOW_COOLDOWN = Config.cooldown(Iris.class, "rainbow-cooldown", 5);
     private static final Config<Integer> RAINBOW_RANGE = Config.of(Iris.class, "rainbow-range", 10, FunctionalInterfaces.positive());
-    private static final Config<Double> RAINBOW_DAMAGE = Config.of(Iris.class, "rainbow-damage", 3.0, FunctionalInterfaces.positive());
+    private static final Config<Double> RAINBOW_DAMAGE = Config.of(Iris.class, "rainbow-damage", 4.5, FunctionalInterfaces.positive());
     private static final Config<Integer> NIGHTMARE_DURATION = Config.time(Iris.class, "nightmare-duration", 4);
     private static final Config<Integer> NIGHTMARE_COOLDOWN = Config.cooldown(Iris.class, "nightmare-cooldown", 50);
     private static final Config<Integer> STACK_PREDICATE = Config.of(Iris.class, "nightmare-stack-predicate", 5, FunctionalInterfaces.positive());

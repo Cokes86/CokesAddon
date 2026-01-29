@@ -25,51 +25,6 @@
         </dependency>
         <dependency>
             <groupId>com.cokes86</groupId>
-            <artifactId>v1_13_R1</artifactId>
-            <version>${revision}</version>
-        </dependency>
-        <dependency>
-            <groupId>com.cokes86</groupId>
-            <artifactId>v1_13_R2</artifactId>
-            <version>${revision}</version>
-        </dependency>
-        <dependency>
-            <groupId>com.cokes86</groupId>
-            <artifactId>v1_14_R1</artifactId>
-            <version>${revision}</version>
-        </dependency>
-        <dependency>
-            <groupId>com.cokes86</groupId>
-            <artifactId>v1_15_R1</artifactId>
-            <version>${revision}</version>
-        </dependency>
-        <dependency>
-            <groupId>com.cokes86</groupId>
-            <artifactId>v1_16_R1</artifactId>
-            <version>${revision}</version>
-        </dependency>
-        <dependency>
-            <groupId>com.cokes86</groupId>
-            <artifactId>v1_16_R2</artifactId>
-            <version>${revision}</version>
-        </dependency>
-        <dependency>
-            <groupId>com.cokes86</groupId>
-            <artifactId>v1_16_R3</artifactId>
-            <version>${revision}</version>
-        </dependency>
-        <dependency>
-            <groupId>com.cokes86</groupId>
-            <artifactId>v1_17_R1</artifactId>
-            <version>${revision}</version>
-        </dependency>
-        <dependency>
-            <groupId>com.cokes86</groupId>
-            <artifactId>v1_19_R1</artifactId>
-            <version>${revision}</version>
-        </dependency>
-        <dependency>
-            <groupId>com.cokes86</groupId>
             <artifactId>RainStar</artifactId>
             <version>${revision}</version>
         </dependency>

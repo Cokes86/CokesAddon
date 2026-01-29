@@ -30,9 +30,9 @@ import org.bukkit.entity.Projectile;
 })
 public class OnlyHitYou extends CokesAbility implements ActiveHandler {
     private static final Config<Integer> COOLDOWN = Config.of(OnlyHitYou.class, "쿨타임", 60, FunctionalInterfaces.positive(), FunctionalInterfaces.COOLDOWN);
-    private static final Config<Integer> FIRST_HIT = Config.of(OnlyHitYou.class, "첫번째_타격_배율(%)", 75, FunctionalInterfaces.positive());
+    private static final Config<Integer> FIRST_HIT = Config.of(OnlyHitYou.class, "첫번째_타격_배율(%)", 80, FunctionalInterfaces.positive());
     private static final Config<Integer> SECOND_HIT = Config.of(OnlyHitYou.class, "두번째_타격_배율(%)", 100, FunctionalInterfaces.positive());
-    private static final Config<Integer> THIRD_HIT = Config.of(OnlyHitYou.class, "세번째_타격_배율(%)", 125, FunctionalInterfaces.positive());
+    private static final Config<Integer> THIRD_HIT = Config.of(OnlyHitYou.class, "세번째_타격_배율(%)", 120, FunctionalInterfaces.positive());
     private static final Config<Integer> LOCK_ON = Config.of(OnlyHitYou.class, "록_온_추가_배율(%)", 75, FunctionalInterfaces.positive());
     private static final Config<Integer> COOLDOWN_DECREASE = Config.of(OnlyHitYou.class, "쿨타임_감소_배율(%)", 25, FunctionalInterfaces.positive());
 

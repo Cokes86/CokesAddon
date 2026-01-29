@@ -54,7 +54,7 @@ import java.util.function.Predicate;
         "  드라그노프는 $[DRAGUNOV_RELOAD_TIME]마다 1개씩 준비되며, 최대 $[DRAGUNOV_MAX]개 가질 수 있습니다.",
         "§7철괴 우클릭 §8- §c델타 필드§f: $[DELTA_FIELD_DURATION]간 드라그노프의 대미지가 30% 감소합니다.",
         "  드라그노프 사용 시 범위 $[DELTA_FIELD_RANGE]블럭 이내 랜덤한 5인에게 자동으로 조준되어 발사됩니다.",
-        "  대신, 자신이 받는 대미지가 1.25베 증가합니다. $[DELTA_FIELD_COOLDOWN]",
+        "  대신, 자신이 받는 대미지가 1.25배 증가합니다. $[DELTA_FIELD_COOLDOWN]",
         "§7상태이상 §8- §c장비파괴§f: 갑옷의 방어와 방어 강도를 1 감소시킵니다."
 })
 public class ShrineOfGod extends CokesSynergy implements ActiveHandler {

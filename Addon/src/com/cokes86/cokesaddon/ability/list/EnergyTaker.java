@@ -47,16 +47,16 @@ public class EnergyTaker extends CokesAbility implements TargetHandler {
     "# 인핸스 쿨타임",
     "# 기본값: 30(초)");
 
-    private final Config<Double> MELEE_DAMAGE = Config.of(EnergyTaker.class, "melee-damage", 5.0, FunctionalInterfaces.positive(),
+    private final Config<Double> MELEE_DAMAGE = Config.of(EnergyTaker.class, "melee-damage", 7.0, FunctionalInterfaces.positive(),
     "# 인핸스 중 근거리일 시 대미지",
     "# 기본값: 5.0");
-    private final Config<Double> DISTANCE_DAMAGE = Config.of(EnergyTaker.class, "distance-damage", 7.0, FunctionalInterfaces.positive(),
+    private final Config<Double> DISTANCE_DAMAGE = Config.of(EnergyTaker.class, "distance-damage", 9.0, FunctionalInterfaces.positive(),
     "# 인핸스 중 원거리일 시 대미지",
     "# 기본값: 7.0");
-    private final Config<Double> MAGIC_DAMAGE = Config.of(EnergyTaker.class, "magic-damage", 3.0, FunctionalInterfaces.positive(),
+    private final Config<Double> MAGIC_DAMAGE = Config.of(EnergyTaker.class, "magic-damage", 5.0, FunctionalInterfaces.positive(),
     "# 인핸스 중 마법일 시 대미지",
     "# 기본값: 3.0");
-    private final Config<Double> OTHER_DAMAGE = Config.of(EnergyTaker.class, "other-damage", 6.0, FunctionalInterfaces.positive(),
+    private final Config<Double> OTHER_DAMAGE = Config.of(EnergyTaker.class, "other-damage", 8.0, FunctionalInterfaces.positive(),
     "# 인핸스 중 이외일 시 대미지",
     "# 기본값: 6.0");
 
@@ -66,11 +66,11 @@ public class EnergyTaker extends CokesAbility implements TargetHandler {
 
 
     private final Config<Integer> AOE_RANGE = Config.of(EnergyTaker.class, "aoe-range", 5, FunctionalInterfaces.positive(),
-    "# 인핸스 중 원거리일 시 주변 플레이어에게 줄 대미지",
+    "# 인핸스 중 원거리일 시 주변 플레이어 탐지 범위",
     "# 기본값: 5");
-    private final Config<Double> AOE_DAMAGE = Config.of(EnergyTaker.class, "aoe-damage", 3.5, FunctionalInterfaces.positive(),
+    private final Config<Double> AOE_DAMAGE = Config.of(EnergyTaker.class, "aoe-damage", 5.5, FunctionalInterfaces.positive(),
     "# 인핸스 중 원거리일 시 주변 플레이어에게 줄 대미지",
-    "# 기본값: 3.5");
+    "# 기본값: 5.5");
 
     private final Config<Integer> POTION_DURATION = Config.of(EnergyTaker.class, "potion-duration", 5, FunctionalInterfaces.TIME,
     "# 인핸스 중 마법일 시 포션 효과 지속시간",

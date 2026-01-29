@@ -38,7 +38,7 @@ import java.util.function.Predicate;
 
 @AbilityManifest(name = "코크스", rank = AbilityManifest.Rank.SPECIAL, species = AbilityManifest.Species.SPECIAL, explain = {
         "§7패시브 §8- §a커스터마이징§f: 능력 효과가 자신에게 이롭게 나올 확률이 증가합니다.",
-        "§7패시브 §8- §c랜더마이즈§f: 대미지가 0% ~ 200% 사이로 랜덤하게 조정됩니다.",
+        "§7패시브 §8- §c랜더마이즈§f: 대미지가 0% ~ 180% 사이로 랜덤하게 조정됩니다.",
         "§7철괴 우클릭 §8- §c이펙트 맛 좀 봐라!§f: 무작위 대상에게 무작위 상태이상을",
         "  1 ~ $[EFFECT_DURATION]초(이동계는 1 ~ $[MOVEMENT_DURATION]초) 부여합니다. $[RIGHT_COOL]",
         "  해당 능력에서 특수 상태이상 §4§n디버깅§f이 등장합니다.",
@@ -94,9 +94,9 @@ public class Cokes extends CokesAbility implements ActiveHandler {
     @SubscribeEvent
     public void onEntityDamage(CEntityDamageEvent e) {
         if (e.getDamager() != null && e.getDamager().equals(getPlayer())) {
-            double temp = new Random().nextDouble() * 2;
+            double temp = new Random().nextDouble() * 1.8;
             if (temp < 1 && debugDamage < 1) {
-                temp = new Random().nextDouble() * 2;
+                temp = new Random().nextDouble() * 1.8;
             }
             debugDamage = temp;
             e.setDamage(e.getDamage() * debugDamage);
@@ -140,7 +140,8 @@ public class Cokes extends CokesAbility implements ActiveHandler {
             }
 
             int second = random.nextInt(EFFECT_DURATION.getValue())+1;
-            if (registration.getEffectType().contains(EffectType.MOVEMENT_RESTRICTION) || registration.getEffectType().contains(EffectType.MOVEMENT_INTERRUPT)) {
+            if (registration.getEffectType().contains(EffectType.MOVEMENT_RESTRICTION) || registration.getEffectType().contains(EffectType.MOVEMENT_INTERRUPT)
+                    || registration.getEffectType().contains(EffectType.SIGHT_RESTRICTION) || registration.getEffectType().contains(EffectType.SIGHT_CONTROL)) {
                 second = random.nextInt(MOVEMENT_DURATION.getValue())+1;
             }
             if (registration.isTypeOf(Debuging.class)) {
@@ -149,7 +150,8 @@ public class Cokes extends CokesAbility implements ActiveHandler {
 
             AbstractGame.Effect e = registration.apply(participant, TimeUnit.SECONDS, second);
             if (e == null) {
-                return ActiveSkill(material, clickType);
+                getPlayer().sendMessage("§c[!] 오류가 발생하여 이펙트를 부여하지 못했습니다. 다시 시도해주세요.");
+                return false;
             }
             getPlayer().sendMessage(participant.getPlayer().getName()+"에게 "+registration.getManifest().displayName()+" §f"+second+"초 부여!");
             participant.getPlayer().sendMessage("[§b코크스§f] "+registration.getManifest().displayName()+"§f 효과를 "+second+"초 받습니다!");

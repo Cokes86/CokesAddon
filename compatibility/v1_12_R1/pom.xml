@@ -21,7 +21,7 @@
             <scope>provided</scope>
         </dependency>
         <dependency>
-            <groupId>daybreak.abilitywar</groupId>
+            <groupId>local.lib</groupId>
             <artifactId>AbilityWar</artifactId>
             <version>${abilitywar-version}</version>
             <scope>provided</scope>

@@ -28,7 +28,7 @@ import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.inventory.ItemStack;
 
-@AbilityManifest(name = "물고기", rank = Rank.B, species = Species.ANIMAL, explain = {
+@AbilityManifest(name = "물고기", rank = Rank.C, species = Species.ANIMAL, explain = {
 		"§7능력 활성화 §8- §b철푸덕§f: 능력이 활성화되면 물갈퀴III 인챈트 쿠폰을 획득하며,",
 		"  신발 착용 중 쿠폰을 우클릭하면 인챈트가 부여됩니다.",
 		"§7물 속 §8- §b첨벙첨벙§f: 이동 속도가 빨라지고, 수중 호흡 효과를 얻으며",

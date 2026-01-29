@@ -53,8 +53,8 @@ public class Mir extends CokesAbility implements ActiveHandler {
 	private static final Config<Integer> RANGE_SHADE = Config.of(Mir.class, "범위.셰이드", 12, FunctionalInterfaces.positive());
 	private static final Config<Integer> RANGE_THUNDER = Config.of(Mir.class, "범위.썬더버드", 12, FunctionalInterfaces.positive());
 	private static final Config<Integer> RANGE_GNOME = Config.of(Mir.class, "범위.노움", 15, FunctionalInterfaces.positive());
-	private static final Config<Double> DAMAGE_DECREMENT = Config.of(Mir.class, "노움_대미지감소율(%)", 25d, FunctionalInterfaces.positive());
-	private static final Config<Double> DAMAGE_INCREMENT = Config.of(Mir.class, "썬더버드_딜증가배율(%)", 20d, FunctionalInterfaces.positive());
+	private static final Config<Double> DAMAGE_DECREMENT = Config.of(Mir.class, "노움_대미지감소율(%)", 15d, FunctionalInterfaces.positive());
+	private static final Config<Double> DAMAGE_INCREMENT = Config.of(Mir.class, "썬더버드_딜증가배율(%)", 15d, FunctionalInterfaces.positive());
 
 	private final Predicate<Entity> predicate = entity -> {
 		if (entity.equals(getPlayer())) return false;

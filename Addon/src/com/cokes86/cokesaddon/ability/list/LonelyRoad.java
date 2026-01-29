@@ -29,13 +29,13 @@ import java.util.List;
 })
 @Lite
 public class LonelyRoad extends CokesAbility {
-    private static final Config<Integer> STACK_BLOCK = Config.of(LonelyRoad.class, "stack-block", 125, FunctionalInterfaces.positive(),
+    private static final Config<Integer> STACK_BLOCK = Config.of(LonelyRoad.class, "stack-block", 45, FunctionalInterfaces.positive(),
             "# 대미지가 상승하기 위해 밟아야할 블럭의 수",
-            "# 기본값: 125 (블럭)");
+            "# 기본값: 45 (블럭)");
     private static final Config<Integer> COOLDOWN = Config.of(LonelyRoad.class, "cooldown", 60, FunctionalInterfaces.TIME,
             "# 밟은 블럭이 다시 측정되기위한 대기시간",
             "# 기본값: 60 (초)");
-    private static final Config<Double> DAMAGE = Config.of(LonelyRoad.class, "damage", 1d, FunctionalInterfaces.positive(),
+    private static final Config<Double> DAMAGE = Config.of(LonelyRoad.class, "damage", 0.5d, FunctionalInterfaces.positive(),
             "# 스택 당 증가하는 대미지",
             "# 기본값: 1.0");
     private int stack = 0;
