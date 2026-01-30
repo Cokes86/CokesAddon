@@ -166,7 +166,8 @@ public class Casino extends CokesAbility implements ActiveHandler {
         }
         return false;
     }
-
+    
+    @SubscribeEvent
     public void onEntityDamage(CEntityDamageEvent e) {
         if (e.getEntity().equals(getPlayer()) && e.getCause().equals(EntityDamageEvent.DamageCause.FALL) && effects.get(Effects.IGNORE_FALL)) {
             e.setCancelled(true);
