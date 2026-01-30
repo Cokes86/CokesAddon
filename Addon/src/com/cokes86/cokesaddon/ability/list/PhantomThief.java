@@ -54,12 +54,12 @@ import java.util.stream.Collectors;
 })
 @NotAvailable({AbstractTripleMix.class})
 public class PhantomThief extends CokesAbility implements ActiveHandler {
-    private static final Config<Integer> COOLDOWN = Config.of(PhantomThief.class, "cooldown", 120, FunctionalInterfaces.positive(), FunctionalInterfaces.COOLDOWN,
+    private static final Config<Integer> COOLDOWN = Config.of(PhantomThief.class, "cooldown", 80, FunctionalInterfaces.positive(), FunctionalInterfaces.COOLDOWN,
             "# 팬텀 쇼 쿨타임",
-            "# 기본 값: 120 (초)");
-    private static final Config<Double> DAMAGE = Config.of(PhantomThief.class, "damage", 3.5, FunctionalInterfaces.positive(),
+            "# 기본 값: 80 (초)");
+    private static final Config<Double> DAMAGE = Config.of(PhantomThief.class, "damage", 15.0, FunctionalInterfaces.positive(),
             "# 팬텀 쇼 도중 분신 공격 시 대미지",
-            "# 기본 값: 3.5");
+            "# 기본 값: 15");
 
     private final Cooldown cooldown = new Cooldown(COOLDOWN.getValue());
     private final PhantomShow phantomShow = new PhantomShow();

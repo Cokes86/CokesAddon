@@ -218,7 +218,7 @@ public class ReiBurningSoul extends CokesSynergy implements ActiveHandler {
         @Override
         protected void run(int count) {
             getPlayer().setFireTicks(21);
-            temporary_soul.removeIf(mill -> mill + TEMPORARY_SOUL_DURATION.getValue()*1000 >= System.currentTimeMillis());
+            temporary_soul.removeIf(mill -> mill + TEMPORARY_SOUL_DURATION.getValue()*1000 <= System.currentTimeMillis());
             channel.update("§c버닝 소울: "+soul + "(+ "+temporary_soul.size()+")");
         }
 
