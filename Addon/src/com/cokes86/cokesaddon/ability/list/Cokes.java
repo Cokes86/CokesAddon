@@ -13,6 +13,7 @@ import daybreak.abilitywar.game.AbstractGame;
 import daybreak.abilitywar.game.manager.effect.registry.EffectRegistry;
 import daybreak.abilitywar.game.manager.effect.registry.EffectType;
 import daybreak.abilitywar.game.module.DeathManager;
+import daybreak.abilitywar.game.team.interfaces.Teamable;
 import daybreak.abilitywar.utils.base.concurrent.SimpleTimer.Observer;
 import daybreak.abilitywar.utils.base.concurrent.TimeUnit;
 import daybreak.abilitywar.utils.base.minecraft.nms.NMS;
@@ -38,7 +39,7 @@ import java.util.function.Predicate;
 
 @AbilityManifest(name = "코크스", rank = AbilityManifest.Rank.SPECIAL, species = AbilityManifest.Species.SPECIAL, explain = {
         "§7패시브 §8- §a커스터마이징§f: 능력 효과가 자신에게 이롭게 나올 확률이 증가합니다.",
-        "§7패시브 §8- §c랜더마이즈§f: 대미지가 0% ~ 180% 사이로 랜덤하게 조정됩니다.",
+        "§7패시브 §8- §c랜더마이즈§f: 대미지가 0% ~ $[RANDOMIZE_MAXIMUM]% 사이로 랜덤하게 조정됩니다.",
         "§7철괴 우클릭 §8- §c이펙트 맛 좀 봐라!§f: 무작위 대상에게 무작위 상태이상을",
         "  1 ~ $[EFFECT_DURATION]초(이동계는 1 ~ $[MOVEMENT_DURATION]초) 부여합니다. $[RIGHT_COOL]",
         "  해당 능력에서 특수 상태이상 §4§n디버깅§f이 등장합니다.",
@@ -70,6 +71,10 @@ public class Cokes extends CokesAbility implements ActiveHandler {
             "이펙트 맛 좀 봐라 중 디버깅 상태이상 최대 지속시간",
             "기본값 : 45 (초)");
 
+    private static final Config<Double> RANDOMIZE_MAXIMUM = Config.of(Cokes.class, "randomize-maximum", 180.0,
+            "랜더마이즈 최대 확률",
+            "기본값 : 180 (%%)");
+
     private final Cooldown rightCool = new Cooldown(RIGHT_COOL.getValue(), "이펙트");
     private final Cooldown leftCool = new Cooldown(LEFT_COOL.getValue(), "슬롯머신");
     private final SlotMachineTimer slot = new SlotMachineTimer();
@@ -79,11 +84,17 @@ public class Cokes extends CokesAbility implements ActiveHandler {
     }
 
     private final Predicate<Entity> predicate = entity -> {
+        if (entity == null) return false;
         if (entity instanceof Player) {
-            if (!getGame().isParticipating(entity.getUniqueId())) return false;
-            if (getGame() instanceof DeathManager.Handler) {
-                DeathManager.Handler game = (DeathManager.Handler) getGame();
-                return !game.getDeathManager().isExcluded(entity.getUniqueId());
+            if (!getGame().isParticipating(entity.getUniqueId())
+                    || (getGame() instanceof DeathManager.Handler && ((DeathManager.Handler) getGame()).getDeathManager().isExcluded(entity.getUniqueId()))
+                    || !getGame().getParticipant(entity.getUniqueId()).attributes().TARGETABLE.getValue()) {
+                return false;
+            }
+            if (getGame() instanceof Teamable) {
+                final Teamable teamGame = (Teamable) getGame();
+                final AbstractGame.Participant entityParticipant = teamGame.getParticipant(entity.getUniqueId()), participant = getParticipant();
+                return !teamGame.hasTeam(entityParticipant) || !teamGame.hasTeam(participant) || (!teamGame.getTeam(entityParticipant).equals(teamGame.getTeam(participant)));
             }
         }
         return true;
@@ -94,9 +105,9 @@ public class Cokes extends CokesAbility implements ActiveHandler {
     @SubscribeEvent
     public void onEntityDamage(CEntityDamageEvent e) {
         if (e.getDamager() != null && e.getDamager().equals(getPlayer())) {
-            double temp = new Random().nextDouble() * 1.8;
+            double temp = new Random().nextDouble() * RANDOMIZE_MAXIMUM.getValue()/100.0;
             if (temp < 1 && debugDamage < 1) {
-                temp = new Random().nextDouble() * 1.8;
+                temp = new Random().nextDouble() * RANDOMIZE_MAXIMUM.getValue()/100.0;
             }
             debugDamage = temp;
             e.setDamage(e.getDamage() * debugDamage);

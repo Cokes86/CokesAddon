@@ -62,13 +62,13 @@ public class ShrineOfGod extends CokesSynergy implements ActiveHandler {
     private final Aiming aiming = new Aiming();
     private final ReloadTimer reloadTimer = new ReloadTimer();
 
-    private static final Config<Double> DRAGUNOV_DAMAGE = Config.of(ShrineOfGod.class, "드라그노프_대미지", 7.0, FunctionalInterfaces.positive());
+    private static final Config<Double> DRAGUNOV_DAMAGE = Config.of(ShrineOfGod.class, "드라그노프_대미지", 9.0, FunctionalInterfaces.positive());
     private static final Config<Double> DRAGUNOV_MULTIPLY = Config.of(ShrineOfGod.class, "드라그노프_추가대미지_배율(%)", 50.0, FunctionalInterfaces.positive());
     private static final Config<Integer> DRAGUNOV_RELOAD_TIME = Config.time(ShrineOfGod.class, "드라그노프_장전시간", 10);
     private static final Config<Integer> DRAGUNOV_MAX = Config.of(ShrineOfGod.class, "드라그노프_최대_개수", 5, FunctionalInterfaces.positive());
     private static final Config<Integer> DELTA_FIELD_DURATION = Config.time(ShrineOfGod.class, "델타_필드_지속시간", 15);
     private static final Config<Integer> DELTA_FIELD_COOLDOWN = Config.cooldown(ShrineOfGod.class, "델타_필드_쿨타임", 60);
-    private static final Config<Integer> DELTA_FIELD_RANGE = Config.of(ShrineOfGod.class, "델타_필드_범위", 30, FunctionalInterfaces.positive());
+    private static final Config<Integer> DELTA_FIELD_RANGE = Config.of(ShrineOfGod.class, "델타_필드_범위", 100, FunctionalInterfaces.positive());
 
     private int dragunov_count = DRAGUNOV_MAX.getValue();
 

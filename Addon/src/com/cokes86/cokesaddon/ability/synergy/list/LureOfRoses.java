@@ -1,10 +1,16 @@
 package com.cokes86.cokesaddon.ability.synergy.list;
 
+import java.util.function.Predicate;
+
+import org.bukkit.entity.Entity;
+import org.bukkit.entity.Player;
+
 import com.cokes86.cokesaddon.ability.Config;
-import com.cokes86.cokesaddon.event.CEntityDamageEvent;
 import com.cokes86.cokesaddon.ability.synergy.CokesSynergy;
+import com.cokes86.cokesaddon.event.CEntityDamageEvent;
 import com.cokes86.cokesaddon.util.CokesUtil;
 import com.cokes86.cokesaddon.util.timer.InvincibilityTimer;
+
 import daybreak.abilitywar.ability.AbilityBase;
 import daybreak.abilitywar.ability.AbilityManifest;
 import daybreak.abilitywar.ability.AbilityManifest.Rank;
@@ -13,14 +19,10 @@ import daybreak.abilitywar.ability.SubscribeEvent;
 import daybreak.abilitywar.game.AbstractGame.Participant;
 import daybreak.abilitywar.game.AbstractGame.Participant.ActionbarNotification.ActionbarChannel;
 import daybreak.abilitywar.game.module.DeathManager;
+import daybreak.abilitywar.utils.annotations.Beta;
 import daybreak.abilitywar.utils.base.concurrent.TimeUnit;
 import daybreak.abilitywar.utils.base.math.LocationUtil;
 import daybreak.abilitywar.utils.library.PotionEffects;
-import org.bukkit.entity.Entity;
-import org.bukkit.entity.Player;
-import org.bukkit.entity.Projectile;
-
-import java.util.function.Predicate;
 
 @AbilityManifest(name = "장미의 유혹", rank = Rank.S, species = Species.OTHERS, explain = {
 		"§7패시브 §8- §c가시돋움§f: 상대방을 공격할 시 §d가시 카운터§f를 1씩 올리고,",
@@ -31,6 +33,7 @@ import java.util.function.Predicate;
 		"  블라인드 효과를 준 후 지속시간동안 자신은 무적이 되며,",
 		"  0.5초마다 채력을 1씩 회복합니다. $[COOLDOWN]"
 })
+@Beta
 public class LureOfRoses extends CokesSynergy {
 	private static final Config<Integer> COOLDOWN = Config.cooldown(LureOfRoses.class, "cooldown", 300,
 			"쿨타임 패시브 <유혹> 쿨타임",
@@ -82,14 +85,7 @@ public class LureOfRoses extends CokesSynergy {
 			}
 		}
 
-		if (e.getDamager() == null) return;
-		Entity attacker = e.getDamager();
-		if (attacker instanceof Projectile) {
-			Projectile entity = (Projectile) attacker;
-			if (entity.getShooter() instanceof Entity) {
-				attacker = (Entity) entity.getShooter();
-			}
-		}
+		Entity attacker = CokesUtil.getDamager(e.getDamager());
 		if (attacker.equals(getPlayer()) && e.getEntity() instanceof Player && getGame().getParticipant((Player) e.getEntity()) != null) {
 			setCounter(counter++);
 			e.setDamage(e.getDamage() + Math.min(counter * PRICKLY_MULTIPLY.getValue(), PRICKLY_MAX_DAMAGE.getValue()));

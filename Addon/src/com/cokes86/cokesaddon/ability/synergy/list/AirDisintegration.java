@@ -1,9 +1,23 @@
 package com.cokes86.cokesaddon.ability.synergy.list;
 
+import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.Map;
+import java.util.function.Predicate;
+
+import org.bukkit.ChatColor;
+import org.bukkit.Location;
+import org.bukkit.Material;
+import org.bukkit.entity.Entity;
+import org.bukkit.entity.LivingEntity;
+import org.bukkit.entity.Player;
+import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
+
 import com.cokes86.cokesaddon.ability.Config;
-import com.cokes86.cokesaddon.event.CEntityDamageEvent;
 import com.cokes86.cokesaddon.ability.synergy.CokesSynergy;
+import com.cokes86.cokesaddon.event.CEntityDamageEvent;
 import com.cokes86.cokesaddon.util.FunctionalInterfaces;
+
 import daybreak.abilitywar.ability.AbilityManifest;
 import daybreak.abilitywar.ability.AbilityManifest.Rank;
 import daybreak.abilitywar.ability.AbilityManifest.Species;
@@ -19,28 +33,17 @@ import daybreak.abilitywar.utils.base.concurrent.TimeUnit;
 import daybreak.abilitywar.utils.base.math.LocationUtil;
 import daybreak.abilitywar.utils.base.minecraft.damage.Damages;
 import daybreak.abilitywar.utils.library.SoundLib;
-import org.bukkit.ChatColor;
-import org.bukkit.Location;
-import org.bukkit.Material;
-import org.bukkit.entity.Entity;
-import org.bukkit.entity.LivingEntity;
-import org.bukkit.entity.Player;
-import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
-
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.Map;
-import java.util.function.Predicate;
 
 @AbilityManifest(name = "공중 분해", rank = Rank.A, species = Species.HUMAN, explain = {
 		"5초마다 §d사슬 카운터§f를 1씩 상승하며 최대 8만큼 상승합니다.",
 		"철괴 우클릭시 §d사슬 카운터§f를 전부 소모하여 플레이어를 (§d사슬 카운터§f/2+5)블럭만큼 공중에 고정시킨 후",
-		"3틱마다 고정된 플레이어 중 한명에게 이동하고 누적된 (§d사슬 카운터§f*0.625)만큼의 관통 대미지를 준 후 떨어트립니다. $[cool]",
+		"3틱마다 고정된 플레이어 중 한명에게 이동하고 누적된 (§d사슬 카운터§f*$[MULTIPLIER])만큼의 관통 대미지를 준 후 떨어트립니다. $[cool]",
 		"능력 사용 이후 1회에 한정해 낙하대미지를 받지 않습니다."
 })
 public class AirDisintegration extends CokesSynergy implements ActiveHandler {
 	public static final Config<Integer> range = Config.of(AirDisintegration.class, "범위", 7, FunctionalInterfaces.positive());
 	public static final Config<Integer> cool = Config.of(AirDisintegration.class, "쿨타임", 15, FunctionalInterfaces.COOLDOWN);
+	public static final Config<Double> MULTIPLIER = Config.of(AirDisintegration.class, "대미지_배율", 0.8d, FunctionalInterfaces.positive());
 	private final Predicate<Entity> STRICT_PREDICATE = entity -> {
 		if (entity.equals(getPlayer())) return false;
 		if (entity instanceof Player) {
@@ -99,7 +102,7 @@ public class AirDisintegration extends CokesSynergy implements ActiveHandler {
 					if (count % 3 == 0) {
 						LivingEntity e = entities.remove();
 						getPlayer().teleport(e);
-						Damages.damageFixed(e, getPlayer(), 0.625f*chain);
+						Damages.damageFixed(e, getPlayer(), (float) (MULTIPLIER.getValue() * chain));
 						SoundLib.ENTITY_PLAYER_ATTACK_SWEEP.playSound(getPlayer());
 						SoundLib.ENTITY_EXPERIENCE_ORB_PICKUP.playSound(getPlayer());
 						stun.remove(e);
@@ -121,6 +124,7 @@ public class AirDisintegration extends CokesSynergy implements ActiveHandler {
 		skill.register();
 	}
 
+	@Override
 	public void onUpdate(Update update) {
 		if (update == Update.RESTRICTION_CLEAR) {
 			passive.start();
@@ -131,7 +135,7 @@ public class AirDisintegration extends CokesSynergy implements ActiveHandler {
 	public boolean ActiveSkill(Material arg0, ClickType arg1) {
 		if (arg0.equals(Material.IRON_INGOT) && arg1.equals(ClickType.RIGHT_CLICK) && chain > 0 && !cooldown.isCooldown()) {
 			this.entities = new LinkedList<>(LocationUtil.getNearbyEntities(LivingEntity.class, getPlayer().getLocation(), range.getValue(), range.getValue(), STRICT_PREDICATE));
-			if (entities.size() > 0) {
+			if (!entities.isEmpty()) {
 				skill.start();
 				return true;
 			} else {

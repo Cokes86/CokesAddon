@@ -5,6 +5,7 @@ import com.cokes86.cokesaddon.event.CEntityDamageEvent;
 import com.cokes86.cokesaddon.ability.synergy.CokesSynergy;
 import com.cokes86.cokesaddon.util.FunctionalInterfaces;
 import daybreak.abilitywar.AbilityWar;
+import daybreak.abilitywar.ability.AbilityBase;
 import daybreak.abilitywar.ability.AbilityManifest;
 import daybreak.abilitywar.ability.Materials;
 import daybreak.abilitywar.ability.decorator.ActiveHandler;
@@ -51,7 +52,7 @@ public class CokesSoldier extends CokesSynergy implements ActiveHandler {
     private static final Config<Integer> SALUTE_COOLDOWN = Config.cooldown(CokesSoldier.class, "사단장_쿨타임", 60);
 
     private static final Config<Integer> K2_COOLDOWN = Config.cooldown(CokesSoldier.class, "K2_쿨타임", 10);
-    private static final Config<Double> K2_DAMAGE = Config.of(CokesSoldier.class, "K2_대미지", 5.0, FunctionalInterfaces.positive());
+    private static final Config<Double> K2_DAMAGE = Config.of(CokesSoldier.class, "K2_대미지", 10.0, FunctionalInterfaces.positive());
 
     public CokesSoldier(AbstractGame.Participant participant) {
         super(participant);
@@ -73,8 +74,9 @@ public class CokesSoldier extends CokesSynergy implements ActiveHandler {
 
         else if (material == Material.IRON_INGOT && clickType == ClickType.RIGHT_CLICK && !k2_cooldown.isCooldown()) {
             for (AbstractGame.Participant participant : getGame().getParticipants()) {
-                if (participant.getAbility() instanceof Mix) {
-                    Mix mix = (Mix) participant.getAbility();
+                AbilityBase ability = participant.getAbility();
+                if (ability != null && ability instanceof Mix) {
+                    Mix mix = (Mix) ability;
                     if (mix.getSynergy() != null && mix.getSynergy() instanceof CokesSoldier) {
                         CokesSoldier soldier = (CokesSoldier) mix.getSynergy();
                         if (soldier.isSalute()) {

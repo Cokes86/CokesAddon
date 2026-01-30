@@ -45,20 +45,17 @@ public class Rude extends CokesAbility implements ActiveHandler {
         if (entity.equals(getPlayer())) return false;
         if (entity instanceof Player) {
             if (!getGame().isParticipating(entity.getUniqueId())
-                    || (getGame() instanceof DeathManager.Handler &&
-                    ((DeathManager.Handler) getGame()).getDeathManager().isExcluded(entity.getUniqueId()))
+                    || (getGame() instanceof DeathManager.Handler && ((DeathManager.Handler) getGame()).getDeathManager().isExcluded(entity.getUniqueId()))
                     || !getGame().getParticipant(entity.getUniqueId()).attributes().TARGETABLE.getValue()) {
                 return false;
             }
             if (getGame() instanceof Teamable) {
                 final Teamable teamGame = (Teamable) getGame();
-                final AbstractGame.Participant entityParticipant = teamGame.getParticipant(
-                        entity.getUniqueId()), participant = getParticipant();
-                return !teamGame.hasTeam(entityParticipant) || !teamGame.hasTeam(participant)
-                        || (!teamGame.getTeam(entityParticipant).equals(teamGame.getTeam(participant)));
+                final AbstractGame.Participant entityParticipant = teamGame.getParticipant(entity.getUniqueId()), participant = getParticipant();
+                return !teamGame.hasTeam(entityParticipant) || !teamGame.hasTeam(participant) || (!teamGame.getTeam(entityParticipant).equals(teamGame.getTeam(participant)));
             }
         }
-        return false;
+        return true;
     };
 
     public Rude(AbstractGame.Participant arg0) {

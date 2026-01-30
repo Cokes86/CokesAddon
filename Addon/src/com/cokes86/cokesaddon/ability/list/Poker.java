@@ -2,9 +2,9 @@ package com.cokes86.cokesaddon.ability.list;
 
 import com.cokes86.cokesaddon.ability.CokesAbility;
 import com.cokes86.cokesaddon.ability.Config;
-import com.cokes86.cokesaddon.ability.decorate.Lite;
 import com.cokes86.cokesaddon.event.CEntityDamageEvent;
 import com.cokes86.cokesaddon.util.FunctionalInterfaces;
+
 import daybreak.abilitywar.ability.AbilityManifest;
 import daybreak.abilitywar.ability.SubscribeEvent;
 import daybreak.abilitywar.ability.decorator.ActiveHandler;
@@ -18,15 +18,17 @@ import daybreak.abilitywar.utils.base.concurrent.TimeUnit;
 import daybreak.abilitywar.utils.base.minecraft.damage.Damages;
 import daybreak.abilitywar.utils.library.PotionEffects;
 import daybreak.abilitywar.utils.library.SoundLib;
+
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
-import org.bukkit.entity.Arrow;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 
 import java.util.Arrays;
 import java.util.Random;
 import java.util.function.Predicate;
+
+import com.cokes86.cokesaddon.util.CokesUtil;
 
 @AbilityManifest(name = "포커", rank = AbilityManifest.Rank.B, species = AbilityManifest.Species.HUMAN, explain = {
 		"§7철괴 우클릭 §8- §c드로우§f: 1 ~ 10 사이의 숫자를 3개 뽑습니다.",
@@ -116,10 +118,10 @@ public class Poker extends CokesAbility implements ActiveHandler {
 						break;
 					case "Triple":
 						getPlayer().sendMessage("완벽합니다! §e트리플§f입니다! 자신을 제외한 모든 플레이어에게 " + (result.getRight() * 1.5) + "만큼의 관통 대미지를 줍니다.");
-						for (Participant p : getGame().getParticipants()) {
-							if (p.equals(getParticipant())) continue;
-							if (predicate.test(p.getPlayer())) {
-								Damages.damageFixed(p.getPlayer(), getPlayer(), result.getRight() * 1.5f);
+						for (Participant participant : getGame().getParticipants()) {
+							if (participant.equals(getParticipant())) continue;
+							if (predicate.test(participant.getPlayer())) {
+								Damages.damageFixed(participant.getPlayer(), getPlayer(), result.getRight() * 1.5f);
 							}
 						}
 						Bukkit.broadcastMessage("[§c!§f] 포커가 같은 수 3개를 뽑아 모두에게 대미지를 줍니다!");
@@ -135,15 +137,7 @@ public class Poker extends CokesAbility implements ActiveHandler {
 
 	@SubscribeEvent
 	public void onEntityDamage(CEntityDamageEvent e) {
-		if (e.getDamager() == null) return;
-		Entity damager = e.getDamager();
-		if (damager instanceof Arrow) {
-			Arrow arrow = (Arrow) e.getDamager();
-			if (arrow.getShooter() instanceof Entity) {
-				damager = (Entity) arrow.getShooter();
-			}
-		}
-
+		Entity damager = CokesUtil.getDamager(e.getDamager());
 		if (damager.equals(getPlayer()) && additional > 0) {
 			e.setDamage(e.getDamage() + additional);
 			additional = 0;

@@ -119,7 +119,7 @@ public class Summoner extends CokesAbility implements ActiveHandler {
 				if (p.equals(getParticipant())) continue;
 				if (predicate.test(p.getPlayer())) values.put(p.getPlayer().getName(), p);
 			}
-			if (values.size() == 0) {
+			if (values.isEmpty()) {
 				getPlayer().sendMessage("소환활 플레이어가 존재하지 않습니다.");
 				stop(true);
 			}

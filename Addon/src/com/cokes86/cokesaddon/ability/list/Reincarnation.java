@@ -1,5 +1,13 @@
 package com.cokes86.cokesaddon.ability.list;
 
+import java.util.List;
+
+import org.bukkit.Location;
+import org.bukkit.entity.Entity;
+import org.bukkit.entity.Player;
+import org.bukkit.event.EventPriority;
+import org.bukkit.event.entity.EntityRegainHealthEvent;
+
 import com.cokes86.cokesaddon.ability.CokesAbility;
 import com.cokes86.cokesaddon.ability.Config;
 import com.cokes86.cokesaddon.ability.decorate.Lite;
@@ -7,6 +15,7 @@ import com.cokes86.cokesaddon.event.CEntityDamageEvent;
 import com.cokes86.cokesaddon.util.AttributeUtil;
 import com.cokes86.cokesaddon.util.CokesUtil;
 import com.cokes86.cokesaddon.util.timer.InvincibilityTimer;
+
 import daybreak.abilitywar.ability.AbilityManifest;
 import daybreak.abilitywar.ability.AbilityManifest.Rank;
 import daybreak.abilitywar.ability.AbilityManifest.Species;
@@ -21,13 +30,6 @@ import daybreak.abilitywar.utils.base.minecraft.entity.health.event.PlayerSetHea
 import daybreak.abilitywar.utils.library.ParticleLib;
 import daybreak.abilitywar.utils.library.PotionEffects;
 import daybreak.abilitywar.utils.library.SoundLib;
-import org.bukkit.Location;
-import org.bukkit.entity.Entity;
-import org.bukkit.entity.Player;
-import org.bukkit.event.EventPriority;
-import org.bukkit.event.entity.EntityRegainHealthEvent;
-
-import java.util.List;
 
 @AbilityManifest(name = "리인카네이션", rank = Rank.L, species = Species.OTHERS, explain = {
 		"§7패시브 §8- §5환생§f: 치명적인 대미지를 입었을 시, 이를 무시하고 체력이 1로 고정됩니다.",
@@ -57,7 +59,7 @@ public class Reincarnation extends CokesAbility {
 	private int hitted = 0;
 	private final Cooldown cool = new Cooldown(COOLDOWN.getValue());
 	private final InvincibilityTimer reincarnation = new InvincibilityTimer(this, TimeUnit.TICKS, DURATION.getValue() * 20) {
-
+		@Override
 		public void onInvincibilityStart() {
 			List<Player> nearby = LocationUtil.getNearbyEntities(Player.class, getPlayer().getLocation(), 5, 5, null);
 			SoundLib.ITEM_SHIELD_BLOCK.playSound(nearby);
@@ -114,7 +116,7 @@ public class Reincarnation extends CokesAbility {
 		}
 	}
 
-	@SubscribeEvent(priority = 999, eventPriority = EventPriority.HIGHEST)
+	@SubscribeEvent(priority = 999, eventPriority = EventPriority.HIGHEST, ignoreCancelled = true)
 	public void onEntityDamage(CEntityDamageEvent e) {
 		if (e.getEntity().equals(getPlayer())) {
 			if (!reincarnation.isRunning() && getPlayer().getHealth() - e.getFinalDamage() <= 0 && !cool.isRunning() && !e.isCancelled()) {
@@ -129,6 +131,12 @@ public class Reincarnation extends CokesAbility {
 			Player target = (Player) e.getEntity();
 			if (reincarnation.isRunning() && getGame().isParticipating(target) && !e.isCancelled()) {
 				e.setDamage(0);
+				hitted += 1;
+				if (hitted == HIT_PREDICATE.getValue()) {
+					SoundLib.ENTITY_PLAYER_LEVELUP.playSound(getPlayer());
+				} else if (hitted == HIT_PREDICATE.getValue()/5 || hitted == HIT_PREDICATE.getValue()*2/5 || hitted == HIT_PREDICATE.getValue()*3/5 || hitted == HIT_PREDICATE.getValue()*4/5) {
+					SoundLib.ENTITY_EXPERIENCE_ORB_PICKUP.playSound(getPlayer());
+				}
 			}
 		}
 	}
@@ -137,23 +145,6 @@ public class Reincarnation extends CokesAbility {
 	public void onEntityRegainHealth(EntityRegainHealthEvent e) {
 		if (e.getEntity().equals(getPlayer()) && reincarnation.isRunning()) {
 			e.setCancelled(true);
-		}
-	}
-
-	@SubscribeEvent(priority = 9999, eventPriority = EventPriority.MONITOR, ignoreCancelled = true)
-	public void onEntityDamage2(CEntityDamageEvent e) {
-		Entity damager = CokesUtil.getDamager(e.getDamager());
-
-		if (damager != null && e.getEntity() instanceof Player && damager.equals(getPlayer())) {
-			Player target = (Player) e.getEntity();
-			if (reincarnation.isRunning() && getGame().isParticipating(target) && !e.isCancelled() && target.getNoDamageTicks() <= 0) {
-				hitted += 1;
-				if (hitted == HIT_PREDICATE.getValue()) {
-					SoundLib.ENTITY_PLAYER_LEVELUP.playSound(getPlayer());
-				} else if (hitted == HIT_PREDICATE.getValue()/5 || hitted == HIT_PREDICATE.getValue()*2/5 || hitted == HIT_PREDICATE.getValue()*3/5 || hitted == HIT_PREDICATE.getValue()*4/5) {
-					SoundLib.ENTITY_EXPERIENCE_ORB_PICKUP.playSound(getPlayer());
-				}
-			}
 		}
 	}
 }
