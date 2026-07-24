@@ -16,6 +16,7 @@ import daybreak.abilitywar.utils.base.minecraft.entity.health.event.PlayerSetHea
 import daybreak.abilitywar.utils.library.SoundLib;
 import org.bukkit.entity.Entity;
 import org.bukkit.event.EventPriority;
+import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.potion.PotionEffect;
 
 @AbilityManifest(name = "부활", rank = Rank.S, species = Species.DEMIGOD, explain = {
@@ -32,7 +33,7 @@ public class Resurrection extends CokesAbility {
 	}
 
 	@SubscribeEvent(priority = 999, eventPriority = EventPriority.HIGHEST)
-	public void onBeforeDeath(CEntityDamageEvent e) {
+	public void onBeforeDeath(EntityDamageEvent e) {
 		if (!isResurrection) {
 			if (e.getEntity().equals(getPlayer())) {
 				if (getPlayer().getHealth() - e.getFinalDamage() <= 0) {

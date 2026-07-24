@@ -47,6 +47,7 @@ public class Revenge extends CokesAbility {
 		super(participant);
 	}
 
+	@Override
 	public void onUpdate(Update update) {
 		if (update == Update.RESTRICTION_CLEAR) {
 			ac.update(ChatColor.BLUE + "고정 대미지 : " + df.format(magicfixed_damage));
@@ -55,14 +56,13 @@ public class Revenge extends CokesAbility {
 
 	@SubscribeEvent
 	public void onEntityDamage(CEntityDamageEvent e) {
-		if (e.getDamager() == null) return;
 		Entity damager = CokesUtil.getDamager(e.getDamager());
 		if (e.getEntity().equals(getPlayer()) && damager instanceof Player && !damager.equals(getPlayer())) {
 			magicfixed_damage = e.getFinalDamage() * PERCENTAGE.getValue() / 100.0;
 			ac.update(ChatColor.BLUE + " 고정 대미지 : " + df.format(magicfixed_damage));
 		} else {
 			if (e.getCause() == DamageCause.VOID) return;
-			if (damager.equals(getPlayer()) && e.getEntity() instanceof Player && !e.getEntity().equals(getPlayer())) {
+			if (damager != null && damager.equals(getPlayer()) && e.getEntity() instanceof Player && !e.getEntity().equals(getPlayer())) {
 				Player target = (Player) e.getEntity();
 				if (map.containsKey(target)) {
 					e.setCancelled(true);
@@ -85,6 +85,7 @@ public class Revenge extends CokesAbility {
 			setPeriod(TimeUnit.TICKS, 1);
 		}
 
+		@Override
 		public void onStart() {
 			if (!player.isDead() && Damages.canDamage(player, getPlayer(), DamageCause.VOID, damage)) {
 				player.setNoDamageTicks(0);
@@ -102,11 +103,13 @@ public class Revenge extends CokesAbility {
 			}
 		}
 
+		@Override
 		public void onEnd() {
 			HandlerList.unregisterAll(this);
 			map.remove(player);
 		}
 
+		@Override
 		public void onSilentEnd() {
 			HandlerList.unregisterAll(this);
 			map.remove(player);

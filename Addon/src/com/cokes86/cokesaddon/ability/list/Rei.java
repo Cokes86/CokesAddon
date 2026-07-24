@@ -22,6 +22,8 @@ import daybreak.abilitywar.utils.library.SoundLib;
 import org.bukkit.GameMode;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
+import org.bukkit.event.EventPriority;
+import org.bukkit.event.entity.EntityDamageEvent;
 
 @AbilityManifest(name = "레이", rank = Rank.L, species = Species.HUMAN, explain = {
 		"§7패시브 §8- §c영혼의 검성§f: 근접 공격 시 최대 체력의 $[COST]%를 소비하고",
@@ -60,11 +62,8 @@ public class Rei extends CokesAbility {
 		super(participant);
 	}
 
-	@SubscribeEvent(priority = 999)
-	public void onBeforeDeath(CEntityDamageEvent e) {
-		Entity damager = e.getDamager();
-		if (damager == null) return;
-
+	@SubscribeEvent(priority = 999, eventPriority = EventPriority.HIGHEST)
+	public void onBeforeDeath(EntityDamageEvent e) {
 		if (e.getEntity().equals(getPlayer()) && !cooldown.isRunning() && !e.isCancelled()) {
 			double damage = e.getFinalDamage();
 			if (getPlayer().getHealth() - damage <= 0) {
@@ -101,7 +100,7 @@ public class Rei extends CokesAbility {
 		}
 	}
 
-	@SubscribeEvent(priority = 5)
+	@SubscribeEvent(priority = 999, eventPriority = EventPriority.HIGHEST)
 	private void onPlayerSetHealth(PlayerSetHealthEvent e) {
 		if (e.getPlayer().equals(getPlayer()) && !cooldown.isRunning() && !e.isCancelled() && e.getHealth() <= 0) {
 			e.setCancelled(true);

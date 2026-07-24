@@ -67,6 +67,7 @@ public class Rune extends CokesAbility implements ActiveHandler {
 		public void damageFixedWithoutKnockback(Player target, float damage) {
 			double knockback = AttributeUtil.getKnockbackResistance(target);
 			AttributeUtil.setKnockbackResistance(target, 1);
+			target.setNoDamageTicks(0);
 			Damages.damageFixed(target,getPlayer(), damage);
 			AttributeUtil.setKnockbackResistance(target, knockback);
 		}
@@ -74,7 +75,7 @@ public class Rune extends CokesAbility implements ActiveHandler {
 		@Override
 		protected void onDurationProcess(int seconds) {
 			List<Player> ps = LocationUtil.getNearbyEntities(Player.class, getPlayer().getLocation(), RANGE.getValue(), RANGE.getValue(), predicate);
-			if (ps.size() > 0) {
+			if (!ps.isEmpty()) {
 				int a = new Random().nextInt(ps.size());
 				Player target = ps.get(a);
 				damageFixedWithoutKnockback(target, DAMAGE.getValue().floatValue());
@@ -97,8 +98,7 @@ public class Rune extends CokesAbility implements ActiveHandler {
 	public boolean ActiveSkill(Material mt, ClickType ct) {
 		if (mt.equals(Material.IRON_INGOT) && ct.equals(ClickType.RIGHT_CLICK)) {
 			if (!c.isCooldown() && !d.isRunning()) {
-				d.start();
-				return true;
+				return d.start();
 			}
 		}
 		return false;

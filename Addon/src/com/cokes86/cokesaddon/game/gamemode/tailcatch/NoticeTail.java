@@ -11,41 +11,82 @@ import org.bukkit.boss.BarStyle;
 import org.bukkit.boss.BossBar;
 
 import java.util.HashMap;
+import java.util.Map;
 
 @ModuleBase(NoticeTail.class)
 public class NoticeTail implements ListenerModule, Observer {
-    private final HashMap<Participant, BossBar> noticeBarMap = new HashMap<>();
+
+    private final Map<Participant, BossBar> noticeBarMap = new HashMap<>();
     private final TailCatch tailCatch;
 
     public NoticeTail(TailCatch game) {
-        game.attachObserver(this);
         this.tailCatch = game;
+        game.attachObserver(this);
     }
 
     @Override
     public void update(GameUpdate update) {
-        if (update == GameUpdate.START) {
-            for (Participant participant : tailCatch.getParticipants()) {
-                Participant tail = tailCatch.getNextTail(participant);
-                BossBar bar = Bukkit.createBossBar("당신의 타겟 : "+tail.getPlayer().getDisplayName(), BarColor.GREEN, BarStyle.SOLID);
-                bar.addPlayer(participant.getPlayer());
-                bar.setVisible(true);
-                noticeBarMap.put(participant, bar);
-            }
-        } else if (update == GameUpdate.END) {
-            for (Participant participant : noticeBarMap.keySet()) {
-                noticeBarMap.get(participant).removeAll();
-            }
-            noticeBarMap.clear();
+        if (update == GameUpdate.END) {
+            clear();
         }
     }
 
-    protected void updateBossBar() {
-        for (Participant participant : noticeBarMap.keySet()) {
-            Participant tail = tailCatch.getNextTail(participant);
-            BossBar bar = noticeBarMap.get(participant);
-            bar.setTitle("당신의 타겟 : "+ tail.getPlayer().getDisplayName());
+    public void initializeBossBar() {
+        clear();
+
+        for (Participant participant : tailCatch.getTailList()) {
+            BossBar bar = Bukkit.createBossBar(
+                    getTitle(participant),
+                    BarColor.GREEN,
+                    BarStyle.SOLID
+            );
+
+            bar.addPlayer(participant.getPlayer());
+            bar.setVisible(true);
+            noticeBarMap.put(participant, bar);
         }
+    }
+
+    public void updateBossBar() {
+        for (Participant participant : tailCatch.getTailList()) {
+            BossBar bar = noticeBarMap.get(participant);
+
+            if (bar == null) {
+                bar = Bukkit.createBossBar(
+                        getTitle(participant),
+                        BarColor.GREEN,
+                        BarStyle.SOLID
+                );
+                bar.addPlayer(participant.getPlayer());
+                bar.setVisible(true);
+                noticeBarMap.put(participant, bar);
+            } else {
+                bar.setTitle(getTitle(participant));
+            }
+        }
+    }
+
+    public void removeBossBar(Participant participant) {
+        BossBar bar = noticeBarMap.remove(participant);
+        if (bar != null) {
+            bar.removeAll();
+        }
+    }
+
+    public void clear() {
+        for (BossBar bar : noticeBarMap.values()) {
+            bar.removeAll();
+        }
+        noticeBarMap.clear();
+    }
+
+    private String getTitle(Participant participant) {
+        if (tailCatch.getTailList().size() <= 1) {
+            return "§a마지막 생존자입니다!";
+        }
+
+        Participant target = tailCatch.getNextTail(participant);
+        return "당신의 타겟 : " + target.getPlayer().getDisplayName();
     }
 
     public interface Handler {

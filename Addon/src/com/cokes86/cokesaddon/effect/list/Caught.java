@@ -44,6 +44,7 @@ public class Caught extends AbstractGame.Effect implements Listener {
     private final ArmorStand hologram;
     private int stack = 0;
     private boolean direction = true;
+    private boolean damaging = false;
 
     public Caught(AbstractGame.Participant participant, TimeUnit timeUnit, int duration) {
         participant.getGame().super(caught, participant, timeUnit.toTicks(duration));
@@ -70,7 +71,9 @@ public class Caught extends AbstractGame.Effect implements Listener {
             hologram.teleport(hologram.getLocation().clone().add(0, direction ? .008 : -.008, 0));
         }
         if (count % 40 == 0 && participant.getPlayer().getHealth() > 1) {
+            damaging = true;
             Damages.damageMagic(participant.getPlayer(), null, true, 1.0f);
+            damaging = false;
         }
     }
 
@@ -134,8 +137,8 @@ public class Caught extends AbstractGame.Effect implements Listener {
 
     @EventHandler
     public void onEntityDamage(EntityDamageEvent e) {
-        if (e.getEntity().getUniqueId().equals(participant.getPlayer().getUniqueId())) {
-            if (e.getCause() == EntityDamageEvent.DamageCause.MAGIC && e.getFinalDamage() == 1.0) return;
+        if (e.getEntity().equals(participant.getPlayer())) {
+            if (damaging) return;
             e.setCancelled(true);
         }
     }

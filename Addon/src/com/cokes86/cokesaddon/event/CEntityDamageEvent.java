@@ -7,7 +7,6 @@ import org.bukkit.event.HandlerList;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
-import org.jetbrains.annotations.Nullable;
 
 public class CEntityDamageEvent extends Event implements Cancellable {
     private static final HandlerList handlers = new HandlerList();
@@ -33,7 +32,7 @@ public class CEntityDamageEvent extends Event implements Cancellable {
         return handlers;
     }
 
-    public @Nullable Entity getDamager() {
+    public Entity getDamager() {
         return damager;
     }
 
@@ -46,6 +45,11 @@ public class CEntityDamageEvent extends Event implements Cancellable {
     public void setCancelled(boolean b) {
         e.setCancelled(b);
         cancelled = b;
+    }
+
+    public boolean isDamager(Entity damager) {
+        if (this.damager == null) return false;
+        return damager.equals(this.damager);
     }
 
     public Entity getEntity() {

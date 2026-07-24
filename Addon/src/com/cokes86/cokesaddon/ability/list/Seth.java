@@ -1,10 +1,24 @@
 package com.cokes86.cokesaddon.ability.list;
 
+import java.text.DecimalFormat;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.function.Predicate;
+
+import org.bukkit.Material;
+import org.bukkit.entity.Entity;
+import org.bukkit.entity.Player;
+import org.bukkit.entity.Projectile;
+import org.bukkit.event.EventPriority;
+import org.bukkit.event.entity.PlayerDeathEvent;
+import org.bukkit.util.Vector;
+
 import com.cokes86.cokesaddon.ability.CokesAbility;
 import com.cokes86.cokesaddon.ability.Config;
 import com.cokes86.cokesaddon.effect.list.DamageDown;
 import com.cokes86.cokesaddon.event.CEntityDamageEvent;
 import com.cokes86.cokesaddon.util.FunctionalInterfaces;
+
 import daybreak.abilitywar.ability.AbilityManifest;
 import daybreak.abilitywar.ability.AbilityManifest.Rank;
 import daybreak.abilitywar.ability.AbilityManifest.Species;
@@ -18,18 +32,6 @@ import daybreak.abilitywar.game.team.interfaces.Teamable;
 import daybreak.abilitywar.utils.base.concurrent.TimeUnit;
 import daybreak.abilitywar.utils.base.math.LocationUtil;
 import daybreak.abilitywar.utils.base.minecraft.nms.NMS;
-import org.bukkit.Material;
-import org.bukkit.entity.Entity;
-import org.bukkit.entity.Player;
-import org.bukkit.entity.Projectile;
-import org.bukkit.event.EventPriority;
-import org.bukkit.event.entity.PlayerDeathEvent;
-import org.bukkit.util.Vector;
-
-import java.text.DecimalFormat;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.function.Predicate;
 
 @AbilityManifest(name = "세트", rank = Rank.S, species = Species.GOD, explain = {
 		"§7패시브 §8- §c전쟁의 여왕§f: 게임 중 플레이어가 사망할때마다 전쟁 스택이 1 증가합니다.",
@@ -81,7 +83,7 @@ public class Seth extends CokesAbility implements ActiveHandler {
 		if (material == Material.IRON_INGOT && clickType == ClickType.RIGHT_CLICK && !cooldown.isCooldown()) {
 			final int range = Seth.RANGE.getValue();
 			final List<Player> list = LocationUtil.getNearbyEntities(Player.class, getPlayer().getLocation(), range, range, predicate);
-			if (list.size() > 0) {
+			if (!list.isEmpty()) {
 				for (Player player : list) {
 					Participant participant = getGame().getParticipant(player);
 					Vector move = getPlayer().getLocation().toVector().subtract(player.getLocation().toVector());
@@ -98,7 +100,7 @@ public class Seth extends CokesAbility implements ActiveHandler {
 	}
 
 	@SubscribeEvent(priority = 99, eventPriority = EventPriority.MONITOR)
-	private void onPlayerDeath(PlayerDeathEvent e) {
+	public void onPlayerDeath(PlayerDeathEvent e) {
 		if (!e.getEntity().equals(getPlayer())) {
 			kill += 1;
 

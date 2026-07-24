@@ -38,7 +38,7 @@ public class ShowRank extends RouletteSingleEffect {
             else if (Compatibility.isOverlap(participant)) {
                 String name;
                 List<AbilityBase> abilities = Compatibility.getAbililitiesInOverlap(participant);
-                if (abilities.size() > 0) {
+                if (!abilities.isEmpty()) {
                     final StringJoiner joiner = new StringJoiner(" §f+ ");
                     for (AbilityBase ability : abilities) {
                         joiner.add(ability.getRank().getRankName());

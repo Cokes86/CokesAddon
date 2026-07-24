@@ -1,12 +1,5 @@
 package com.cokes86.cokesaddon.util;
 
-import daybreak.abilitywar.utils.base.minecraft.entity.health.Healths;
-import daybreak.abilitywar.utils.base.minecraft.nms.NMS;
-import daybreak.abilitywar.utils.library.MaterialX;
-import daybreak.google.common.base.Strings;
-import daybreak.google.common.collect.ImmutableSet;
-import daybreak.google.common.collect.ImmutableSet.Builder;
-import kotlin.ranges.RangesKt;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.attribute.Attribute;
@@ -15,6 +8,14 @@ import org.bukkit.entity.Player;
 import org.bukkit.entity.Projectile;
 import org.bukkit.event.entity.EntityRegainHealthEvent;
 import org.bukkit.event.entity.EntityRegainHealthEvent.RegainReason;
+
+import daybreak.abilitywar.utils.base.minecraft.entity.health.Healths;
+import daybreak.abilitywar.utils.base.minecraft.nms.NMS;
+import daybreak.abilitywar.utils.library.MaterialX;
+import daybreak.google.common.base.Strings;
+import daybreak.google.common.collect.ImmutableSet;
+import daybreak.google.common.collect.ImmutableSet.Builder;
+import kotlin.ranges.RangesKt;
 
 public class CokesUtil {
 
@@ -47,7 +48,7 @@ public class CokesUtil {
     public static Entity getDamager(Entity entity) {
         Entity attacker = entity;
         if (attacker != null) {
-            if (NMS.isArrow(attacker)) {
+            if (NMS.isArrow(attacker) || attacker instanceof Projectile) {
                 Projectile arrow = (Projectile) attacker;
                 if (arrow.getShooter() instanceof Entity) {
                     attacker = (Entity) arrow.getShooter();

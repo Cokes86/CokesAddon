@@ -1,9 +1,14 @@
 package com.cokes86.cokesaddon.ability.list;
 
+import org.bukkit.Material;
+import org.bukkit.Note;
+import org.bukkit.Note.Tone;
+
 import com.cokes86.cokesaddon.ability.CokesAbility;
 import com.cokes86.cokesaddon.ability.Config;
 import com.cokes86.cokesaddon.event.CEntityDamageEvent;
 import com.cokes86.cokesaddon.util.FunctionalInterfaces;
+
 import daybreak.abilitywar.ability.AbilityManifest;
 import daybreak.abilitywar.ability.AbilityManifest.Rank;
 import daybreak.abilitywar.ability.AbilityManifest.Species;
@@ -13,10 +18,6 @@ import daybreak.abilitywar.game.AbstractGame.Participant;
 import daybreak.abilitywar.game.AbstractGame.Participant.ActionbarNotification.ActionbarChannel;
 import daybreak.abilitywar.utils.base.collect.Pair;
 import daybreak.abilitywar.utils.library.SoundLib;
-
-import org.bukkit.Material;
-import org.bukkit.Note;
-import org.bukkit.Note.Tone;
 
 @AbilityManifest(name = "겜블러", rank = Rank.B, species = Species.HUMAN, explain = {
 		"§7패시브 §8- §b겜블§f: 매 $[GM_PERIOD]마다 받는 대미지와 주는 대미지가",
@@ -28,20 +29,20 @@ import org.bukkit.Note.Tone;
 		"[아이디어 제공자 §aRainStar_§f]"
 })
 public class Gambler extends CokesAbility implements ActiveHandler {
-	private static final Config<Integer> GM_PERIOD = Config.of(Gambler.class, "period", 10, FunctionalInterfaces.positive(), FunctionalInterfaces.TIME,
+	private static final Config<Integer> GM_PERIOD = Config.of(Gambler.class, "period", 15, FunctionalInterfaces.positive(), FunctionalInterfaces.TIME,
 			"# 겜블 주기",
-			"# 기본값: 10(초)");
+			"# 기본값: 15(초)");
 	private static final Config<Integer> VALUE1 = Config.of(Gambler.class, "value-1", 75, FunctionalInterfaces.positive(),
 			"# 겜블 최소/최대치 값 중 하나",
 			"# 두 숫자중 작은 값이 최소치, 큰 값이 최대치로 자동 변경됩니다.",
 			"# 기본값: 75(%) 최소 / 150(%) 최대");
-	private static final Config<Integer> VALUE2 = Config.of(Gambler.class, "value-2", 150, FunctionalInterfaces.positive(),
+	private static final Config<Integer> VALUE2 = Config.of(Gambler.class, "value-2", 200, FunctionalInterfaces.positive(),
 			"# 겜블 최소/최대치 값 중 하나",
 			"# 두 숫자중 작은 값이 최소치, 큰 값이 최대치로 자동 변경됩니다.",
-			"# 기본값: 75(%) 최소 / 150(%) 최대");
-	private static final Config<Integer> PD_PENALTY = Config.of(Gambler.class, "penalty", 10, FunctionalInterfaces.positive(),
+			"# 기본값: 75(%) 최소 / 200(%) 최대");
+	private static final Config<Integer> PD_PENALTY = Config.of(Gambler.class, "penalty", 15, FunctionalInterfaces.positive(),
 			"# 패널티 다이스로 안좋은 쪽으로 증감될 수치",
-			"# 기본값: 10(%)");
+			"# 기본값: 15(%)");
 	private static final Config<Integer> PD_COOLDOWN = Config.of(Gambler.class, "cooldown", 60, FunctionalInterfaces.positive(), FunctionalInterfaces.COOLDOWN,
 			"# 패널티 다이스 쿨타임",
 			"# 기본값: 60(초)");

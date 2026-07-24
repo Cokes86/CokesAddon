@@ -79,6 +79,10 @@ public class Config<T> extends SettingObject<T> {
         return new Config<>(aClass, name, value, description, FunctionalInterfaces.positive(), FunctionalInterfaces.toStrings());
     }
 
+    public static Config<Double>  percent(Class<? extends AbilityBase> aClass, String name, Double value, String... description) {
+        return new Config<>(aClass, name, value, description, FunctionalInterfaces.positive(), FunctionalInterfaces.percent());
+    }
+
     public static void update() {
         abilitySettings.update();
         synergySettings.update();
@@ -87,6 +91,7 @@ public class Config<T> extends SettingObject<T> {
     public String toString() {
         return function.apply(getValue());
     }
+
 
     public boolean condition(T object) {
         return predicate.test(object);

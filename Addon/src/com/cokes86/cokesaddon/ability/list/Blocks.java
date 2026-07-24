@@ -1,23 +1,7 @@
 package com.cokes86.cokesaddon.ability.list;
 
-import com.cokes86.cokesaddon.ability.CokesAbility;
-import com.cokes86.cokesaddon.ability.Config;
-import com.cokes86.cokesaddon.event.CEntityDamageEvent;
-import com.cokes86.cokesaddon.util.FunctionalInterfaces;
-import com.cokes86.cokesaddon.util.timer.InvincibilityTimer;
-import daybreak.abilitywar.AbilityWar;
-import daybreak.abilitywar.ability.AbilityManifest;
-import daybreak.abilitywar.ability.AbilityManifest.Rank;
-import daybreak.abilitywar.ability.AbilityManifest.Species;
-import daybreak.abilitywar.ability.SubscribeEvent;
-import daybreak.abilitywar.ability.Tips;
-import daybreak.abilitywar.ability.decorator.ActiveHandler;
-import daybreak.abilitywar.game.AbstractGame.Participant;
-import daybreak.abilitywar.utils.base.concurrent.TimeUnit;
-import daybreak.abilitywar.utils.base.minecraft.nms.NMS;
-import daybreak.abilitywar.utils.base.minecraft.version.ServerVersion;
-import daybreak.abilitywar.utils.library.MaterialX;
-import daybreak.abilitywar.utils.library.PotionEffects;
+import java.util.Objects;
+
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.attribute.Attribute;
@@ -31,7 +15,25 @@ import org.bukkit.inventory.EntityEquipment;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.util.Vector;
 
-import java.util.Objects;
+import com.cokes86.cokesaddon.ability.CokesAbility;
+import com.cokes86.cokesaddon.ability.Config;
+import com.cokes86.cokesaddon.event.CEntityDamageEvent;
+import com.cokes86.cokesaddon.util.FunctionalInterfaces;
+import com.cokes86.cokesaddon.util.timer.InvincibilityTimer;
+
+import daybreak.abilitywar.AbilityWar;
+import daybreak.abilitywar.ability.AbilityManifest;
+import daybreak.abilitywar.ability.AbilityManifest.Rank;
+import daybreak.abilitywar.ability.AbilityManifest.Species;
+import daybreak.abilitywar.ability.SubscribeEvent;
+import daybreak.abilitywar.ability.Tips;
+import daybreak.abilitywar.ability.decorator.ActiveHandler;
+import daybreak.abilitywar.game.AbstractGame.Participant;
+import daybreak.abilitywar.utils.base.concurrent.TimeUnit;
+import daybreak.abilitywar.utils.base.minecraft.nms.NMS;
+import daybreak.abilitywar.utils.base.minecraft.version.ServerVersion;
+import daybreak.abilitywar.utils.library.MaterialX;
+import daybreak.abilitywar.utils.library.PotionEffects;
 
 @AbilityManifest(name = "블럭", rank = Rank.A, species = Species.OTHERS, explain = {
 		"철괴 우클릭시 자신의 상태를 변화시킵니다. 자신의 상태에따라 추가효과를 얻습니다.",
@@ -121,6 +123,7 @@ public class Blocks extends CokesAbility implements ActiveHandler {
 		if (e.getRightClicked().equals(armorStand)) e.setCancelled(true);
 	}
 
+	@Override
 	protected void onUpdate(Update update) {
 		switch (update) {
 			case RESTRICTION_CLEAR:
@@ -180,47 +183,54 @@ public class Blocks extends CokesAbility implements ActiveHandler {
 		}
 		if (e.getEntity().equals(getPlayer())) {
 			if (!invTimer.isRunning()) {
-				if (condition.equals(Condition.STONE)) {
-					if (e.getDamager() instanceof Player) {
-						Player damager = (Player) e.getDamager();
-						ItemStack i = damager.getInventory().getItemInMainHand();
-						Material mainhand = i.getType();
-						Pickaxe p = Pickaxe.getPickaxe(mainhand);
-						if (p != null) {
-							double damage = p.getDamage();
-							int level = i.getEnchantmentLevel(Enchantment.DIG_SPEED);
-							if (level > 0) {
-								e.setDamage((damage + (level + 1) * 0.5) * 1.25);
-							} else {
-								e.setDamage(damage  * 1.25);
-							}
-						} else {
-							e.setDamage(e.getDamage() * (100.0 - stone.getValue()) / 100);
-						}
-					} else {
-						e.setDamage(e.getDamage() * (100.0 - stone.getValue()) / 100.0);
-					}
-				} else if (condition.equals(Condition.SAND)) {
-					if (e.getCause().equals(DamageCause.FALL)) {
-						e.setCancelled(true);
-						return;
-					}
-					invTimer.start();
-				} else if (condition.equals(Condition.GLASS)) {
-					e.setDamage(e.getDamage() * (1 + glass.getValue() / 100.0));
-				} else if (condition.equals(Condition.OBSIDIAN)) {
-					if (e.getCause().equals(DamageCause.BLOCK_EXPLOSION)
-							|| e.getCause().equals(DamageCause.ENTITY_EXPLOSION)) {
-						e.setCancelled(true);
-					} else {
-						getPlayer().setHealth(Math.max(0.0, getPlayer().getHealth() - e.getFinalDamage()));
-						e.setDamage(0);
-						Vector vec = new Vector();
-						getPlayer().setVelocity(vec);
-						Bukkit.getScheduler().runTaskLater(AbilityWar.getPlugin(), () -> getPlayer().setVelocity(vec),
-								1L);
-					}
-				}
+                            switch (condition) {
+                                case STONE:
+                                    if (e.getDamager() instanceof Player) {
+                                        Player damager = (Player) e.getDamager();
+                                        ItemStack i = damager.getInventory().getItemInMainHand();
+                                        Material mainhand = i.getType();
+                                        Pickaxe p = Pickaxe.getPickaxe(mainhand);
+                                        if (p != null) {
+                                            double damage = p.getDamage();
+                                            int level = i.getEnchantmentLevel(Enchantment.DIG_SPEED);
+                                            if (level > 0) {
+                                                e.setDamage((damage + (level + 1) * 0.5) * 1.25);
+                                            } else {
+                                                e.setDamage(damage  * 1.25);
+                                            }
+                                        } else {
+                                            e.setDamage(e.getDamage() * (100.0 - stone.getValue()) / 100);
+                                        }
+                                    } else {
+                                        e.setDamage(e.getDamage() * (100.0 - stone.getValue()) / 100.0);
+                                    }
+                                    break;
+                                case SAND:
+                                    if (e.getCause().equals(DamageCause.FALL)) {
+                                        e.setCancelled(true);
+                                        return;
+                                    }
+                                    invTimer.start();
+                                    break;
+                                case GLASS:
+                                    e.setDamage(e.getDamage() * (1 + glass.getValue() / 100.0));
+                                    break;
+                                case OBSIDIAN:
+                                    if (e.getCause().equals(DamageCause.BLOCK_EXPLOSION)
+                                            || e.getCause().equals(DamageCause.ENTITY_EXPLOSION)) {
+                                        e.setCancelled(true);
+                                    } else {
+                                        getPlayer().setHealth(Math.max(0.0, getPlayer().getHealth() - e.getFinalDamage()));
+                                        e.setDamage(0);
+                                        Vector vec = new Vector();
+                                        getPlayer().setVelocity(vec);
+                                        Bukkit.getScheduler().runTaskLater(AbilityWar.getPlugin(), () -> getPlayer().setVelocity(vec),
+                                                1L);
+                                    }
+                                    break;
+                                default:
+                                    break;
+                            }
 			}
 		}
 	}

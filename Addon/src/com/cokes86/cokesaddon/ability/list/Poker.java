@@ -138,7 +138,7 @@ public class Poker extends CokesAbility implements ActiveHandler {
 	@SubscribeEvent
 	public void onEntityDamage(CEntityDamageEvent e) {
 		Entity damager = CokesUtil.getDamager(e.getDamager());
-		if (damager.equals(getPlayer()) && additional > 0) {
+		if (damager != null && damager.equals(getPlayer()) && additional > 0) {
 			e.setDamage(e.getDamage() + additional);
 			additional = 0;
 		}

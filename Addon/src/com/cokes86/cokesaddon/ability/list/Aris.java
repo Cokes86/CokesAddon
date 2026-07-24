@@ -1,9 +1,18 @@
 package com.cokes86.cokesaddon.ability.list;
 
+import java.util.List;
+import java.util.function.Predicate;
+
+import org.bukkit.Location;
+import org.bukkit.Material;
+import org.bukkit.entity.Entity;
+import org.bukkit.entity.Player;
+
 import com.cokes86.cokesaddon.ability.CokesAbility;
 import com.cokes86.cokesaddon.ability.Config;
 import com.cokes86.cokesaddon.effect.list.Caught;
 import com.cokes86.cokesaddon.util.FunctionalInterfaces;
+
 import daybreak.abilitywar.ability.AbilityManifest;
 import daybreak.abilitywar.ability.AbilityManifest.Rank;
 import daybreak.abilitywar.ability.AbilityManifest.Species;
@@ -23,13 +32,6 @@ import daybreak.abilitywar.utils.base.concurrent.TimeUnit;
 import daybreak.abilitywar.utils.base.math.LocationUtil;
 import daybreak.abilitywar.utils.base.math.geometry.Line;
 import daybreak.abilitywar.utils.base.math.geometry.location.LocationIterator;
-import org.bukkit.Location;
-import org.bukkit.Material;
-import org.bukkit.entity.Entity;
-import org.bukkit.entity.Player;
-
-import java.util.List;
-import java.util.function.Predicate;
 
 @AbilityManifest(name = "아리스", rank = Rank.B, species = Species.HUMAN, explain = {
 		"§7패시브 §8- §c체인§f: 5초마다 §d사슬 카운터§f를 1씩 상승하며 최대 $[MAX_CHAIN_COUNTER]만큼 상승합니다.",
@@ -117,6 +119,7 @@ public class Aris extends CokesAbility implements ActiveHandler {
 		passive.register();
 	}
 
+	@Override
 	public void onUpdate(Update update) {
 		if (update == Update.RESTRICTION_CLEAR) {
 			passive.start();

@@ -1,10 +1,31 @@
 package com.cokes86.cokesaddon.ability.list;
 
+import java.text.DecimalFormat;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Random;
+import java.util.Set;
+import java.util.function.Predicate;
+
+import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
+import org.bukkit.Material;
+import org.bukkit.enchantments.Enchantment;
+import org.bukkit.entity.Entity;
+import org.bukkit.entity.LivingEntity;
+import org.bukkit.entity.Player;
+import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
+import org.bukkit.event.player.PlayerDropItemEvent;
+import org.bukkit.event.player.PlayerSwapHandItemsEvent;
+import org.bukkit.event.player.PlayerToggleSneakEvent;
+import org.bukkit.inventory.ItemStack;
+
 import com.cokes86.cokesaddon.ability.CokesAbility;
 import com.cokes86.cokesaddon.ability.Config;
 import com.cokes86.cokesaddon.event.CEntityDamageEvent;
 import com.cokes86.cokesaddon.util.CokesUtil;
 import com.cokes86.cokesaddon.util.FunctionalInterfaces;
+
 import daybreak.abilitywar.ability.AbilityManifest;
 import daybreak.abilitywar.ability.AbilityManifest.Rank;
 import daybreak.abilitywar.ability.AbilityManifest.Species;
@@ -22,26 +43,6 @@ import daybreak.abilitywar.utils.base.concurrent.TimeUnit;
 import daybreak.abilitywar.utils.base.math.LocationUtil;
 import daybreak.abilitywar.utils.base.minecraft.damage.Damages;
 import daybreak.abilitywar.utils.library.item.EnchantLib;
-
-import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
-import org.bukkit.Material;
-import org.bukkit.enchantments.Enchantment;
-import org.bukkit.entity.Entity;
-import org.bukkit.entity.LivingEntity;
-import org.bukkit.entity.Player;
-import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
-import org.bukkit.event.player.PlayerDropItemEvent;
-import org.bukkit.event.player.PlayerSwapHandItemsEvent;
-import org.bukkit.event.player.PlayerToggleSneakEvent;
-import org.bukkit.inventory.ItemStack;
-
-import java.text.DecimalFormat;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Random;
-import java.util.Set;
-import java.util.function.Predicate;
 
 @AbilityManifest(name = "권투선수", rank = Rank.A, species = Species.HUMAN, explain = {
         "§7패시브 §8- §c잽§f: 검으로 공격 시 대미지가 $[JAP_DAMAGE_DECREMENT_PERCENTAGE]% 감소합니다.",
@@ -69,7 +70,7 @@ import java.util.function.Predicate;
 public class Boxer extends CokesAbility implements TargetHandler {
     private static final Set<Material> swords = CokesUtil.getSwords();
 
-    private static final String prefix = "[§b권투선수§f] ";
+    private static final String PREFIX = "[§b권투선수§f] ";
 
     // 공격, 확률 컨피그
     private static final Config<Double> JAP_DAMAGE_DECREMENT_PERCENTAGE = Config.of(Boxer.class,
@@ -220,8 +221,8 @@ public class Boxer extends CokesAbility implements TargetHandler {
             if (skillTimer.combination.size() >= 3
                     && CokesUtil.xor_encoding(skillTimer.getRecentCombination(3), 0x415701).equals("坍坒坓")) {
                 percentage += COMBINATION_STRAIGHT_DAMAGE_INCREMENT.getValue();
-                getPlayer().sendMessage(prefix + "스트레이트 콤비네이션!");
-                getPlayer().sendMessage(prefix + "대미지 + " + COMBINATION_STRAIGHT_DAMAGE_INCREMENT.getValue() + "%p");
+                getPlayer().sendMessage(PREFIX + "스트레이트 콤비네이션!");
+                getPlayer().sendMessage(PREFIX + "대미지 + " + COMBINATION_STRAIGHT_DAMAGE_INCREMENT.getValue() + "%p");
             }
             float damage = (float) (EnchantLib.getDamageWithSharpnessEnchantment(sword, sharpness) * percentage
                     / 100.0);
@@ -261,8 +262,8 @@ public class Boxer extends CokesAbility implements TargetHandler {
                             && CokesUtil.xor_encoding(skillTimer.getRecentCombination(3), 0x27f9a5).equals("里臨泥")) {
                         damage_percentage += COMBINATION_COUNTER_DAMAGE_INCREMENT.getValue();
                         thorn_percentage += COMBINATION_COUNTER_THORN_INCREMENT.getValue();
-                        getPlayer().sendMessage(prefix + "카운터 콤비네이션!");
-                        getPlayer().sendMessage(prefix + "대미지 + " + COMBINATION_COUNTER_DAMAGE_INCREMENT.getValue()
+                        getPlayer().sendMessage(PREFIX + "카운터 콤비네이션!");
+                        getPlayer().sendMessage(PREFIX + "대미지 + " + COMBINATION_COUNTER_DAMAGE_INCREMENT.getValue()
                                 + "%p, 반사대미지 + " + COMBINATION_COUNTER_THORN_INCREMENT.getValue() + "%p");
                     }
 
@@ -306,28 +307,28 @@ public class Boxer extends CokesAbility implements TargetHandler {
                             && CokesUtil.xor_encoding(skillTimer.getRecentCombination(3), 0x565673).equals("嘿嘠嘢")) {
                         damage_percentage += COMBINATION_UPPER_DAMAGE_INCREMENT.getValue();
                         stun_percentage += COMBINATION_UPPER_STUN_INCREMENT.getValue();
-                        getPlayer().sendMessage(prefix + "어퍼 콤비네이션!");
-                        getPlayer().sendMessage(prefix + "대미지 + " + COMBINATION_UPPER_DAMAGE_INCREMENT.getValue()
+                        getPlayer().sendMessage(PREFIX + "어퍼 콤비네이션!");
+                        getPlayer().sendMessage(PREFIX + "대미지 + " + COMBINATION_UPPER_DAMAGE_INCREMENT.getValue()
                                 + "%p, 기절 확률 + " + COMBINATION_UPPER_STUN_INCREMENT.getValue() + "%p");
                     }
                     if (skillTimer.combination.size() >= 3
                             && CokesUtil.xor_encoding(skillTimer.getRecentCombination(3), 0xb1117e).equals("ᄲᄬᄯ")) {
                         stun_percentage += COMBINATION_JPH_STUN_INCREMENT.getValue();
-                        getPlayer().sendMessage(prefix + "잽, 펀치, 훅!");
+                        getPlayer().sendMessage(PREFIX + "잽, 펀치, 훅!");
                         getPlayer()
-                                .sendMessage(prefix + "기절 확률 + " + COMBINATION_UPPER_STUN_INCREMENT.getValue() + "%p");
+                                .sendMessage(PREFIX + "기절 확률 + " + COMBINATION_UPPER_STUN_INCREMENT.getValue() + "%p");
                     }
 
                     if (skillTimer.combination.size() >= 4
                             && CokesUtil.xor_encoding(skillTimer.getRecentCombination(4), 0xceb510).equals("땜땂땃땁")) {
                         stun_percentage += COMBINATION_FIND_GAP_STUN_INCREMENT.getValue();
                         damage_percentage += COMBINATION_FIND_GAP_DAMAGE_INCREMENT.getValue();
-                        getPlayer().sendMessage(prefix + "빈틈 발견!");
+                        getPlayer().sendMessage(PREFIX + "빈틈 발견!");
                         getPlayer()
-                                .sendMessage(prefix + "대미지 + " + COMBINATION_FIND_GAP_STUN_INCREMENT.getValue() + "%p");
+                                .sendMessage(PREFIX + "대미지 + " + COMBINATION_FIND_GAP_STUN_INCREMENT.getValue() + "%p");
                         getPlayer()
                                 .sendMessage(
-                                        prefix + "기절 확률 + " + COMBINATION_FIND_GAP_STUN_INCREMENT.getValue() + "%p");
+                                        PREFIX + "기절 확률 + " + COMBINATION_FIND_GAP_STUN_INCREMENT.getValue() + "%p");
                     }
 
                     skillTimer.participant.getPlayer().setNoDamageTicks(0);

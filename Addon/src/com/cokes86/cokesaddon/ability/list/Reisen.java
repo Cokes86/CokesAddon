@@ -1,24 +1,8 @@
 package com.cokes86.cokesaddon.ability.list;
 
-import com.cokes86.cokesaddon.ability.CokesAbility;
-import com.cokes86.cokesaddon.ability.Config;
-import com.cokes86.cokesaddon.effect.list.Warp;
-import com.cokes86.cokesaddon.event.CEntityDamageEvent;
-import com.cokes86.cokesaddon.util.FunctionalInterfaces;
-import daybreak.abilitywar.ability.AbilityManifest;
-import daybreak.abilitywar.ability.SubscribeEvent;
-import daybreak.abilitywar.ability.decorator.ActiveHandler;
-import daybreak.abilitywar.ability.event.AbilityPreActiveSkillEvent;
-import daybreak.abilitywar.ability.event.AbilityPreTargetEvent;
-import daybreak.abilitywar.game.AbstractGame;
-import daybreak.abilitywar.game.module.DeathManager;
-import daybreak.abilitywar.utils.base.color.RGB;
-import daybreak.abilitywar.utils.base.concurrent.TimeUnit;
-import daybreak.abilitywar.utils.base.math.FastMath;
-import daybreak.abilitywar.utils.base.math.LocationUtil;
-import daybreak.abilitywar.utils.base.minecraft.nms.NMS;
-import daybreak.abilitywar.utils.library.ParticleLib;
-import daybreak.abilitywar.utils.library.SoundLib;
+import java.util.List;
+import java.util.function.Predicate;
+
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -27,13 +11,32 @@ import org.bukkit.boss.BarStyle;
 import org.bukkit.boss.BossBar;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
-import org.bukkit.entity.Projectile;
 import org.bukkit.util.Vector;
 
-import java.util.List;
-import java.util.function.Predicate;
+import com.cokes86.cokesaddon.ability.CokesAbility;
+import com.cokes86.cokesaddon.ability.Config;
+import com.cokes86.cokesaddon.effect.list.Warp;
+import com.cokes86.cokesaddon.event.CEntityDamageEvent;
+import com.cokes86.cokesaddon.util.CokesUtil;
+import com.cokes86.cokesaddon.util.FunctionalInterfaces;
 
-@AbilityManifest(name = "레이센", rank = AbilityManifest.Rank.A, species = AbilityManifest.Species.OTHERS, explain = {
+import daybreak.abilitywar.ability.AbilityManifest;
+import daybreak.abilitywar.ability.SubscribeEvent;
+import daybreak.abilitywar.ability.decorator.ActiveHandler;
+import daybreak.abilitywar.ability.event.AbilityPreActiveSkillEvent;
+import daybreak.abilitywar.ability.event.AbilityPreTargetEvent;
+import daybreak.abilitywar.game.AbstractGame;
+import daybreak.abilitywar.game.module.DeathManager;
+import daybreak.abilitywar.game.team.interfaces.Teamable;
+import daybreak.abilitywar.utils.base.color.RGB;
+import daybreak.abilitywar.utils.base.concurrent.TimeUnit;
+import daybreak.abilitywar.utils.base.math.FastMath;
+import daybreak.abilitywar.utils.base.math.LocationUtil;
+import daybreak.abilitywar.utils.base.minecraft.nms.NMS;
+import daybreak.abilitywar.utils.library.ParticleLib;
+import daybreak.abilitywar.utils.library.SoundLib;
+
+@AbilityManifest(name = "레이센", rank = AbilityManifest.Rank.S, species = AbilityManifest.Species.OTHERS, explain = {
         "§7패시브 §8- §9마인드 쉐이커§f: 상대방을 3회 타격할 때 마다 §9마인드 쉐이커§f의 수치가 1씩 증가합니다.",
         "  §9마인드 쉐이커§f의 수치가 $[MIND_SHAKER_ENHANCE_PREDICATE] 이상일 경우, ",
         "  자신의 모든 공격에 §8뒤틀림§f 효과를 $[MIND_SHAKER_ENHANCE_DURATION] 부여합니다.",
@@ -96,17 +99,23 @@ public class Reisen extends CokesAbility implements ActiveHandler {
     };
 
     private final Predicate<Entity> predicate = entity -> {
-        if (entity.equals(getPlayer())) return false;
-        if (entity instanceof Player) {
-            if (!getGame().isParticipating(entity.getUniqueId())) return false;
-            if (getGame() instanceof DeathManager.Handler) {
-                DeathManager.Handler game = (DeathManager.Handler) getGame();
-                return !game.getDeathManager().isExcluded(entity.getUniqueId());
-            }
-            return getGame().getParticipant(entity.getUniqueId()).attributes().TARGETABLE.getValue();
-        }
-        return true;
-    };
+		if (entity.equals(getPlayer())) return false;
+		if (entity instanceof Player) {
+			if (!getGame().isParticipating(entity.getUniqueId())) return false;
+			AbstractGame.Participant target = getGame().getParticipant(entity.getUniqueId());
+			if (getGame() instanceof DeathManager.Handler) {
+				DeathManager.Handler game = (DeathManager.Handler) getGame();
+				if (game.getDeathManager().isExcluded(entity.getUniqueId())) return false;
+			}
+			if (getGame() instanceof Teamable) {
+				Teamable game = (Teamable) getGame();
+				return (!game.hasTeam(getParticipant()) || !game.hasTeam(target) || !game.getTeam(getParticipant()).equals(game.getTeam(target)));
+			}
+			return target.attributes().TARGETABLE.getValue();
+		}
+		return true;
+	};
+
 
     private final AbilityTimer passive_timer = new ReisenMadnessTimer();
     private final MindShakerNoticeTimer notice = new MindShakerNoticeTimer();
@@ -188,16 +197,9 @@ public class Reisen extends CokesAbility implements ActiveHandler {
 
     @SubscribeEvent
     public void onEntityDamage(CEntityDamageEvent e) {
-        if (e.getDamager() == null) return;
-        Entity damager = e.getDamager();
-        if (NMS.isArrow(damager)) {
-            Projectile arrow = (Projectile) e.getDamager();
-            if (arrow.getShooter() instanceof Entity) {
-                damager = (Entity) arrow.getShooter();
-            }
-        }
+        Entity damager = CokesUtil.getDamager(e.getDamager());
 
-        if (damager.equals(getPlayer()) && predicate.test(e.getEntity()) && e.getEntity() instanceof Player) {
+        if (damager != null && damager.equals(getPlayer()) && predicate.test(e.getEntity()) && e.getEntity() instanceof Player) {
             if(mind_shaker_enhance) Warp.apply(getGame().getParticipant(e.getEntity().getUniqueId()), TimeUnit.SECONDS, MIND_SHAKER_ENHANCE_DURATION.getValue());
             hit++;
             if (hit == 3) {

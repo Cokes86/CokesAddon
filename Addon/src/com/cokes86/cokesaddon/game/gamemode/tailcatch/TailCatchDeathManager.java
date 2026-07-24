@@ -11,10 +11,8 @@ import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
 import org.bukkit.scheduler.BukkitRunnable;
 
-import java.util.ArrayList;
-import java.util.List;
-
 public class TailCatchDeathManager extends DeathManager {
+
     private final boolean autoRespawn = DeathSettings.getAutoRespawn();
     private final TailCatch game;
 
@@ -24,27 +22,42 @@ public class TailCatchDeathManager extends DeathManager {
     }
 
     @Override
-    public void Operation(Participant victim) {
-        Bukkit.broadcastMessage("§c" + victim.getPlayer().getName() + "§f님이 탈락하셨습니다.");
-        victim.getPlayer().setGameMode(GameMode.SPECTATOR);
-        excludedPlayers.add(victim.getPlayer().getUniqueId());
-        AttributeUtil.setMaxHealth(victim.getPlayer(), Settings.getDefaultMaxHealth());
-        if (autoRespawn) {
-            new BukkitRunnable() {
-                @Override
-                public void run() {
-                    NMS.respawn(victim.getPlayer());
-                }
-            }.runTaskLater(AbilityWar.getPlugin(), 2L);
+    public void Operation(final Participant victim) {
+        if (excludedPlayers.contains(victim.getPlayer().getUniqueId())) {
+            return;
         }
+
+        Bukkit.broadcastMessage("§c" + victim.getPlayer().getName() + "§f님이 탈락하셨습니다.");
+
+        excludedPlayers.add(victim.getPlayer().getUniqueId());
+
+        victim.getPlayer().setGameMode(GameMode.SPECTATOR);
+        AttributeUtil.setMaxHealth(victim.getPlayer(), Settings.getDefaultMaxHealth());
+
+        game.getNoticeTail().removeBossBar(victim);
+
         if (game.removeTail(victim)) {
             game.getNoticeTail().updateBossBar();
         }
 
-        if (game.getParticipants().size() - excludedPlayers.size() == 1) {
-            List<Participant> winner = new ArrayList<>(game.getParticipants());
-            winner.removeIf(participant -> excludedPlayers.contains(participant.getPlayer().getUniqueId()));
-            game.Win(winner.get(0));
+        if (autoRespawn) {
+            new BukkitRunnable() {
+                @Override
+                public void run() {
+                    if (victim.getPlayer().isOnline()) {
+                        NMS.respawn(victim.getPlayer());
+                        victim.getPlayer().setGameMode(GameMode.SPECTATOR);
+                    }
+                }
+            }.runTaskLater(AbilityWar.getPlugin(), 2L);
+        }
+
+        if (game.getAliveCount() == 1) {
+            Participant winner = game.getLastAliveParticipant();
+
+            if (winner != null) {
+                game.Win(winner);
+            }
         }
     }
 }

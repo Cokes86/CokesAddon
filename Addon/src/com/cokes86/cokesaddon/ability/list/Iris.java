@@ -1,9 +1,19 @@
 package com.cokes86.cokesaddon.ability.list;
 
+import java.util.HashMap;
+import java.util.Map;
+
+import static org.bukkit.ChatColor.DARK_GRAY;
+import static org.bukkit.ChatColor.GRAY;
+import org.bukkit.Material;
+import org.bukkit.entity.Entity;
+import org.bukkit.entity.Player;
+
 import com.cokes86.cokesaddon.ability.CokesAbility;
 import com.cokes86.cokesaddon.ability.Config;
 import com.cokes86.cokesaddon.effect.list.Nightmare;
 import com.cokes86.cokesaddon.util.FunctionalInterfaces;
+
 import daybreak.abilitywar.ability.AbilityManifest;
 import daybreak.abilitywar.ability.decorator.ActiveHandler;
 import daybreak.abilitywar.config.enums.CooldownDecrease;
@@ -17,15 +27,6 @@ import daybreak.abilitywar.utils.base.minecraft.nms.IHologram;
 import daybreak.abilitywar.utils.base.minecraft.nms.NMS;
 import daybreak.abilitywar.utils.library.SoundLib;
 import daybreak.google.common.base.Predicate;
-import org.bukkit.Material;
-import org.bukkit.entity.Entity;
-import org.bukkit.entity.Player;
-
-import java.util.HashMap;
-import java.util.Map;
-
-import static org.bukkit.ChatColor.DARK_GRAY;
-import static org.bukkit.ChatColor.GRAY;
 
 @AbilityManifest(name = "아이리스", rank = AbilityManifest.Rank.A, species = AbilityManifest.Species.HUMAN, explain = {
         "§7철괴 우클릭 §8- §c레인보우§r: $[RAINBOW_RANGE]블럭 이내 상대방을 보고 우클릭 시",
@@ -131,10 +132,11 @@ public class Iris extends CokesAbility implements ActiveHandler {
             super(STACK_HOLDING_TIME.getValue()*20);
             this.participant = participant;
 
+            
             final Player targetPlayer = participant.getPlayer();
             this.hologram = NMS.newHologram(targetPlayer.getWorld(), targetPlayer.getLocation().getX(), targetPlayer.getLocation().getY() + 3.0, targetPlayer.getLocation().getZ());
             this.hologram.setText("§e무지개: "+rainbow);
-            this.hologram.display(getPlayer());
+            this.hologram.display(Iris.this.getPlayer());
             setPeriod(TimeUnit.TICKS, 1);
         }
 

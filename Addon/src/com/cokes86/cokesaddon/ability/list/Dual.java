@@ -10,14 +10,11 @@ import daybreak.abilitywar.ability.AbilityManifest.Rank;
 import daybreak.abilitywar.ability.AbilityManifest.Species;
 import daybreak.abilitywar.ability.decorator.ActiveHandler;
 import daybreak.abilitywar.ability.decorator.TargetHandler;
-import daybreak.abilitywar.config.Configuration;
 import daybreak.abilitywar.config.Configuration.Settings;
-import daybreak.abilitywar.config.Configuration.Settings.DeveloperSettings;
 import daybreak.abilitywar.game.AbstractGame.GameTimer;
 import daybreak.abilitywar.game.AbstractGame.Participant;
 import daybreak.abilitywar.game.manager.AbilityList;
 import daybreak.abilitywar.game.manager.effect.Stun;
-import daybreak.abilitywar.utils.annotations.Beta;
 import daybreak.abilitywar.utils.base.collect.SetUnion;
 import daybreak.abilitywar.utils.base.concurrent.TimeUnit;
 import daybreak.abilitywar.utils.base.minecraft.entity.health.Healths;
@@ -38,7 +35,6 @@ import java.util.stream.Collectors;
 @AbilityManifest(name = "듀얼", rank = Rank.SPECIAL, species = Species.SPECIAL, explain={
     "§7패시브 §8- §c듀얼모드§f: 2개의 캐릭터를 운용합니다.",
     "  두 캐릭터는 능력과 체력은 다르나 그 외의 것들은 공유합니다.",
-    "  능력은 B ~ S 사이에서 배정받습니다.",
     "§7에메랄드 우클릭 §8- §c체인지§f: 자신이 운용하는 캐릭터를 바꿉니다.",
     "  단 1초간 움직일 수 없고, 능력이 봉인됩니다.",
     "$(CHARACTER_EXPLAIN)"
@@ -86,19 +82,22 @@ public class Dual extends CokesAbility implements ActiveHandler, TargetHandler {
 
     private AbilityBase createCharacter() {
         try {
-            List<AbilityRegistration> returnAbilities = AbilityList.values().stream().filter(abilityRegistration -> {
-                if (abilityRegistration.getAbilityClass().getAnnotation(Beta.class) != null) {
-                    if (!DeveloperSettings.isEnabled()) return false;
-                }
-                if (Configuration.Settings.isBlacklisted(abilityRegistration.getManifest().name())) {
-                    return false;
-                }
-                if (abilityRegistration.getManifest().name().equals("유키")) return false;
-                return abilityRegistration.getManifest().rank() == Rank.B || abilityRegistration.getManifest().rank() == Rank.A || abilityRegistration.getManifest().rank() == Rank.S;
-            }).collect(Collectors.toList());
-            final Random random = new Random();
+            List<AbilityRegistration> returnAbilities = AbilityList.values().stream()
+                    .filter(reg -> {
+                        if (reg.getManifest().name().equals("듀얼")) return false;
+                        if (Settings.isBlacklisted(reg.getManifest().name()))
+                            return false;
 
+                        if (!reg.isAvailable(Dual.this.getGame().getClass()))
+                            return false;
+
+                        return Settings.isUsingBetaAbility() || !reg.hasFlag(AbilityRegistration.Flag.BETA);
+                    })
+                    .collect(Collectors.toList());
+
+            final Random random = new Random();
             return AbilityBase.create(random.pick(returnAbilities), getParticipant());
+
         } catch (ReflectiveOperationException e) {
             return createCharacter();
         }

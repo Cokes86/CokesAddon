@@ -1,10 +1,25 @@
 package com.cokes86.cokesaddon.ability.list;
 
+import java.text.DecimalFormat;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Random;
+
+import org.bukkit.Material;
+import org.bukkit.entity.Entity;
+import org.bukkit.entity.Projectile;
+
 import com.cokes86.cokesaddon.ability.CokesAbility;
 import com.cokes86.cokesaddon.ability.Config;
 import com.cokes86.cokesaddon.event.CEntityDamageEvent;
 import com.cokes86.cokesaddon.util.FunctionalInterfaces;
-import daybreak.abilitywar.ability.*;
+
+import daybreak.abilitywar.ability.AbilityBase;
+import daybreak.abilitywar.ability.AbilityManifest;
+import daybreak.abilitywar.ability.Materials;
+import daybreak.abilitywar.ability.NotAvailable;
+import daybreak.abilitywar.ability.SubscribeEvent;
+import daybreak.abilitywar.ability.Tips;
 import daybreak.abilitywar.ability.Tips.Description;
 import daybreak.abilitywar.ability.Tips.Difficulty;
 import daybreak.abilitywar.ability.Tips.Level;
@@ -18,14 +33,6 @@ import daybreak.abilitywar.game.list.mix.triplemix.AbstractTripleMix;
 import daybreak.abilitywar.utils.base.concurrent.TimeUnit;
 import daybreak.abilitywar.utils.base.minecraft.nms.IHologram;
 import daybreak.abilitywar.utils.base.minecraft.nms.NMS;
-import org.bukkit.Material;
-import org.bukkit.entity.Entity;
-import org.bukkit.entity.Projectile;
-
-import java.text.DecimalFormat;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Random;
 
 @AbilityManifest(name = "데이터마이닝", rank = AbilityManifest.Rank.S, species = AbilityManifest.Species.HUMAN, explain = {
 		"§7패시브 §8- §c딥러닝§f: 플레이어의 능력사용여부, 전투여부를 알 수 있습니다.",
@@ -120,6 +127,7 @@ public class DataMining extends CokesAbility implements ActiveHandler {
 		}
 	}
 
+	@Override
 	public void onUpdate(Update update) {
 		if (update == Update.RESTRICTION_CLEAR) {
 			final double damage_value = damageUp.getValue()*2 / max_count * damage_count;
@@ -139,7 +147,7 @@ public class DataMining extends CokesAbility implements ActiveHandler {
 	}
 
 	@SubscribeEvent
-	private void onAbilityActiveSkill(AbilityActiveSkillEvent e) {
+	public void onAbilityActiveSkill(AbilityActiveSkillEvent e) {
 		if (!e.getParticipant().equals(getParticipant())) {
 			if ((damage_count + defense_count) < max_count) {
 				Active();
@@ -202,6 +210,7 @@ public class DataMining extends CokesAbility implements ActiveHandler {
 		private final IHologram hologram;
 		private final Participant participant;
 
+		@SuppressWarnings("null")
 		public Scanning(Participant participant) {
 			super();
 			this.participant = participant;
@@ -226,6 +235,7 @@ public class DataMining extends CokesAbility implements ActiveHandler {
 			start();
 		}
 
+		@SuppressWarnings("null")
 		@Override
 		protected void run(int count) {
 			if (!hologram.isUnregistered()) {

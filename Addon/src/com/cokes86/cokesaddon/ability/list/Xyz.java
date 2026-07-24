@@ -3,6 +3,8 @@ package com.cokes86.cokesaddon.ability.list;
 import com.cokes86.cokesaddon.ability.CokesAbility;
 import com.cokes86.cokesaddon.ability.Config;
 import com.cokes86.cokesaddon.ability.decorate.Lite;
+import com.cokes86.cokesaddon.event.CEntityDamageEvent;
+import com.cokes86.cokesaddon.util.CokesUtil;
 import com.cokes86.cokesaddon.util.FunctionalInterfaces;
 import daybreak.abilitywar.AbilityWar;
 import daybreak.abilitywar.ability.AbilityManifest;
@@ -16,7 +18,6 @@ import daybreak.abilitywar.game.module.DeathManager;
 import daybreak.abilitywar.game.team.interfaces.Teamable;
 import daybreak.abilitywar.utils.base.concurrent.TimeUnit;
 import daybreak.abilitywar.utils.base.math.LocationUtil;
-import daybreak.abilitywar.utils.base.minecraft.damage.Damages;
 import daybreak.google.common.base.Predicate;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
@@ -32,8 +33,8 @@ import java.util.List;
 @AbilityManifest(name = "엑시즈", rank = Rank.S, species = Species.HUMAN, explain = {
 		"게임 중 1회에 한하여 철괴 우클릭 시",
 		"주변 $[RANGE]블럭 이내 플레이어는 자신에게 이동합니다.",
-		"이후 자신이 사망할 때 까지 이동된 플레이어는",
-		"$[DOT_DAMAGE_PERIOD]마다 $[DOT_DAMAGE]의 관통대미지를 받는",
+		"이후 자신이 사망할 때 까지 이동된 플레이어 대상으로",
+		"공격력이 $[DAMAGE] 상승합니다.",
 		"§5저주§f를 부여받습니다."
 })
 @Lite
@@ -41,8 +42,7 @@ public class Xyz extends CokesAbility implements ActiveHandler {
 	private static final Config<Integer> RANGE = Config.of(Xyz.class, "range", 10, FunctionalInterfaces.positive(),
 			"능력 대상 범위",
 			"기본값: 10 (블럭)");
-	private static final Config<Integer> DOT_DAMAGE_PERIOD = Config.of(Xyz.class, "dot-damage-period", 50, FunctionalInterfaces.positive(), FunctionalInterfaces.tickToSecond());
-	private static final Config<Double> DOT_DAMAGE = Config.of(Xyz.class, "dot-damage", 2.5, FunctionalInterfaces.positive());
+	private static final Config<Double> DAMAGE = Config.percent(Xyz.class, "damage", 0.5);
 	private final Predicate<Entity> predicate = entity -> {
 		if (entity == null || entity.equals(getPlayer())) return false;
 		if (entity instanceof Player) {
@@ -70,7 +70,7 @@ public class Xyz extends CokesAbility implements ActiveHandler {
 	public boolean ActiveSkill(Material arg0, ClickType arg1) {
 		if (arg0 == Material.IRON_INGOT && arg1 == ClickType.RIGHT_CLICK && !use) {
 			List<Player> targets = LocationUtil.getNearbyEntities(Player.class, getPlayer().getLocation(), RANGE.getValue(), RANGE.getValue(), predicate);
-			if (targets.size() != 0) {
+			if (!targets.isEmpty()) {
 				for (Player player : targets) {
 					player.teleport(getPlayer().getLocation());
 					new XyzTimer(getGame().getParticipant(player));
@@ -105,9 +105,6 @@ public class Xyz extends CokesAbility implements ActiveHandler {
 		@Override
 		protected void run(int arg0) {
 			channel.update("§5저주");
-			if (arg0 % DOT_DAMAGE_PERIOD.getValue() == 0) {
-				Damages.damageFixed(participant.getPlayer(), getPlayer(), DOT_DAMAGE.getValue().floatValue());
-			}
 		}
 
 		@Override
@@ -127,6 +124,16 @@ public class Xyz extends CokesAbility implements ActiveHandler {
 			if (e.getEntity().equals(getPlayer())) {
 				participant.getPlayer().sendMessage("엑시즈가 사망하였습니다.");
 				stop(true);
+			}
+		}
+
+		@EventHandler
+		public void onEntityDamageByEntity(CEntityDamageEvent e) {
+			Entity damager = CokesUtil.getDamager(e.getDamager());
+			Entity victim = e.getEntity();
+
+			if (damager != null && damager.equals(getPlayer()) && victim.equals(participant.getPlayer())) {
+				e.setDamage(e.getDamage() * (1+DAMAGE.getValue()));
 			}
 		}
 	}

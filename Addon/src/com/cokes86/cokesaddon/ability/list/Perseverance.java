@@ -45,7 +45,10 @@ public class Perseverance extends CokesAbility {
 
 	public void onUpdate(Update update) {
 		if (update == Update.RESTRICTION_CLEAR) {
+			ac.update("상대방에게 주는 대미지 " + (give) + "% 증가");
 			passive.start();
+		} else {
+			ac.update("");
 		}
 	}
 

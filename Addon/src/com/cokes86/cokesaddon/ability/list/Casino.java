@@ -1,5 +1,26 @@
 package com.cokes86.cokesaddon.ability.list;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.StringJoiner;
+import java.util.function.Predicate;
+
+import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
+import org.bukkit.Material;
+import org.bukkit.Note;
+import org.bukkit.attribute.Attribute;
+import org.bukkit.entity.Entity;
+import org.bukkit.entity.Player;
+import org.bukkit.entity.Projectile;
+import org.bukkit.event.entity.EntityDamageEvent;
+import org.bukkit.event.entity.EntityRegainHealthEvent;
+import org.bukkit.event.entity.ProjectileLaunchEvent;
+import org.bukkit.util.Vector;
+
 import com.cokes86.cokesaddon.ability.CokesAbility;
 import com.cokes86.cokesaddon.ability.Config;
 import com.cokes86.cokesaddon.ability.decorate.Lite;
@@ -9,6 +30,7 @@ import com.cokes86.cokesaddon.util.CokesUtil;
 import com.cokes86.cokesaddon.util.FunctionalInterfaces;
 import com.cokes86.cokesaddon.util.nms.NMSUtil;
 import com.google.common.base.Strings;
+
 import daybreak.abilitywar.ability.AbilityManifest;
 import daybreak.abilitywar.ability.SubscribeEvent;
 import daybreak.abilitywar.ability.decorator.ActiveHandler;
@@ -26,21 +48,6 @@ import daybreak.abilitywar.utils.base.minecraft.nms.NMS;
 import daybreak.abilitywar.utils.base.random.Random;
 import daybreak.abilitywar.utils.library.SoundLib;
 import daybreak.google.common.collect.ImmutableMap;
-import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
-import org.bukkit.Material;
-import org.bukkit.Note;
-import org.bukkit.attribute.Attribute;
-import org.bukkit.entity.Entity;
-import org.bukkit.entity.Player;
-import org.bukkit.entity.Projectile;
-import org.bukkit.event.entity.EntityDamageEvent;
-import org.bukkit.event.entity.EntityRegainHealthEvent;
-import org.bukkit.event.entity.ProjectileLaunchEvent;
-import org.bukkit.util.Vector;
-
-import java.util.*;
-import java.util.function.Predicate;
 
 @AbilityManifest(name="카지노", rank = AbilityManifest.Rank.B, species = AbilityManifest.Species.HUMAN, explain = {
         "철괴 우클릭시 랜덤한 효과 하나를 영구히 부여합니다. $[COOLDOWN]",
@@ -54,10 +61,10 @@ public class Casino extends CokesAbility implements ActiveHandler {
             "# 쿨타임", "# 기본값: 60 (초)");
 
     //각종 효과 세부내역
-    private static final Config<Double> DAMAGE_INCREMENT_VALUE = Config.of(Casino.class, "effects.damage-increment", 0.5, FunctionalInterfaces.positive(),
-            "# 효과 중 대미지 증가량 수치", "# 기본값: 0.5");
-    private static final Config<Double> DAMAGE_DECREMENT_VALUE = Config.of(Casino.class, "effects.damage-decrement", 0.5, FunctionalInterfaces.positive(),
-            "# 효과 중 대미지 감소량 수치", "# 기본값: 0.5");
+    private static final Config<Double> DAMAGE_INCREMENT_VALUE = Config.of(Casino.class, "effects.damage-increment", 2.5, FunctionalInterfaces.positive(),
+            "# 효과 중 대미지 증가량 수치", "# 기본값: 2.5");
+    private static final Config<Double> DAMAGE_DECREMENT_VALUE = Config.of(Casino.class, "effects.damage-decrement", 1.5, FunctionalInterfaces.positive(),
+            "# 효과 중 대미지 감소량 수치", "# 기본값: 1.5");
     private static final Config<Integer> WITHER_PERIOD = Config.of(Casino.class, "effects.wither-period", 4, FunctionalInterfaces.positive(), FunctionalInterfaces.TIME,
             "# 효과 중 위더 대미지 주기", "# 기본값: 4 (초)");
     private static final Config<Integer> TWIST_PERIOD = Config.of(Casino.class, "effects.twist-period", 10, FunctionalInterfaces.positive(), FunctionalInterfaces.TIME,
@@ -66,12 +73,12 @@ public class Casino extends CokesAbility implements ActiveHandler {
             "# 효과 중 체력 즉시 회복량", "# 기본값: 2");
     private static final Config<Integer> MAX_HEALTH_DECREMENT = Config.of(Casino.class, "effects.max-health-decrement", 2, FunctionalInterfaces.positive(),
             "# 효과 중 최대 체력 감소량", "# 기본값: 2");
-    private static final Config<Double> REGAIN_INCREMENT = Config.of(Casino.class, "effects.regain-increment", 0.2, FunctionalInterfaces.positive(),
-            "# 효과 중 주기적인 체력 회복 증가량", "# 기본값: 0.2 (배)");
+    private static final Config<Double> REGAIN_INCREMENT = Config.of(Casino.class, "effects.regain-increment", 0.5, FunctionalInterfaces.positive(),
+            "# 효과 중 주기적인 체력 회복 증가량", "# 기본값: 0.5 (배)");
     private static final Config<Integer> BLEED_ATTACK_PREDICATE = Config.of(Casino.class, "effects.bleed-attack-predicate", 4, FunctionalInterfaces.positive(),
             "# 효과 중 출혈 부여 조건", "# 기본값: 4 (회)");
-    private static final Config<Integer> BLEED_DURATION = Config.of(Casino.class, "effects.bleed-duration", 1, FunctionalInterfaces.positive(),
-            "# 효과 중 출혈 시간", "# 기본값: 1 (초)");
+    private static final Config<Integer> BLEED_DURATION = Config.of(Casino.class, "effects.bleed-duration", 2, FunctionalInterfaces.positive(),
+            "# 효과 중 출혈 시간", "# 기본값: 2 (초)");
     private static final Config<Integer> COOLDOWN_INCREMENT = Config.of(Casino.class, "effects.cooldown-increment", 50, FunctionalInterfaces.positive(),
             "# 효과 중 쿨타임 증가량", "# 기본값: 50 (%)");
     private static final Config<Integer> STUN_DURATION = Config.of(Casino.class, "effects.stun-duration", 2, FunctionalInterfaces.positive(), FunctionalInterfaces.TIME,
@@ -147,6 +154,7 @@ public class Casino extends CokesAbility implements ActiveHandler {
         }
     }
 
+    @Override
     public boolean ActiveSkill(Material material, ClickType clickType) {
         if (material == Material.IRON_INGOT) {
             if (clickType == ClickType.RIGHT_CLICK && !cooldown.isCooldown() && !infoTimer.isRunning()) {
@@ -346,23 +354,28 @@ public class Casino extends CokesAbility implements ActiveHandler {
             this.setPeriod(TimeUnit.TICKS, 1);
         }
 
+        @Override
         public void onStart() {
             hologram.display(getPlayer());
         }
 
+        @Override
         public void run(int time) {
             hologram.teleport(participant.getPlayer().getLocation().clone().add(0,2.2,0));
         }
 
+        @Override
         public void onCountSet() {
             String text = "§c".concat(Strings.repeat("☑",hit)).concat(Strings.repeat("☐", BLEED_ATTACK_PREDICATE.getValue()-hit));
             hologram.setText(text);
         }
 
+        @Override
         public void onEnd() {
             this.hologram.hide(getPlayer());
         }
 
+        @Override
         public void onSilentEnd() {
             this.hologram.hide(getPlayer());
         }

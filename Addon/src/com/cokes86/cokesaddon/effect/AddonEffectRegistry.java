@@ -21,7 +21,6 @@ public class AddonEffectRegistry {
         registerEffect(Nightmare.class);
         registerEffect(Seal.class);
         registerEffect(Warp.class);
-        registerEffect(Suffle.class);
 
         //2.0.0
         registerEffect(Debuging.class);

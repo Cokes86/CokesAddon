@@ -57,7 +57,7 @@ import java.util.function.Predicate;
         "§7치명적 공격을 받을 시 §8- §c라스트 버닝§f: §c버닝 소울§f이 1개 이상 존재하면",
         "  §c버닝 소울§f 1개가 해방하여 $[LAST_BURNING_RANGE]블럭 이내 플레이어를",
         "  $[LAST_BURNING_FIRE_DURATION]간 추가로 불태운 다음 자신의 체력이 1로 변경됩니다.",
-        "  사용되는 §c버닝 소울§f은 수거로 얻은 것부터 우선시되어 사용됩니다."
+        "  사용되는 §c버닝 소울§f은 §c수거§f로 얻은 것부터 우선시되어 사용됩니다."
 }, summarize = {
         "항상 불타고 화염 피해 (§c버닝 소울§f × $[FIRE_DAMAGE_INCREMENT])% 증가하는 대신, 회복량이 2배가 됩니다.",
         "자신이 적을 처치하면 최대 $[MAX_SOUL]개 보유 가능한 §c버닝 소울§f을 얻습니다.",
@@ -176,7 +176,7 @@ public class ReiBurningSoul extends CokesSynergy implements ActiveHandler {
                 double damageIncrement = (firetick - DAMAGE_INCREMENT_PREDICATE.getValue()*20) * 0.06;
                 e.setDamage(e.getDamage() + damageIncrement);
             } else {
-                e.getEntity().setFireTicks(e.getEntity().getFireTicks() + 20 + burningSoul.getTotalBurningSoul()*20);
+                e.getEntity().setFireTicks(e.getEntity().getFireTicks() + 21 + burningSoul.getTotalBurningSoul()*20);
             }
         }
     }
@@ -217,7 +217,7 @@ public class ReiBurningSoul extends CokesSynergy implements ActiveHandler {
 
         @Override
         protected void run(int count) {
-            getPlayer().setFireTicks(21);
+            if (count % 20 == 0) getPlayer().setFireTicks(21);
             temporary_soul.removeIf(mill -> mill + TEMPORARY_SOUL_DURATION.getValue()*1000 <= System.currentTimeMillis());
             channel.update("§c버닝 소울: "+soul + "(+ "+temporary_soul.size()+")");
         }

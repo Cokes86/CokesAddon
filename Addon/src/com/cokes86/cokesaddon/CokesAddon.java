@@ -11,6 +11,8 @@ import com.cokes86.cokesaddon.game.gamemode.disguiseparty.DisguiseParty;
 import com.cokes86.cokesaddon.game.gamemode.tailcatch.TailCatch;
 import com.cokes86.cokesaddon.game.module.roulette.Roulette;
 import com.cokes86.cokesaddon.game.module.roulette.RouletteRegister;
+
+import daybreak.abilitywar.AbilityWar;
 import daybreak.abilitywar.addon.Addon;
 import daybreak.abilitywar.addon.AddonLoader;
 import daybreak.abilitywar.game.Category;
@@ -24,6 +26,7 @@ import daybreak.abilitywar.game.list.mix.AbstractMix;
 import daybreak.abilitywar.game.list.mix.blind.MixBlindGame;
 import daybreak.abilitywar.game.manager.GameFactory;
 import daybreak.abilitywar.utils.base.Messager;
+
 import org.bukkit.Bukkit;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -37,6 +40,8 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
+
+import com.cokes86.cokesaddon.game.gamemode.killrace.KillRaceGame;
 
 public class CokesAddon extends Addon implements Listener {
 	private static final Map<String, Addon> loaded = new HashMap<>();
@@ -67,6 +72,7 @@ public class CokesAddon extends Addon implements Listener {
 		//Load Game Mode
 		GameFactory.registerMode(DisguiseParty.class);  // 변장파티
 		GameFactory.registerMode(TailCatch.class);  // 꼬리잡기
+		GameFactory.registerMode(KillRaceGame.class);
 
 		//register Murder
 		new CokesMurderMysteryFactory();

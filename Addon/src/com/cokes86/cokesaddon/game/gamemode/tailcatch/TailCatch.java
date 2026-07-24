@@ -1,7 +1,6 @@
 package com.cokes86.cokesaddon.game.gamemode.tailcatch;
 
 import com.cokes86.cokesaddon.CokesAddon;
-import com.cokes86.cokesaddon.util.AttributeUtil;
 import daybreak.abilitywar.config.Configuration.Settings;
 import daybreak.abilitywar.game.Category;
 import daybreak.abilitywar.game.Category.GameCategory;
@@ -28,6 +27,8 @@ import org.bukkit.entity.Player;
 import org.bukkit.entity.Projectile;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
+import org.bukkit.potion.PotionEffect;
+import org.bukkit.potion.PotionEffectType;
 import org.jetbrains.annotations.NotNull;
 
 import javax.naming.OperationNotSupportedException;
@@ -42,6 +43,7 @@ import java.util.List;
 @Category(GameCategory.GAME)
 @GameAliases(value = {"꼬잡", "꼬리"})
 public class TailCatch extends Game implements DefaultKitHandler, Winnable, NoticeTail.Handler {
+
     private final List<Participant> tail = new ArrayList<>();
     private final NoticeTail noticeTail = addModule(new NoticeTail(this));
 
@@ -53,13 +55,15 @@ public class TailCatch extends Game implements DefaultKitHandler, Winnable, Noti
     @Override
     protected void progressGame(int i) {
         switch (i) {
-            case 1:
+            case 1: {
                 List<String> lines = Messager.asList("§6==== §e게임 참여자 목록 §6====");
                 int count = 0;
+
                 for (Participant p : getParticipants()) {
                     count++;
                     lines.add("§a" + count + ". §f" + p.getPlayer().getName());
                 }
+
                 lines.add("§e총 인원수 : " + count + "명");
                 lines.add("§6===========================");
 
@@ -72,8 +76,10 @@ public class TailCatch extends Game implements DefaultKitHandler, Winnable, Noti
                     Bukkit.broadcastMessage("§c최소 참가자 수를 충족하지 못하여 게임을 중지합니다. §8(§72명§8)");
                 }
                 break;
-            case 3:
-                lines = Messager.asList(
+            }
+
+            case 3: {
+                List<String> lines = Messager.asList(
                         "§cTailCatch §f- §6꼬리잡기 - 나 잡아 봐라",
                         "§e버전 §7: §f" + CokesAddon.getAddon().getDescription().getVersion(),
                         "§b개발자 §7: §fCokes_86 코크스",
@@ -88,50 +94,64 @@ public class TailCatch extends Game implements DefaultKitHandler, Winnable, Noti
                     Bukkit.broadcastMessage(line);
                 }
                 break;
-            case 5:
+            }
+
+            case 5: {
                 if (Settings.getDrawAbility()) {
                     for (String line : Messager.asList(
                             "§f플러그인에 총 §b" + AbilityList.nameValues().size() + "개§f의 능력이 등록되어 있습니다.",
-                            "§7능력을 무작위로 할당합니다...")) {
+                            "§7능력을 무작위로 할당합니다..."
+                    )) {
                         Bukkit.broadcastMessage(line);
                     }
+
                     try {
                         startAbilitySelect();
                     } catch (OperationNotSupportedException ignored) {
                     }
                 }
                 break;
-            case 6:
+            }
+
+            case 6: {
                 if (Settings.getDrawAbility()) {
                     Bukkit.broadcastMessage("§f모든 참가자가 능력을 §b확정§f했습니다.");
                 } else {
                     Bukkit.broadcastMessage("§f능력자 게임 설정에 따라 §b능력§f을 추첨하지 않습니다.");
                 }
                 break;
+            }
+
             case 8:
                 Bukkit.broadcastMessage("§e잠시 후 게임이 시작됩니다.");
                 break;
+
             case 10:
                 Bukkit.broadcastMessage("§e게임이 §c5§e초 후에 시작됩니다.");
                 SoundLib.BLOCK_NOTE_BLOCK_HARP.broadcastSound();
                 break;
+
             case 11:
                 Bukkit.broadcastMessage("§e게임이 §c4§e초 후에 시작됩니다.");
                 SoundLib.BLOCK_NOTE_BLOCK_HARP.broadcastSound();
                 break;
+
             case 12:
                 Bukkit.broadcastMessage("§e게임이 §c3§e초 후에 시작됩니다.");
                 SoundLib.BLOCK_NOTE_BLOCK_HARP.broadcastSound();
                 break;
+
             case 13:
                 Bukkit.broadcastMessage("§e게임이 §c2§e초 후에 시작됩니다.");
                 SoundLib.BLOCK_NOTE_BLOCK_HARP.broadcastSound();
                 break;
+
             case 14:
                 Bukkit.broadcastMessage("§e게임이 §c1§e초 후에 시작됩니다.");
                 SoundLib.BLOCK_NOTE_BLOCK_HARP.broadcastSound();
                 break;
-            case 15:
+
+            case 15: {
                 if (Seasons.isChristmas()) {
                     final String blocks = Strings.repeat("§c■§2■", 22);
                     Bukkit.broadcastMessage(blocks);
@@ -143,7 +163,8 @@ public class TailCatch extends Game implements DefaultKitHandler, Winnable, Noti
                             "§e■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■",
                             "§f             §cTailCatch §f- §6꼬리잡기 - 나 잡아 봐라  ",
                             "§f                    게임 시작                ",
-                            "§e■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■")) {
+                            "§e■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■"
+                    )) {
                         Bukkit.broadcastMessage(line);
                     }
                 }
@@ -152,6 +173,7 @@ public class TailCatch extends Game implements DefaultKitHandler, Winnable, Noti
 
                 if (Settings.getSpawnEnable()) {
                     Location spawn = Settings.getSpawnLocation().toBukkitLocation();
+
                     for (Participant participant : getParticipants()) {
                         participant.getPlayer().teleport(spawn);
                     }
@@ -170,8 +192,14 @@ public class TailCatch extends Game implements DefaultKitHandler, Winnable, Noti
                 }
 
                 if (Settings.getClearWeather()) {
-                    for (World world : Bukkit.getWorlds()) world.setStorm(false);
+                    for (World world : Bukkit.getWorlds()) {
+                        world.setStorm(false);
+                    }
                 }
+
+                tail.clear();
+                tail.addAll(getParticipants());
+                Collections.shuffle(tail);
 
                 if (isRestricted()) {
                     getInvincibility().start(false);
@@ -184,10 +212,9 @@ public class TailCatch extends Game implements DefaultKitHandler, Winnable, Noti
 
                 startGame();
 
-                tail.addAll(getParticipants());
-                Collections.shuffle(tail);
-                noticeTail.updateBossBar();
+                noticeTail.initializeBossBar();
                 break;
+            }
         }
     }
 
@@ -196,17 +223,34 @@ public class TailCatch extends Game implements DefaultKitHandler, Winnable, Noti
         return new TailCatchDeathManager(this);
     }
 
+    public List<Participant> getTailList() {
+        return tail;
+    }
+
     protected @NotNull Participant getNextTail(Participant participant) {
-        int index = tail.indexOf(participant);
-        if (index < 0) {
-            throw new IndexOutOfBoundsException();
+        if (tail.size() <= 1) {
+            return participant;
         }
-        int nextIndex = index == tail.size()-1 ? 0 : index + 1;
-        return tail.get(nextIndex);
+
+        int index = tail.indexOf(participant);
+
+        if (index < 0) {
+            throw new IllegalStateException("꼬리 목록에 없는 참가자입니다: " + participant.getPlayer().getName());
+        }
+
+        return tail.get((index + 1) % tail.size());
     }
 
     protected boolean removeTail(Participant participant) {
         return tail.remove(participant);
+    }
+
+    public int getAliveCount() {
+        return tail.size();
+    }
+
+    public Participant getLastAliveParticipant() {
+        return tail.size() == 1 ? tail.get(0) : null;
     }
 
     @Override
@@ -217,22 +261,37 @@ public class TailCatch extends Game implements DefaultKitHandler, Winnable, Noti
     @EventHandler
     public void onEntityDamageByEntity(EntityDamageByEntityEvent e) {
         Entity damager = e.getDamager();
+
         if (damager instanceof Projectile) {
             Projectile projectile = (Projectile) damager;
+
             if (projectile.getShooter() instanceof Entity) {
                 damager = (Entity) projectile.getShooter();
             }
         }
 
-        if (damager instanceof Player && e.getEntity() instanceof Player) {
-            Participant entityParticipant = getParticipant(e.getEntity().getUniqueId());
-            Participant damagerParticipant = getParticipant(damager.getUniqueId());
+        if (!(damager instanceof Player)) return;
+        if (!(e.getEntity() instanceof Player)) return;
 
-            int beforeIndex = tail.indexOf(entityParticipant) == 0 ? tail.size()-1 : tail.indexOf(entityParticipant) - 1;
-            if (tail.get(beforeIndex).equals(damagerParticipant)) {
-                e.setDamage(0);
-                AttributeUtil.setMaxHealth(damagerParticipant.getPlayer(), AttributeUtil.getMaxHealth(damagerParticipant.getPlayer()) * 2 / 3);
-            }
+        Participant victimParticipant = getParticipant(e.getEntity().getUniqueId());
+        Participant damagerParticipant = getParticipant(damager.getUniqueId());
+
+        if (victimParticipant == null || damagerParticipant == null) return;
+        if (!tail.contains(victimParticipant) || !tail.contains(damagerParticipant)) return;
+        if (tail.size() == 1) return;
+
+        Participant target = getNextTail(damagerParticipant);
+
+        if (!target.equals(victimParticipant)) {
+            e.setDamage(0);
+
+            Player attacker = damagerParticipant.getPlayer();
+
+            attacker.addPotionEffect(new PotionEffect(PotionEffectType.SLOW, 60, 1));
+            attacker.addPotionEffect(new PotionEffect(PotionEffectType.GLOWING, 60, 0));
+            attacker.addPotionEffect(new PotionEffect(PotionEffectType.WEAKNESS, 60, 0));
+
+            attacker.sendMessage("§c자신의 타겟이 아닌 플레이어를 공격하여 디버프를 받았습니다.");
         }
     }
 }

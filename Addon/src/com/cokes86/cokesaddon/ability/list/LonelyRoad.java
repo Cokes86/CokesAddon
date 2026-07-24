@@ -37,7 +37,7 @@ public class LonelyRoad extends CokesAbility {
             "# 기본값: 60 (초)");
     private static final Config<Double> DAMAGE = Config.of(LonelyRoad.class, "damage", 0.5d, FunctionalInterfaces.positive(),
             "# 스택 당 증가하는 대미지",
-            "# 기본값: 1.0");
+            "# 기본값: 0.5");
     private int stack = 0;
     private final List<BlockData> blockData = new ArrayList<>();
     private final ActionbarChannel channel = newActionbarChannel();

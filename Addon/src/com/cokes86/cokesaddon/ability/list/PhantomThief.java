@@ -15,6 +15,7 @@ import daybreak.abilitywar.ability.AbilityManifest.Rank;
 import daybreak.abilitywar.ability.AbilityManifest.Species;
 import daybreak.abilitywar.ability.NotAvailable;
 import daybreak.abilitywar.ability.decorator.ActiveHandler;
+import daybreak.abilitywar.config.Configuration;
 import daybreak.abilitywar.game.AbstractGame.Participant;
 import daybreak.abilitywar.game.list.mix.AbstractMix.MixParticipant;
 import daybreak.abilitywar.game.list.mix.Mix;
@@ -84,11 +85,16 @@ public class PhantomThief extends CokesAbility implements ActiveHandler {
             Rank rank = target.getAbility().getRank();
             List<AbilityRegistration> returnAbilities = AbilityList.values().stream().filter(abilityRegistration -> {
                 Rank rank1 = abilityRegistration.getManifest().rank();
-                if (abilityRegistration.getAbilityClass().getAnnotation(Beta.class) != null) return false;
                 return (rank == Rank.SPECIAL && rank1 == Rank.L) || (rank == Rank.L && rank1 == Rank.S)
                         || (rank == Rank.S && rank1 == Rank.A) || (rank == Rank.A && rank1 == Rank.B)
                         || (rank == Rank.B && rank1 == Rank.C) || (rank == Rank.C && (rank1 == Rank.S || rank1 == Rank.L || rank1 == Rank.SPECIAL));
             }).collect(Collectors.toList());
+
+            returnAbilities.removeIf(reg -> {
+                if (Configuration.Settings.isBlacklisted(reg.getManifest().name())) return true;
+                if (!reg.isAvailable(getGame().getClass())) return true;
+                return !Configuration.Settings.isUsingBetaAbility() && reg.hasFlag(AbilityRegistration.Flag.BETA);
+            });
 
             AbilityRegistration newOne = new Random().pick(returnAbilities);
 
@@ -136,6 +142,12 @@ public class PhantomThief extends CokesAbility implements ActiveHandler {
                     }
                 }
 
+                returnAbilities.removeIf(reg -> {
+                    if (Configuration.Settings.isBlacklisted(reg.getManifest().name())) return true;
+                    if (!reg.isAvailable(getGame().getClass())) return true;
+                    return !Configuration.Settings.isUsingBetaAbility() && reg.hasFlag(AbilityRegistration.Flag.BETA);
+                });
+
                 AbilityRegistration newOne = new Random().pick(returnAbilities);
 
                 try {
@@ -164,6 +176,12 @@ public class PhantomThief extends CokesAbility implements ActiveHandler {
                                 || (rank == Rank.S && rank1 == Rank.A) || (rank == Rank.A && rank1 == Rank.B)
                                 || (rank == Rank.B && rank1 == Rank.C) || (rank == Rank.C && (rank1 == Rank.S || rank1 == Rank.L || rank1 == Rank.SPECIAL));
                     }).collect(Collectors.toList());
+
+                    returnAbilities.removeIf(reg -> {
+                        if (Configuration.Settings.isBlacklisted(reg.getManifest().name())) return true;
+                        if (!reg.isAvailable(getGame().getClass())) return true;
+                        return !Configuration.Settings.isUsingBetaAbility() && reg.hasFlag(AbilityRegistration.Flag.BETA);
+                    });
         
                     AbilityRegistration newOne = new Random().pick(returnAbilities);
 
@@ -193,6 +211,12 @@ public class PhantomThief extends CokesAbility implements ActiveHandler {
                                 || (rank == Rank.S && rank1 == Rank.A) || (rank == Rank.A && rank1 == Rank.B)
                                 || (rank == Rank.B && rank1 == Rank.C) || (rank == Rank.C && (rank1 == Rank.S || rank1 == Rank.L || rank1 == Rank.SPECIAL));
                     }).collect(Collectors.toList());
+
+                    returnAbilities.removeIf(reg -> {
+                        if (Configuration.Settings.isBlacklisted(reg.getManifest().name())) return true;
+                        if (!reg.isAvailable(getGame().getClass())) return true;
+                        return !Configuration.Settings.isUsingBetaAbility() && reg.hasFlag(AbilityRegistration.Flag.BETA);
+                    });
         
                     AbilityRegistration newOne = new Random().pick(returnAbilities);
 

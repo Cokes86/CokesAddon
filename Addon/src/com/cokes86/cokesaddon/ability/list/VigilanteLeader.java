@@ -1,9 +1,24 @@
 package com.cokes86.cokesaddon.ability.list;
 
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+import java.util.function.Predicate;
+
+import org.bukkit.Location;
+import org.bukkit.Material;
+import org.bukkit.entity.Entity;
+import org.bukkit.entity.Player;
+import org.bukkit.event.entity.PlayerDeathEvent;
+import org.bukkit.potion.PotionEffect;
+import org.bukkit.potion.PotionEffectType;
+
 import com.cokes86.cokesaddon.ability.CokesAbility;
 import com.cokes86.cokesaddon.ability.Config;
 import com.cokes86.cokesaddon.event.CEntityDamageEvent;
 import com.cokes86.cokesaddon.util.FunctionalInterfaces;
+import com.cokes86.cokesaddon.util.CokesUtil;
+
 import daybreak.abilitywar.ability.AbilityManifest;
 import daybreak.abilitywar.ability.SubscribeEvent;
 import daybreak.abilitywar.ability.decorator.ActiveHandler;
@@ -15,26 +30,12 @@ import daybreak.abilitywar.utils.base.color.RGB;
 import daybreak.abilitywar.utils.base.concurrent.TimeUnit;
 import daybreak.abilitywar.utils.base.math.LocationUtil;
 import daybreak.abilitywar.utils.base.math.geometry.Circle;
-import daybreak.abilitywar.utils.base.minecraft.nms.NMS;
 import daybreak.abilitywar.utils.library.ParticleLib;
-import org.bukkit.Location;
-import org.bukkit.Material;
-import org.bukkit.entity.Entity;
-import org.bukkit.entity.Player;
-import org.bukkit.entity.Projectile;
-import org.bukkit.event.entity.PlayerDeathEvent;
-import org.bukkit.potion.PotionEffect;
-import org.bukkit.potion.PotionEffectType;
-
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-import java.util.function.Predicate;
 
 @AbilityManifest(name = "자경단장", rank = AbilityManifest.Rank.B, species = AbilityManifest.Species.HUMAN, explain = {
 		"§7최초 철괴 우클릭 - §c자경단 집결§f: 범위 $[r]블럭 이내 모든 범위를 자경단 아지트로 만듭니다.",
 		"  또한 해당 범위 안에 있던 플레이어 전부 자경단원으로 소속됩니다.",
-		"§7철괴 우클릭 - §c자경단 공격§f: 힘1 버프를 참가자의 수만큼 부여합니다. $[cool]",
+		"§7철괴 우클릭 - §c자경단 공격§f: 참가자의 수만큼 대미지가 $[DAMAGE] 상승합니다. $[cool]",
 		"§7패시브 - §c단합§f: 자경단 아지트 내에서 참가자는 2명, 자경단원은 3명, 자경단장은 4명 취급하며",
 		"  자경단 아지트 밖에서 자경단장은 2명 취급합니다.",
 		"  자경단원은 자경단장을 공격할 때, 자경단장이 받는 대미지가 30% 감소합니다."
@@ -42,6 +43,7 @@ import java.util.function.Predicate;
 public class VigilanteLeader extends CokesAbility implements ActiveHandler {
 	public static final Config<Integer> r = Config.of(VigilanteLeader.class, "아지트범위", 10, FunctionalInterfaces.positive());
 	public static final Config<Integer> cool = Config.of(VigilanteLeader.class, "쿨타임", 90, FunctionalInterfaces.positive(), FunctionalInterfaces.COOLDOWN);
+	public static final Config<Double> DAMAGE = Config.positive(VigilanteLeader.class, "대미지", 2.0);
 	private final ActionbarChannel channel = this.newActionbarChannel();
 	private final RGB color = RGB.of(0, 162, 232);
 	private final Set<Participant> vigilantes = new HashSet<>();
@@ -83,7 +85,8 @@ public class VigilanteLeader extends CokesAbility implements ActiveHandler {
 				channel.update("인원 수: " + num + "+" + addNum + "");
 			}
 		}
-	}.setPeriod(TimeUnit.TICKS, 2).register();
+	}.setPeriod(TimeUnit.TICKS, 2).register(); 
+	
 	public VigilanteLeader(Participant participant) {
 		super(participant);
 		passive.start();
@@ -118,14 +121,7 @@ public class VigilanteLeader extends CokesAbility implements ActiveHandler {
 
 	@SubscribeEvent
 	public void onEntityDamage(CEntityDamageEvent e) {
-		if (e.getDamager() == null) return;
-		Entity damager = e.getDamager();
-		if (NMS.isArrow(damager)) {
-			Projectile arrow = (Projectile) damager;
-			if (arrow.getShooter() instanceof Entity) {
-				damager = (Entity) arrow.getShooter();
-			}
-		}
+		Entity damager = CokesUtil.getDamager(e.getDamager());
 
 		if (e.getEntity().equals(getPlayer()) && damager instanceof Player) {
 			Player t = (Player) damager;
@@ -135,6 +131,7 @@ public class VigilanteLeader extends CokesAbility implements ActiveHandler {
 		}
 	}
 
+	@Override
 	public void onUpdate(Update update) {
 		if (update == Update.RESTRICTION_CLEAR) {
 			passive.start();

@@ -65,6 +65,10 @@ public class FunctionalInterfaces {
         return a -> (a.doubleValue() / 20.0) +"초";
     }
 
+    public static Function<Double, String> percent() {
+        return a -> (a * 100) +"%";
+    }
+
     /**
      * 확률
      * @param includeZero 0을 포함할 것인지

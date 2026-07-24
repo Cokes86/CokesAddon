@@ -5,6 +5,7 @@ import com.cokes86.cokesaddon.event.CEntityDamageEvent;
 import com.cokes86.cokesaddon.ability.synergy.CokesSynergy;
 import com.cokes86.cokesaddon.util.AttributeUtil;
 import com.cokes86.cokesaddon.util.FunctionalInterfaces;
+
 import daybreak.abilitywar.ability.AbilityManifest;
 import daybreak.abilitywar.ability.SubscribeEvent;
 import daybreak.abilitywar.ability.decorator.ActiveHandler;
@@ -19,17 +20,19 @@ import daybreak.abilitywar.utils.base.minecraft.nms.NMS;
 import daybreak.abilitywar.utils.library.MaterialX;
 import daybreak.abilitywar.utils.library.ParticleLib;
 import daybreak.abilitywar.utils.library.SoundLib;
+
 import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.Note;
-import org.bukkit.entity.Arrow;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 
+import com.cokes86.cokesaddon.util.CokesUtil;
+
 @AbilityManifest(name = "레이<소울테이커>", rank = AbilityManifest.Rank.L, species = AbilityManifest.Species.HUMAN, explain = {
         "§7패시브 §8- §c소울 커팅§f: 상대방을 공격할 시 주는 대미지가 $[DAMAGE]% 증가합니다.",
-        "  추가로 자신이 가진 §e흡수 체력§f $[DEMAND_ABSORPTION]당 대미지가 1 증가합니다.",
+        "  추가로 자신이 가진 §e흡수 체력§f $[DEMAND_ABSORPTION]당 대미지가 $[ADDITIONAL_DAMAGE] 증가합니다.",
         "  퍼센트 대미지가 증가 후 §e흡수 체력§f으로 인한 대미지가 증가합니다.",
         "§7플레이어 사망 §8- §c리멤버§f: 플레이어가 사망한 자리에 영혼이 남아 돌아다닙니다.",
         "  영혼 근처 $[RANGE]블럭에 다가갈 경우 영혼을 흡수하여",
@@ -44,6 +47,7 @@ import org.bukkit.entity.Player;
 })
 public class ReiSoulTaker extends CokesSynergy implements ActiveHandler {
     public static final Config<Double> DAMAGE = Config.of(ReiSoulTaker.class, "추가대미지", 60.0, FunctionalInterfaces.positive());
+    public static final Config<Double> ADDITIONAL_DAMAGE = Config.of(ReiSoulTaker.class, "흡수체력당_추가대미지", 2.5, FunctionalInterfaces.positive());
     public static final Config<Integer> RANGE = Config.of(ReiSoulTaker.class, "리멤버_흡수_범위", 5, FunctionalInterfaces.positive());
     public static final Config<Integer> DURATION = Config.time(ReiSoulTaker.class, "이맨서페이션_지속시간", 20);
     public static final Config<Double> ADDITIONAL = Config.of(ReiSoulTaker.class, "이맨서페이션_추가대미지", 35.0, FunctionalInterfaces.positive());
@@ -109,17 +113,8 @@ public class ReiSoulTaker extends CokesSynergy implements ActiveHandler {
             }
         }
 
-        if (e.getDamager() == null) return;
-        Entity damager = e.getDamager();
-        if (damager instanceof Arrow) {
-            Arrow arrow = (Arrow) e.getDamager();
-            if (arrow.getShooter() instanceof Entity) {
-                damager = (Entity) arrow.getShooter();
-            }
-        }
-
-        if (damager.equals(getPlayer())) {
-            e.setDamage(e.getDamage() * (1 + DAMAGE.getValue()/100.0 + (duration.isRunning() ? ADDITIONAL.getValue()/100.0 : 0)) + (int)(NMS.getAbsorptionHearts(getPlayer())/DEMAND_ABSORPTION.getValue()));
+        if (e.isDamager(getPlayer())) {
+            e.setDamage(e.getDamage() * (1 + DAMAGE.getValue()/100.0 + (duration.isRunning() ? ADDITIONAL.getValue()/100.0 : 0)) + ((int)(NMS.getAbsorptionHearts(getPlayer())/DEMAND_ABSORPTION.getValue()))*ADDITIONAL_DAMAGE.getValue());
 
             if (duration.isRunning()) {
                 final double maxHealth = AttributeUtil.getMaxHealth(getPlayer()), health = getPlayer().getHealth();
@@ -159,6 +154,7 @@ public class ReiSoulTaker extends CokesSynergy implements ActiveHandler {
             this.setPeriod(TimeUnit.TICKS, 1);
         }
 
+        @Override
         public void run(int cnt) {
             ParticleLib.REDSTONE.spawnParticle(location.clone().add(0,0.5,0), RGB.BLACK);
 
