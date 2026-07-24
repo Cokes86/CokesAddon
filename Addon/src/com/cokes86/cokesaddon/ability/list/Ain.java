@@ -16,7 +16,8 @@ import daybreak.abilitywar.game.AbstractGame;
 
 @AbilityManifest(name = "아인", rank = AbilityManifest.Rank.A, species = AbilityManifest.Species.HUMAN, explain = {
         "§7패시브 §8- §c망각의 저주§f: 쿨타임이 있는 적을 공격 시 (쿨타임) * $[INCREASE]%의 피해를 더 줍니다.",
-        "  또한 작동중인 쿨타임의 시간을 $[TIME] 늘립니다."
+        "  또한 작동중인 쿨타임의 시간을 $[TIME] 늘립니다.",
+        "  단, $[MAXIMUM]%까지만 상승합니다."
 }, summarize = {
         "쿨타임이 있는 능력자들에게 더욱 큰 피해를 줍니다."
 })
@@ -26,6 +27,8 @@ public class Ain extends CokesAbility {
             "# 망각의 저주 피해 증가량", "# 기본값: 2.0 (%)");
     private static final Config<Integer> TIME = Config.time(Ain.class, "time", 3,
             "# 망각의 저주로 인해 늘어날 쿨타임", "# 기본값: 3");
+    private static final Config<Double> MAXIMUM = Config.of(Ain.class, "maximum", 200.0, FunctionalInterfaces.positive(),
+            "# 망각의 저주 피해 증가량 최대치", "# 기본값: 100.0 (%)");
 
     public Ain(AbstractGame.Participant arg0) {
         super(arg0);
@@ -48,7 +51,8 @@ public class Ain extends CokesAbility {
                         }
                     }
 
-                    e.setDamage(e.getDamage() * (1 + cooldown*INCREASE.getValue()/100.0));
+                    double temp = Math.min((cooldown*INCREASE.getValue()/100.0), MAXIMUM.getValue() / 100.0);
+                    e.setDamage(e.getDamage() * (1 + temp));
                 }
             }
         }

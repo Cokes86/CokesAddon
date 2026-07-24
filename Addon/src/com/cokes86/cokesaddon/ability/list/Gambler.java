@@ -20,8 +20,9 @@ import daybreak.abilitywar.utils.base.collect.Pair;
 import daybreak.abilitywar.utils.library.SoundLib;
 
 @AbilityManifest(name = "겜블러", rank = Rank.B, species = Species.HUMAN, explain = {
-		"§7패시브 §8- §b겜블§f: 매 $[GM_PERIOD]마다 받는 대미지와 주는 대미지가",
-		"  $[MIN]% ~ $[MAX]% 사이로 랜덤하게 변경됩니다.",
+		"§7패시브 §8- §b겜블§f: 매 $[GM_PERIOD]마다",
+		"  받는 대미지가 $[TAKE_MIN]% ~ $[TAKE_MAX]% 사이로 랜덤하게 변경됩니다.",
+		"  주는 대미지가 $[GIVE_MIN]% ~ $[GIVE_MAX]% 사이로 랜덤하게 변경됩니다.",
 		"§7철괴 우클릭 §8- §c패널티 다이스§f: §b겜블§f의 주기가 $[PD_PERIOD]로 조정됩니다.",
 		"  다만, §b겜블§f로 수치가 랜덤하게 변경되지 아니하고",
 		"  능력 사용 시점 수치의 $[PD_PENALTY]%만큼 안좋은 쪽으로 증감합니다.",
@@ -32,14 +33,24 @@ public class Gambler extends CokesAbility implements ActiveHandler {
 	private static final Config<Integer> GM_PERIOD = Config.of(Gambler.class, "period", 15, FunctionalInterfaces.positive(), FunctionalInterfaces.TIME,
 			"# 겜블 주기",
 			"# 기본값: 15(초)");
-	private static final Config<Integer> VALUE1 = Config.of(Gambler.class, "value-1", 75, FunctionalInterfaces.positive(),
-			"# 겜블 최소/최대치 값 중 하나",
-			"# 두 숫자중 작은 값이 최소치, 큰 값이 최대치로 자동 변경됩니다.",
-			"# 기본값: 75(%) 최소 / 150(%) 최대");
-	private static final Config<Integer> VALUE2 = Config.of(Gambler.class, "value-2", 200, FunctionalInterfaces.positive(),
-			"# 겜블 최소/최대치 값 중 하나",
-			"# 두 숫자중 작은 값이 최소치, 큰 값이 최대치로 자동 변경됩니다.",
+	private static final Config<Integer> GIVE_VALUE1 = Config.of(Gambler.class, "give-value-1", 75, FunctionalInterfaces.positive(),
+			"# 겜블 주는 대미지 최소/최대치 값 중 하나",
+			"# 두 숫자 중 작은 값이 최소치, 큰 값이 최대치로 자동 변경됩니다.",
 			"# 기본값: 75(%) 최소 / 200(%) 최대");
+	private static final Config<Integer> GIVE_VALUE2 = Config.of(Gambler.class, "give-value-2", 200, FunctionalInterfaces.positive(),
+			"# 겜블 주는 대미지 최소/최대치 값 중 하나",
+			"# 두 숫자 중 작은 값이 최소치, 큰 값이 최대치로 자동 변경됩니다.",
+			"# 기본값: 75(%) 최소 / 200(%) 최대");
+
+	private static final Config<Integer> TAKE_VALUE1 = Config.of(Gambler.class, "take-value-1", 75, FunctionalInterfaces.positive(),
+			"# 겜블 받는 대미지 최소/최대치 값 중 하나",
+			"# 두 숫자 중 작은 값이 최소치, 큰 값이 최대치로 자동 변경됩니다.",
+			"# 기본값: 75(%) 최소 / 150(%) 최대");
+	private static final Config<Integer> TAKE_VALUE2 = Config.of(Gambler.class, "take-value-2", 150, FunctionalInterfaces.positive(),
+			"# 겜블 받는 대미지 최소/최대치 값 중 하나",
+			"# 두 숫자 중 작은 값이 최소치, 큰 값이 최대치로 자동 변경됩니다.",
+			"# 기본값: 75(%) 최소 / 150(%) 최대");
+
 	private static final Config<Integer> PD_PENALTY = Config.of(Gambler.class, "penalty", 15, FunctionalInterfaces.positive(),
 			"# 패널티 다이스로 안좋은 쪽으로 증감될 수치",
 			"# 기본값: 15(%)");
@@ -50,16 +61,13 @@ public class Gambler extends CokesAbility implements ActiveHandler {
 			"# 패널티 다이스 중 겜블 주기",
 			"# 기본값: 30(초)");
 
-	private static final int MIN, MAX;
+	private static final int GIVE_MIN, GIVE_MAX, TAKE_MIN, TAKE_MAX;
 
 	static {
-		if (VALUE1.getValue() > VALUE2.getValue()) {
-			MAX = VALUE1.getValue();
-			MIN = VALUE2.getValue();
-		} else {
-			MAX = VALUE2.getValue();
-			MIN = VALUE1.getValue();
-		}
+		GIVE_MAX = Math.max(GIVE_VALUE1.getValue(), GIVE_VALUE2.getValue());
+		TAKE_MAX = Math.max(TAKE_VALUE1.getValue(), TAKE_VALUE2.getValue());
+		GIVE_MIN = Math.min(GIVE_VALUE1.getValue(), GIVE_VALUE2.getValue());
+		TAKE_MIN = Math.min(TAKE_VALUE1.getValue(), TAKE_VALUE2.getValue());
 	}
 
 	private boolean penaltyDice = false;
@@ -79,22 +87,22 @@ public class Gambler extends CokesAbility implements ActiveHandler {
 			if (penaltyDice) {
 				give -= penaltyDiceInitial.getLeft() * PD_PENALTY.getValue()/100;
 				receive += penaltyDiceInitial.getRight() * PD_PENALTY.getValue()/100;
-				if (give <= MIN) {
-					give = MIN;
+				if (give <= GIVE_MIN) {
+					give = GIVE_MIN;
 					penaltyDice = false;
 					passive.setMaximumCount(GM_PERIOD.getValue());
 					passive.setCount(GM_PERIOD.getValue());
 					cooldown.start();
-				} else if (receive >= MAX) {
-					receive = MAX;
+				} else if (receive >= TAKE_MAX) {
+					receive = TAKE_MAX;
 					penaltyDice = false;
 					passive.setMaximumCount(GM_PERIOD.getValue());
 					passive.setCount(GM_PERIOD.getValue());
 					cooldown.start();
 				}
 			} else {
-				give = MIN + (int) ((MAX - MIN) * Math.random());
-				receive = MIN + (int) ((MAX - MIN) * Math.random());
+				give = GIVE_MIN + (int) ((GIVE_MAX - GIVE_MIN) * Math.random());
+				receive = TAKE_MIN + (int) ((TAKE_MAX - TAKE_MIN) * Math.random());
 			}
 		}
 

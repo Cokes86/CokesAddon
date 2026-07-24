@@ -8,6 +8,7 @@ import java.util.Objects;
 import java.util.StringJoiner;
 import java.util.function.Predicate;
 
+import com.cokes86.cokesaddon.effect.list.SlotLock;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
@@ -71,10 +72,8 @@ public class Casino extends CokesAbility implements ActiveHandler {
             "# 효과 중 시야 뒤틀림 주기", "# 기본값: 10 (초)");
     private static final Config<Integer> HEAL_VALUE = Config.of(Casino.class, "effects.heal", 2, FunctionalInterfaces.positive(),
             "# 효과 중 체력 즉시 회복량", "# 기본값: 2");
-    private static final Config<Integer> MAX_HEALTH_DECREMENT = Config.of(Casino.class, "effects.max-health-decrement", 2, FunctionalInterfaces.positive(),
-            "# 효과 중 최대 체력 감소량", "# 기본값: 2");
     private static final Config<Double> REGAIN_INCREMENT = Config.of(Casino.class, "effects.regain-increment", 0.5, FunctionalInterfaces.positive(),
-            "# 효과 중 주기적인 체력 회복 증가량", "# 기본값: 0.5 (배)");
+            "# 효과 중 주기적인 체력 회복 증가량", "# 기본값: 0.5");
     private static final Config<Integer> BLEED_ATTACK_PREDICATE = Config.of(Casino.class, "effects.bleed-attack-predicate", 4, FunctionalInterfaces.positive(),
             "# 효과 중 출혈 부여 조건", "# 기본값: 4 (회)");
     private static final Config<Integer> BLEED_DURATION = Config.of(Casino.class, "effects.bleed-duration", 2, FunctionalInterfaces.positive(),
@@ -93,7 +92,7 @@ public class Casino extends CokesAbility implements ActiveHandler {
             .put(Effects.HEAL, false)
             .put(Effects.TWIST, false)
             .put(Effects.REGAIN, false)
-            .put(Effects.MAX_HEALTH_DOWN, false)
+            .put(Effects.SLOT_LOCK, false)
             .put(Effects.BLEED, false)
             .put(Effects.COOLDOWN_UP, false)
             .put(Effects.IGNORE_FALL, false)
@@ -142,17 +141,6 @@ public class Casino extends CokesAbility implements ActiveHandler {
         }
         return true;
     };
-
-    @Override
-    protected void onUpdate(Update update) {
-        if (update == Update.ABILITY_DESTROY || update == Update.RESTRICTION_SET) {
-            AttributeUtil.setMaxHealth(getPlayer(), defaultMaxHealth);
-        } else {
-            if (effects.get(Effects.MAX_HEALTH_DOWN)) {
-                AttributeUtil.setMaxHealth(getPlayer(), defaultMaxHealth - 2);
-            }
-        }
-    }
 
     @Override
     public boolean ActiveSkill(Material material, ClickType clickType) {
@@ -232,7 +220,7 @@ public class Casino extends CokesAbility implements ActiveHandler {
         HEAL("체력 "+HEAL_VALUE+" 즉시 흭득"),
         TWIST(TWIST_PERIOD+"마다 시야 뒤틀림"),
         REGAIN("회복량 "+REGAIN_INCREMENT+"배 증가"),
-        MAX_HEALTH_DOWN("최대 체력 "+MAX_HEALTH_DECREMENT+" 감소"),
+        SLOT_LOCK("슬롯 1개 잠금"),
         BLEED(BLEED_ATTACK_PREDICATE+"회 타격 시 출혈 "+BLEED_DURATION+"부여"),
         COOLDOWN_UP("쿨타임 "+COOLDOWN_INCREMENT+"% 증가"),
         IGNORE_FALL("낙하대미지 무시"),
@@ -322,8 +310,8 @@ public class Casino extends CokesAbility implements ActiveHandler {
                         case TWIST:
                             aim.start();
                             break;
-                        case MAX_HEALTH_DOWN:
-                            AttributeUtil.setMaxHealth(getPlayer(), defaultMaxHealth - MAX_HEALTH_DECREMENT.getValue());
+                        case SLOT_LOCK:
+                            SlotLock.apply(getParticipant(), TimeUnit.TICKS, 20);
                             break;
                         case COOLDOWN_UP:
                             cooldown = new Cooldown((int)(COOLDOWN.getValue() * (1+ COOLDOWN_INCREMENT.getValue()/100.0)), CooldownDecrease._75);

@@ -36,7 +36,7 @@ import java.util.function.Predicate;
 })
 public class SlicingMaelstrom extends CokesSynergy implements ActiveHandler {
     public static final Config<Integer> cooldown = Config.cooldown(SlicingMaelstrom.class, "쿨타임", 60);
-    public static final Config<Integer> LIGHTNING_COUNT = Config.of(SlicingMaelstrom.class, "반복횟수", 15, FunctionalInterfaces.positive());
+    public static final Config<Integer> LIGHTNING_COUNT = Config.of(SlicingMaelstrom.class, "반복횟수", 6, FunctionalInterfaces.positive());
     public static final Config<Integer> range = Config.of(SlicingMaelstrom.class, "범위", 10, FunctionalInterfaces.positive());
     public static final Config<Integer> DAMAGE = Config.of(SlicingMaelstrom.class, "대미지", 1, FunctionalInterfaces.positive());
     public static final Config<Integer> ADDITIONAL = Config.of(SlicingMaelstrom.class, "추가대미지", 1, FunctionalInterfaces.positive());

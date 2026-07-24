@@ -110,7 +110,7 @@ public class Reincarnation extends CokesAbility {
 		reincarnation.register();
 	}
 
-	@SubscribeEvent(priority = 999, eventPriority = EventPriority.HIGHEST)
+	@SubscribeEvent(priority = 1000, eventPriority = EventPriority.HIGHEST)
 	public void onPlayerSetHealth(PlayerSetHealthEvent e) {
 		if (e.getPlayer().equals(getPlayer())) {
 			if (reincarnation.isRunning()) e.setCancelled(true);
@@ -122,7 +122,7 @@ public class Reincarnation extends CokesAbility {
 		}
 	}
 
-	@SubscribeEvent(priority = 999, eventPriority = EventPriority.HIGHEST, ignoreCancelled = true)
+	@SubscribeEvent(priority = 1000, eventPriority = EventPriority.HIGHEST, ignoreCancelled = true)
 	public void onEntityDamage(EntityDamageByEntityEvent e) {
 		if (e.getEntity().equals(getPlayer())) {
 			if (!reincarnation.isRunning() && getPlayer().getHealth() - e.getFinalDamage() <= 0 && !cool.isRunning() && !e.isCancelled()) {

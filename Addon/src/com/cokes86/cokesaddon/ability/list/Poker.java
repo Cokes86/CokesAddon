@@ -30,7 +30,7 @@ import java.util.function.Predicate;
 
 import com.cokes86.cokesaddon.util.CokesUtil;
 
-@AbilityManifest(name = "포커", rank = AbilityManifest.Rank.B, species = AbilityManifest.Species.HUMAN, explain = {
+@AbilityManifest(name = "포커", rank = AbilityManifest.Rank.A, species = AbilityManifest.Species.HUMAN, explain = {
 		"§7철괴 우클릭 §8- §c드로우§f: 1 ~ 10 사이의 숫자를 3개 뽑습니다.",
 		"  나온 3개의 숫자의 조합에 따라 효과를 받습니다. $[COOLDOWN]",
 		"§a---------------------------------",
@@ -39,10 +39,11 @@ import com.cokes86.cokesaddon.util.CokesUtil;
 		"§b스트레이트§f: 3개의 숫자가 연속인 경우.",
 		"  다음 공격 시 주는 대미지가 그 중 가장 큰 수만큼 증가합니다.",
 		"§e트리플§f: 3개의 숫자가 모두 같은 경우.",
-		"  자신과 팀을 제외한 모든 플레이어에게 그 수의 1.5배에 해당하는 관통 대미지를 줍니다."
+		"  자신과 팀을 제외한 모든 플레이어에게 그 수의 $[DAMAGE]배에 해당하는 관통 대미지를 줍니다."
 })
 public class Poker extends CokesAbility implements ActiveHandler {
 	private static final Config<Integer> COOLDOWN = Config.of(Poker.class, "쿨타임", 30, FunctionalInterfaces.positive(), FunctionalInterfaces.COOLDOWN);
+	private static final Config<Double> DAMAGE = Config.of(Poker.class, "damage", 1.5, FunctionalInterfaces.positive());
 	private final int[] num = new int[3];
 	private int additional = 0;
 	private final ActionbarChannel ac = newActionbarChannel();
@@ -117,11 +118,14 @@ public class Poker extends CokesAbility implements ActiveHandler {
 						additional = result.getRight();
 						break;
 					case "Triple":
-						getPlayer().sendMessage("완벽합니다! §e트리플§f입니다! 자신을 제외한 모든 플레이어에게 " + (result.getRight() * 1.5) + "만큼의 관통 대미지를 줍니다.");
+						getPlayer().sendMessage("완벽합니다! §e트리플§f입니다! 자신을 제외한 모든 플레이어에게 " + (result.getRight() * DAMAGE.getValue()) + "만큼의 관통 대미지를 줍니다.");
 						for (Participant participant : getGame().getParticipants()) {
 							if (participant.equals(getParticipant())) continue;
 							if (predicate.test(participant.getPlayer())) {
-								Damages.damageFixed(participant.getPlayer(), getPlayer(), result.getRight() * 1.5f);
+								int temp = additional;
+								additional = 0;
+								Damages.damageFixed(participant.getPlayer(), getPlayer(), result.getRight() * DAMAGE.getValue().floatValue());
+								additional = temp;
 							}
 						}
 						Bukkit.broadcastMessage("[§c!§f] 포커가 같은 수 3개를 뽑아 모두에게 대미지를 줍니다!");

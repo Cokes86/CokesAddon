@@ -40,7 +40,7 @@ public class Rune extends CokesAbility implements ActiveHandler {
 	public static final Config<Integer> COUNT = Config.of(Rune.class, "repeat-count", 7, FunctionalInterfaces.positive());
 	public static final Config<Integer> COOLDOWN = Config.of(Rune.class, "cooldown", 60, FunctionalInterfaces.positive(), FunctionalInterfaces.COOLDOWN);
 	public static final Config<Integer> RANGE = Config.of(Rune.class, "range", 5, FunctionalInterfaces.positive());
-	public static final Config<Double> DAMAGE = Config.of(Rune.class, "damage", 2d, FunctionalInterfaces.positive());
+	public static final Config<Double> DAMAGE = Config.of(Rune.class, "damage", 1.0d, FunctionalInterfaces.positive());
 
 	private final Predicate<Entity> predicate = entity -> {
 		if (entity.equals(getPlayer())) return false;

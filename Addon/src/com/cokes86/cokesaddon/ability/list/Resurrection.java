@@ -32,7 +32,7 @@ public class Resurrection extends CokesAbility {
 		super(arg0);
 	}
 
-	@SubscribeEvent(priority = 999, eventPriority = EventPriority.HIGHEST)
+	@SubscribeEvent(priority = 1000, eventPriority = EventPriority.HIGHEST)
 	public void onBeforeDeath(EntityDamageEvent e) {
 		if (!isResurrection) {
 			if (e.getEntity().equals(getPlayer())) {
@@ -50,7 +50,7 @@ public class Resurrection extends CokesAbility {
 		}
 	}
 
-	@SubscribeEvent(priority = 999, eventPriority = EventPriority.HIGHEST)
+	@SubscribeEvent(priority = 1000, eventPriority = EventPriority.HIGHEST)
 	public void onPlayerSetHealth(PlayerSetHealthEvent e) {
 		if (!isResurrection) {
 			if (e.getPlayer().equals(getPlayer())) {

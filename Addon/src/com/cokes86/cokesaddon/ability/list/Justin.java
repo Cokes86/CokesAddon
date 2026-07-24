@@ -9,6 +9,7 @@ import daybreak.abilitywar.ability.AbilityManifest;
 import daybreak.abilitywar.ability.SubscribeEvent;
 import daybreak.abilitywar.ability.decorator.ActiveHandler;
 import daybreak.abilitywar.game.AbstractGame;
+import daybreak.abilitywar.utils.annotations.Beta;
 import daybreak.abilitywar.utils.base.concurrent.TimeUnit;
 import daybreak.abilitywar.utils.base.minecraft.damage.Damages;
 import daybreak.abilitywar.utils.base.minecraft.nms.IHologram;
@@ -47,6 +48,7 @@ import java.util.concurrent.ConcurrentHashMap;
     "이후 §7검을 들고 우클릭§f 하면 흑심 카운터 개당 $[GET_THIS_DAMAGE]의 §b관통 마법 대미지§f를 줍니다.",
     "공통적으로 §7철괴를 우클릭§f하면 인격이 바뀌지만, 다음 주기가 반으로 감소합니다."
 })
+@Beta
 public class Justin extends CokesAbility implements ActiveHandler {
     private static final Config<Integer> PERIOD = Config.of(Justin.class, "period", 45, FunctionalInterfaces.positive(),
         "# 인격 변경 주기",

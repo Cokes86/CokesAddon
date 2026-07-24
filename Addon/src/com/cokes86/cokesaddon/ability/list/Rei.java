@@ -62,7 +62,7 @@ public class Rei extends CokesAbility {
 		super(participant);
 	}
 
-	@SubscribeEvent(priority = 999, eventPriority = EventPriority.HIGHEST)
+	@SubscribeEvent(priority = 1000, eventPriority = EventPriority.HIGHEST)
 	public void onBeforeDeath(EntityDamageEvent e) {
 		if (e.getEntity().equals(getPlayer()) && !cooldown.isRunning() && !e.isCancelled()) {
 			double damage = e.getFinalDamage();
@@ -100,7 +100,7 @@ public class Rei extends CokesAbility {
 		}
 	}
 
-	@SubscribeEvent(priority = 999, eventPriority = EventPriority.HIGHEST)
+	@SubscribeEvent(priority = 1000, eventPriority = EventPriority.HIGHEST)
 	private void onPlayerSetHealth(PlayerSetHealthEvent e) {
 		if (e.getPlayer().equals(getPlayer()) && !cooldown.isRunning() && !e.isCancelled() && e.getHealth() <= 0) {
 			e.setCancelled(true);

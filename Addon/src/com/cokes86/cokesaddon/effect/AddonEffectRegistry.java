@@ -25,6 +25,9 @@ public class AddonEffectRegistry {
         //2.0.0
         registerEffect(Debuging.class);
         registerEffect(Dizziness.class);
+
+        //2.2.0
+        registerEffect(SlotLock.class);
     }
 
     public static <T extends Effect> void registerEffect(Class<T> effect) {

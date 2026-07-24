@@ -67,9 +67,9 @@ public class Cokes extends CokesAbility implements ActiveHandler {
     private static final Config<Integer> MOVEMENT_DURATION = Config.time(Cokes.class, "move-effect-duration", 5,
             "이펙트 맛 좀 봐라 중 이동 관련 상태이상 최대 지속시간",
             "기본값 : 5 (초)");
-    private static final Config<Integer> DEBUGING_DURATION = Config.time(Cokes.class, "debuging-duration", 45,
+    private static final Config<Integer> DEBUGING_DURATION = Config.time(Cokes.class, "debuging-duration", 15,
             "이펙트 맛 좀 봐라 중 디버깅 상태이상 최대 지속시간",
-            "기본값 : 45 (초)");
+            "기본값 : 15 (초)");
 
     private static final Config<Double> RANDOMIZE_MAXIMUM = Config.of(Cokes.class, "randomize-maximum", 180.0,
             "랜더마이즈 최대 확률",
