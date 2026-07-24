@@ -1,5 +1,6 @@
 package com.cokes86.cokesaddon.effect.list;
 
+import com.cokes86.cokesaddon.effect.AddonEffectRegistry;
 import daybreak.abilitywar.AbilityWar;
 import daybreak.abilitywar.game.AbstractGame;
 import daybreak.abilitywar.game.manager.effect.registry.ApplicationMethod;
@@ -17,8 +18,6 @@ import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryDragEvent;
 import org.bukkit.event.player.PlayerDropItemEvent;
-import org.bukkit.event.player.PlayerItemHeldEvent;
-import org.bukkit.event.player.PlayerSwapHandItemsEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
@@ -31,7 +30,7 @@ import java.util.Map;
 })
 public class SlotLock extends AbstractGame.Effect implements Listener {
 
-    public static final EffectRegistry.EffectRegistration<SlotLock> registration = EffectRegistry.registerEffect(SlotLock.class);
+    public static final EffectRegistry.EffectRegistration<SlotLock> registration = AddonEffectRegistry.getRegistration(SlotLock.class);
 
     public static void apply(AbstractGame.Participant participant, TimeUnit timeUnit, int duration) {
         registration.apply(participant, timeUnit, duration);
