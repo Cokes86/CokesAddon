@@ -25,10 +25,12 @@ import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.Note;
-import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 
-import com.cokes86.cokesaddon.util.CokesUtil;
+import org.bukkit.event.EventPriority;
+import org.bukkit.event.entity.EntityDamageByBlockEvent;
+import org.bukkit.event.entity.EntityDamageByEntityEvent;
+import org.bukkit.event.entity.EntityDamageEvent;
 
 @AbilityManifest(name = "레이<소울테이커>", rank = AbilityManifest.Rank.L, species = AbilityManifest.Species.HUMAN, explain = {
         "§7패시브 §8- §c소울 커팅§f: 상대방을 공격할 시 주는 대미지가 $[DAMAGE]% 증가합니다.",
@@ -102,17 +104,6 @@ public class ReiSoulTaker extends CokesSynergy implements ActiveHandler {
 
     @SubscribeEvent
     public void onCEntityDamage(CEntityDamageEvent e) {
-        if (e.getEntity().equals(getPlayer())) {
-            if (getPlayer().getHealth() - e.getFinalDamage() <= 0 && !arousal_cool.isRunning() && soul > 0) {
-                e.setDamage(0);
-                Healths.setHealth(getPlayer(), soul * (1+ (duration.isRunning() ? 0.5 : 0)));
-                arousal_cool.start();
-
-                soul = 0;
-                channel.update(null);
-            }
-        }
-
         if (e.isDamager(getPlayer())) {
             e.setDamage(e.getDamage() * (1 + DAMAGE.getValue()/100.0 + (duration.isRunning() ? ADDITIONAL.getValue()/100.0 : 0)) + ((int)(NMS.getAbsorptionHearts(getPlayer())/DEMAND_ABSORPTION.getValue()))*ADDITIONAL_DAMAGE.getValue());
 
@@ -135,7 +126,22 @@ public class ReiSoulTaker extends CokesSynergy implements ActiveHandler {
         }
     }
 
-    @SubscribeEvent
+    @SubscribeEvent(priority = 1000, eventPriority = EventPriority.HIGHEST, childs = {EntityDamageByBlockEvent.class, EntityDamageByEntityEvent.class})
+    public void onBeforeDeath(EntityDamageEvent e) {
+        if (e.getEntity().equals(getPlayer())) {
+            if (getPlayer().getHealth() - e.getFinalDamage() <= 0 && !arousal_cool.isRunning() && soul > 0) {
+                e.setDamage(0);
+                Healths.setHealth(getPlayer(), soul * (1+ (duration.isRunning() ? 0.5 : 0)));
+                arousal_cool.start();
+
+                soul = 0;
+                channel.update(null);
+                SoundLib.ITEM_TOTEM_USE.playSound(getPlayer());
+            }
+        }
+    }
+
+    @SubscribeEvent(priority = 1000, eventPriority = EventPriority.HIGHEST)
     public void onPlayerSetHealth(PlayerSetHealthEvent e) {
         if (e.getPlayer().equals(getPlayer()) && e.getHealth() <= 0 && !arousal_cool.isRunning() && soul > 0 && !e.isCancelled()) {
             Healths.setHealth(getPlayer(), soul * (1+ (duration.isRunning() ? 0.5 : 0)));
@@ -143,6 +149,7 @@ public class ReiSoulTaker extends CokesSynergy implements ActiveHandler {
 
             soul = 0;
             channel.update(null);
+            SoundLib.ITEM_TOTEM_USE.playSound(getPlayer());
         }
     }
 

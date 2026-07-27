@@ -9,10 +9,10 @@ import daybreak.abilitywar.game.manager.effect.registry.EffectRegistry;
 import daybreak.abilitywar.game.manager.effect.registry.EffectType;
 import daybreak.abilitywar.utils.base.concurrent.TimeUnit;
 import daybreak.abilitywar.utils.base.random.Random;
-import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.HandlerList;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.inventory.InventoryClickEvent;
@@ -53,7 +53,7 @@ public class SlotLock extends AbstractGame.Effect implements Listener {
 
     @Override
     protected void onStart() {
-        Bukkit.getPluginManager().registerEvents(this, AbilityWar.getPlugin());
+        AbilityWar.getPlugin().getServer().getPluginManager().registerEvents(this, AbilityWar.getPlugin());
 
         ItemStack old = player.getInventory().getItem(slot);
 
@@ -69,8 +69,16 @@ public class SlotLock extends AbstractGame.Effect implements Listener {
 
         // 마지막에 방벽 설치
         player.getInventory().setItem(slot, barrier);
+    }
 
-        super.onStart();
+    @Override
+    protected void onEnd() {
+        HandlerList.unregisterAll(this);
+    }
+
+    @Override
+    protected void onSilentEnd() {
+        HandlerList.unregisterAll(this);
     }
 
     @Override

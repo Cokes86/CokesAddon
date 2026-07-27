@@ -48,6 +48,9 @@ public class AddonSynergyFactory {
         //1.10.0
         registerSynergy(Summoner.class, Summoner.class, RealSummoner.class);
         registerSynergy(Revenge.class, Revenge.class, Nemesis.class);
+
+        //2.2.3
+        registerSynergy(PhantomThief.class, PhantomThief.class, GreatPhantom.class);
     }
 
     public static void registerSynergy(Class<? extends AbilityBase> first, Class<? extends AbilityBase> second, Class<? extends CokesSynergy> synergy) {

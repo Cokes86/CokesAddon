@@ -58,8 +58,8 @@ public class CokesUtil {
         return attacker;
     }
 
-    public static void healPlayer(Player player, double healamount) {
-        final EntityRegainHealthEvent event = new EntityRegainHealthEvent(player, healamount, RegainReason.CUSTOM);
+    public static void healPlayer(Player player, double healAmount) {
+        final EntityRegainHealthEvent event = new EntityRegainHealthEvent(player, healAmount, RegainReason.CUSTOM);
         Bukkit.getPluginManager().callEvent(event);
         if (!event.isCancelled()) {
             Healths.setHealth(player, player.getHealth() + event.getAmount());

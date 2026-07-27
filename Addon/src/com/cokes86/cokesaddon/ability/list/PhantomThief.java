@@ -22,7 +22,6 @@ import daybreak.abilitywar.game.list.mix.Mix;
 import daybreak.abilitywar.game.list.mix.synergy.SynergyFactory;
 import daybreak.abilitywar.game.list.mix.triplemix.AbstractTripleMix;
 import daybreak.abilitywar.game.manager.AbilityList;
-import daybreak.abilitywar.utils.annotations.Beta;
 import daybreak.abilitywar.utils.base.color.RGB;
 import daybreak.abilitywar.utils.base.concurrent.TimeUnit;
 import daybreak.abilitywar.utils.base.math.LocationUtil;
@@ -46,7 +45,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @AbilityManifest(name = "팬텀 시프", rank = Rank.S, species = Species.HUMAN, explain = {
-        "§7철괴 우클릭 §8- §c팬텀 쇼§f: 자신 위치에 §7그림자§f를 3초간 소환하고 자신은 §a은신§f합니다. $[COOLDOWN]",
+        "§7철괴 우클릭 §8- §c팬텀 쇼§f: 자신 위치에 §7그림자§f를 $[DURATION]간 소환하고 자신은 §a은신§f합니다. $[COOLDOWN]",
         "  그림자를 공격한 플레이어는 $[DAMAGE]의 대미지를 주고",
         "  그 사람의 능력의 등급을 §b1단계 내려 재배정§f합니다.",
         "  재배정한 플레이어는 3초간 무적시간이 부여되며, 공격또한 불가능합니다.",
@@ -55,6 +54,9 @@ import java.util.stream.Collectors;
 })
 @NotAvailable({AbstractTripleMix.class})
 public class PhantomThief extends CokesAbility implements ActiveHandler {
+    private static final Config<Integer> DURATION = Config.of(PhantomThief.class, "duration", 3, FunctionalInterfaces.positive(), FunctionalInterfaces.TIME,
+            "# 팬텀 쇼 그림자 지속시간",
+            "# 기본 값: 3 (초)");
     private static final Config<Integer> COOLDOWN = Config.of(PhantomThief.class, "cooldown", 80, FunctionalInterfaces.positive(), FunctionalInterfaces.COOLDOWN,
             "# 팬텀 쇼 쿨타임",
             "# 기본 값: 80 (초)");
@@ -77,9 +79,10 @@ public class PhantomThief extends CokesAbility implements ActiveHandler {
         return false;
     }
 
-    private boolean setNewAbility(Participant target) {
+    private void setNewAbility(Participant target) {
         if (target instanceof MixParticipant) {
-            return setNewAbility((MixParticipant) target);
+            setNewAbility((MixParticipant) target);
+            return;
         }
         if (target.getAbility() != null) {
             Rank rank = target.getAbility().getRank();
@@ -107,17 +110,15 @@ public class PhantomThief extends CokesAbility implements ActiveHandler {
                             target.getPlayer().getDisplayName(),
                             "§"+newOne.getManifest().rank().getRankName().charAt(1)));
                 }
-                return new InvincibilityTimer(target.getAbility(), 3, true).start();
+                new InvincibilityTimer(target.getAbility(), 3, true).start();
             } catch (ReflectiveOperationException e) {
                 getPlayer().sendMessage("[팬텀 시프] 능력을 재배정하는 도중 오류가 발생하였습니다.");
                 e.printStackTrace();
-                return false;
             }
         }
-        return false;
     }
 
-    private boolean setNewAbility(MixParticipant target) {
+    private void setNewAbility(MixParticipant target) {
         if (target.getAbility() != null && getParticipant().getAbility() != null) {
             if (target.getAbility().hasSynergy()) {
                 int lowRank = 99, highRank = 0;
@@ -159,11 +160,10 @@ public class PhantomThief extends CokesAbility implements ActiveHandler {
                                 target.getPlayer().getDisplayName(),
                                 "§"+newOne.getManifest().rank().getRankName().charAt(1)));
                     }
-                    return new InvincibilityTimer(target.getAbility(), 3, true).start();
+                    new InvincibilityTimer(target.getAbility(), 3, true).start();
                 } catch (ReflectiveOperationException e) {
                     getPlayer().sendMessage("[팬텀 시프] 능력을 재배정하는 도중 오류가 발생하였습니다.");
                     e.printStackTrace();
-                    return false;
                 }
             } else {
                 Mix targetMix = target.getAbility();
@@ -195,11 +195,10 @@ public class PhantomThief extends CokesAbility implements ActiveHandler {
                                     "§"+newOne.getManifest().rank().getRankName().charAt(1)));
                         }
                         SoundLib.ENTITY_PLAYER_LEVELUP.playSound(target.getPlayer().getLocation());
-                        return new InvincibilityTimer(target.getAbility(), 3, true).start();
+                        new InvincibilityTimer(target.getAbility(), 3, true).start();
                     } catch (ReflectiveOperationException e) {
                         getPlayer().sendMessage("[팬텀 시프] 능력을 재배정하는 도중 오류가 발생하였습니다.");
                         e.printStackTrace();
-                        return false;
                     }
                 }
 
@@ -229,23 +228,21 @@ public class PhantomThief extends CokesAbility implements ActiveHandler {
                                     target.getPlayer().getDisplayName(),
                                     "§"+newOne.getManifest().rank().getRankName().charAt(1)));
                         }
-                        return new InvincibilityTimer(target.getAbility(), 3, true).start();
+                        new InvincibilityTimer(target.getAbility(), 3, true).start();
                     } catch (ReflectiveOperationException e) {
                         getPlayer().sendMessage("[팬텀 시프] 능력을 재배정하는 도중 오류가 발생하였습니다.");
                         e.printStackTrace();
-                        return false;
                     }
                 }
             }
         }
-        return false;
     }
 
     private class PhantomShow extends Duration implements Listener {
         private IDummy phantom;
 
         public PhantomShow() {
-            super(60, cooldown);
+            super(DURATION.getValue() * 20, cooldown);
             setPeriod(TimeUnit.TICKS, 1);
         }
 

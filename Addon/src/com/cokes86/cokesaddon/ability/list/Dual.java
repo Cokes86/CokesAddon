@@ -1,7 +1,9 @@
 package com.cokes86.cokesaddon.ability.list;
 
 import com.cokes86.cokesaddon.ability.CokesAbility;
+import com.cokes86.cokesaddon.ability.Config;
 import com.cokes86.cokesaddon.effect.list.Seal;
+import com.cokes86.cokesaddon.util.FunctionalInterfaces;
 import com.cokes86.cokesaddon.util.PairSet;
 import daybreak.abilitywar.ability.AbilityBase;
 import daybreak.abilitywar.ability.AbilityFactory.AbilityRegistration;
@@ -10,6 +12,7 @@ import daybreak.abilitywar.ability.AbilityManifest.Rank;
 import daybreak.abilitywar.ability.AbilityManifest.Species;
 import daybreak.abilitywar.ability.decorator.ActiveHandler;
 import daybreak.abilitywar.ability.decorator.TargetHandler;
+import daybreak.abilitywar.ability.list.Eos;
 import daybreak.abilitywar.config.Configuration.Settings;
 import daybreak.abilitywar.game.AbstractGame.GameTimer;
 import daybreak.abilitywar.game.AbstractGame.Participant;
@@ -37,12 +40,15 @@ import java.util.stream.Collectors;
     "  두 캐릭터는 능력과 체력은 다르나 그 외의 것들은 공유합니다.",
     "§7에메랄드 우클릭 §8- §c체인지§f: 자신이 운용하는 캐릭터를 바꿉니다.",
     "  단 1초간 움직일 수 없고, 능력이 봉인됩니다.",
+    "§8[§7HIDDEN§8] §b스페셜§f: 캐릭터 당 $[HIDDEN]%의 확률로 아주 특별한 능력이 나옵니다.",
     "$(CHARACTER_EXPLAIN)"
 })
 public class Dual extends CokesAbility implements ActiveHandler, TargetHandler {
     private final PairSet<AbilityBase, Double> first, second;
     private boolean usingSecond = false;
     private boolean giveEmerald = false;
+
+    private final Config<Double> HIDDEN = Config.of(Dual.class, "hidden", 0.0, FunctionalInterfaces.chance(true, true));
 
     @SuppressWarnings("unused")
     private final Object CHARACTER_EXPLAIN = new Object() {
@@ -82,6 +88,9 @@ public class Dual extends CokesAbility implements ActiveHandler, TargetHandler {
 
     private AbilityBase createCharacter() {
         try {
+            final Random random = new Random();
+            double chance = random.nextDouble()*100;
+            if (chance < HIDDEN.getValue()) return AbilityBase.create(Eos.class, getParticipant());
             List<AbilityRegistration> returnAbilities = AbilityList.values().stream()
                     .filter(reg -> {
                         if (reg.getManifest().name().equals("듀얼")) return false;
@@ -91,11 +100,10 @@ public class Dual extends CokesAbility implements ActiveHandler, TargetHandler {
                         if (!reg.isAvailable(Dual.this.getGame().getClass()))
                             return false;
 
-                        return Settings.isUsingBetaAbility() || !reg.hasFlag(AbilityRegistration.Flag.BETA);
+                        return !reg.hasFlag(AbilityRegistration.Flag.BETA);
                     })
                     .collect(Collectors.toList());
 
-            final Random random = new Random();
             return AbilityBase.create(random.pick(returnAbilities), getParticipant());
 
         } catch (ReflectiveOperationException e) {

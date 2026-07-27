@@ -22,6 +22,8 @@ import daybreak.abilitywar.utils.base.minecraft.nms.NMS;
 import daybreak.abilitywar.utils.library.SoundLib;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
+import org.bukkit.event.EventPriority;
+import org.bukkit.event.entity.EntityDamageByBlockEvent;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
 
@@ -80,8 +82,8 @@ public class Vennominaga extends CokesSynergy {
         return true;
     };
 
-    @SubscribeEvent(priority = 999)
-    public void onEntityDamage(EntityDamageEvent e) {
+    @SubscribeEvent(priority = 1000, eventPriority = EventPriority.HIGHEST, childs = {EntityDamageByBlockEvent.class, EntityDamageByEntityEvent.class})
+    public void onBeforeDeath(EntityDamageEvent e) {
         if (e.getEntity().equals(getPlayer()) && getPlayer().getHealth() - e.getFinalDamage() <= 0) {
             int health = 0;
             for (Player player : LocationUtil.getNearbyEntities(Player.class, getPlayer().getLocation(), RANGE.getValue(), RANGE.getValue(), predicate)) {
@@ -99,7 +101,7 @@ public class Vennominaga extends CokesSynergy {
         }
     }
 
-    @SubscribeEvent(priority = 999)
+    @SubscribeEvent(priority = 1000, eventPriority = EventPriority.HIGHEST)
     public void onPlayerSetHealth(PlayerSetHealthEvent e) {
         if (e.getPlayer().equals(getPlayer()) && e.getHealth() <= 0) {
             int health = 0;
@@ -120,11 +122,11 @@ public class Vennominaga extends CokesSynergy {
 
     @SubscribeEvent
     public void onEntityDamageByEntity(EntityDamageByEntityEvent e) {
-        onEntityDamage(e);
-
         Entity damager = CokesUtil.getDamager(e.getDamager());
         if (damager != null && getGame().isParticipating(damager.getUniqueId()) && getGame().isParticipating(e.getEntity().getUniqueId())) {
             Participant damagerParticipant = getGame().getParticipant(damager.getUniqueId());
+            if (damagerParticipant.getAbility() instanceof Vennominaga) return;
+            if (damagerParticipant.getAbility() instanceof Mix && ((Mix) damagerParticipant.getAbility()).getSynergy() instanceof Vennominaga) return;
             if (venomMap.containsKey(damagerParticipant)) {
                 Participant participant = getGame().getParticipant(e.getEntity().getUniqueId());
                 VenominagaVenom venomTimer = venomMap.get(participant);

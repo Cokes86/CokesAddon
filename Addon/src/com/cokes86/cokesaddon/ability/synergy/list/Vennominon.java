@@ -1,7 +1,6 @@
 package com.cokes86.cokesaddon.ability.synergy.list;
 
 import com.cokes86.cokesaddon.ability.Config;
-import com.cokes86.cokesaddon.event.CEntityDamageEvent;
 import com.cokes86.cokesaddon.ability.synergy.CokesSynergy;
 import com.cokes86.cokesaddon.util.AttributeUtil;
 import com.cokes86.cokesaddon.util.CokesUtil;
@@ -27,6 +26,10 @@ import daybreak.abilitywar.utils.library.SoundLib;
 import org.bukkit.Material;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
+import org.bukkit.event.EventPriority;
+import org.bukkit.event.entity.EntityDamageByBlockEvent;
+import org.bukkit.event.entity.EntityDamageByEntityEvent;
+import org.bukkit.event.entity.EntityDamageEvent;
 
 import java.util.HashMap;
 import java.util.function.Predicate;
@@ -36,8 +39,9 @@ import java.util.function.Predicate;
         "  죽을 위기에 처할 때, $[RANGE]블럭 이내 플레이어의 §2맹독§f을 전부 제거하고",
         "  제거한 §2맹독§f의 1/3에 해당하는 만큼 §b체력을 회복합니다.",
         "  이후 $[GROGGY]동안 독사왕은 발동하지 않습니다.",
-        "§7철괴 우클릭 §8- §2사신강림§f: 게임 중 독사왕으로 부여한 §2맹독§f이 누적 75회 이상",
+        "§7철괴 우클릭 §8- §2사신강림§f: 게임 중 독사왕으로 부여한 §2맹독§f이 누적 $[CONDITION]회 이상",
         "  부여하였을 때 사용이 가능합니다. 자신은 <베노미너거>가 됩니다.",
+        "  그렇지 못했을 경우, §2맹독§f 누적 횟수를 확인합니다.",
         "§2맹독§f: 매 $[VENOM_ATTACK_DELAY]마다 §2맹독§f의 수만큼 대미지를 받습니다.",
         "  §2맹독§f으로 준 대미지 역시 §2맹독§f을 부여합니다.",
         "  §2맹독§f은 최대 $[MAX_VENOM_STACK]개까지 올라가며, $[COUNT_OF_VENOM_ATTACK]회까지 대미지를 줍니다."
@@ -61,6 +65,9 @@ public class Vennominon extends CokesSynergy implements ActiveHandler {
     public static final Config<Integer> GROGGY = Config.of(Vennominon.class, "groggy", 10, FunctionalInterfaces.positive(), FunctionalInterfaces.TIME,
             "# 독사왕 부활 후 그로기 시간",
             "# 기본값: 10 (초)");
+    public static final Config<Integer> CONDITION = Config.of(Vennominon.class, "condition", 75, FunctionalInterfaces.positive(),
+            "# 사신강림 사용 조건",
+            "# 기본값: 75");
 
     public Vennominon(Participant participant) {
         super(participant);
@@ -90,21 +97,23 @@ public class Vennominon extends CokesSynergy implements ActiveHandler {
 
     @Override
     public boolean ActiveSkill(Material material, ClickType clickType) {
-        if (material == Material.IRON_INGOT && clickType == ClickType.RIGHT_CLICK && venom >= 75 && getParticipant().getAbility() != null) {
-            try {
-                ((Mix)getParticipant().getAbility()).setSynergy(SynergyFactory.getSynergy(Vennominaga.class, Vennominaga.class));
-            } catch (ReflectiveOperationException e) {
-                e.printStackTrace();
+        if (material == Material.IRON_INGOT && clickType == ClickType.RIGHT_CLICK && getParticipant().getAbility() != null) {
+            if (venom >= CONDITION.getValue()) {
+                try {
+                    ((Mix)getParticipant().getAbility()).setSynergy(SynergyFactory.getSynergy(Vennominaga.class, Vennominaga.class));
+                } catch (ReflectiveOperationException e) {
+                    e.printStackTrace();
+                }
+                return true;
+            } else {
+                getPlayer().sendMessage("누적된 §2맹독§f: "+venom);
             }
         }
         return false;
     }
 
-    @SubscribeEvent(priority = 999)
-    public void onEntityDamage(CEntityDamageEvent e) {
-        Entity damager = e.getDamager();
-        if (damager == null) return;
-
+    @SubscribeEvent(priority = 1000, eventPriority = EventPriority.HIGHEST, childs = {EntityDamageByBlockEvent.class, EntityDamageByEntityEvent.class})
+    public void onBeforeDeath(EntityDamageEvent e) {
         if (e.getEntity().equals(getPlayer()) && !groggy.isRunning() && getPlayer().getHealth() - e.getFinalDamage() <= 0) {
             int health = 0;
             for (Player player : LocationUtil.getNearbyEntities(Player.class, getPlayer().getLocation(), RANGE.getValue(), RANGE.getValue(), predicate)) {
@@ -122,7 +131,7 @@ public class Vennominon extends CokesSynergy implements ActiveHandler {
         }
     }
 
-    @SubscribeEvent(priority = 999)
+    @SubscribeEvent(priority = 1000, eventPriority = EventPriority.HIGHEST)
     public void onPlayerSetHealth(PlayerSetHealthEvent e) {
         if (e.getPlayer().equals(getPlayer()) && !groggy.isRunning() && e.getHealth() <= 0) {
             int health = 0;

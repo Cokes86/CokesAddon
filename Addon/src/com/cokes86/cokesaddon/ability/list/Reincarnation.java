@@ -6,7 +6,9 @@ import org.bukkit.Location;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventPriority;
+import org.bukkit.event.entity.EntityDamageByBlockEvent;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
+import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.EntityRegainHealthEvent;
 
 import com.cokes86.cokesaddon.ability.CokesAbility;
@@ -122,16 +124,8 @@ public class Reincarnation extends CokesAbility {
 		}
 	}
 
-	@SubscribeEvent(priority = 1000, eventPriority = EventPriority.HIGHEST, ignoreCancelled = true)
+	@SubscribeEvent(priority = 999, eventPriority = EventPriority.HIGHEST, ignoreCancelled = true)
 	public void onEntityDamage(EntityDamageByEntityEvent e) {
-		if (e.getEntity().equals(getPlayer())) {
-			if (!reincarnation.isRunning() && getPlayer().getHealth() - e.getFinalDamage() <= 0 && !cool.isRunning() && !e.isCancelled()) {
-				e.setDamage(0);
-				getPlayer().setHealth(1);
-				reincarnation.start();
-			}
-		}
-
 		Entity damager = CokesUtil.getDamager(e.getDamager());
 		if (damager != null && e.getEntity() instanceof Player && damager.equals(getPlayer())) {
 			Player target = (Player) e.getEntity();
@@ -147,7 +141,18 @@ public class Reincarnation extends CokesAbility {
 		}
 	}
 
-	@SubscribeEvent(eventPriority = EventPriority.MONITOR)
+	@SubscribeEvent(priority = 1000, eventPriority = EventPriority.HIGHEST, childs = {EntityDamageByBlockEvent.class, EntityDamageByEntityEvent.class})
+	public void onBeforeDeath(EntityDamageEvent e) {
+		if (e.getEntity().equals(getPlayer())) {
+			if (!reincarnation.isRunning() && getPlayer().getHealth() - e.getFinalDamage() <= 0 && !cool.isRunning() && !e.isCancelled()) {
+				e.setDamage(0);
+				getPlayer().setHealth(1);
+				reincarnation.start();
+			}
+		}
+	}
+
+	@SubscribeEvent(eventPriority = EventPriority.HIGHEST, priority = 10000)
 	public void onEntityRegainHealth(EntityRegainHealthEvent e) {
 		if (e.getEntity().equals(getPlayer()) && reincarnation.isRunning()) {
 			e.setCancelled(true);
