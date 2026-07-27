@@ -57,7 +57,7 @@ import java.util.function.Predicate;
         "  $[ALCHEMY_CAPSULE_DAMAGE]의 대미지를 줍니다. $[ALCHEMY_CAPSULE_COOL]",
         "  사용 시 약간의 경직이 생깁니다.",
         "  [§a알케미 에리어§f 효과]",
-        "  $(ALCHEMY_AREA_EFFECT)",
+        "$(ALCHEMY_AREA_EFFECT)",
         "§7철괴 우클릭 §8-§c 알케미 체인지§f: 자신의§c 알케미 마스터리§f 상태를 바꿉니다. §c쿨타임 §7: §f0.25초"
 }, summarize = {
         "철괴 우클릭으로 §c알케미 마스터리§f를 변경합니다.",
@@ -113,17 +113,17 @@ public class Emily extends CokesAbility implements ActiveHandler {
             }
             switch(capsuleType) {
                 case FIRE: {
-                    joiner.add("내부는 항상 불타며, 에밀리는 내부에서 화염대미지를 §c받지 않습니다§f.");
+                    joiner.add("  내부는 항상 불타며, 에밀리는 내부에서 화염대미지를 §c받지 않습니다§f.");
                     joiner.add("  이외의 플레이어는 내부에서 §c받는 화염대미지가 "+ALCHEMY_AREA_BONUS_DAMAGE +" 증가합니다.");
                     break;
                 }
                 case SLOWDOWN: {
-                    joiner.add("에밀리를 제외한 플레이어는 0.5초마다 쿨타임이 "+ALCHEMY_AREA_SLOWDOWN_COOL+" 증가하고");
+                    joiner.add("  에밀리를 제외한 플레이어는 0.5초마다 쿨타임이 "+ALCHEMY_AREA_SLOWDOWN_COOL+" 증가하고");
                     joiner.add("  §b§n빙결§f 1.5초를 각 플레이어마다 최대 "+ALCHEMY_AREA_FROST_MAX_COUNT+"번 받습니다.");
                     break;
                 }
                 case EXPLOSION: {
-                    joiner.add("1초마다 "+ALCHEMY_AREA_EXPLOSION_DAMAGE+"의 대미지를 주는 폭발을 일으킵니다.");
+                    joiner.add("  1초마다 "+ALCHEMY_AREA_EXPLOSION_DAMAGE+"의 대미지를 주는 폭발을 일으킵니다.");
                     joiner.add("  에밀리는 해당 폭발에 휘말리지 않습니다.");
                     break;
                 }

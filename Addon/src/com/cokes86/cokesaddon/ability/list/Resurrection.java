@@ -16,6 +16,8 @@ import daybreak.abilitywar.utils.base.minecraft.entity.health.event.PlayerSetHea
 import daybreak.abilitywar.utils.library.SoundLib;
 import org.bukkit.entity.Entity;
 import org.bukkit.event.EventPriority;
+import org.bukkit.event.entity.EntityDamageByBlockEvent;
+import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.potion.PotionEffect;
 
@@ -32,7 +34,7 @@ public class Resurrection extends CokesAbility {
 		super(arg0);
 	}
 
-	@SubscribeEvent(priority = 1000, eventPriority = EventPriority.HIGHEST)
+	@SubscribeEvent(priority = 1000, eventPriority = EventPriority.HIGHEST, childs = {EntityDamageByBlockEvent.class, EntityDamageByEntityEvent.class})
 	public void onBeforeDeath(EntityDamageEvent e) {
 		if (!isResurrection) {
 			if (e.getEntity().equals(getPlayer())) {

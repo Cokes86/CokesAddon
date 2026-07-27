@@ -5,6 +5,7 @@ import com.cokes86.cokesaddon.ability.Config;
 import com.cokes86.cokesaddon.event.CEntityDamageEvent;
 import com.cokes86.cokesaddon.util.AttributeUtil;
 import com.cokes86.cokesaddon.util.FunctionalInterfaces;
+import com.cokes86.cokesaddon.util.timer.InvincibilityTimer;
 import daybreak.abilitywar.ability.AbilityManifest;
 import daybreak.abilitywar.ability.AbilityManifest.Rank;
 import daybreak.abilitywar.ability.AbilityManifest.Species;
@@ -16,6 +17,7 @@ import daybreak.abilitywar.ability.Tips.Level;
 import daybreak.abilitywar.ability.Tips.Stats;
 import daybreak.abilitywar.config.enums.CooldownDecrease;
 import daybreak.abilitywar.game.AbstractGame.Participant;
+import daybreak.abilitywar.utils.base.concurrent.TimeUnit;
 import daybreak.abilitywar.utils.base.minecraft.entity.health.event.PlayerSetHealthEvent;
 import daybreak.abilitywar.utils.base.minecraft.nms.NMS;
 import daybreak.abilitywar.utils.library.SoundLib;
@@ -23,6 +25,8 @@ import org.bukkit.GameMode;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventPriority;
+import org.bukkit.event.entity.EntityDamageByBlockEvent;
+import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
 
 @AbilityManifest(name = "레이", rank = Rank.L, species = Species.HUMAN, explain = {
@@ -57,12 +61,13 @@ public class Rei extends CokesAbility {
 			"# 기본값: 4");
 
 	private final Cooldown cooldown = new Cooldown(COOLDOWN.getValue(), CooldownDecrease._75);
+	private final InvincibilityTimer invTimer = new InvincibilityTimer(this, TimeUnit.TICKS, 10);
 
 	public Rei(Participant participant) {
 		super(participant);
 	}
 
-	@SubscribeEvent(priority = 1000, eventPriority = EventPriority.HIGHEST)
+	@SubscribeEvent(priority = 1000, eventPriority = EventPriority.HIGHEST, childs = {EntityDamageByBlockEvent.class, EntityDamageByEntityEvent.class})
 	public void onBeforeDeath(EntityDamageEvent e) {
 		if (e.getEntity().equals(getPlayer()) && !cooldown.isRunning() && !e.isCancelled()) {
 			double damage = e.getFinalDamage();
@@ -71,6 +76,7 @@ public class Rei extends CokesAbility {
 				getPlayer().setHealth(RESPAWN.getValue());
 				cooldown.start();
 				SoundLib.ITEM_TOTEM_USE.playSound(getPlayer());
+				invTimer.start();
 			}
 		}
 	}
