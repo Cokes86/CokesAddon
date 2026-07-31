@@ -1,7 +1,7 @@
-package com.cokes86.cokesaddon.ability.murdermystery;
+package com.cokes86.cokesaddon.murdermystery;
 
-import com.cokes86.cokesaddon.ability.murdermystery.innocent.TaxiDriver;
-import com.cokes86.cokesaddon.ability.murdermystery.murder.DisguiserMurderer;
+import com.cokes86.cokesaddon.murdermystery.innocent.TaxiDriver;
+import com.cokes86.cokesaddon.murdermystery.murder.DisguiserMurderer;
 import daybreak.abilitywar.ability.AbilityFactory;
 import daybreak.abilitywar.game.list.murdermystery.CharacterType;
 import daybreak.abilitywar.game.list.murdermystery.JobList;

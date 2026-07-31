@@ -1,8 +1,8 @@
-package com.cokes86.cokesaddon.ability.synergy.list;
+package com.cokes86.cokesaddon.synergy.list;
 
 import com.cokes86.cokesaddon.ability.Config;
 import com.cokes86.cokesaddon.ability.list.Xyz;
-import com.cokes86.cokesaddon.ability.synergy.CokesSynergy;
+import com.cokes86.cokesaddon.synergy.CokesSynergy;
 import com.cokes86.cokesaddon.event.CEntityDamageEvent;
 import com.cokes86.cokesaddon.util.CokesUtil;
 
@@ -15,7 +15,6 @@ import daybreak.abilitywar.ability.decorator.ActiveHandler;
 import daybreak.abilitywar.game.AbstractGame;
 import daybreak.abilitywar.game.AbstractGame.Participant;
 import daybreak.abilitywar.game.list.mix.Mix;
-import daybreak.abilitywar.utils.annotations.Beta;
 import daybreak.abilitywar.utils.base.concurrent.TimeUnit;
 
 import org.bukkit.Bukkit;

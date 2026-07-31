@@ -16,6 +16,7 @@ import daybreak.abilitywar.ability.list.Eos;
 import daybreak.abilitywar.config.Configuration.Settings;
 import daybreak.abilitywar.game.AbstractGame.GameTimer;
 import daybreak.abilitywar.game.AbstractGame.Participant;
+import daybreak.abilitywar.game.event.participant.*;
 import daybreak.abilitywar.game.manager.AbilityList;
 import daybreak.abilitywar.game.manager.effect.Stun;
 import daybreak.abilitywar.utils.base.collect.SetUnion;
@@ -24,8 +25,7 @@ import daybreak.abilitywar.utils.base.minecraft.entity.health.Healths;
 import daybreak.abilitywar.utils.base.minecraft.item.builder.ItemBuilder;
 import daybreak.abilitywar.utils.base.random.Random;
 import daybreak.abilitywar.utils.library.MaterialX;
-import org.bukkit.ChatColor;
-import org.bukkit.Material;
+import org.bukkit.*;
 import org.bukkit.entity.LivingEntity;
 import org.jetbrains.annotations.NotNull;
 
@@ -48,7 +48,7 @@ public class Dual extends CokesAbility implements ActiveHandler, TargetHandler {
     private boolean usingSecond = false;
     private boolean giveEmerald = false;
 
-    private final Config<Double> HIDDEN = Config.of(Dual.class, "hidden", 0.0, FunctionalInterfaces.chance(true, true));
+    private static final Config<Double> HIDDEN = Config.of(Dual.class, "hidden", 0.0, FunctionalInterfaces.chance(true, true));
 
     @SuppressWarnings("unused")
     private final Object CHARACTER_EXPLAIN = new Object() {
@@ -104,7 +104,10 @@ public class Dual extends CokesAbility implements ActiveHandler, TargetHandler {
                     })
                     .collect(Collectors.toList());
 
-            return AbilityBase.create(random.pick(returnAbilities), getParticipant());
+            AbilityBase character = AbilityBase.create(random.pick(returnAbilities), getParticipant());
+            ParticipantAbilitySetEvent event = new ParticipantAbilitySetEvent(getParticipant(), null, character);
+            Bukkit.getPluginManager().callEvent(event);
+            return character;
 
         } catch (ReflectiveOperationException e) {
             return createCharacter();

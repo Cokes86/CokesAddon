@@ -1,4 +1,4 @@
-package com.cokes86.cokesaddon.ability.synergy.list;
+package com.cokes86.cokesaddon.synergy.list;
 
 import java.util.HashMap;
 
@@ -12,7 +12,7 @@ import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
 
 import com.cokes86.cokesaddon.event.CEntityDamageEvent;
-import com.cokes86.cokesaddon.ability.synergy.CokesSynergy;
+import com.cokes86.cokesaddon.synergy.CokesSynergy;
 import com.cokes86.cokesaddon.util.nms.NMSUtil;
 
 import daybreak.abilitywar.AbilityWar;

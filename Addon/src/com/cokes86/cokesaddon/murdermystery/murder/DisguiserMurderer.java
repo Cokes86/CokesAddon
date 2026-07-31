@@ -1,7 +1,7 @@
-package com.cokes86.cokesaddon.ability.murdermystery.murder;
+package com.cokes86.cokesaddon.murdermystery.murder;
 
 import com.cokes86.cokesaddon.ability.Config;
-import com.cokes86.cokesaddon.ability.murdermystery.module.DisguiseModule;
+import com.cokes86.cokesaddon.murdermystery.module.DisguiseModule;
 import com.cokes86.cokesaddon.util.nms.NMSUtil;
 import daybreak.abilitywar.ability.AbilityManifest;
 import daybreak.abilitywar.ability.AbilityManifest.Rank;

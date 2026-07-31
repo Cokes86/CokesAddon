@@ -1,9 +1,9 @@
-package com.cokes86.cokesaddon.ability.synergy.list;
+package com.cokes86.cokesaddon.synergy.list;
 
 import com.cokes86.cokesaddon.ability.Config;
 import com.cokes86.cokesaddon.effect.list.ArmorBroken;
 import com.cokes86.cokesaddon.event.CEntityDamageEvent;
-import com.cokes86.cokesaddon.ability.synergy.CokesSynergy;
+import com.cokes86.cokesaddon.synergy.CokesSynergy;
 import com.cokes86.cokesaddon.util.FunctionalInterfaces;
 import daybreak.abilitywar.AbilityWar;
 import daybreak.abilitywar.ability.AbilityManifest;

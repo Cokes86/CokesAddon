@@ -1,6 +1,6 @@
-package com.cokes86.cokesaddon.ability.murdermystery.module;
+package com.cokes86.cokesaddon.murdermystery.module;
 
-import com.cokes86.cokesaddon.ability.murdermystery.murder.DisguiserMurderer;
+import com.cokes86.cokesaddon.murdermystery.murder.DisguiserMurderer;
 import com.cokes86.cokesaddon.util.nms.NMSUtil;
 import daybreak.abilitywar.AbilityWar;
 import daybreak.abilitywar.game.AbstractGame.Participant;

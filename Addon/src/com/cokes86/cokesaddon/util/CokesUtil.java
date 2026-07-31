@@ -1,11 +1,14 @@
 package com.cokes86.cokesaddon.util;
 
+import daybreak.abilitywar.AbilityWar;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Projectile;
+import org.bukkit.event.HandlerList;
+import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityRegainHealthEvent;
 import org.bukkit.event.entity.EntityRegainHealthEvent.RegainReason;
 
@@ -72,5 +75,13 @@ public class CokesUtil {
         if (!event.isCancelled()) {
             player.setHealth(RangesKt.coerceIn(player.getHealth() + event.getAmount(), 0, player.getAttribute(Attribute.GENERIC_MAX_HEALTH).getValue()));
         }
+    }
+
+    public static void registerEvents(Listener listener) {
+        AbilityWar.getPlugin().getServer().getPluginManager().registerEvents(listener, AbilityWar.getPlugin());
+    }
+
+    public static void unregisterEvents(Listener listener) {
+        HandlerList.unregisterAll(listener);
     }
 }

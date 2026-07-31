@@ -2,8 +2,8 @@ package com.cokes86.cokesaddon;
 
 import com.cokes86.cokesaddon.ability.AddonAbilityFactory;
 import com.cokes86.cokesaddon.ability.Config;
-import com.cokes86.cokesaddon.ability.murdermystery.CokesMurderMysteryFactory;
-import com.cokes86.cokesaddon.ability.synergy.AddonSynergyFactory;
+import com.cokes86.cokesaddon.murdermystery.CokesMurderMysteryFactory;
+import com.cokes86.cokesaddon.synergy.AddonSynergyFactory;
 import com.cokes86.cokesaddon.command.CokesCommand;
 import com.cokes86.cokesaddon.effect.AddonEffectRegistry;
 import com.cokes86.cokesaddon.event.CEntityDamageEvent;
@@ -12,7 +12,7 @@ import com.cokes86.cokesaddon.game.gamemode.tailcatch.TailCatch;
 import com.cokes86.cokesaddon.game.module.roulette.Roulette;
 import com.cokes86.cokesaddon.game.module.roulette.RouletteRegister;
 
-import daybreak.abilitywar.AbilityWar;
+import com.cokes86.cokesaddon.listener.ReviveListener;
 import daybreak.abilitywar.addon.Addon;
 import daybreak.abilitywar.addon.AddonLoader;
 import daybreak.abilitywar.game.Category;
@@ -28,17 +28,13 @@ import daybreak.abilitywar.game.manager.GameFactory;
 import daybreak.abilitywar.utils.base.Messager;
 
 import org.bukkit.Bukkit;
-import org.bukkit.event.EventHandler;
-import org.bukkit.event.Listener;
-import org.bukkit.event.entity.EntityDamageEvent;
+import org.bukkit.event.*;
+import org.bukkit.event.entity.*;
 import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
 import org.bukkit.event.server.TabCompleteEvent;
 
 import java.io.File;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.CompletableFuture;
 
 import com.cokes86.cokesaddon.game.gamemode.killrace.KillRaceGame;
@@ -79,6 +75,7 @@ public class CokesAddon extends Addon implements Listener {
 
 		//Register Event
 		Bukkit.getPluginManager().registerEvents(this, getPlugin());
+		Bukkit.getPluginManager().registerEvents(new ReviveListener(), getPlugin());
 
 		//Repeat Load Ability
 		Bukkit.getServer().getScheduler().scheduleSyncDelayedTask(getPlugin(), configLoader);
@@ -165,7 +162,7 @@ public class CokesAddon extends Addon implements Listener {
 	public void onEntityDamage(EntityDamageEvent e) {
 		if (GameManager.isGameRunning() && e.getCause() == DamageCause.VOID) return;
 		CEntityDamageEvent event = new CEntityDamageEvent(e);
-		if (!event.isCancelled() && !e.isCancelled()) Bukkit.getPluginManager().callEvent(new CEntityDamageEvent(e));
+		if (!event.isCancelled() && !e.isCancelled()) Bukkit.getPluginManager().callEvent(event);
 	}
 
 	public static File getAddonFile(String name) {

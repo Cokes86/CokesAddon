@@ -1,4 +1,4 @@
-package com.cokes86.cokesaddon.ability.synergy.list;
+package com.cokes86.cokesaddon.synergy.list;
 
 import java.util.function.Predicate;
 
@@ -6,7 +6,7 @@ import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 
 import com.cokes86.cokesaddon.ability.Config;
-import com.cokes86.cokesaddon.ability.synergy.CokesSynergy;
+import com.cokes86.cokesaddon.synergy.CokesSynergy;
 import com.cokes86.cokesaddon.event.CEntityDamageEvent;
 import com.cokes86.cokesaddon.util.CokesUtil;
 import com.cokes86.cokesaddon.util.timer.InvincibilityTimer;

@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import java.util.StringJoiner;
 import java.util.function.Predicate;
 
@@ -13,7 +12,6 @@ import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.Note;
-import org.bukkit.attribute.Attribute;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Projectile;
@@ -26,7 +24,6 @@ import com.cokes86.cokesaddon.ability.CokesAbility;
 import com.cokes86.cokesaddon.ability.Config;
 import com.cokes86.cokesaddon.ability.decorate.Lite;
 import com.cokes86.cokesaddon.event.CEntityDamageEvent;
-import com.cokes86.cokesaddon.util.AttributeUtil;
 import com.cokes86.cokesaddon.util.CokesUtil;
 import com.cokes86.cokesaddon.util.FunctionalInterfaces;
 import com.cokes86.cokesaddon.util.nms.NMSUtil;
@@ -63,9 +60,9 @@ public class Casino extends CokesAbility implements ActiveHandler {
 
     //각종 효과 세부내역
     private static final Config<Double> DAMAGE_INCREMENT_VALUE = Config.of(Casino.class, "effects.damage-increment", 2.5, FunctionalInterfaces.positive(),
-            "# 효과 중 대미지 증가량 수치", "# 기본값: 2.5");
+            "# 효과 중 주는 대미지 증가량 수치", "# 기본값: 2.5");
     private static final Config<Double> DAMAGE_DECREMENT_VALUE = Config.of(Casino.class, "effects.damage-decrement", 1.5, FunctionalInterfaces.positive(),
-            "# 효과 중 대미지 감소량 수치", "# 기본값: 1.5");
+            "# 효과 중 받는 대미지 감소량 수치", "# 기본값: 1.5");
     private static final Config<Integer> WITHER_PERIOD = Config.of(Casino.class, "effects.wither-period", 4, FunctionalInterfaces.positive(), FunctionalInterfaces.TIME,
             "# 효과 중 위더 대미지 주기", "# 기본값: 4 (초)");
     private static final Config<Integer> TWIST_PERIOD = Config.of(Casino.class, "effects.twist-period", 10, FunctionalInterfaces.positive(), FunctionalInterfaces.TIME,
@@ -83,9 +80,8 @@ public class Casino extends CokesAbility implements ActiveHandler {
     private static final Config<Integer> STUN_DURATION = Config.of(Casino.class, "effects.stun-duration", 2, FunctionalInterfaces.positive(), FunctionalInterfaces.TIME,
             "# 효과 중 스턴 지속시간", "# 기본값: 2 (초)");
 
-    private final double defaultMaxHealth = Objects.requireNonNull(getPlayer().getAttribute(Attribute.GENERIC_MAX_HEALTH)).getBaseValue();
     private Cooldown cooldown = new Cooldown(COOLDOWN.getValue(), CooldownDecrease._75);
-    private final Map<Effects, Boolean> effects = new HashMap<>(ImmutableMap.<Effects, Boolean>builder()
+    private final Map<Effects, Boolean> effects = ImmutableMap.<Effects, Boolean>builder()
             .put(Effects.DAMAGE_INCREMENT, false)
             .put(Effects.WITHER, false)
             .put(Effects.RESISTANCE, false)
@@ -98,7 +94,7 @@ public class Casino extends CokesAbility implements ActiveHandler {
             .put(Effects.IGNORE_FALL, false)
             .put(Effects.STUN, false)
             .put(Effects.FIRE_RESISTANCE, false)
-            .put(Effects.NO_CRITICAL, false).build());
+            .put(Effects.NO_CRITICAL, false).build();
     private final Map<AbstractGame.Participant, HitBleedTimer> hit = new HashMap<>();
 
     private final AbilityTimer wither = new AbilityTimer() {
@@ -120,6 +116,12 @@ public class Casino extends CokesAbility implements ActiveHandler {
         }
     }.setInitialDelay(TimeUnit.SECONDS, TWIST_PERIOD.getValue()).setPeriod(TimeUnit.SECONDS, TWIST_PERIOD.getValue()).register();
     private final AbilityInfoTimer infoTimer = new AbilityInfoTimer();
+    private final AbilityTimer seal = new AbilityTimer() {
+        @Override
+        protected void run(int count) {
+            SlotLock.apply(getParticipant(), TimeUnit.TICKS, 20);
+        }
+    }.setPeriod(TimeUnit.TICKS, 5);
 
     public Casino(AbstractGame.Participant arg0) {
         super(arg0);
@@ -312,6 +314,7 @@ public class Casino extends CokesAbility implements ActiveHandler {
                             break;
                         case SLOT_LOCK:
                             SlotLock.apply(getParticipant(), TimeUnit.TICKS, 20);
+                            seal.start();
                             break;
                         case COOLDOWN_UP:
                             cooldown = new Cooldown((int)(COOLDOWN.getValue() * (1+ COOLDOWN_INCREMENT.getValue()/100.0)), CooldownDecrease._75);

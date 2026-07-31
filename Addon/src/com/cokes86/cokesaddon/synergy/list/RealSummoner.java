@@ -1,4 +1,4 @@
-package com.cokes86.cokesaddon.ability.synergy.list;
+package com.cokes86.cokesaddon.synergy.list;
 
 import java.util.Map;
 import java.util.Objects;
@@ -21,7 +21,7 @@ import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
-import com.cokes86.cokesaddon.ability.synergy.CokesSynergy;
+import com.cokes86.cokesaddon.synergy.CokesSynergy;
 import com.cokes86.cokesaddon.util.FunctionalInterfaces;
 
 import daybreak.abilitywar.AbilityWar;

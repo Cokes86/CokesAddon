@@ -1,8 +1,8 @@
-package com.cokes86.cokesaddon.ability.synergy.list;
+package com.cokes86.cokesaddon.synergy.list;
 
 import com.cokes86.cokesaddon.ability.Config;
 import com.cokes86.cokesaddon.event.CEntityDamageEvent;
-import com.cokes86.cokesaddon.ability.synergy.CokesSynergy;
+import com.cokes86.cokesaddon.synergy.CokesSynergy;
 import com.cokes86.cokesaddon.util.FunctionalInterfaces;
 import daybreak.abilitywar.AbilityWar;
 import daybreak.abilitywar.ability.AbilityBase;
@@ -75,7 +75,7 @@ public class CokesSoldier extends CokesSynergy implements ActiveHandler {
         else if (material == Material.IRON_INGOT && clickType == ClickType.RIGHT_CLICK && !k2_cooldown.isCooldown()) {
             for (AbstractGame.Participant participant : getGame().getParticipants()) {
                 AbilityBase ability = participant.getAbility();
-                if (ability != null && ability instanceof Mix) {
+                if (ability instanceof Mix) {
                     Mix mix = (Mix) ability;
                     if (mix.getSynergy() != null && mix.getSynergy() instanceof CokesSoldier) {
                         CokesSoldier soldier = (CokesSoldier) mix.getSynergy();

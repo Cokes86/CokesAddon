@@ -1,4 +1,4 @@
-package com.cokes86.cokesaddon.ability.murdermystery.innocent;
+package com.cokes86.cokesaddon.murdermystery.innocent;
 
 import com.cokes86.cokesaddon.ability.Config;
 import daybreak.abilitywar.AbilityWar;

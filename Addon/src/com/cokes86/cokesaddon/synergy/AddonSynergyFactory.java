@@ -1,8 +1,8 @@
-package com.cokes86.cokesaddon.ability.synergy;
+package com.cokes86.cokesaddon.synergy;
 
 import com.cokes86.cokesaddon.CokesAddon;
 import com.cokes86.cokesaddon.ability.list.*;
-import com.cokes86.cokesaddon.ability.synergy.list.*;
+import com.cokes86.cokesaddon.synergy.list.*;
 import daybreak.abilitywar.ability.AbilityBase;
 import daybreak.abilitywar.ability.AbilityFactory;
 import daybreak.abilitywar.ability.AbilityManifest;

@@ -1,8 +1,8 @@
-package com.cokes86.cokesaddon.ability.synergy.list;
+package com.cokes86.cokesaddon.synergy.list;
 
 import com.cokes86.cokesaddon.ability.Config;
 import com.cokes86.cokesaddon.ability.list.PhantomThief;
-import com.cokes86.cokesaddon.ability.synergy.CokesSynergy;
+import com.cokes86.cokesaddon.synergy.CokesSynergy;
 import com.cokes86.cokesaddon.util.AttributeUtil;
 import com.cokes86.cokesaddon.util.CokesUtil;
 import com.cokes86.cokesaddon.util.FunctionalInterfaces;
@@ -53,8 +53,9 @@ import java.util.stream.Collectors;
         "  그림자를 공격한 플레이어는 $[DAMAGE]의 대미지를 주고",
         "  그 사람의 능력의 등급을 §b1단계 내려 재배정§f합니다.",
         "  재배정한 플레이어는 3초간 무적시간이 부여되며, 공격또한 불가능합니다.",
-        "  그림자가 사라지면 §a은신§f또한 중간에 해제됩니다.",
-        "§7사망 시 §8- §c본모습으로f: 자신은 다른 시너지로 능력이 변경되고, 최대체력으로 회복합니다.",
+        "  그림자가 사라지면 ca은신§f또한 중간에 해제됩니다.",
+        "  §8믹스능력자의 경우, 두 능력 모두 재배정합니다.",
+        "§7사망 시 §8- §c본모습으로§f: 자신은 다른 시너지로 능력이 변경되고, 최대체력으로 회복합니다.",
         "§8[§7HIDDEN§8] §b구제§f: 누구를 구제하셨나요?"
 })
 public class GreatPhantom extends CokesSynergy implements ActiveHandler {
@@ -211,66 +212,55 @@ public class GreatPhantom extends CokesSynergy implements ActiveHandler {
             } else {
                 Mix targetMix = target.getAbility();
                 Mix myMix = (Mix) getParticipant().getAbility();
-                if (targetMix.getFirst() != null && myMix.getFirst().getClass().equals(PhantomThief.class)) {
-                    AbilityManifest.Rank rank = targetMix.getFirst().getRank();
-                    List<AbilityFactory.AbilityRegistration> returnAbilities = AbilityList.values().stream().filter(abilityRegistration -> {
+                if (targetMix.getFirst() != null && targetMix.getSecond() != null && myMix.getSynergy() instanceof GreatPhantom) {
+                    AbilityManifest.Rank rankFirst = targetMix.getFirst().getRank();
+                    List<AbilityFactory.AbilityRegistration> returnAbilitiesForFirst = AbilityList.values().stream().filter(abilityRegistration -> {
                         AbilityManifest.Rank rank1 = abilityRegistration.getManifest().rank();
-                        return (rank == AbilityManifest.Rank.SPECIAL && rank1 == AbilityManifest.Rank.L) || (rank == AbilityManifest.Rank.L && rank1 == AbilityManifest.Rank.S)
-                                || (rank == AbilityManifest.Rank.S && rank1 == AbilityManifest.Rank.A) || (rank == AbilityManifest.Rank.A && rank1 == AbilityManifest.Rank.B)
-                                || (rank == AbilityManifest.Rank.B && rank1 == AbilityManifest.Rank.C) || (rank == AbilityManifest.Rank.C && (rank1 == AbilityManifest.Rank.S || rank1 == AbilityManifest.Rank.L || rank1 == AbilityManifest.Rank.SPECIAL));
+                        return (rankFirst == AbilityManifest.Rank.SPECIAL && rank1 == AbilityManifest.Rank.L) || (rankFirst == AbilityManifest.Rank.L && rank1 == AbilityManifest.Rank.S)
+                                || (rankFirst == AbilityManifest.Rank.S && rank1 == AbilityManifest.Rank.A) || (rankFirst == AbilityManifest.Rank.A && rank1 == AbilityManifest.Rank.B)
+                                || (rankFirst == AbilityManifest.Rank.B && rank1 == AbilityManifest.Rank.C) || (rankFirst == AbilityManifest.Rank.C && (rank1 == AbilityManifest.Rank.S || rank1 == AbilityManifest.Rank.L || rank1 == AbilityManifest.Rank.SPECIAL));
                     }).collect(Collectors.toList());
 
-                    returnAbilities.removeIf(reg -> {
+                    returnAbilitiesForFirst.removeIf(reg -> {
                         if (Configuration.Settings.isBlacklisted(reg.getManifest().name())) return true;
                         if (!reg.isAvailable(getGame().getClass())) return true;
                         return !Configuration.Settings.isUsingBetaAbility() && reg.hasFlag(AbilityFactory.AbilityRegistration.Flag.BETA);
                     });
 
-                    AbilityFactory.AbilityRegistration newOne = new Random().pick(returnAbilities);
+                    AbilityManifest.Rank rankSecond = targetMix.getSecond().getRank();
+                    List<AbilityFactory.AbilityRegistration> returnAbilitiesForSecond = AbilityList.values().stream().filter(abilityRegistration -> {
+                        AbilityManifest.Rank rank1 = abilityRegistration.getManifest().rank();
+                        return (rankSecond == AbilityManifest.Rank.SPECIAL && rank1 == AbilityManifest.Rank.L) || (rankSecond == AbilityManifest.Rank.L && rank1 == AbilityManifest.Rank.S)
+                                || (rankSecond == AbilityManifest.Rank.S && rank1 == AbilityManifest.Rank.A) || (rankSecond == AbilityManifest.Rank.A && rank1 == AbilityManifest.Rank.B)
+                                || (rankSecond == AbilityManifest.Rank.B && rank1 == AbilityManifest.Rank.C) || (rankSecond == AbilityManifest.Rank.C && (rank1 == AbilityManifest.Rank.S || rank1 == AbilityManifest.Rank.L || rank1 == AbilityManifest.Rank.SPECIAL));
+                    }).collect(Collectors.toList());
+
+                    returnAbilitiesForFirst.removeIf(reg -> {
+                        if (Configuration.Settings.isBlacklisted(reg.getManifest().name())) return true;
+                        if (!reg.isAvailable(getGame().getClass())) return true;
+                        return !Configuration.Settings.isUsingBetaAbility() && reg.hasFlag(AbilityFactory.AbilityRegistration.Flag.BETA);
+                    });
+
+                    AbilityFactory.AbilityRegistration newOneForFirst = new Random().pick(returnAbilitiesForFirst);
+                    AbilityFactory.AbilityRegistration newOneForSecond = new Random().pick(returnAbilitiesForSecond);
 
                     try {
-                        targetMix.setFirst(newOne);
-                        target.getPlayer().sendMessage("[대괴도] 첫번째 능력이 재배정되었습니다. 당신의 첫번째 능력은 §e"+newOne.getManifest().name()+"§f입니다.");
-                        getPlayer().sendMessage(String.format("[대괴도] §e%s§f님의 첫번째 능력을 재배정하였습니다.", target.getPlayer().getDisplayName()));
-                        if (rank == AbilityManifest.Rank.C) {
-                            getPlayer().sendMessage(String.format("[대괴도] §e%s§f님의 첫번째 능력이 §eC등급§f이기에 <%s구제§f>하였습니다.",
+                        targetMix.setFirst(newOneForFirst);
+                        targetMix.setSecond(newOneForSecond);
+                        target.getPlayer().sendMessage(String.format("[대괴도] 능력이 재배정되었습니다. 당신의 능력은 §e%s§f + §e%s§f입니다.", newOneForFirst.getManifest().name(), newOneForSecond.getManifest().name()));
+                        getPlayer().sendMessage(String.format("[대괴도] §e%s§f님의 능력을 재배정하였습니다.", target.getPlayer().getDisplayName()));
+                        if (rankFirst == AbilityManifest.Rank.C) {
+                            getPlayer().sendMessage(String.format("[대괴도] §e%s§f님의 첫번째 능력이 §eC등급§f이기에 <§%s구제§f>하였습니다.",
                                     target.getPlayer().getDisplayName(),
-                                    "§"+newOne.getManifest().rank().getRankName().charAt(1)));
+                                    newOneForFirst.getManifest().rank().getRankName().charAt(1)));
+                        }
+
+                        if (rankSecond == AbilityManifest.Rank.C) {
+                            getPlayer().sendMessage(String.format("[대괴도] §e%s§f님의 두번째 능력이 §eC등급§f이기에 <§%s구제§f>하였습니다.",
+                                    target.getPlayer().getDisplayName(),
+                                    newOneForSecond.getManifest().rank().getRankName().charAt(1)));
                         }
                         SoundLib.ENTITY_PLAYER_LEVELUP.playSound(target.getPlayer().getLocation());
-                        new InvincibilityTimer(target.getAbility(), 3, true).start();
-                    } catch (ReflectiveOperationException e) {
-                        getPlayer().sendMessage("[대괴도] 능력을 재배정하는 도중 오류가 발생하였습니다.");
-                        e.printStackTrace();
-                    }
-                }
-
-                else if (targetMix.getSecond() != null && myMix.getSecond().getClass().equals(PhantomThief.class)) {
-                    AbilityManifest.Rank rank = targetMix.getSecond().getRank();
-                    List<AbilityFactory.AbilityRegistration> returnAbilities = AbilityList.values().stream().filter(abilityRegistration -> {
-                        AbilityManifest.Rank rank1 = abilityRegistration.getManifest().rank();
-                        return (rank == AbilityManifest.Rank.SPECIAL && rank1 == AbilityManifest.Rank.L) || (rank == AbilityManifest.Rank.L && rank1 == AbilityManifest.Rank.S)
-                                || (rank == AbilityManifest.Rank.S && rank1 == AbilityManifest.Rank.A) || (rank == AbilityManifest.Rank.A && rank1 == AbilityManifest.Rank.B)
-                                || (rank == AbilityManifest.Rank.B && rank1 == AbilityManifest.Rank.C) || (rank == AbilityManifest.Rank.C && (rank1 == AbilityManifest.Rank.S || rank1 == AbilityManifest.Rank.L || rank1 == AbilityManifest.Rank.SPECIAL));
-                    }).collect(Collectors.toList());
-
-                    returnAbilities.removeIf(reg -> {
-                        if (Configuration.Settings.isBlacklisted(reg.getManifest().name())) return true;
-                        if (!reg.isAvailable(getGame().getClass())) return true;
-                        return !Configuration.Settings.isUsingBetaAbility() && reg.hasFlag(AbilityFactory.AbilityRegistration.Flag.BETA);
-                    });
-
-                    AbilityFactory.AbilityRegistration newOne = new Random().pick(returnAbilities);
-
-                    try {
-                        targetMix.setSecond(newOne);
-                        target.getPlayer().sendMessage("[대괴도] 두번째 능력이 재배정되었습니다. 당신의 두번째 능력은 §e"+newOne.getManifest().name()+"§f입니다.");
-                        getPlayer().sendMessage(String.format("[대괴도] §e%s§f님의 두번째 능력을 재배정하였습니다.", target.getPlayer().getDisplayName()));
-                        if (rank == AbilityManifest.Rank.C) {
-                            getPlayer().sendMessage(String.format("[대괴도] §e%s§f님의 두번째 능력이 §eC등급§f이기에 <%s구제§f>하였습니다.",
-                                    target.getPlayer().getDisplayName(),
-                                    "§"+newOne.getManifest().rank().getRankName().charAt(1)));
-                        }
                         new InvincibilityTimer(target.getAbility(), 3, true).start();
                     } catch (ReflectiveOperationException e) {
                         getPlayer().sendMessage("[대괴도] 능력을 재배정하는 도중 오류가 발생하였습니다.");

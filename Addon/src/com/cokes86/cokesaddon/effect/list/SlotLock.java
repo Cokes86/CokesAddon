@@ -21,8 +21,6 @@ import org.bukkit.event.player.PlayerDropItemEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
-import java.util.Map;
-
 @EffectManifest(displayName = "§c슬롯 봉인", name = "술롯 봉인", method = ApplicationMethod.UNIQUE_LONGEST, type = {
         EffectType.COMBAT_RESTRICTION
 }, description = {
@@ -54,48 +52,39 @@ public class SlotLock extends AbstractGame.Effect implements Listener {
     @Override
     protected void onStart() {
         AbilityWar.getPlugin().getServer().getPluginManager().registerEvents(this, AbilityWar.getPlugin());
-
         ItemStack old = player.getInventory().getItem(slot);
-
-        // 먼저 슬롯 비우기
         player.getInventory().setItem(slot, null);
-
-        if (old != null && old.getType() != Material.AIR) {
-            Map<Integer, ItemStack> remain = player.getInventory().addItem(old);
-
-            remain.values().forEach(item ->
-                    player.getWorld().dropItemNaturally(player.getLocation(), item));
-        }
-
-        // 마지막에 방벽 설치
         player.getInventory().setItem(slot, barrier);
+        if (old != null) {
+            player.getInventory().addItem(old);
+        }
     }
 
     @Override
     protected void onEnd() {
+        player.getInventory().setItem(slot, null);
         HandlerList.unregisterAll(this);
     }
 
     @Override
     protected void onSilentEnd() {
+        player.getInventory().setItem(slot, null);
         HandlerList.unregisterAll(this);
     }
 
     @Override
-    protected void run(int count) {
-        setCount(20);
-    }
+    protected void run(int count) {}
 
     @EventHandler
     public void onClick(InventoryClickEvent e) {
         if (!e.getWhoClicked().equals(player)) return;
-        if (e.getRawSlot() == slot) e.setCancelled(true);
+        if (e.getSlot() == slot) e.setCancelled(true);
     }
 
     @EventHandler
     public void onDrop(PlayerDropItemEvent e) {
         if (!e.getPlayer().equals(player)) return;
-        if (e.getItemDrop().equals(barrier)) e.setCancelled(true);
+        if (e.getItemDrop().getItemStack().getType() == Material.BARRIER) e.setCancelled(true);
     }
 
     @EventHandler
@@ -107,6 +96,6 @@ public class SlotLock extends AbstractGame.Effect implements Listener {
     @EventHandler
     public void onDrag(InventoryDragEvent e) {
         if (!e.getWhoClicked().equals(player)) return;
-        if (e.getRawSlots().contains(slot)) e.setCancelled(true);
+        if (e.getInventorySlots().contains(slot)) e.setCancelled(true);
     }
 }

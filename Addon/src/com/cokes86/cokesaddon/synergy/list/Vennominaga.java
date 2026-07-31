@@ -1,20 +1,17 @@
-package com.cokes86.cokesaddon.ability.synergy.list;
+package com.cokes86.cokesaddon.synergy.list;
 
 import com.cokes86.cokesaddon.ability.Config;
-import com.cokes86.cokesaddon.ability.synergy.CokesSynergy;
+import com.cokes86.cokesaddon.synergy.CokesSynergy;
 import com.cokes86.cokesaddon.util.AttributeUtil;
 import com.cokes86.cokesaddon.util.CokesUtil;
 import com.cokes86.cokesaddon.util.FunctionalInterfaces;
-import com.cokes86.cokesaddon.util.timer.NoticeTimeTimer;
 import daybreak.abilitywar.ability.AbilityManifest;
 import daybreak.abilitywar.ability.AbilityManifest.Rank;
 import daybreak.abilitywar.ability.AbilityManifest.Species;
 import daybreak.abilitywar.ability.SubscribeEvent;
-import daybreak.abilitywar.ability.decorator.ActiveHandler;
 import daybreak.abilitywar.game.AbstractGame;
 import daybreak.abilitywar.game.AbstractGame.Participant;
 import daybreak.abilitywar.game.list.mix.Mix;
-import daybreak.abilitywar.game.list.mix.synergy.SynergyFactory;
 import daybreak.abilitywar.game.module.DeathManager;
 import daybreak.abilitywar.game.team.interfaces.Teamable;
 import daybreak.abilitywar.utils.base.concurrent.TimeUnit;
@@ -23,7 +20,6 @@ import daybreak.abilitywar.utils.base.minecraft.entity.health.event.PlayerSetHea
 import daybreak.abilitywar.utils.base.minecraft.nms.IHologram;
 import daybreak.abilitywar.utils.base.minecraft.nms.NMS;
 import daybreak.abilitywar.utils.library.SoundLib;
-import org.bukkit.Material;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventPriority;
@@ -34,49 +30,40 @@ import org.bukkit.event.entity.EntityDamageEvent;
 import java.util.HashMap;
 import java.util.function.Predicate;
 
-@AbilityManifest(name = "베노미논", rank = Rank.S, species = Species.ANIMAL, explain = {
-        "§7패시브 §8- §2독사왕§f: $[DELAY]마다 $[RANGE]블럭 이내 플레이어에게 §2맹독§f을 부여합니다.",
+@AbilityManifest(name = "베노미너거", rank = Rank.L, species = Species.ANIMAL, explain = {
+        "§7패시브 §8- §2독사신§f: $[DELAY]마다 $[RANGE]블럭 이내 플레이어에게 §2맹독§f을 2개 부여합니다.",
         "  죽을 위기에 처할 때, $[RANGE]블럭 이내 플레이어의 §2맹독§f을 전부 제거하고",
-        "  제거한 §2맹독§f의 1/3에 해당하는 만큼 §b체력을 회복합니다.",
-        "  이후 $[GROGGY]동안 독사왕은 발동하지 않습니다.",
-        "§7철괴 우클릭 §8- §2사신강림§f: 게임 중 독사왕으로 부여한 §2맹독§f이 누적 $[CONDITION]회 이상",
-        "  부여하였을 때 사용이 가능합니다. 자신은 <베노미너거>가 됩니다.",
-        "  그렇지 못했을 경우, §2맹독§f 누적 횟수를 확인합니다.",
+        "  제거한 §2맹독§f의 1/2에 해당하는 만큼 §b체력을 회복합니다.",
+        "§7패시브 §8- §2베놈 번§f: §2맹독§f을 가진 플레이어가 다른 플레이어를 공격할 시",
+        "  그 플레이어 역시 §2맹독§f을 부여합니다.",
+        "  베노미너거는 이 효과를 받지 않습니다.",
         "§2맹독§f: 매 $[VENOM_ATTACK_DELAY]마다 §2맹독§f의 수만큼 대미지를 받습니다.",
         "  §2맹독§f으로 준 대미지 역시 §2맹독§f을 부여합니다.",
         "  §2맹독§f은 최대 $[MAX_VENOM_STACK]개까지 올라가며, $[COUNT_OF_VENOM_ATTACK]회까지 대미지를 줍니다."
 })
-public class Vennominon extends CokesSynergy implements ActiveHandler {
-    public static final Config<Integer> MAX_VENOM_STACK = Config.of(Vennominon.class, "max-venom-stack", 10, FunctionalInterfaces.positive(),
+public class Vennominaga extends CokesSynergy {
+    public static final Config<Integer> MAX_VENOM_STACK = Config.of(Vennominaga.class, "max-venom-stack", 10, FunctionalInterfaces.positive(),
             "# 맹독의 최대 스택",
             "# 기본값: 10 (개)");
-    public static final Config<Integer> VENOM_ATTACK_DELAY = Config.of(Vennominon.class, "venom-attack-delay", 7, FunctionalInterfaces.positive(), FunctionalInterfaces.TIME,
+    public static final Config<Integer> VENOM_ATTACK_DELAY = Config.of(Vennominaga.class, "venom-attack-delay", 7, FunctionalInterfaces.positive(), FunctionalInterfaces.TIME,
             "# 맹독의 공격 주기",
             "# 기본값: 7 (초)");
-    public static final Config<Integer> COUNT_OF_VENOM_ATTACK = Config.of(Vennominon.class, "count-of-venon-attack", 15, FunctionalInterfaces.positive(),
+    public static final Config<Integer> COUNT_OF_VENOM_ATTACK = Config.of(Vennominaga.class, "count-of-venon-attack", 15, FunctionalInterfaces.positive(),
             "# 맹독의 최대 공격 횟수",
             "# 기본값: 15 (회)");
-    public static final Config<Integer> RANGE = Config.of(Vennominon.class, "range", 7, FunctionalInterfaces.positive(),
-            "# 독사왕 범위",
-            "# 기본값: 7 (블럭)");
-    public static final Config<Integer> DELAY = Config.of(Vennominon.class, "delay", 7, FunctionalInterfaces.positive(), FunctionalInterfaces.TIME,
-            "# 독사왕 발동 주기",
-            "# 기본값: 7 (초)");
-    public static final Config<Integer> GROGGY = Config.of(Vennominon.class, "groggy", 10, FunctionalInterfaces.positive(), FunctionalInterfaces.TIME,
-            "# 독사왕 부활 후 그로기 시간",
-            "# 기본값: 10 (초)");
-    public static final Config<Integer> CONDITION = Config.of(Vennominon.class, "condition", 75, FunctionalInterfaces.positive(),
-            "# 사신강림 사용 조건",
-            "# 기본값: 75");
+    public static final Config<Integer> RANGE = Config.of(Vennominaga.class, "range", 10, FunctionalInterfaces.positive(),
+            "# 독사신 범위",
+            "# 기본값: 10 (블럭)");
+    public static final Config<Integer> DELAY = Config.of(Vennominaga.class, "delay", 5, FunctionalInterfaces.positive(), FunctionalInterfaces.TIME,
+            "# 독사신 발동 주기",
+            "# 기본값: 5 (초)");
 
-    public Vennominon(Participant participant) {
+    public Vennominaga(Participant participant) {
         super(participant);
     }
 
-    private int venom = 0;
-    private final NoticeTimeTimer groggy = new NoticeTimeTimer(getParticipant(), "§7그로기", GROGGY.getValue());
-    private final KingOfVenom kOfVenom = new KingOfVenom();
-    private final HashMap<Participant, VenominonVenom> venomMap = new HashMap<>();
+    private final HashMap<Participant, VenominagaVenom> venomMap = new HashMap<>();
+    private final GodOfVenom gOfVenom = new GodOfVenom();
     private final Predicate<Entity> predicate = entity -> {
         if (entity.equals(getPlayer())) return false;
         if (entity instanceof Player) {
@@ -95,70 +82,72 @@ public class Vennominon extends CokesSynergy implements ActiveHandler {
         return true;
     };
 
-    @Override
-    public boolean ActiveSkill(Material material, ClickType clickType) {
-        if (material == Material.IRON_INGOT && clickType == ClickType.RIGHT_CLICK && getParticipant().getAbility() != null) {
-            if (venom >= CONDITION.getValue()) {
-                try {
-                    ((Mix)getParticipant().getAbility()).setSynergy(SynergyFactory.getSynergy(Vennominaga.class, Vennominaga.class));
-                } catch (ReflectiveOperationException e) {
-                    e.printStackTrace();
-                }
-                return true;
-            } else {
-                getPlayer().sendMessage("누적된 §2맹독§f: "+venom);
-            }
-        }
-        return false;
-    }
-
     @SubscribeEvent(priority = 1000, eventPriority = EventPriority.HIGHEST, childs = {EntityDamageByBlockEvent.class, EntityDamageByEntityEvent.class})
     public void onBeforeDeath(EntityDamageEvent e) {
-        if (e.getEntity().equals(getPlayer()) && !groggy.isRunning() && getPlayer().getHealth() - e.getFinalDamage() <= 0) {
+        if (e.getEntity().equals(getPlayer()) && getPlayer().getHealth() - e.getFinalDamage() <= 0) {
             int health = 0;
             for (Player player : LocationUtil.getNearbyEntities(Player.class, getPlayer().getLocation(), RANGE.getValue(), RANGE.getValue(), predicate)) {
                 Participant participant = getGame().getParticipant(player.getPlayer());
-                VenominonVenom venomTimer = venomMap.remove(participant);
+                VenominagaVenom venomTimer = venomMap.remove(participant);
                 if (venomTimer == null) continue;
                 health += venomTimer.stack;
                 venomTimer.stop(true);
             }
-            getPlayer().setHealth(Math.max(AttributeUtil.getMaxHealth(getPlayer()), health / 3.0));
-            groggy.start();
+            double final_health = Math.min(AttributeUtil.getMaxHealth(getPlayer()), health / 2.0);
+            getPlayer().setHealth(final_health);
             SoundLib.ITEM_TOTEM_USE.playSound(getPlayer());
-            getPlayer().sendMessage("[§b베노미논§f] 부활! §8(♥ "+(health/3.0)+"§8)");
+            getPlayer().sendMessage("[§b베노미너거§f] 부활! §8(♥ "+final_health+"§8)");
             e.setDamage(0);
         }
     }
 
     @SubscribeEvent(priority = 1000, eventPriority = EventPriority.HIGHEST)
     public void onPlayerSetHealth(PlayerSetHealthEvent e) {
-        if (e.getPlayer().equals(getPlayer()) && !groggy.isRunning() && e.getHealth() <= 0) {
+        if (e.getPlayer().equals(getPlayer()) && e.getHealth() <= 0) {
             int health = 0;
             for (Player player : LocationUtil.getNearbyEntities(Player.class, getPlayer().getLocation(), RANGE.getValue(), RANGE.getValue(), predicate)) {
                 Participant participant = getGame().getParticipant(player.getPlayer());
-                VenominonVenom venomTimer = venomMap.remove(participant);
+                VenominagaVenom venomTimer = venomMap.remove(participant);
                 if (venomTimer == null) continue;
                 health += venomTimer.stack;
                 venomTimer.stop(true);
             }
-            getPlayer().setHealth(Math.min(AttributeUtil.getMaxHealth(getPlayer()), health / 3.0));
-            groggy.start();
-            SoundLib.ITEM_TOTEM_USE.playSound(getPlayer());
-            getPlayer().sendMessage("[§b베노미논§f] 부활! §8(♥ "+(health/3.0)+"§8)");
             e.setCancelled(true);
+            getPlayer().setHealth(Math.max(AttributeUtil.getMaxHealth(getPlayer()), health / 2.0));
+            SoundLib.ITEM_TOTEM_USE.playSound(getPlayer());
+            getPlayer().sendMessage("[§b베노미너거§f] 부활! §8(♥ "+(health/2.0)+"§8)");
+
+        }
+    }
+
+    @SubscribeEvent
+    public void onEntityDamageByEntity(EntityDamageByEntityEvent e) {
+        Entity damager = CokesUtil.getDamager(e.getDamager());
+        if (damager != null && getGame().isParticipating(damager.getUniqueId()) && getGame().isParticipating(e.getEntity().getUniqueId())) {
+            Participant damagerParticipant = getGame().getParticipant(damager.getUniqueId());
+            if (damagerParticipant.getAbility() instanceof Vennominaga) return;
+            if (damagerParticipant.getAbility() instanceof Mix && ((Mix) damagerParticipant.getAbility()).getSynergy() instanceof Vennominaga) return;
+            if (venomMap.containsKey(damagerParticipant)) {
+                Participant participant = getGame().getParticipant(e.getEntity().getUniqueId());
+                VenominagaVenom venomTimer = venomMap.get(participant);
+                if (venomTimer == null) {
+                    venomTimer = new VenominagaVenom(participant);
+                    venomMap.put(participant, venomTimer);
+                }
+                venomTimer.addStack();
+            }
         }
     }
 
     @Override
     public void onUpdate(Update update) {
         if (update == Update.RESTRICTION_CLEAR) {
-            kOfVenom.start();
+            gOfVenom.start();
         }
     }
 
-    private class KingOfVenom extends AbilityTimer {
-        public KingOfVenom() {
+    private class GodOfVenom extends AbilityTimer {
+        public GodOfVenom() {
             super();
             setPeriod(TimeUnit.SECONDS, DELAY.getValue());
             setInitialDelay(TimeUnit.SECONDS, DELAY.getValue());
@@ -166,24 +155,23 @@ public class Vennominon extends CokesSynergy implements ActiveHandler {
 
         @Override
         protected void run(int count) {
-            if (!groggy.isRunning()) {
-                for (Player player : LocationUtil.getNearbyEntities(Player.class, getPlayer().getLocation(), RANGE.getValue(), RANGE.getValue(), predicate)) {
-                    Participant participant = getGame().getParticipant(player.getPlayer());
-                    if (participant.getAbility() instanceof Vennominon ||(
-                            participant.getAbility() instanceof Mix && ((Mix) participant.getAbility()).hasSynergy() && ((Mix) participant.getAbility()).getSynergy() instanceof Vennominon
-                    )) return;
-                    VenominonVenom venomTimer = venomMap.get(participant);
-                    if (venomTimer == null) {
-                        venomTimer = new VenominonVenom(participant);
-                        venomMap.put(participant, venomTimer);
-                    }
-                    venomTimer.addStack();
+            for (Player player : LocationUtil.getNearbyEntities(Player.class, getPlayer().getLocation(), RANGE.getValue(), RANGE.getValue(), predicate)) {
+                Participant participant = getGame().getParticipant(player.getPlayer());
+                if (participant.getAbility() instanceof Vennominaga ||(
+                        participant.getAbility() instanceof Mix && ((Mix) participant.getAbility()).hasSynergy() && ((Mix) participant.getAbility()).getSynergy() instanceof Vennominaga
+                        )) return;
+                VenominagaVenom venomTimer = venomMap.get(participant);
+                if (venomTimer == null) {
+                    venomTimer = new VenominagaVenom(participant);
+                    venomMap.put(participant, venomTimer);
                 }
+                venomTimer.addStack();
+                venomTimer.addStack();
             }
         }
     }
 
-    public class VenominonVenom extends AbilityTimer {
+    private class VenominagaVenom extends AbilityTimer {
         private final Participant target;
         private final IHologram hologram;
         private final int maxCounter = MAX_VENOM_STACK.getValue();
@@ -191,7 +179,7 @@ public class Vennominon extends CokesSynergy implements ActiveHandler {
         private int damageCount = 0;
         private final String icon = "☣";
 
-        public VenominonVenom(Participant target) {
+        public VenominagaVenom(Participant target) {
             super();
             this.setPeriod(TimeUnit.TICKS, 1);
             this.target = target;
@@ -199,7 +187,7 @@ public class Vennominon extends CokesSynergy implements ActiveHandler {
             this.hologram = NMS.newHologram(targetPlayer.getWorld(), targetPlayer.getLocation().getX(), targetPlayer.getLocation().getY() + targetPlayer.getEyeHeight() + 0.6, targetPlayer.getLocation().getZ());
             this.hologram.setText(CokesUtil.repeatWithTwoColor(icon, '2', stack, 'f', maxCounter-stack));
             this.hologram.display(getPlayer());
-            this.stack = 0;
+            this.stack = 1;
             this.start();
         }
         @Override
@@ -227,7 +215,6 @@ public class Vennominon extends CokesSynergy implements ActiveHandler {
         private void addStack() {
             if (stack < maxCounter) {
                 stack++;
-                venom++;
             }
         }
     }

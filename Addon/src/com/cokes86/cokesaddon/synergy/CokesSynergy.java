@@ -1,4 +1,4 @@
-package com.cokes86.cokesaddon.ability.synergy;
+package com.cokes86.cokesaddon.synergy;
 
 import daybreak.abilitywar.game.AbstractGame.Participant;
 import daybreak.abilitywar.game.list.mix.synergy.Synergy;
